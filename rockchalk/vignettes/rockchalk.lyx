@@ -1,0 +1,4593 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass sweavel-article
+\begin_preamble
+%\VignetteIndexEntry{Using rockchalk}
+
+\usepackage{Sweavel}
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage[samesize]{cancel}
+
+
+
+\usepackage{ifthen}
+
+\makeatletter
+
+\renewenvironment{figure}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{figure}
+
+ }{%
+
+   \@float{figure}[#1]%
+
+ }%
+
+ \centering
+
+}{%
+
+ \end@float
+
+}
+
+\renewenvironment{table}[1][]{%
+
+ \ifthenelse{\equal{#1}{}}{%
+
+   \@float{table}
+
+ }{%
+
+   \@float{table}[#1]%
+
+ }%
+
+ \centering
+
+%  \setlength{\@tempdima}{\abovecaptionskip}%
+
+%  \setlength{\abovecaptionskip}{\belowcaptionskip}%
+
+% \setlength{\belowcaptionskip}{\@tempdima}%
+
+}{%
+
+ \end@float
+
+}
+
+
+%\usepackage{listings}
+% Make ordinary listings look as if they come from Sweave
+\lstset{tabsize=2, breaklines=true,style=Rstyle}
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\def\Sweavesize{\scriptsize} 
+\def\Rcolor{\color{black}} 
+\def\Rbackground{\color[gray]{0.90}}
+\end_preamble
+\use_default_options true
+\begin_modules
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine natbib_authoryear
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Using rockchalk for Regression Presentations
+\end_layout
+
+\begin_layout Author
+Paul Johnson
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{ae=F,nogin=T}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+options(device = pdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=80, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The rockchalk package is a collection of functions that I need, or my students
+ might need, when I'm teaching about regression.
+ The functions here divide into three categories.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Functions that help me prepare lectures and reports.
+ The function to create LaTeX tables from regression output, outreg, falls
+ into this category.
+ It speeds up the preparation of lectures immensely to include table generating
+ code that 
+\begin_inset Quotes eld
+\end_inset
+
+just works
+\begin_inset Quotes erd
+\end_inset
+
+ with R output.
+ Some functions in R are very hard to use and get right consistently, especially
+ where 3 dimensional plotting is concerned.
+ That's where functions like mcGraph1, mcGraph2, mcGraph3, and plotPlane
+ come in handy.
+ These don't do any work that is particularly original, but they do help
+ to easily make the multidimensional plots that turn out 
+\begin_inset Quotes eld
+\end_inset
+
+about right
+\begin_inset Quotes erd
+\end_inset
+
+ most of the time.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Functions simplify vital chores that are difficult for regression students.
+ I keep track of the R idioms that bother the students and try to craft
+ functions that simplify them.
+ I have often asked students to plot several regression lines, 
+\begin_inset Quotes eld
+\end_inset
+
+one for each sub-group of respondents,
+\begin_inset Quotes erd
+\end_inset
+
+ and this sometimes proves frustrating.
+ The function plotSlopes is offered as my suggestion for creating interaction
+ plots of 
+\begin_inset Quotes eld
+\end_inset
+
+simple slopes
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This handles the work of calculating predicted values and drawing them
+ for several possible values of a third variable.
+ plotPlane is along the same line.
+ If students find that useful, they can then use the examples to build up
+ more complicated drawings.
+\end_layout
+
+\begin_layout Enumerate
+Functions that people often ask for, even if they might be unwise to use
+ them.
+ A function to estimate a 
+\begin_inset Quotes eld
+\end_inset
+
+standardized regression
+\begin_inset Quotes erd
+\end_inset
+
+ is offered.
+ Although that is clearly unwise (in the eyes of many), some folks still
+ want to calculate 
+\begin_inset Quotes eld
+\end_inset
+
+beta weights.
+\begin_inset Quotes erd
+\end_inset
+
+ Some functions, such as meanCenter and residualCenter, are offered not
+ because I need those tools, but because other people propose them to the
+ students.
+ Those procedures are, possibly, not truly helpful and in order to demonstrate
+ that fact, I have to provide the functions.
+\end_layout
+
+\begin_layout Section
+Facilitating Collection of Summary Information
+\end_layout
+
+\begin_layout Subsection
+summarize: A replacement for summary
+\end_layout
+
+\begin_layout Standard
+R's summary function has some limitations.
+ For example, no indicators of diversity are included in the presentation.
+ I'd like to see the standard deviation and/or the variance.
+ For categorical variables, I'd like an indicator like entropy, which, roughly
+ speaking, is a way of summarizing the chances that two observations (randomly
+ drawn) do not fall into the same category.
+ 
+\end_layout
+
+\begin_layout Standard
+As work progressed on a revision of summary, I realized there are other
+ things about R's summary that I wanted to change.
+ First, I want to separate the numeric from the categorical (factor) variables.
+ Second, I want the option to have alphabetized columns in the output.
+ Third, I want more workable objects to be returned.
+ I find it almost impossible to use the returned value from summary for
+ further analysis.
+ It offers a large block of text in a table format.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order to create more workable output objects, some re-arrangement of
+ the work behind the scenes can be done.
+ Basically, it is necessary that the summarize function return the more-workable
+, less easily printable output object, and then a print method is used to
+ 
+\begin_inset Quotes eld
+\end_inset
+
+pretty print
+\begin_inset Quotes erd
+\end_inset
+
+ that output for the user.
+ 
+\end_layout
+
+\begin_layout Standard
+The summarize function returns a list with two components, 
+\begin_inset Quotes eld
+\end_inset
+
+numerics
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+factors
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The numeric summary is a data frame, with named rows, that can be used
+ for further analysis.
+ Users who wish to summarize only the numeric variables can run summarizeNumeric
+s instead, while others who want to summarize only factors can run summarizeFact
+ors.
+ The output from summarizeFactors is a list of factor summaries.
+ 
+\end_layout
+
+\begin_layout Standard
+Consider the results of applying the summarize function to Fox's Chile data
+ set from the car package:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+data(Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+(summChile <- summarize(Chile))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A companion function is centralValues, which will provide only one number
+ for each variable in a data frame.
+ For numerics, it returns the mean, while for factor variables, it returns
+ the mode.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+centralValues(Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Easier newdata objects for predict
+\end_layout
+
+\begin_layout Standard
+These two functions greatly facilitate the creation of 
+\begin_inset Quotes eld
+\end_inset
+
+newdata
+\begin_inset Quotes erd
+\end_inset
+
+ objects for use with R's predict methods.
+ This code fits a regression model on the Chile data and then it extracts
+ the model frame for further analysis.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(statusquo ~ age + income + population + region + sex, data=Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1mf <- model.frame(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+If we were to run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+predict(m1)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+we would receive a predicted value for each observation.
+ We want a smaller set of calculations, just predictions for a few cases
+ we find interesting.
+ In R, one should create a 
+\begin_inset Quotes eld
+\end_inset
+
+newdata
+\begin_inset Quotes erd
+\end_inset
+
+ data frame, which can then be used in a command like 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+predict(m1, newdata=myNewDF)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The newdata must include one column for each variable in the model, and
+ those variables must have exactly the same names as were used in the regression
+ formula.
+ This makes it difficult for students to get the predictions they want without
+ learning a lot about variable management in R.
+ 
+\end_layout
+
+\begin_layout Standard
+I have sought to streamline this by developing a 
+\begin_inset Quotes eld
+\end_inset
+
+can't miss
+\begin_inset Quotes erd
+\end_inset
+
+ sequence of steps.
+ My preferred approach is as follows.
+ First, create a new data frame that sets the predictors at their central
+ values (mean or mode).
+ Then specify some alternate levels for particular predictors in a new data
+ frame, and then combine those special interest variables with the central
+ values data set.
+ 
+\end_layout
+
+\begin_layout Standard
+In the context of model m1, suppose we want to formulate predictions for
+ each of the 3 middle quantiles of the age variable and for the levels of
+ region called 
+\begin_inset Quotes eld
+\end_inset
+
+C
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+N
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The summarize function and the centralValues functions are run first to
+ collect up the needed information.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1mfsumm <- summarize(m1mf)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1cv <- centralValues(m1mf)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use R's expand.grid function to create, mixAndMatch, a mix-and-match data
+ frame of all combinations of the values for which we want to calculate
+ predictions.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mixAndMatch <- expand.grid(age = summChile$numerics[2:4, "age"], region =
+ c("C","N"))
+\end_layout
+
+\begin_layout Plain Layout
+
+mixAndMatch
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There are many ways to put together the interesting combinations in the
+ mixAndMatch data frame with the central values in m1cv.
+ There is a danger that we may end up with columns that have duplicate names
+ (there is a variable 
+\begin_inset Quotes eld
+\end_inset
+
+age
+\begin_inset Quotes erd
+\end_inset
+
+ in both m1cv and mixAndMatch).
+ To avoid duplicate column names, I keep only the columns from m1cv that
+ are not already in mixAndMatch when I join the two together.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- cbind(mixAndMatch, m1cv[  ,!colnames(m1cv) %in% colnames(mixAndMatch)
+])
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The predicted values are called fit and added to mynewdf.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf$fit <- predict(m1, newdata = mynewdf)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If one desires confidence intervals, the procedure is similar, although
+ the data management is slightly more tedious.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- cbind(mixAndMatch, m1cv[  ,!colnames(m1cv) %in% colnames(mixAndMatch)
+])
+\end_layout
+
+\begin_layout Plain Layout
+
+preds <- predict(m1, newdata = mynewdf, interval="confidence")
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- cbind(mynewdf, preds)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Better Regression Tables: Some outreg Examples.
+\end_layout
+
+\begin_layout Standard
+On May 8, 2006, Dave Armstrong, a political science PhD student at University
+ of Maryland, posted a code snippet in r-help that demonstrated one way
+ to use the 
+\begin_inset Quotes eld
+\end_inset
+
+cat
+\begin_inset Quotes erd
+\end_inset
+
+ function from R to write LaTeX markup.
+ That gave me the idea to write a LaTeX output scheme that would help create
+ some nice looking term and research papers.
+ I'd been frustrated with the LaTeX output from other R functions.
+ I needed a table-maker to include all of the required information in a
+ regression table without including a lot of chaff (in my opinion).
+ I don't want both the standard error of b and the t value, I never want
+ p values, I need stars for the significant variables, and I want a minimally
+ sufficient set of summary statistics.
+ In 2006, there was no function that met those needs.
+\end_layout
+
+\begin_layout Standard
+Tables 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab1"
+
+\end_inset
+
+ through 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Combined-OLSGLM"
+
+\end_inset
+
+ present examples of table output that I am able to generate with outreg.
+ The regression models are fit with some simulated data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<createdata, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(1234)
+\end_layout
+
+\begin_layout Plain Layout
+
+x1 <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+x2 <- rnorm(100, m=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+x3 <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+y1 <- 5*rnorm(100) - 3*x1 + 4*x2
+\end_layout
+
+\begin_layout Plain Layout
+
+y2 <- rnorm(100)+5*x2
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x1, x2, x3, y1, y2)
+\end_layout
+
+\begin_layout Plain Layout
+
+rm (x1, x2, y1, y2)
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm (y1~x1, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm (y1~x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm (y1 ~ x1 + x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+myilogit <- function(x) exp(x)/(1 + exp(x))
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y3 <- rbinom(100, size=1, p=myilogit(scale(dat$y1)))
+\end_layout
+
+\begin_layout Plain Layout
+
+gm1 <- glm(y3~x1 + x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y4 <- 1 + 0.1 * dat$x1 - 6.9 * dat$x2 + 0.5 * dat$x1*dat$x2 + 0.2 * dat$x3
+ + rnorm(100,0, sd=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+My One Tightly Printed Regression
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Tab1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg10, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab1"
+
+\end_inset
+
+ displays the default outreg output, without any special options.
+ The command is
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<outreg10>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+My Spread Out Regressions
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Tab2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg20, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m1, tight=FALSE, modelLabels=c("Fingers"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the literature, regression tables are sometimes presented in a tight
+ column format, with the estimates of the coefficients and standard errors
+ 
+\begin_inset Quotes eld
+\end_inset
+
+stacked up
+\begin_inset Quotes erd
+\end_inset
+
+ to allow multiple models side by side, while sometimes they are printed
+ with separate columns for the coefficients and standard errors.
+ The outreg option tight=F provides the two column style.
+ In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab2"
+
+\end_inset
+
+, I've also used the argument modelLabels to insert the word 
+\begin_inset Quotes eld
+\end_inset
+
+Fingers
+\begin_inset Quotes erd
+\end_inset
+
+ above the regression model.
+ The command that produces the table is
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<outreg20>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+My Two Linear Regressions Tightly Printed
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Tab3"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+(a) Tightly Formatted Columns
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg30, results=tex, echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m1,m2), modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie")
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+(b) Two Columns Per Regression Model
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg33, results=tex, echo=FALSE>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m1,m2), tight=FALSE,  modelLabels=c("Mine","Yours"), varLabels
+ = list(x1="Billie"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The outreg function can present different models in a single table, as we
+ see in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab3"
+
+\end_inset
+
+.
+ The default output uses the tight format, so there is no need to specify
+ that explicitly.
+ In part (a) of Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab3"
+
+\end_inset
+
+, we have tightly formatted columns of regression output that result from
+ this command:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<outreg30>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+To my eye, there is something pleasant about the less-tightly-packed format,
+ as illustrated in part (b) of Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab3"
+
+\end_inset
+
+.
+ Note that the only difference in the commands that produce those tables
+ is the insertion of tight=FALSE.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<outreg33>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+My Three Linear Regressions in a Tight Format
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:3tight"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg35, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m1,m2,m3), modelLabels=c("A","B","C"), varLabels = list(x1="I
+ Forgot x1", x2="He Remembered x2"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+In addition to using modelLables to provide headings for the 2 models, the
+ other argument that was used in Table is 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab3"
+
+\end_inset
+
+ varLabels.
+ It is often a problem that the variable names are terse, while a presentation
+ must have a full name.
+ So in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab3"
+
+\end_inset
+
+, I've demonstrated how to replace the variable name x1 with the word 
+\begin_inset Quotes eld
+\end_inset
+
+Billie
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Any of the predictor variables can be re-named in this way.
+ Another usage of varLabels is offered in an example with three models in
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3tight"
+
+\end_inset
+
+, which is a result of
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<outreg35>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+As one can see, outreg gracefully handles the situation in which variables
+ are inserted or removed from a fitted model.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Three Regressions in the Spread out Format
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:3RegNotTIght"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m1,m2,m3), tight=F, modelLabels=c("I Love love love really long
+ titles","Hate Long","Medium"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I have not bothered too much with some fine points of LaTeX table formatting.
+ In order to produce tables that are completely ready for publication in
+ a journal, it would be necessary to use some special LaTeX packages to
+ control the vertical alignment of columns and such.
+ Doing so would make outreg more difficult for researchers to use, and I
+ believe the benefit would be minimal.
+ In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:3RegNotTIght"
+
+\end_inset
+
+, we have regression output which is, in my opinion, completely acceptable
+ for inclusion in a presentation or conference paper.
+ There are some warts: because the model labels are not equal in length,
+ the columns are not equally sized.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Combined OLS and GLM Estimates
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:Combined-OLSGLM"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<outreg70, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m1,gm1),modelLabels=c("OLS:y1","GLM: Categorized y1"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Another feature of outreg is that it can present the estimates of different
+ kinds of models.
+ It can present the estimates from R's lm and glm functions in a single
+ table.
+ Consider Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Combined-OLSGLM"
+
+\end_inset
+
+, which resulted from the command
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<outreg70>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the future, outreg will be enhanced to handle more types of regression
+ models, including mixed (hierarchical) models.
+\end_layout
+
+\begin_layout Section
+plotSlopes, plotPlane and plotCurves
+\end_layout
+
+\begin_layout Subsection
+plotSlopes for linear models with moderator variables
+\end_layout
+
+\begin_layout Standard
+Suppose the fitted model includes several variables, 
+\begin_inset Formula 
+\begin{equation}
+\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}x2_{i}+\hat{b}_{4}x3_{i}.\label{eq:plotSl10}
+\end{equation}
+
+\end_inset
+
+We would like to visualize the effect of 
+\begin_inset Formula $x1$
+\end_inset
+
+ on 
+\begin_inset Formula $y$
+\end_inset
+
+ for several values of 
+\begin_inset Formula $x2$
+\end_inset
+
+, keeping 
+\begin_inset Formula $x3_{i}$
+\end_inset
+
+ set at some reference value.
+ 
+\end_layout
+
+\begin_layout Standard
+The plotSlopes function assists with that project.
+ First, we fit a regression model, and then we pass that object to plotSlopes.
+ Suppose we estimate the model in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:plotSl10"
+
+\end_inset
+
+.
+ Then use plotSlopes to illustrate the effect of 
+\begin_inset Formula $x1$
+\end_inset
+
+ as it depends on 
+\begin_inset Formula $x2$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The plotx argument is variable x1, meaning that x1 will be on the horizontal
+ axis, and x2 serves as the moderator variable.
+ plotSlopes requires that the plotx argument must be the name of a numeric
+ variable, but modx may be the name of either a numeric or a factor variable.
+ 
+\end_layout
+
+\begin_layout Standard
+When modx is a numeric variable, then some particular values must be selected
+ for calculation of predictive lines.
+ By default, three hypothetical values of plotx are selected (the quantiles
+ 25%, 50%, and 75%).
+ Any other variables in the model are set at central values, which would
+ be the mean for a numeric variable and the mode for a categorical variable.
+ The user can also use the modxVals argument to specify a different selection
+ of values of the moderator for plotting.
+\end_layout
+
+\begin_layout Standard
+Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps10"
+
+\end_inset
+
+ illustrates the plotSlopes function for two use cases.
+ The first is the default selection of values for the moderator.
+ The second example in that figure illustrates user-selected values for
+ the moderator, which in this case are {8, 10.5, 12}.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps10, fig=T, echo=F, height=9, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m4 <- lm (y4 ~ x1*x2 + x3, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a Continuous
+ Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$x1, c(1.2,1)))
+\end_layout
+
+\begin_layout Plain Layout
+
+m4psb <- plotSlopes(m4, plotx = "x1", modx = "x2", modxVals=c(8, 10.5, 12),
+ xlab="Continuous Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$
+x1, c(1.2,1)))
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotSlopes Illustrated
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ps10"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+plotSlopes is intended for linear models with multiplicative interactions,
+ but it will also draw ordinary linear models.
+ It returns an object that may facilitate further analysis.
+ The output object includes the newdata object that was used to construct
+ the plots that are draw.
+ That output object is used by the function testSlopes, which is discussed
+ below.
+\end_layout
+
+\begin_layout Standard
+The plotSlopes function also works well if the moderator is a categorical
+ variable.
+ When modx is categorical, the points and lines are drawn with colors that
+ represent the categories of the plotted responses.
+ Suppose we have a four-valued categorical variable, 
+\begin_inset Quotes eld
+\end_inset
+
+West
+\begin_inset Quotes erd
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+Midwest
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+South
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+East
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If that variable is used in an interaction in the regression model, then
+ the plotSlopes output will include four lines, one for each region.
+ Like other plot functions in R, the col option can be used to adjust the
+ colors to suit the taste of the user.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps20"
+
+\end_inset
+
+, the categorical variable is x4.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps20, fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fourCat <- gl(4,25, labels=c("East","West","South", "Midwest"))
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$x4 <- sample(fourCat, 100, replace=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y5 <- 1 + 0.1 * dat$x1 + contrasts(dat$x4)[dat$x4, ] %*% c(-1,1,2) +
+ rnorm(100,0, sd=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+m5 <- lm (y5 ~ x1*x4 + x3, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous
+ Predictor", xlim=magRange(dat$x1, c(1.2,1)))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotSlopes with a Categorical Moderator
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ps20"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+testSlopes, a companion of plotSlopes
+\end_layout
+
+\begin_layout Standard
+In psychology, methodologists have recommended the analysis of 
+\begin_inset Quotes eld
+\end_inset
+
+simple slopes
+\begin_inset Quotes erd
+\end_inset
+
+ to depict the effect of several variables in a 2 dimensional plot.
+ This is most often of interest in the analysis of regression models with
+ interactive terms.
+ 
+\end_layout
+
+\begin_layout Standard
+Aiken and West (and later Cohen, Cohen, West, and Aiken) propose using the
+ t test to find out if the effect of the 
+\begin_inset Quotes eld
+\end_inset
+
+plotx
+\begin_inset Quotes erd
+\end_inset
+
+ variable is statistically significantly different from zero for each particular
+ value of the moderator variable.
+ The user should first run plotSlopes, and then submit the output object
+ to testSlopes.
+ The usual use case would be the following:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4ps <- plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor
+")
+\end_layout
+
+\begin_layout Plain Layout
+
+testSlopes(m4ps)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The output from that testSlopes usage is illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ts10"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ts10, fig=T, echo=T, height=4, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+testSlopes(m4psa)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+testSlopes for an Interactive Model
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ts10"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The hypothesis tests reported by testSlopes should be understood as follows.
+ Each of the lines in the output from plotSlopes, say Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps10"
+
+\end_inset
+
+, can be tested to find out if its 
+\begin_inset Quotes eld
+\end_inset
+
+simple slope
+\begin_inset Quotes erd
+\end_inset
+
+ is different from zero.
+ The tests calculated by testSlopes represent the null hypothesis that 
+\begin_inset Formula 
+\begin{equation}
+H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+b_{plotx\cdot modx}modx
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+where 
+\begin_inset Formula $modx$
+\end_inset
+
+ is the moderator variable and 
+\begin_inset Formula $plotx$
+\end_inset
+
+ is plotted on the horizontal axis in the plotSlopes output.
+ 
+\end_layout
+
+\begin_layout Standard
+Following a suggestion of Preacher, Curran, and Bauer (2006), the testSlopes
+ function also tries to calculate the Johnson-Neyman (1936) interpretation
+ of the same test.
+ It presents a plot, as illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ts10"
+
+\end_inset
+
+.
+ The J-N test would have us ask, 
+\begin_inset Quotes eld
+\end_inset
+
+for which values of the moderator would the value 
+\begin_inset Formula $\hat{b}_{simple\, slope}$
+\end_inset
+
+ be statistically significantly different from zero?
+\begin_inset Quotes erd
+\end_inset
+
+ The J-N calculation requires the solution an equation that is quadratic
+ in the value of the moderator variable, 
+\begin_inset Formula $modx$
+\end_inset
+
+.
+ The interval of values of 
+\begin_inset Formula $modx$
+\end_inset
+
+ associated with a statistically significant effect of 
+\begin_inset Formula $plotx$
+\end_inset
+
+ on the outcome is determined from the computation of a T statistic for
+ 
+\begin_inset Formula $\hat{b}_{simple\, slope}$
+\end_inset
+
+.
+ The J-N interval is the set of values of 
+\begin_inset Formula $modx$
+\end_inset
+
+ for which the following holds:
+\begin_inset Formula 
+\begin{equation}
+\hat{t}=\frac{\hat{b}_{simple\, slope}}{std.err(\hat{b}_{simple\, slope})}=\frac{\hat{b}_{simple\, slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Suppose there are two real roots, 
+\begin_inset Formula $root1$
+\end_inset
+
+ and 
+\begin_inset Formula $root2$
+\end_inset
+
+.
+ The values of 
+\begin_inset Formula $modx$
+\end_inset
+
+ for which the slope is statistically significant may be a compact interval,
+ 
+\begin_inset Formula $[root1,root2]$
+\end_inset
+
+, or it may two open intervals, 
+\begin_inset Formula $(-\infty,root1]$
+\end_inset
+
+ and 
+\begin_inset Formula $[root2,\infty)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+The J-N interpretation is most useful when the moderator is a continuous
+ variable and the result specifies an interval inside the range of the moderator.
+ In quite a few cases, the J-N interval is outside the observed range of
+ the moderator, which makes it either difficult to interpret or irrelevant.
+\end_layout
+
+\begin_layout Subsection
+plotCurves
+\end_layout
+
+\begin_layout Standard
+plotCurves generalizes the plotting capability of plotSlopes.
+ plotCurves should be able to handle any regression formulas that include
+ nonlinear transformations.
+ Models that have polynomials or terms that are logged (or otherwise transformed
+) can be plotted.
+ In that sense, plotCurves is rather similar to R's own termplot function.
+ The difference is that plotCurves allows for moderator variables, which
+ implies that one can draw several different curves to represent separate
+ groups.
+\end_layout
+
+\begin_layout Standard
+Suppose a dependent variable y5 is created according to a nonlinear process.
+\begin_inset Formula 
+\begin{equation}
+y5_{i}=-3x1_{i}+1.5*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F,include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y5 <- with(dat, -3*x1 + 3.5*log(x2) + 2.1*x2 + 2.2 *x1 * x2 + 20*rnorm(100))
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pcps20, fig=T, height=6, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m6 <- lm (y5 ~ log(x2*x2) + x1 * x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotCurves(m6, plotx="x2", modx="x1")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotCurves
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pcps20"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+plotPlane
+\end_layout
+
+\begin_layout Standard
+The persp function in R works well, but its interface is too complicated
+ for most elementary and intermediate R users.
+ To facilitate its use for regression users, the plotPlane is offered.
+\end_layout
+
+\begin_layout Standard
+The plotPlane function offers a visualization of the mutual effect of two
+ predictors in m4.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pp100"
+
+\end_inset
+
+ for the plot created by
+\end_layout
+
+\begin_layout Standard
+\noindent
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+plotPlane(m4, plotx1="x1", plotx2="x2")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pp100, fig=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+p100 <- plotPlane(m4, plotx1="x1", plotx2="x2")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotPlane for the Interactive Model
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pp100"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+plotPlane is designed to work like plotCurves, to tolerate nonlinear components
+ in the regression formula.
+ As illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pcps10"
+
+\end_inset
+
+, plotPlane allows the depiction of a 3 dimensional curving plane that 
+\begin_inset Quotes eld
+\end_inset
+
+sits
+\begin_inset Quotes erd
+\end_inset
+
+ in the cloud of data points.
+ The variables that are not explicitly pictured in the plotPlane figure
+ are set to central reference values.
+ As illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pcps20"
+
+\end_inset
+
+, plotCurves is a 2 dimensional depiction of the same model.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pcps10, fig=T, height=4, width=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPlane(m6, plotx1="x1", plotx2="x2")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(m6, tight=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotPlane
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pcps10"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At some point in the future, the ability to make plotSlopes and plotPlane
+ work together will be introduced.
+ The user will be able to see how the two and three dimensional graphs relate
+ to each other.
+ A preliminary rendering of what that might look like is presented in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pp110"
+
+\end_inset
+
+.
+ It is as if we can 
+\begin_inset Quotes eld
+\end_inset
+
+press the plane down
+\begin_inset Quotes erd
+\end_inset
+
+ into the 2-D slopes plot, or the 2-D simple slopes can be depicted in the
+ 3 dimensional plane.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pp110, fig=T, echo=F, width=5, height=4>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m6ps <- plotSlopes(m6, plotx="x1", modx="x2", xlab="Continuous Predictor",
+ ylim=c(-25, 105))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\begin_layout Plain Layout
+
+<<pp111, fig=T, echo=F, height=5>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+p110 <- plotPlane(m6, plotx1="x1", plotx2="x2", x1lab="Continuous Predictor",
+ phi=30)
+\end_layout
+
+\begin_layout Plain Layout
+
+for(j in unique(m6ps$newdata$x2)){
+\end_layout
+
+\begin_layout Plain Layout
+
+subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
+\end_layout
+
+\begin_layout Plain Layout
+
+lines(trans3d(subdat$x1, subdat$x2, subdat$pred, pmat=p110$res), col="red",
+ lwd=3)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Making plotSlopes and plotPlane work Together
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pp110"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Standardized, Mean-Centered, and Residual-Centered Regressions 
+\end_layout
+
+\begin_layout Subsection
+Standardized regression
+\end_layout
+
+\begin_layout Standard
+Many of us learned to conduct regression analysis with SPSS, which (historically
+, at least) reported both the ordinary regression coefficients as well as
+ a column of coefficients obtained from a regression in which each of the
+ predictors in the design matrix had been 
+\begin_inset Quotes eld
+\end_inset
+
+standardized.
+\begin_inset Quotes erd
+\end_inset
+
+ That is to say, each variable, for example 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+, was replaced by an estimated 
+\begin_inset Formula $Z-score:$
+\end_inset
+
+ 
+\begin_inset Formula $(x1_{i}-\overline{x1})/std.dev.(x1_{i}$
+\end_inset
+
+).
+ A regression fitted with those standardized variables is said to produce
+ 
+\begin_inset Quotes eld
+\end_inset
+
+standardized coefficients.
+\begin_inset Quotes erd
+\end_inset
+
+ These standardized coefficients, dubbed 
+\begin_inset Quotes eld
+\end_inset
+
+beta weights
+\begin_inset Quotes erd
+\end_inset
+
+ in common parlance, were thought to set different kinds of variables onto
+ a common metric.
+ While this idea appears to have been in error (see, for example, King 1986),
+ it still is of interest to many scholars who want to standardize their
+ variables in order to compare them more easily.
+ 
+\end_layout
+
+\begin_layout Standard
+The function standardize was included in rockchalk to facilitate lectures
+ about what a researcher ought not do.
+ standardize performs the complete, mindless standardization of all predictors,
+ no matter whether they are categorical, interaction terms, or transformed
+ values (such as logs).
+ Each column of the design matrix is scaled to a new variable with mean
+ 0 and standard deviation 1.
+ The input to standardize should be a fitted regression model.
+ For example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m4 <- lm (y4 ~ x1 * x2, data=dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4s <- standardize(m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It does seem odd to me that a person would actually want a standardized
+ regression of that sort, and the commentary included with the summary method
+ for the standardized regression object probably makes that clear.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m4s)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparing Ordinary and Standardized Regression
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:stdreg10"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<stdreg10, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m4,m4s), tight=F, modelLabels=c("Not Standardized","Standardized"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Mean-centered Interaction Models
+\end_layout
+
+\begin_layout Standard
+Sometimes people will fit a model like this
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+and then wonder, 
+\begin_inset Quotes eld
+\end_inset
+
+is there an interaction between 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+?
+\begin_inset Quotes erd
+\end_inset
+
+ The natural inclination is to run this model, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1*x2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+or its equivalent
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x1 + x2 + x1:x2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For a variety of reasons, researchers have been advised that they should
+ not run the ordinary interaction model.
+ Instead, they should 
+\begin_inset Quotes eld
+\end_inset
+
+mean center
+\begin_inset Quotes erd
+\end_inset
+
+ the variables 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ before entering them into the regression model.
+ That is, they should replace 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ with 
+\begin_inset Formula $(x1_{i}-\overline{x1})$
+\end_inset
+
+ and 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+ with 
+\begin_inset Formula $(x2_{i}-\overline{x2})$
+\end_inset
+
+, so that the fitted model is actually
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+b_{1}(x1_{i}-\overline{x1})+b_{2}(x2_{i}-\overline{x2})+b_{3}(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})+e_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This is easy enough to do in R, but it can be tedious to center the variables
+ and then run the model.
+ To make it easier for users to compare the results of the 
+\begin_inset Quotes eld
+\end_inset
+
+ordinary interaction
+\begin_inset Quotes erd
+\end_inset
+
+ and the 
+\begin_inset Quotes eld
+\end_inset
+
+mean centered
+\begin_inset Quotes erd
+\end_inset
+
+ model, this package includes a function meanCenter.
+ meanCenter will receive a model, scan it for interaction terms, and then
+ center the variables that are involved in interactions.
+ It is used as follows.
+ First, fit any regression, such as m4 above, the same one with which the
+ standardize function was demonstrated.
+ Pass the output object to the meanCenter function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m4mc <- meanCenter(m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m4mc)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The default settings for meanCenter cause it to center only the variables
+ involved in an interaction, and it leaves the others unchanged.
+ If the user wants all of the numeric predictors to be mean-centered, the
+ usage would be
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m4mc <- meanCenter(m4, centerOnlyInteractors = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m1mc4)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+By default, it does not standardize while centering (but the user can request
+ standardization).
+ Users who want to standardize the variables that are centered can use the
+ argument standardize=TRUE.
+ The option centerDV causes the dependent variable to be centered as well.
+\end_layout
+
+\begin_layout Subsection
+Residual-centered Models
+\end_layout
+
+\begin_layout Standard
+Residual-centering is another adjustment that has been recommended for models
+ that include interactions or squared terms.
+ Like mean-centering, it is recommended mainly as a way to ameliorate multicolli
+nearity.
+ 
+\end_layout
+
+\begin_layout Standard
+I think of residual-centering as follows.
+ Suppose we fit the linear model, with no interaction
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y=c_{0}+c_{1}x1+c_{2}x2+e{}_{i}.\label{eq:rc20}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+Suppose that those parameter estimates, 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+, 
+\begin_inset Formula $\hat{c}_{2}$
+\end_inset
+
+, are the 
+\begin_inset Quotes eld
+\end_inset
+
+right ones
+\begin_inset Quotes erd
+\end_inset
+
+.
+ We want to estimate the interactive model, 
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i},
+\end{equation}
+
+\end_inset
+
+but if we estimate that, it will 
+\begin_inset Quotes eld
+\end_inset
+
+ruin
+\begin_inset Quotes erd
+\end_inset
+
+ our estimates for the effects of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+.
+ So we proceed by constraining the fitted coefficients in the interactive
+ model so that the main effects remain the same.
+ That is to say, require that the parameter estimates of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ must match match estimates from equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:rc20"
+
+\end_inset
+
+.
+ Effectively, 
+\begin_inset Formula $\hat{b}_{1}=\hat{c}_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{b}_{2}=\hat{c}_{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+How can this be done in a convenient, practical way? The answer: use 
+\begin_inset Quotes eld
+\end_inset
+
+residual-centering.
+\begin_inset Quotes erd
+\end_inset
+
+ First, estimate the following regression, in which the left hand side is
+ the interaction product term:
+\begin_inset Formula 
+\begin{equation}
+(x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2+u_{i}\label{eq:residCentered}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The residuals from that regression are, by definition, orthogonal to both
+ 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+.
+ Call those fitted residuals 
+\begin_inset Formula $\widehat{u_{i}}$
+\end_inset
+
+.
+ We fit the interactive model using 
+\begin_inset Formula $\widehat{u}_{i}$
+\end_inset
+
+ in place actual product term 
+\begin_inset Formula $(x1_{i}\times x2_{i})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3\widehat{u_{i}}+e_{i},\label{eq:rc10-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+In essence, we have taken the interaction 
+\begin_inset Formula $(x1_{i}\times x2_{i})$
+\end_inset
+
+, and purged it of its parts that are linearly related to 
+\begin_inset Formula $x1_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $x2_{i}$
+\end_inset
+
+ separately.
+ 
+\end_layout
+
+\begin_layout Standard
+The rockchalk function residualCenter handles this for the user.
+ Like meanCenter, the user has to fit an interactive model first, and the
+ result object is passed to residualCenter like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m4rc <- residualCenter(m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m4rc)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The objects created by residualCenter are assigned the class 
+\begin_inset Quotes eld
+\end_inset
+
+rcreg
+\begin_inset Quotes erd
+\end_inset
+
+ and the package includes summary, print, and predict methods for these
+ objects.
+ In the regression output, the residual-centered interaction term is labeled
+ as 
+\begin_inset Formula $(x1Xx2)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Why are we bothering with mean-centering and residual-centering in the first
+ place?
+\end_layout
+
+\begin_layout Standard
+In the long run, think the correct answer will be, 
+\begin_inset Quotes eld
+\end_inset
+
+we were mistaken.
+\begin_inset Quotes erd
+\end_inset
+
+ Nevertheless, the advice that one ought to mean-center or residual-center
+ in regression analysis has become quite widely established.
+ The primary advocates of 
+\begin_inset Quotes eld
+\end_inset
+
+mean-centering
+\begin_inset Quotes erd
+\end_inset
+
+ have been Aiken and West (1991), who integrated that advice into the very
+ widely used regression textbook, 
+\emph on
+Applied Multiple Regression/Correlation for the Behavioral Sciences
+\emph default
+ (Cohen, et.
+ al , 2002).
+ The advice that one ought to mean-center the predictors has been picked
+ up in other fields.
+ One statistics text for biologists notes, 
+\begin_inset Quotes eld
+\end_inset
+
+We support the recommendation of Aiken & West (1991) and others that multiple
+ regression with interaction terms should be fitted to data with centered
+ predictor values
+\begin_inset Quotes erd
+\end_inset
+
+ (Quinn and Keough, 2002, Chapter 6).
+ 
+\end_layout
+
+\begin_layout Standard
+In order to understand how mean-centering came to seem like a 
+\begin_inset Quotes eld
+\end_inset
+
+magic bullet,
+\begin_inset Quotes erd
+\end_inset
+
+ it is necessary to re-trace some steps to find out how we arrived in our
+ current situation.
+ For this example, I used the function genCorrelatedData in rockchalk.
+ The 
+\begin_inset Quotes eld
+\end_inset
+
+true model
+\begin_inset Quotes erd
+\end_inset
+
+ from which the data is produced is
+\begin_inset Formula 
+\begin{equation}
+y_{i}=2+0.1x1_{i}+0.1x2_{i}+0.2\cdot(x1_{i}\times x2_{i})+e_{i},
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+where 
+\begin_inset Formula $e_{i}\sim N(0,300^{2})$
+\end_inset
+
+ and 
+\begin_inset Formula $\rho_{x1,x2}=0.4$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Virtually everybody who has experimented with regression has had the 
+\begin_inset Quotes eld
+\end_inset
+
+what the heck happened to my predictors?
+\begin_inset Quotes erd
+\end_inset
+
+ experience.
+ Please consider the Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:meancenter10-1"
+
+\end_inset
+
+.
+ In the first column, we have the ordinary linear specification
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(y ~ x1 + x2, data=dat2).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The coefficients of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ appear to be 
+\begin_inset Quotes eld
+\end_inset
+
+statistically significant,
+\begin_inset Quotes erd
+\end_inset
+
+ a very gratifying regression indeed.
+ It appears we might have found something!
+\end_layout
+
+\begin_layout Standard
+Unable to leave well enough alone, the researcher wonders, 
+\begin_inset Quotes eld
+\end_inset
+
+is there an interaction between 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+?
+\begin_inset Quotes erd
+\end_inset
+
+ The second column in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:meancenter10-1"
+
+\end_inset
+
+ summarizes the regression that includes an interaction term.
+ That interaction model, which adds the product variable 
+\begin_inset Formula $x1\times x2$
+\end_inset
+
+, is estimated in R with
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm(y ~ x1 * x2, data=dat2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+A quick scan of column two usually lead to the 
+\begin_inset Quotes eld
+\end_inset
+
+what the heck?
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Holy Cow!
+\begin_inset Quotes erd
+\end_inset
+
+ response.
+ The regression went to hell! Neither of the key variables, 
+\begin_inset Formula $x1$
+\end_inset
+
+ nor 
+\begin_inset Formula $x2$
+\end_inset
+
+, is 
+\begin_inset Quotes eld
+\end_inset
+
+statistically significant
+\begin_inset Quotes erd
+\end_inset
+
+ any more.
+ While the coefficients for the variables 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ did seem to be substantial in the first model, the introduction of the
+ interactive effect appears to ruin the whole thing.
+ What should be done when adding a product term seems to 
+\begin_inset Quotes eld
+\end_inset
+
+ruin
+\begin_inset Quotes erd
+\end_inset
+
+ a regression model? 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=F, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat2 <- genCorrelatedData(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+m6linear <- lm (y ~ x1 + x2, data=dat2)
+\end_layout
+
+\begin_layout Plain Layout
+
+m6int <- lm (y ~ x1 * x2, data=dat2)
+\end_layout
+
+\begin_layout Plain Layout
+
+m6mc <- meanCenter(m6int)
+\end_layout
+
+\begin_layout Plain Layout
+
+m6rc <- residualCenter(m6int)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Comparing Regressions
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:meancenter10-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mcenter10, results=tex, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear",
+ "Interaction","Mean-centered","Residual-centered"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Cohen, et al.
+ refer to the apparent instability of the coefficients as a reflection of
+ 
+\begin_inset Quotes eld
+\end_inset
+
+inessential collinearity
+\begin_inset Quotes erd
+\end_inset
+
+ among the predictors, due to the fact that 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ are correlated with the new term, 
+\begin_inset Formula $x1\times x2$
+\end_inset
+
+.
+ They advised their readers to 
+\begin_inset Quotes eld
+\end_inset
+
+mean center
+\begin_inset Quotes erd
+\end_inset
+
+ their predictors, to subtract the mean of each predictor from the observed
+ model and run the regression again.
+ 
+\end_layout
+
+\begin_layout Standard
+Mean-centering seems to help.
+ The result of the meanCenter function is displayed in the third column
+ of Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:meancenter10-1"
+
+\end_inset
+
+.
+ It appears that the estimates for the slopes are 
+\begin_inset Quotes eld
+\end_inset
+
+significant again
+\begin_inset Quotes erd
+\end_inset
+
+ and we have 
+\begin_inset Quotes eld
+\end_inset
+
+solved
+\begin_inset Quotes erd
+\end_inset
+
+ the problem of inessential collinearity.
+ 
+\end_layout
+
+\begin_layout Standard
+The solution, however, is simply an illusion.
+ Technical rebuttals have been published (Kromrey, J.
+ D., & Foster-Johnson, L.
+ , 1998; Echambadi and Hess, 2007), but applied researchers continue to
+ use the practice.
+ The argument against mean-centering is really quite simple.
+ It has no effect.
+ There is no benefit.
+ The ordinary model and the mean-centered models are actually exactly the
+ same in every important way.
+ The technical critiques have focused on the multicollinearity issue, but
+ they leave open the possibility that mean-centering may facilitate interpretati
+on of the estimates.
+ The presentation here should convince the reader that even the interpretation
+ is not facilitated by mean-centering.
+\end_layout
+
+\begin_layout Standard
+The first hint of trouble is in the fact that the coefficient of the interactive
+ effect in columns 2 and 3 is identical.
+ Those coefficients are the same because they are estimates of a constant,
+ the cross partial derivative 
+\begin_inset Formula $\partial^{2}y/\partial x1\partial x2$
+\end_inset
+
+.
+ That is to say, when the different models try to estimate the same coefficient,
+ they get the same result.
+ Note as well that the root mean square and 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ estimates are identical.
+ Is it possible that the mean-centered regression could really be 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ if its fit statistics are not altered?
+\end_layout
+
+\begin_layout Standard
+The models only appear different because we sometimes forget that we are
+ studying a nonlinear problem when the regression model includes interactions.
+ To assist in the visualization of this situation, we can use some functions
+ in rockchalk.
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mcenter30"
+
+\end_inset
+
+, we see that the ordinary interaction and mean-centered models produce
+ identical predicted values! 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<mcenter50, fig=T,echo=FALSE, height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par(no.readonly = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(2,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mar=c(2,2,2,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPlane(m6linear, plotx1="x1", plotx2="x2", plotPoints=FALSE, main="Linear",
+ ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPlane(m6int, plotx1="x1", plotx2="x2", plotPoints=FALSE, main="Interaction:
+ Not Centered", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPlane(m6mc, plotx1="x1c", plotx2="x2c", plotPoints=FALSE, main="Mean-centere
+d", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+plotPlane(m6rc, plotx1="x1", plotx2="x2", plotPoints=FALSE, main="Residual-cente
+red", ticktype="detailed")
+\end_layout
+
+\begin_layout Plain Layout
+
+par(op)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Predicted Planes from Centered and Uncentered Fits Identical
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:mcenter30"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The curves in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:mcenter30"
+
+\end_inset
+
+ are identical.
+ With the original, non-transformed data, the vertical (y) axis is positioned
+ at the front-left edge of the graph, while the centered one re-positions
+ the y axis into the center of the graph.
+ The coefficient estimates from a regression model on a nonlinear surface
+ depend on the location of the y axis.
+ At some points, the estimates will be large, at some points they will be
+ small.
+ Mean-centering may accidentally reposition the axis to a location that
+ has 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ (bigger?) point estimates.
+ The estimated standard errors, of course, also change as we move the y
+ axis about.
+ In the middle of the data, the point estimates of the standard errors are
+ generally smaller than they are when the axis is positioned on the periphery
+ of the data.
+ It can be shown that, from either fitted model, the estimated slopes and
+ standard errors at any given point in the data are exactly the same.
+ Included with the rockchalk package, in the examples folder, one can find
+ a file called 
+\begin_inset Quotes eld
+\end_inset
+
+residualCentering.R
+\begin_inset Quotes erd
+\end_inset
+
+ that walks through this argument step by step.
+ 
+\end_layout
+
+\begin_layout Standard
+If mean-centering does not help, perhaps residual-centering will address
+ the problem.
+ Residual-centering is offered as a new, improved sort of mean-centering.
+ Where mean-centering seems to reduce the damage done by inessential collinearit
+y, residual-centering completely eliminates it.
+ Because the residual-centered interaction variable is, by definition, completel
+y uncorrelated with the other variables in the model, the problem of collinearit
+y seems to be completely solved.
+ 
+\end_layout
+
+\begin_layout Standard
+The fourth column in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:meancenter10-1"
+
+\end_inset
+
+ presents the residual centered results.
+ The parameter estimates are a little larger, the standard errors are a
+ bit smaller.
+ In the way that applied researchers usually look at situations like this,
+ it is a 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ model.
+ 
+\end_layout
+
+\begin_layout Standard
+And, yet again, our high hopes are dashed.
+ In the end, we will find out that the residual-centered model is completely
+ equivalent to the ordinary interaction model and the mean-centered model.
+ My effort to visualize this was initially frustrated by the difficulty
+ of writing a predict function that worked for arbitrary new data objects,
+ but once that was finished, the result became completely clear.
+ The predicted values of the ordinary interactive model, the mean-centered
+ model, and the residual-centered models are exactly the same.
+ Perhaps the most persuasive case is found in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:rcenter40"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<rcenter40, fig=T,echo=FALSE, height=5, width=7>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat3 <- centerNumerics(dat2)
+\end_layout
+
+\begin_layout Plain Layout
+
+##m6mcpred <- fitted(m6mc) ##
+\end_layout
+
+\begin_layout Plain Layout
+
+m6mcpred <- predict(m6mc, newdata=dat3)
+\end_layout
+
+\begin_layout Plain Layout
+
+##m6rcpred <- fitted(m6rc) ##
+\end_layout
+
+\begin_layout Plain Layout
+
+m6rcpred <- predict(m6rc, newdata=dat3)
+\end_layout
+
+\begin_layout Plain Layout
+
+##m6intpred <- fitted(m6int) ##
+\end_layout
+
+\begin_layout Plain Layout
+
+m6intpred <- predict(m6int, newdata=dat3)
+\end_layout
+
+\begin_layout Plain Layout
+
+op <- par(no.readonly = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+par(mfcol=c(1,2))
+\end_layout
+
+\begin_layout Plain Layout
+
+##plot(fitted(m6rc), predict(m6rc, newdata=dat3))
+\end_layout
+
+\begin_layout Plain Layout
+
+##plot(fitted(m6mc), predict(m6mc, newdata=dat3))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(m6intpred, m6rcpred, main="", xlab="Predictions of Uncentered Interaction",
+ ylab="Residual-centered Predictions")
+\end_layout
+
+\begin_layout Plain Layout
+
+predcor <- round(cor(m6intpred, m6rcpred),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", legend=c(paste("Correlation=", predcor)))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(m6mcpred, m6rcpred, main="", xlab="Mean-centered Predictions", ylab
+ = "Residual-centered Predictions")
+\end_layout
+
+\begin_layout Plain Layout
+
+predcor <- round(cor(m6mcpred, m6rcpred),3)
+\end_layout
+
+\begin_layout Plain Layout
+
+legend("topleft", legend=c(paste("Correlation=", predcor)))
+\end_layout
+
+\begin_layout Plain Layout
+
+par(op)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Predicted Values of Mean and Residual-centered Models
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:rcenter40"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The conclusion is this.
+ One can code a nonlinear model in various ways, all of which are theoretically
+ and analytically identical.
+ There are superficial differences in the estimates of the coefficients
+ of the various specifications, but these differences are understandable
+ in light of the changes in the design matrix.
+ The connection between the observed values of the predictors and the predicted
+ values remains the same in all of these specifications.
+\end_layout
+
+\begin_layout Standard
+Why do the coefficients differ if the models are actually the same? Recall
+ that we are estimating the slopes of a curving plane, and so estimates
+ of the marginal effects of 
+\begin_inset Formula $x1$
+\end_inset
+
+ and 
+\begin_inset Formula $x2$
+\end_inset
+
+ will depend on the point at which we are calculating the slopes.
+ Mean-centering and residual-centering are different methods for re-positioning
+ the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis.
+ The interactive model has a constant mixed partial derivative, so the estimate
+ of the interaction coefficient is not affected by the position of the y
+ axis.
+ The other coefficients, however, do change.
+ 
+\end_layout
+
+\begin_layout Standard
+It is possible to translate between the estimates of any one of these fitted
+ models and the estimates of another.
+ The derivation proceeds as follows.
+ The ordinary model is
+\begin_inset Formula 
+\begin{equation}
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3(x1_{i}\times x2_{i})+e1_{i}\label{eq:int}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The mean-centered model is 
+\begin_inset Formula 
+\begin{equation}
+y_{i}=c_{0}+c_{1}(x1_{i}-\overline{x1})+c_{2}(x2_{i}-\overline{x2})+c_{3}(x1_{i}-\overline{x1})\times(x2_{i}-\overline{x2})+e2_{i}\label{eq:mc1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order to compare with equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:int"
+
+\end_inset
+
+, we would re-arrange like so
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=c_{0}+c_{1}(x1_{i})-c_{1}\overline{x1}+c_{2}(x2_{i})-c_{2}\overline{x2}+c_{3}(x1_{i}x2_{i}+\overline{x1}\overline{x2}-\overline{x1}x2_{i}-\overline{x2}x1_{i})+e2_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=c_{0}+c_{1}(x1_{i})-c_{1}\overline{x1}+c_{2}(x2_{i})-c_{2}\overline{x2}+c_{3}(x1_{i}x2_{i})+c_{3}\overline{x1}\overline{x2}-c_{3}\overline{x1}x2_{i}-c_{3}\overline{x2}x1_{i})+e2_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=\{c_{0}-c_{1}\overline{x1}-c_{2}\overline{x2}+c_{3}\overline{x1}\overline{x2}\}+\{c_{1}-c_{3}\overline{x2}\}x1_{i}+\{c_{2}-c_{3}\overline{x1}\}x2_{i}+c_{3}(x1_{i}x2_{i})+e2_{i}\label{eq:mc3}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+One can then compare the parameter estimates from equations 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:int"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mc3"
+
+\end_inset
+
+ in order to understand the observed changes in fitted coefficients after
+ changing from the ordinary to the mean-centered coding.
+ Both 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:int"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mc3"
+
+\end_inset
+
+ include a single parameter times 
+\begin_inset Formula $(x1_{i}x2_{i}),$
+\end_inset
+
+ leading one to expect that the estimate 
+\begin_inset Formula $\hat{b}_{3}$
+\end_inset
+
+ should be equal to the estimate of 
+\begin_inset Formula $\hat{c}_{3}$
+\end_inset
+
+ (and they are, as we have found).
+ Less obviously, one can use the fitted coefficients from either model to
+ deduce the fitted coefficients from the other.
+ The following equalities describe that relationship.
+\begin_inset Formula 
+\begin{eqnarray}
+\hat{b}_{0} & = & \hat{c}_{0}-\hat{c}_{1}\overline{x1}-\hat{c}_{2}\overline{x2}+\hat{c}_{3}\overline{x1}\overline{x2}\\
+\hat{b}_{1} & = & \hat{c}_{1}-\hat{c}_{3}\overline{x2}\\
+\hat{b}_{2} & = & \hat{c}_{2}-\hat{c}_{3}\overline{x1}\\
+\hat{b}_{3} & = & \hat{c}_{3}
+\end{eqnarray}
+
+\end_inset
+
+The estimated fit of equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mc1"
+
+\end_inset
+
+ would provide estimated coefficients 
+\begin_inset Formula $\hat{c}_{j}$
+\end_inset
+
+, 
+\begin_inset Formula $j=0,...,3$
+\end_inset
+
+, which would then be used to calculate the estimates from the noncentered
+ model.
+\end_layout
+
+\begin_layout Standard
+The estimation of the residual centered model requires two steps.
+ First, estimate a regression 
+\begin_inset Formula 
+\begin{equation}
+(x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2_{i}+u_{i}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+from which the predicted value can be calculated:
+\begin_inset Formula 
+\begin{equation}
+\widehat{(x1_{i}\times x2_{i})}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}.
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The residual of that regression 
+\begin_inset Formula 
+\begin{equation}
+\widehat{u}_{i}=(x1_{i}\times x2_{i})-\widehat{(x1_{i}\times x2_{i})}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+is used as the 
+\begin_inset Quotes eld
+\end_inset
+
+residual-centered
+\begin_inset Quotes erd
+\end_inset
+
+ predictor in place of 
+\begin_inset Formula $(x1_{i}\times x2_{i})$
+\end_inset
+
+ in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:int"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+y_{i}=h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\widehat{x1_{i}\times x2_{i}}\}+e3_{i}\label{eq:rc1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Replacing 
+\begin_inset Formula $\widehat{x1_{i}\times x2_{i}}$
+\end_inset
+
+ with 
+\begin_inset Formula $\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}$
+\end_inset
+
+, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:rc1"
+
+\end_inset
+
+ becomes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray}
+y_{i} & = & h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\hat{d}_{0}-\hat{d}_{1}x1_{i}-\hat{d}_{2}x2_{i}\}+e3_{i}\\
+ & = & h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}\}-h_{3}\hat{d}_{0}-h_{3}\hat{d}_{1}x1_{i}-h_{3}\hat{d}_{2}x2_{i}\}+e3_{i}\\
+ &  & \{h_{0}-h_{3}\hat{d}_{0}\}+\{h_{1}-h_{3}\hat{d}_{1}\}x1_{i}+\{h_{2}-h_{3}\hat{d}_{2}\}x2_{i}+h_{3}\{x1_{i}\times x2_{i}\}+e3_{i}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As in the previous comparison of models, we can translate coefficient estimates
+ between the ordinary specification and the residual-centered model.
+ The coefficient estimated for the product term, 
+\begin_inset Formula $\hat{h}_{3}$
+\end_inset
+
+, should be equal to 
+\begin_inset Formula $\hat{b}_{3}$
+\end_inset
+
+ and 
+\begin_inset Formula $\hat{c}_{3}$
+\end_inset
+
+ (and it is!).
+ If we fit the residual centered model, 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:rc1"
+
+\end_inset
+
+, we can re-generate the coefficients of the other models like so: 
+\begin_inset Formula 
+\begin{eqnarray}
+b_{0} & =\hat{c}_{0}-\hat{c}_{1}\overline{x1}-\hat{c}_{2}\overline{x2}+\hat{c}_{3}\overline{x1}\overline{x2}= & h_{0}-h_{3}\hat{d}_{0}\\
+b_{1} & =\hat{c}_{1}-\hat{c}_{3}\overline{x2}= & h_{1}-h_{3}\hat{d}_{1}\\
+b_{2} & =\hat{c}_{2}-\hat{c}_{3}\overline{x1}= & h_{2}-h_{3}\hat{d}_{2}
+\end{eqnarray}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From the preceding, it should be clear enough that the three models are
+ equivalent, in the sense that the parameter estimates (parameters, predicted
+ values, and so forth) from any one can be translated into the terminology
+ of the other.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+Aiken, L.
+ S., & West, S.
+ G.
+ (1991).
+ 
+\emph on
+Multiple Regression: Testing and Interpreting Interactions
+\emph default
+.
+ Newbury Park, Calif: Sage Publications.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+
+\end_inset
+
+Cohen, J., Cohen, P., West, S.
+ G., & Aiken, L.
+ S.
+ (2002).
+ 
+\emph on
+Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences
+\emph default
+ (Third.).
+ Routledge Academic.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-3"
+
+\end_inset
+
+Echambadi, R., & Hess, J.
+ D.
+ (2007).
+ Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple
+ Regression 
+\emph on
+Models.
+ Marketing Science
+\emph default
+, 26(3), 438–445.
+ doi: 10.1287/mksc.1060.0263
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-4"
+
+\end_inset
+
+Kromrey, J.
+ D., & Foster-Johnson, L.
+ (1998).
+ Mean Centering in Moderated Multiple Regression: Much Ado about Nothing.
+ 
+\emph on
+Educational and Psychological Measurement
+\emph default
+, 58(1), 42 –67.
+ doi:10.1177/0013164498058001005
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-7"
+
+\end_inset
+
+Little, T.
+ D., Bovaird, J.
+ A., and Widaman, K.
+ F.
+ (2006).
+ On the Merits of Orthogonalizing Powered and Product Terms: Implications
+ for Modeling Interactions Among Latent Variables.
+ 
+\emph on
+Structural Equation Modeling
+\emph default
+, 13(4), 497-519.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-6"
+
+\end_inset
+
+Preacher, K.
+ J., Curran, P.
+ J., & Bauer, D.
+ J.
+ (2006).
+ Computational Tools for Probing Interactions in Multiple Linear Regression,
+ Multilevel Modeling, and Latent Curve Analysis.
+ 
+\emph on
+Journal of Educational and Behavioral Statistics
+\emph default
+, 31(4), 437–448.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-5"
+
+\end_inset
+
+Quinn, G.P, and Keough, Michael J.
+ (2002) Experimental Design and Data Analysis for Biologists.
+ Cambridge University Press.The primary advocates of 
+\begin_inset Quotes eld
+\end_inset
+
+mean-centering
+\begin_inset Quotes erd
+\end_inset
+
+ have been Aiken and West (1991), who then integrated that advice into the
+ very widely used regression textbook, 
+\emph on
+Applied Multiple Regression/Correlation for the Behavioral Sciences
+\emph default
+ (Cohen, et.
+ al , 2002).
+ 
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,257 @@
+2012-06-03  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R (## carrier.name): using model.data now, and
+	varNamesRHS, no need for carrier nonsense anymore.
+
+2012-06-02  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotCurves.R (carrier.name): revise to use model.data
+	function, including the attribute varNamesRHS. Cleans up use of
+	carrier data.
+
+2012-05-29  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/meanCenter.R (formulaReplace): rework code so centered
+	variables are re-named with "c" on end. Otherwise too confusing.
+
+	* standardize: re-work to change variable names by appending s.
+
+	* centerNumerics: new function, will add centered variables to a
+	data frame with new names with "c" or "cs" appended.
+
+2012-05-28  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/meanCenter.R (predict.mcreg): predict must use same mean
+	and scale as were used in original regression. Use meanCenter
+	centeredValues return more fully.
+	* meanCenter(std): eliminate use of R scale, now calculate
+	mean and scale factors, return them in list with centered
+	variables.
+
+2012-05-27  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R (carrier.name): use model.data, fix centerValues
+
+	* ../R/residualCenter.R (createRCinteraction): Noticed that this
+	function did not work with categorical variables in
+	interactions. MASSIVELY reworked calculation approach. Because R
+	generates new variables when it finds factors, a new, completely
+	literal approach is taken. From fitted model, get the design
+	matrix, notice the colnames are the variables in a linear
+	formula. Scan through there and replace variables with colons with
+	the residual centered versions.
+
+2012-05-19  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/recodeFactors.R (adjacent): fix flaw in ordered factor
+	re-calculation (had *again* made the "levels" mistake on the RHS)
+
+2012-05-13  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R: x1floor and x2floor. Bad names?  Number of
+	divider lines to draw in floor of plot. Default 5, which was the
+	value I had hard coded before.
+
+	* ../R/perspEmpty.R (perspEmpty): clean up interface! Use x1 and
+	x2 arguments  to position the bottom grids.  Will require
+	interface cleanups in other functions.
+	
+	* ../R/mcGraph (mcGraph1-3): Changes to make usage match
+	perspEmpty intercface change. Instead of assuming perspEmpty will
+	manufacture the plot sequences, now the caller must do so.
+
+2012-05-07  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R (myPredict): move draw arrows before points, so
+	arrows sit under, not over points
+
+	* ../R/mcGraph.R (mcGraph3): name elements in returned list
+
+2012-05-06  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotSlopes.R (plotSlopes): llwd: lwd to pass through to
+	lines. lwd controls darkness of points only.
+
+	* ../R/outreg.R (outreg): fix conditional at end to insert
+	\end{table} to match previous changes to top of function
+
+2012-05-05  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/magRange.R (magRange): work to allow mult smaller than
+	1. Range can shrink to (center, center) point when mult reaches 0.
+
+2012-04-29  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/summarize.R (summarizeNumerics): insert N output for summarize
+
+2012-04-28  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/utils.R (cutByQuantile): work out n to divide interval
+	according to a special scheme
+	(cutBySD): choose between n=3 and 4
+
+	* ../R/summarize.R (summarizeFactors): if no factors found, return NULL
+	(summarizeNumerics): if no numerics, return NULL
+
+2012-04-20  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/summarize.R: sumstat: new paramter to restrict diagnostic output
+	(summarizeNumerics): fix crash when data frame does not includes
+	only factors or only numerics. Returns NULL in summarizeNumerics
+	or summarizeFactors.
+
+2012-04-15  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/meanCenter.R (standardize.lm): drop=FALSE for dm, keeps it
+	a matrix
+	(summary.mcreg): drop=FALSE for dm
+
+2012-04-04  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/testSlopes.R (testSlopes): fixing plots. red intervals on "either
+	side" result. Labels too.
+
+2012-04-02  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotCurves.R (cutBySD): insert "col" option, similar to plotSlopes
+
+2012-03-31  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotSlopes.R: allow user to specify colors in plot. add
+	option plotLegend.
+
+	* ../R/outreg.R (outreg): fixing problem that title did not print
+	unless LyX=FALSE
+
+2012-03-29  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/summarize.R (ncw): new method print.factorSummaries
+
+2012-03-09  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* examples/meanCenter-ex.R: remove references to centerContrasts
+
+	* ../R/meanCenter.R (std): predict.mcreg centers all variable in the
+	"centeredVars" list.
+	* ../R/meanCenter.R: Cut "centerContrasts" option in meanCenter and tons of
+	beautiful code because it is impossible to manage re-centering in
+	predict.mcreg if there are centered congrasts. 
+
+2012-03-03  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* examples/predict.rcreg-ex.R: new file to demo predict
+
+	* ../R/residualCenter.R (predict.rcreg): new method handles
+	by re-calcuating predictions for each auxiliary regression.
+
+2012-03-01  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/meanCenter.R (std): Found really bad bug where
+	plotPlane(meanCenter) returned error about predict being
+	used for wrong type of data. Problem traced back to fact
+	that "scale" returns a matrix with 1 column, rather than
+	a numeric vector, so dataClasses was mismatched.
+	attr(,"dataClasses")
+          y         xxx         x22
+	"numeric" "nmatrix.1" "nmatrix.1".  The "newdata" I'd
+	generate did not have "nmatrix.1" as the type, and so
+	predict's use of .MFCheckClass resulted in failure.
+	Like others, I say "How aggravating."
+
+2012-02-01  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotSlopes.R (plotSlopes): "std.dev." and "quantile" now
+	legal strings for modxVals, along with particular values.
+
+2012-01-30  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R (plotPlane.default): correct typos referring to plotSlopes
+
+	* ../R/plotSlopes.R (plotSlopes): add na.rm=TRUE for range commands
+
+2012-01-25  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotSlopes.R (plotSlopes): change return value to include newdf
+
+2012-01-09  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/lmrc.R (makeRCformula): weird. data from residuals turns up
+	with class "AsIs" and causes all kinds of confusion later
+	* residualCenter now a generic method
+	* residualCenter.default should work for any glm or lm.
+
+2012-01-03  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/meanCenter.R (std): create class name for mean centered
+	regression, add attributes.
+	print.mcreg: new method
+
+2011-12-30  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R (carrier.name): use get_all_vars to build emf
+
+2011-12-28  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotPlane.R: insert plotPoints option to suppress plotting
+	of points.  Question. Should plotPoints=FALSE force drawArrows=FALSE?
+
+2011-12-12  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotSeq.R: allow x to be a factor, return levels if so
+
+	* /pauljohn.plotSeq.R (plotSeq): range
+	allow missings
+
+	* ../R/plotPlane.R: new introduced function
+
+2011-12-11  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../DESCRIPTION (Date): Version: bump
+
+	* ../R/perspEmpty.R (perspEmpty): range(na.rm=TRUE) allow missings
+
+	* ../R/magRange.R (magRange): range(na.rm=TRUE) to allow missings
+
+2011-12-06  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/lmrc.R (makeRCformula): This is necessary so that all
+	interactive components are included
+	iv <- paste("(", gsub(":"," + ",x),")^2") 
+	* Replace whole stucture to make sure x1.X.x2 coding gets used.
+
+	* ../R/plotSlopes.R (plotSlopes): trying to fix that pesky "one
+	extra variable" error in regression models
+
+2011-12-02  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/plotSlopes.R (plotSlopes): fix problem when only one
+	variable was left in calculating centralized predictor values. The
+	bare vector has to be told "as.data.frame"
+
+2011-12-01  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/lmrc.R (makeRCresiduals): revised bug in calculation lmrc
+	was not using residual centered variables when "x1:x2" was
+	included, R was constructing own product term. So necessary to
+	re-name the residual centered variable connector .X.
+
+2011-11-26  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/mcGraph.R (mcGraph3): added option drawArrows
+
+2011-11-05  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* ../R/mcGraph.R (mcGraph3): insert invisible() on returns
+
+	* ../R/rockchalk-package.R: insert dataset religioncrime and
+	documentation.
+	* data/religioncrime.RData: new dataset with beautiful example
+	of suppression
+
+2011-11-02  pauljohn  <pauljohn@pjlap-124.ku.edu>
+
+	* rockchalk/rockchalk/R/mcGraph.R (mcGraph3): more fiddling
+	with interaction
+
+	* mcGraph.R (mcGraph3): fix interaction code in lm
+
