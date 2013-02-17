@@ -1,3 +1,17 @@
+2013-02-16  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/predictOMatic.R (predictOMatic): return NOT invisible()
+	anymore. Why did I do that at before?
+
+	* ../R/plotSlopes.R (plotSlopes): removed moderator variable name
+	from legnd variable, after adding variable name to legend title
+
+	* ../R/utils.R (cutByTable): Fixed the longstanding bug that
+	cutTable did not return the desired values (had names and
+	values reversed in role). Now output same meaning as
+	cutByQuantile
+
+
 2012-06-03  pauljohn  <pauljohn@pjlap-124.ku.edu>
 
 	* ../R/plotPlane.R (## carrier.name): using model.data now, and

@@ -159,13 +159,13 @@ plotSlopes <-
     do.call("lines", parms)
   }
   if (is.null(names(modxVals))) {
-    legnd <- paste(modx, " = ", modxVals, sep = "")
+    legnd <- paste(modxVals, sep = "")
   }
   else {
-    legnd <- paste(modx, " = ", names(modxVals), sep = "")
+    legnd <- paste(names(modxVals), sep = "")
   }
   if(plotLegend) legend("topleft", legend = legnd, lty = 1:lmx, col = col, lwd = llwd,
          bg = "white", title= paste("moderator:", modx))
 
-  invisible(list(call=cl, newdata=newdf, modxVals = modxVals))
+  invisible(list(call=cl, newdata = newdf, modxVals = modxVals))
 }

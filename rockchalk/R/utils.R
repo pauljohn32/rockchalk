@@ -58,7 +58,9 @@ plotSeq <- function (x, length.out = length(x))
 ##' Select most frequently occurring values from numeric or categorical variables.
 ##'
 ##' The "n" most frequently occurring values are returned, sorted by
-##' frequency of occurrence (in descending order).
+##' frequency of occurrence (in descending order). The names attribute
+##' includes information about the percentage of cases that have the
+##' indicated values.
 ##'
 ##' This is used by plotSlopes, plotCurves, and other "newdata" making
 ##' functions.
@@ -69,10 +71,13 @@ plotSeq <- function (x, length.out = length(x))
 cutByTable <- function(x, n = 5) {
     table1 <- table(x)
     n <- min(n, length(names(table1)))
-    table1sort <-  sort(table1, decreasing = T)
-    qs <- table1sort[1:n]
-    names(qs) <- names(table1sort[1:n])
-    invisible(qs)
+    table1 <- sort(table1, decreasing = T)
+    table1cut <- table1[1:n]
+    tabNames <- names(table1cut)
+    res <- as.numeric(tabNames)
+    freq <- 100*round(table1cut/sum(table1),1)
+    names(res) <- paste(tabNames," (",freq,"%)", sep="")
+    res
 }
 NULL
 

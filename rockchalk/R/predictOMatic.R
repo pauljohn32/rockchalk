@@ -182,7 +182,7 @@ predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, 
                          "std.dev." = rockchalk:::cutBySD(emf[,x], n),
                          stop("unknown 'divider' algorithm"))
             } else {
-                flxxx[[x]] <- names(rockchalk:::cutByTable(emf[ ,x], n))
+                flxxx[[x]] <- rockchalk:::cutByTable(emf[ ,x], n)
             }
             ndnew <- newdata(model, fl=flxxx[x], emf = emf)
             fit <- predict(model, newdata = ndnew, ...)
@@ -199,7 +199,7 @@ predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, 
         nd <- cbind(fit, nd)
         attr(nd, "flnames") <- flnames
     }
-    invisible(nd)
+    nd
 }
 
 
