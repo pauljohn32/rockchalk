@@ -1,3 +1,19 @@
+2013-02-19  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/testSlopes.R (testSlopes): Sunthud Pornprasertmanit
+	suggests 2013-02-19 there is a bug, diag is applied to a singleton.
+
+2013-02-17  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotPlane.R (myPredict): class set to rockchalk3d
+
+	* ../R/plotSlopes.R (plotSlopes): class set to rockchalk2d.
+
+	* ../R/plotCurves.R (## carrier.name): class set to rockchal2d.
+
+	* ../R/utils.R (cutByTable): make sure return value is a factor
+	for factor x, and numeric for numeric x
+
 2013-02-16  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/predictOMatic.R (predictOMatic): return NOT invisible()

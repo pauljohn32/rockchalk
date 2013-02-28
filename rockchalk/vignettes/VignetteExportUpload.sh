@@ -1,5 +1,8 @@
 cd /home/pauljohn/SVN/rgroup/trunk/rockchalk/rockchalk/vignettes
 
+lyx -e pdf2 Rstyle.lyx
+lyx -e sweave Rstyle.lyx
+
 lyx -e pdf2 Rchaeology.lyx
 lyx -e sweave Rchaeology.lyx
 
@@ -23,5 +26,8 @@ ssh freefaculty mkdir -p $budir
 rsync -e ssh  -b --suffix="-bak2" --backup-dir=$dir Rchaeology.pdf  freefaculty:freefaculty.org/R
 
 rsync -e ssh -b --suffix="-bak2" --backup-dir=$dir rockchalk.pdf  freefaculty:freefaculty.org/R
+
+rsync -e ssh -b --suffix="-bak2" --backup-dir=$dir Rstyle.pdf  freefaculty:freefaculty.org/R
+
 
 ##rsync -e ssh -b --suffix="-bak2" --backup-dir=$dir  Rchaeology.html.LyXconv/Rchaeology.html  freefaculty:freefaculty.org/R

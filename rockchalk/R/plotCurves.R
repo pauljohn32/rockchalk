@@ -167,5 +167,8 @@ plotCurves <-
   legend("topleft", legend = legnd, lty = 1:lmx, col = 1:lmx,
          bg = "white", title= paste("moderator:", modx))
 
-  invisible(list(call=cl, newdata=newdf, modxVals = modxVals))
+  z <- list(call=cl, newdata=newdf, modxVals = modxVals)
+  class(z) <- "rockchalk2d"
+
+  invisible(z)
 }

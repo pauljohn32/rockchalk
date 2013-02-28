@@ -1,21 +1,21 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.6.2
-Date: 2012-06-18
+Version: 1.7.0
+Date: 2013-02-17
 Author: Paul E. Johnson <pauljohn@ku.edu>
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for ease of
-    presentation and interpretation of regression analysis. 
-    These functions are developed in response to student requests 
-    that have arisen in our regression course. For regression 
-    diagnostics, see mcDiagnose, getDeltaRsquare, meanCenter or 
-    residualCenter. See the outreg function for a way to generate 
+    presentation and interpretation of regression analysis.
+    These functions are developed in response to student requests
+    that have arisen in our regression course. For regression
+    diagnostics, see mcDiagnose, getDeltaRsquare, meanCenter or
+    residualCenter. See the outreg function for a way to generate
     LaTeX tables of regression models. For nice, easy to use pictures,
-    see plotSlopes, plotCurves, plotPlane for graphs. There are some 
-    functions for re-organization of data, especially useful might be 
-    combineLevels for re-coding factors. The vignette "rockchalk" 
-    offers a fairly broad survey.  The package title "rockchalk" refers 
+    see plotSlopes, plotCurves, plotPlane for graphs. There are some
+    functions for re-organization of data, especially useful might be
+    combineLevels for re-coding factors. The vignette "rockchalk"
+    offers a fairly broad survey.  The package title "rockchalk" refers
     to the expression,  "Rock Chalk Jayhawk, Go K.U.".
 License: GPL (>= 3.0)
 LazyLoad: yes

@@ -101,7 +101,13 @@ testSlopes <- function(plotSlopesObject) {
       mcoef <- coef(model)
       modxContrastNames <- c(grep(plotx,  grep(modx, names(mcoef), value = TRUE),  value=TRUE))
       slope <- mcoef[modxContrastNames] + coef(model)[plotx]
-      seslope <- sqrt( V[plotx,plotx] +  diag(V[modxContrastNames, modxContrastNames]) + 2* V[modxContrastNames, plotx])
+
+      ## 2013-02-19 Sunthud Pornprasertmanit spots bug here:
+      seslope <- sqrt( V[plotx,plotx, drop = FALSE] +  diag(V[modxContrastNames, modxContrastNames, drop = FALSE]) + 2* V[modxContrastNames, plotx, drop = FALSE])
+      ## Problem: diag doesn't work when argument is a single real number. Fix:
+      ## temp <- V[modxContrastNames, modxContrastNames]
+      ## if(length(temp) > 1) temp <- diag(temp)
+      ## seslope <- sqrt(V[plotx, plotx] + temp + 2 * V[modxContrastNames, plotx])
 
       modxContrastNames <- c(plotx, modxContrastNames)
       slope <- c(mcoef[plotx], slope)

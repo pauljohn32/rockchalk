@@ -4,7 +4,7 @@
 \begin_header
 \textclass sweavel-article
 \begin_preamble
-%\VignetteIndexEntry{Rchaeology}
+%\VignetteIndexEntry{Rstyle}
 
 \usepackage{Sweavel}
 \usepackage{graphicx}
@@ -2404,7 +2404,7 @@ outreg(list(m1, m1i, m1imc, m1irc), tight = TRUE, modelLabels = c("Linear",
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
 bibfiles "rockchalk"
-options "apsr"
+options "chicago"
 
 \end_inset
 

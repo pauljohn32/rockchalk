@@ -43,7 +43,7 @@
 newdata <- function (model = NULL, fl = NULL, emf = NULL){
     if (is.null(emf)) emf <- model.data(model = model)
     varNamesRHS <- attr(emf, "varNamesRHS")
-    emf <- emf[ , varNamesRHS]
+    emf <- emf[ , varNamesRHS, drop = FALSE]
     modelcv <- centralValues(emf)
     if (is.null(fl)) return(modelcv)
     if (sum(!names(fl) %in% varNamesRHS) > 0) stop(cat(c("Error. The focus list:  fl requests variables that are not included in the original model. The names of the variables in the focus list be drawn from this list: ",  varNamesRHS, "\n")))

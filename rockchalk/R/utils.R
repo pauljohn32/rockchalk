@@ -74,7 +74,11 @@ cutByTable <- function(x, n = 5) {
     table1 <- sort(table1, decreasing = T)
     table1cut <- table1[1:n]
     tabNames <- names(table1cut)
-    res <- as.numeric(tabNames)
+    res <- if(!is.factor(x)){
+        as.numeric(tabNames)
+    }else{
+        as.factor( tabNames)
+    }
     freq <- 100*round(table1cut/sum(table1),1)
     names(res) <- paste(tabNames," (",freq,"%)", sep="")
     res

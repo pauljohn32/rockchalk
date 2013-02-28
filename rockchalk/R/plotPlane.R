@@ -57,6 +57,9 @@
 ##' @param alty line type, lty passed to the "arrows" function
 ##' @param alwd line width, lwd passed to the "arrows" function
 ##' @param alength arrow head length, length passed to "arrows" function
+##' @param linesFrom object with information about "highlight" lines to be added to the 3d plane (output from plotCurves or plotSlopes)
+##' @param lfcol colors for the linesFrom highlight lines
+##' @param lflwd line widths for linesFrom highlight lines
 ##' @param envir environment from whence to grab data
 ##' @param ... additional parameters that will go to persp
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -65,7 +68,7 @@
 ##' @seealso \code{\link[graphics]{persp}}, \code{\link[scatterplot3d]{scatterplot3d}}, \code{\link[HH]{regr2.plot}}
 ##' @example inst/examples/plotPlane-ex.R
 
-plotPlane <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE, plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5, x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1, llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3, alength = 0.1, envir = environment(formula(model)),  ...){
+plotPlane <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE, plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5, x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1, llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3, alength = 0.1, linesFrom, lfcol = "red", lflwd = 3, envir = environment(formula(model)),  ...){
   UseMethod("plotPlane")
 }
 
@@ -75,7 +78,7 @@ plotPlane <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = 
 ##' @rdname plotPlane
 ##' @method plotPlane default
 ##' @S3method plotPlane default
-plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE, plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5, x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1, llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3, alength = 0.1, envir = environment(formula(model)),  ...){
+plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE, plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5, x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1, llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3, alength = 0.1, linesFrom,  lfcol = "red", lflwd = 3, envir = environment(formula(model)),  ...){
     if (is.null(model))
         stop("plotPlane requires a fitted regression model.")
     if (is.null(plotx1) | is.null(plotx2))
@@ -93,10 +96,10 @@ plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawA
     if (plotx1 %in% varnames)
         x1 <- emf[, plotx1]
     if (!is.numeric(x1))
-        stop(paste("plotSlopes: The variable", plotx1, "should be a numeric variable"))
+        stop(paste("plotPlane: The variable", plotx1, "should be a numeric variable"))
     x2 <- emf[, plotx2]
     if (!is.numeric(x2))
-        stop(paste("plotSlopes: The variable", plotx2, "should be a numeric variable"))
+        stop(paste("plotPlane: The variable", plotx2, "should be a numeric variable"))
 
     if (missing(ylab)) ylab <- colnames(model$model)[1]
     if (missing(x1lab)) x1lab <- plotx1
@@ -133,9 +136,9 @@ plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawA
 
     yrange <- magRange(c(zplane,y), 1.15)
 
-    res <- perspEmpty(x1 = plotSeq(x1range, x1floor), x2 =
-                      plotSeq(x2range, x2floor), y = yrange, x1lab =
-                      x1lab, x2lab = x2lab, ylab = ylab, ...)
+    res <- perspEmpty(x1 = plotSeq(x1range, x1floor),
+                      x2 = plotSeq(x2range, x2floor), y = yrange,
+                      x1lab = x1lab, x2lab = x2lab, ylab = ylab, ...)
 
     ##for arrows. NEEDS reworking to be more general
     if ("glm" %in% class(model)) {
@@ -143,6 +146,7 @@ plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawA
     }else{
         fits <-  fitted(model)
     }
+
     mypoints4 <- trans3d(x1, x2, fits, pmat = res)
     newy <- ifelse(fits < y, fits + 0.8 * (y - fits),
                    fits + 0.8 * (y - fits))
@@ -183,5 +187,31 @@ plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawA
               lwd = llwd, col = lcol, lty = llty)
     }
 
+    if (!missing(linesFrom)){
+        dataSplits <- split(linesFrom$newdata, f = linesFrom$newdata[[linesFrom$call[["modx"]]]])
+        lapply(dataSplits, function(nd){
+            lines(trans3d( nd[[plotx1]], nd[[plotx2]], nd$pred, pmat=res), col = lfcol, lwd = lflwd)})
+    }
+
+
     invisible(list(res=res, call=cl, "x1seq"=x1seq, "x2seq"=x2seq, "zplane"=zplane))
 }
+
+
+## Problem: what if plotSlopes object and plotPlanes object have wrong variables.
+
+addLines <- function(to = NULL, from = NULL, col = "red", lwd = 4){
+    if (!class(from) %in% "rockchalk") stop("rockchalk's addLines function only
+ready to add lines for objects of type rockchalk2d")
+
+    if ( !(from$call[["modx"]] %in% to$call[["plotx1"]] | from$call[["modx"]] %in% to$call[["plotx2"]]) ) stop("Mismatched plotPlanes and plotSlopes objects")
+
+    dataSplits <- split(from$newdata, f = from$newdata[[from$call[["modx"]]]])
+    ## lapply(dataSplits, function(nd){
+    ##     lines(trans3d( nd[[from$call[["plotx"]]]], nd[[from$call[["modx"]]]], nd$pred, pmat=res), col= "red", lwd=4)})
+    lapply(dataSplits, function(nd){
+        lines(trans3d( nd[[to$call[["plotx1"]]]], nd[[to$call[["plotx2"]]]], nd$pred, pmat = to$res), col= col, lwd= lwd)})
+}
+
+
+
