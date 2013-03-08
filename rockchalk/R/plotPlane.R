@@ -193,24 +193,43 @@ plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawA
             lines(trans3d( nd[[plotx1]], nd[[plotx2]], nd$pred, pmat=res), col = lfcol, lwd = lflwd)})
     }
 
-
-    invisible(list(res=res, call=cl, "x1seq"=x1seq, "x2seq"=x2seq, "zplane"=zplane))
+    retval <- list(res=res, call=cl, "x1seq"=x1seq, "x2seq"=x2seq, "zplane"=zplane)
+    class(retval) <- "rockchalk3d"
+    invisible(retval)
 }
 
+NULL
 
-## Problem: what if plotSlopes object and plotPlanes object have wrong variables.
 
-addLines <- function(to = NULL, from = NULL, col = "red", lwd = 4){
-    if (!class(from) %in% "rockchalk") stop("rockchalk's addLines function only
-ready to add lines for objects of type rockchalk2d")
+## New for version 1.7.x
 
+##' Superimpose regression lines on a plotted plane
+##'
+##' The examples will demonstrate the intended usage.
+##'
+##' From an educational stand point, the objective is to assist with the
+##' student's conceptualization of the two and three dimensional regression
+##' relationships.
+##' @param to a 3d plot object produced by plotPlane
+##' @param from output from a plotSlopes or plotCurves function (class="rockchalk")
+##' @param col color of plotted lines (default: "red")
+##' @param lwd line width of added lines (default: 2)
+##' @param lty line type of added lines (default: 1)
+##' @return NULL, nothing, nicht, nada.
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @rdname plotPlane
+##' @export plotPlane
+##' @example inst/examples/addLines-ex.R
+
+addLines <- function(to = NULL, from = NULL, col = "red", lwd = 2, lty = 1){
+    if (!class(from) %in% "rockchalk") stop("addLines: from must be an output object from plotSlopes or plotCurves, of class rockchalk")
+    if (!class(from) %in% "rockchalk3d") stop("addLines: to must be a 3d plot object created by plotPlane or such")
     if ( !(from$call[["modx"]] %in% to$call[["plotx1"]] | from$call[["modx"]] %in% to$call[["plotx2"]]) ) stop("Mismatched plotPlanes and plotSlopes objects")
 
     dataSplits <- split(from$newdata, f = from$newdata[[from$call[["modx"]]]])
-    ## lapply(dataSplits, function(nd){
-    ##     lines(trans3d( nd[[from$call[["plotx"]]]], nd[[from$call[["modx"]]]], nd$pred, pmat=res), col= "red", lwd=4)})
     lapply(dataSplits, function(nd){
-        lines(trans3d( nd[[to$call[["plotx1"]]]], nd[[to$call[["plotx2"]]]], nd$pred, pmat = to$res), col= col, lwd= lwd)})
+        lines(trans3d( nd[[to$call[["plotx1"]]]], nd[[to$call[["plotx2"]]]], nd$pred, pmat = to$res), col = col, lwd = lwd, lty = lty)})
+    NULL
 }
 
 
