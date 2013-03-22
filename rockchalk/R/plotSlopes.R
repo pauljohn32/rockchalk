@@ -73,102 +73,102 @@ plotSlopes <-
   function (model = NULL, plotx = NULL, modx = NULL, modxVals = NULL,
             plotPoints = TRUE, plotLegend = TRUE, col, llwd, ...)
 {
-  if (is.null(model))
-    stop("plotSlopes requires a fitted regression model.")
-  if (is.null(plotx))
-    stop("plotSlopes requires the name of the variable to be drawn on the x axis")
-  if (is.null(modx))
-    stop("plotSlopes requires the name of moderator variable for which several slopes are to be drawn")
+    if (is.null(model))
+        stop("plotSlopes requires a fitted regression model.")
+    if (is.null(plotx))
+        stop("plotSlopes requires the name of the variable to be drawn on the x axis")
+    if (is.null(modx))
+        stop("plotSlopes requires the name of moderator variable for which several slopes are to be drawn")
 
-  cl <- match.call()
-  mm <- model.matrix(model)
-  depVar <- model$model[, 1]
-  modxVar <- model$model[, modx]
-  plotxVar <- model$model[, plotx]
-  if (!is.numeric(plotxVar))
-    stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
-  ylab <- colnames(model$model)[1]
-  plotyRange <- magRange(depVar, mult=c(1,1.2))
-  plotxRange <- range(mm[, plotx], na.rm = TRUE)
-  plotxSeq <- plotSeq(plotxRange, length.out = 40)
+    cl <- match.call()
+    mm <- model.matrix(model)
+    depVar <- model$model[, 1]
+    modxVar <- model$model[, modx]
+    plotxVar <- model$model[, plotx]
+    if (!is.numeric(plotxVar))
+        stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
+    ylab <- colnames(model$model)[1]
+    plotyRange <- magRange(depVar, mult=c(1,1.2))
+    plotxRange <- range(mm[, plotx], na.rm = TRUE)
+    plotxSeq <- plotSeq(plotxRange, length.out = 40)
 
-  if (is.factor(modxVar)) { ## modxVar is a factor
-    if (is.null(modxVals)) {
-      modxVals <- levels(modxVar)
-    } else {
-      if (!all(modxVals %in% levels(modxVar))) stop("modxVals includes non-observed levels of modxVar")
-    }
-  } else {                  ## modxVar is not a factor
-    modxRange <- range(modxVar, na.rm=TRUE)
-    if (is.null(modxVals)) {
-      modxVals <- rockchalk:::cutByQuantile(modxVar)
-    } else {
-      if (is.numeric(modxVals)) {
-        ;# print("TODO: Insert some checks that modxVals are reasonable")
-      } else {
-        if (is.character(modxVals)) {
-          modxVals <- match.arg(tolower(modxVals),
-                                c("quantile", "std.dev.","table"))
-          print(modxVals)
-          modxVals <- switch(modxVals,
-                         table = rockchalk:::cutByTable(modxVar),
-                         quantile = rockchalk:::cutByQuantile(modxVar),
-                         "std.dev." = rockchalk:::cutBySD(modxVar),
-                         stop("unknown 'modxVals' algorithm"))
+    if (is.factor(modxVar)) { ## modxVar is a factor
+        if (is.null(modxVals)) {
+            modxVals <- levels(modxVar)
+        } else {
+            if (!all(modxVals %in% levels(modxVar))) stop("modxVals includes non-observed levels of modxVar")
         }
-      }
+    } else {                  ## modxVar is not a factor
+        modxRange <- range(modxVar, na.rm=TRUE)
+        if (is.null(modxVals)) {
+            modxVals <- rockchalk:::cutByQuantile(modxVar)
+        } else {
+            if (is.numeric(modxVals)) {
+                ;# print("TODO: Insert some checks that modxVals are reasonable")
+            } else {
+                if (is.character(modxVals)) {
+                    modxVals <- match.arg(tolower(modxVals),
+                                          c("quantile", "std.dev.","table"))
+                    print(modxVals)
+                    modxVals <- switch(modxVals,
+                                       table = rockchalk:::cutByTable(modxVar),
+                                       quantile = rockchalk:::cutByQuantile(modxVar),
+                                       "std.dev." = rockchalk:::cutBySD(modxVar),
+                                       stop("unknown 'modxVals' algorithm"))
+                }
+            }
+        }
     }
-  }
-  lmx <- length(modxVals)
-  if (missing(col)) col <- 1:lmx
-  if (length(col) < lmx) col <- rep(col, length.out = lmx)
-  if (missing(llwd)) llwd <- 2
-  if (length(llwd) < lmx) llwd <- rep(llwd, length.out = lmx)
-  predictors <- colnames(model$model)[-1]
-  predictors <- setdiff(predictors, c(modx, plotx))
-  newdf <- data.frame(expand.grid(plotxRange, modxVals))
-  colnames(newdf) <- c(plotx, modx)
-  if (length(predictors) > 0) {
-    newdf <- cbind(newdf, centralValues(as.data.frame(model$model[, predictors])))
-    colnames(newdf) <- c(plotx, modx, predictors)
-  }
-  newdf$pred <- predict(model, newdata = newdf)
-  dotargs <- list(...)
+    lmx <- length(modxVals)
+    if (missing(col)) col <- 1:lmx
+    if (length(col) < lmx) col <- rep(col, length.out = lmx)
+    if (missing(llwd)) llwd <- 2
+    if (length(llwd) < lmx) llwd <- rep(llwd, length.out = lmx)
+    predictors <- colnames(model$model)[-1]
+    predictors <- setdiff(predictors, c(modx, plotx))
+    newdf <- data.frame(expand.grid(plotxRange, modxVals))
+    colnames(newdf) <- c(plotx, modx)
+    if (length(predictors) > 0) {
+        newdf <- cbind(newdf, centralValues(as.data.frame(model$model[, predictors])))
+        colnames(newdf) <- c(plotx, modx, predictors)
+    }
+    newdf$pred <- predict(model, newdata = newdf)
+    dotargs <- list(...)
 
-  parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
-                type = "n")
-  parms <- modifyList(parms, dotargs)
-  do.call("plot", parms)
-  if (plotPoints){
-      parms <- list(x = mm[, plotx], y = depVar, xlab = plotx, ylab = ylab,
-                        cex = 0.5, lwd = 0.2)
-      if (is.factor(modxVar)) {
-          parms[["col"]] <- col
-          parms <- modifyList(parms, dotargs)
-          do.call("points", parms)
-      } else {
-          parms <- modifyList(parms, dotargs)
-          do.call("points", parms)
-    }
-  }
-  for (i in 1:lmx) {
-    pdat <- newdf[newdf[, modx] %in% modxVals[i], ]
-    parms <- list(x = pdat[, plotx], y = pdat$pred, lty = i)
+    parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
+                  type = "n")
     parms <- modifyList(parms, dotargs)
-    parms <- modifyList(parms, list(col = col[i], lwd = llwd[i]))
-    do.call("lines", parms)
-  }
-  if (is.null(names(modxVals))) {
-    legnd <- paste(modxVals, sep = "")
-  }
-  else {
-    legnd <- paste(names(modxVals), sep = "")
-  }
-  if(plotLegend) legend("topleft", legend = legnd, lty = 1:lmx, col = col, lwd = llwd,
-         bg = "white", title= paste("moderator:", modx))
+    do.call("plot", parms)
+    if (plotPoints){
+        parms <- list(x = mm[, plotx], y = depVar, xlab = plotx, ylab = ylab,
+                      cex = 0.5, lwd = 0.2)
+        if (is.factor(modxVar)) {
+            parms[["col"]] <- col
+            parms <- modifyList(parms, dotargs)
+            do.call("points", parms)
+        } else {
+            parms <- modifyList(parms, dotargs)
+            do.call("points", parms)
+        }
+    }
+    for (i in 1:lmx) {
+        pdat <- newdf[newdf[, modx] %in% modxVals[i], ]
+        parms <- list(x = pdat[, plotx], y = pdat$pred, lty = i)
+        parms <- modifyList(parms, dotargs)
+        parms <- modifyList(parms, list(col = col[i], lwd = llwd[i]))
+        do.call("lines", parms)
+    }
+    if (is.null(names(modxVals))) {
+        legnd <- paste(modxVals, sep = "")
+    }
+    else {
+        legnd <- paste(names(modxVals), sep = "")
+    }
+    if(plotLegend) legend("topleft", legend = legnd, lty = 1:lmx, col = col, lwd = llwd,
+                          bg = "white", title= paste("moderator:", modx))
 
-  z <- list(call = cl, newdata = newdf, modxVals = modxVals)
-  class(z) <- "rockchalk"
+    z <- list(call = cl, newdata = newdf, modxVals = modxVals)
+    class(z) <- "rockchalk"
 
-  invisible(z)
+    invisible(z)
 }

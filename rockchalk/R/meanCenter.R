@@ -10,7 +10,7 @@
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @seealso \code{\link[rockchalk]{meanCenter}} which will center or re-scale only numberic variables
 standardize <- function(model){
-  UseMethod("standardize")
+    UseMethod("standardize")
 }
 
 ##' @return a standardized regression object
@@ -20,36 +20,36 @@ standardize <- function(model){
 ##' @S3method standardize lm
 ##' @example inst/examples/standardize-ex.R
 standardize.lm <- function(model){
-  formulaReplace <- function(fmla, xname, newname){
-      do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname)))
-  }
+    formulaReplace <- function(fmla, xname, newname){
+        do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname)))
+    }
 
-  mt <- terms(model)
-  mdata <- model.frame(model)
-  ys  <- drop(scale(mdata[, 1]))
-  #dm = design matrix, columns of predictors as numerically coded
-  dm <- model.matrix(model)[ , -1, drop=FALSE] #no intercept
-  dmnames <- paste(colnames(dm),"s", sep="")
-  dmnamesticked <- paste("`",dmnames,"`", sep="")
-  dmnamesticked <- gsub("``","`", dmnamesticked)
-  dvname <- paste(colnames(mdata)[1],"s", sep="")
-  dvnameticked <-  paste("`", dvname,"`", sep="")
-  dvnameticked <- gsub("``","`", dvnameticked)
-  std <- function(x) if(is.numeric(x)) scale(x) else x
-  stddat <- apply(dm, 2, std)  ##standardize numeric vars
-  colnames(stddat) <- paste(colnames(stddat), "s", sep="")
-  stddat <- cbind(ys, stddat )
-  stddat <- as.data.frame(stddat)
-  colnames(stddat) <- c(dvname, dmnames)
-  colnames(stddat) <- gsub("`","", colnames(stddat))
+    mt <- terms(model)
+    mdata <- model.frame(model)
+    ys  <- drop(scale(mdata[, 1]))
+                                        #dm = design matrix, columns of predictors as numerically coded
+    dm <- model.matrix(model)[ , -1, drop=FALSE] #no intercept
+    dmnames <- paste(colnames(dm),"s", sep="")
+    dmnamesticked <- paste("`",dmnames,"`", sep="")
+    dmnamesticked <- gsub("``","`", dmnamesticked)
+    dvname <- paste(colnames(mdata)[1],"s", sep="")
+    dvnameticked <-  paste("`", dvname,"`", sep="")
+    dvnameticked <- gsub("``","`", dvnameticked)
+    std <- function(x) if(is.numeric(x)) scale(x) else x
+    stddat <- apply(dm, 2, std)  ##standardize numeric vars
+    colnames(stddat) <- paste(colnames(stddat), "s", sep="")
+    stddat <- cbind(ys, stddat )
+    stddat <- as.data.frame(stddat)
+    colnames(stddat) <- c(dvname, dmnames)
+    colnames(stddat) <- gsub("`","", colnames(stddat))
 
-  mc <- model$call
-  mc$data <- quote(stddat)
-  fmla <- paste(dvnameticked, " ~ ", paste(dmnamesticked, collapse= " + "))
-  mc$formula <- formula(fmla)
-  res <- eval(mc)
-  class(res) <- c("stdreg", class(model))
-  res
+    mc <- model$call
+    mc$data <- quote(stddat)
+    fmla <- paste(dvnameticked, " ~ ", paste(dmnamesticked, collapse= " + "))
+    mc$formula <- formula(fmla)
+    res <- eval(mc)
+    class(res) <- c("stdreg", class(model))
+    res
 }
 
 
@@ -77,8 +77,8 @@ NULL
 ##' @method print stdreg
 ##' @S3method print stdreg
 print.stdreg <- function(x, ...){
-  cat("The standardized variables are suffixed with the letter \"s\" \n")
-  NextMethod(generic = "print", object = x, ...)
+    cat("The standardized variables are suffixed with the letter \"s\" \n")
+    NextMethod(generic = "print", object = x, ...)
 }
 NULL
 
@@ -142,7 +142,7 @@ NULL
 ##' Echambadi, R., and Hess, J. D. (2007). Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple Regression Models. Marketing Science, 26(3), 438-445.
 ##' @example inst/examples/meanCenter-ex.R
 meanCenter <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standardize=FALSE){
-  UseMethod("meanCenter")
+    UseMethod("meanCenter")
 }
 
 ##' @return A regression model of the same type as the input model,
@@ -151,14 +151,16 @@ meanCenter <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standa
 ##' @export
 ##' @method meanCenter default
 ##' @S3method meanCenter default
-meanCenter.default <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standardize=FALSE){
+meanCenter.default <-
+    function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standardize=FALSE)
+{
 
     std <- function(x) {
         if(!is.numeric(x)) stop("can't center a factor variable. No Can Do!")
         xmean <- mean(x, na.rm = TRUE)
         if(standardize){
             xsd <- sd(x, na.rm = TRUE)
-        }else{
+        } else {
             xsd <- 1
         }
         x <- (x-xmean)/xsd
@@ -181,15 +183,15 @@ meanCenter.default <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE
         if (centerOnlyInteractors == FALSE){
             nc <- isNumeric[-1] #-1 excludes response
             unique(nc)
-        }else{
+        } else {
             interactTerms <- tl[grep(":", tl)]
             nc <- unique(unlist(strsplit( interactTerms, ":")))
             nc <-  nc[which(nc %in% isNumeric)]
         }
-    }else{
+    } else {
         if (centerOnlyInteractors == FALSE){
             nc <- isNumeric
-        }else{
+        } else {
             interactTerms <- tl[grep(":", tl)]
             nc <- unique(unlist(strsplit( interactTerms, ":")))
             nc <- nc[which(nc %in% isNumeric)]
@@ -234,20 +236,20 @@ meanCenter.default <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE
 ##' @S3method summary mcreg
 ##' @method summary mcreg
 summary.mcreg <- function(object, ...){
-  centeredVars <- attr(object, "centeredVars")
-  dm <- model.matrix(object)
-  dm <- dm[ , which(attr(dm, "assign") != 0), drop=FALSE] #remove intercept, if any
-  dm <- cbind( model.frame(object)[ , deparse(terms(object)[[2]])], dm)
-  colnames(dm)[1] <- deparse(terms(object)[[2]])
-  dmmeans <- apply(dm, 2, mean)
-  dmstds <- apply(dm, 2, sd)
-  summstat <- zapsmall(data.frame("mean" = dmmeans, "std.dev." = dmstds))
-  summ <- NextMethod(generic = "summary", object = object, ...)
-  summ$summstat <- summstat
-  summ$centeredVars <- centeredVars
-  class(summ) <- paste("summary.", class(object), sep="")
-  summ$mc <- attr(object, "centerCall")
-  summ
+    centeredVars <- attr(object, "centeredVars")
+    dm <- model.matrix(object)
+    dm <- dm[ , which(attr(dm, "assign") != 0), drop=FALSE] #remove intercept, if any
+    dm <- cbind( model.frame(object)[ , deparse(terms(object)[[2]])], dm)
+    colnames(dm)[1] <- deparse(terms(object)[[2]])
+    dmmeans <- apply(dm, 2, mean)
+    dmstds <- apply(dm, 2, sd)
+    summstat <- zapsmall(data.frame("mean" = dmmeans, "std.dev." = dmstds))
+    summ <- NextMethod(generic = "summary", object = object, ...)
+    summ$summstat <- summstat
+    summ$centeredVars <- centeredVars
+    class(summ) <- paste("summary.", class(object), sep="")
+    summ$mc <- attr(object, "centerCall")
+    summ
 }
 NULL
 
@@ -255,13 +257,13 @@ NULL
 ##' @method print mcreg
 ##' @S3method print mcreg
 print.mcreg <- function(x, ...){
-  centeredVars <- attr(x, "centeredVars")
-  cat("The centered variables are: \n")
-  print(centeredVars)
-  mc <- attr(x, "centerCall")
-  cat("The call that requested centering was: \n")
-  print(mc)
-  NextMethod(generic = "print", object = x, ...)
+    centeredVars <- attr(x, "centeredVars")
+    cat("The centered variables are: \n")
+    print(centeredVars)
+    mc <- attr(x, "centerCall")
+    cat("The call that requested centering was: \n")
+    print(mc)
+    NextMethod(generic = "print", object = x, ...)
 }
 NULL
 
@@ -270,17 +272,17 @@ NULL
 ##' @method print summary.mcreg
 ##' @S3method print summary.mcreg
 print.summary.mcreg <- function (x, ...){
-  cat("These variables were mean-centered before any transformations were made on the design matrix.\n")
-  print(colnames(x$centeredVars))
-  cat("The centers and scale factors were \n")
-  print(x$centeredVars)
+    cat("These variables were mean-centered before any transformations were made on the design matrix.\n")
+    print(colnames(x$centeredVars))
+    cat("The centers and scale factors were \n")
+    print(x$centeredVars)
 
-  cat("The summary statistics of the variables in the design matrix (after centering). \n")
-  print(x$summstat)
-  cat("\nThe following results were produced from: \n")
-  print(x$mc)
-  ##NextMethod(generic = "print", x = x, ...)
-  NextMethod()
+    cat("The summary statistics of the variables in the design matrix (after centering). \n")
+    print(x$summstat)
+    cat("\nThe following results were produced from: \n")
+    print(x$mc)
+    ##NextMethod(generic = "print", x = x, ...)
+    NextMethod()
 }
 NULL
 
@@ -289,27 +291,26 @@ NULL
 ##' @method predict mcreg
 ##' @S3method predict mcreg
 predict.mcreg <- function (object, newdata, ...){
-
-  originalCall <- object$call
-  centeredVars <- attr(object, "centeredVars")
-  nc <- colnames(centeredVars) #need centering
-  dvname <- parse(text=formula(originalCall)[[2]])
-  nc <- setdiff(nc, dvname) #remove dv name if present
-  if(missing(newdata)) {
-      newdata <- model.frame(object)##should be centered already
-      tmeans <- sapply(newdata[ , nc], mean, na.rm=T)
-      if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes=F))) stop("dead newdata walking")
-  ## } else {
-  ##     if (isTRUE(attr(newdata, "isCentered"))){
-  ##         ##verify the claim
-  ##         print("data claims it is already centered")
-  ##     } else {
-  ##         for(i in nc){
-  ##             newdata[ , i] <- (newdata[ ,i] - centeredVars["mean", i])/centeredVars["scale", i]
-  ##         }
-  ##     }
-  }
-  NextMethod(object, newdata = newdata, ...)
+    originalCall <- object$call
+    centeredVars <- attr(object, "centeredVars")
+    nc <- colnames(centeredVars) #need centering
+    dvname <- parse(text=formula(originalCall)[[2]])
+    nc <- setdiff(nc, dvname) #remove dv name if present
+    if(missing(newdata)) {
+        newdata <- model.frame(object)##should be centered already
+        tmeans <- sapply(newdata[ , nc], mean, na.rm=T)
+        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes=F))) stop("dead newdata walking")
+        ## } else {
+        ##     if (isTRUE(attr(newdata, "isCentered"))){
+        ##         ##verify the claim
+        ##         print("data claims it is already centered")
+        ##     } else {
+        ##         for(i in nc){
+        ##             newdata[ , i] <- (newdata[ ,i] - centeredVars["mean", i])/centeredVars["scale", i]
+        ##         }
+        ##     }
+    }
+    NextMethod(object, newdata = newdata, ...)
 }
 NULL
 

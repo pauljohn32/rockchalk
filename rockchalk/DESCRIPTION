@@ -1,8 +1,8 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.7.0
-Date: 2013-03-07
+Version: 1.6.3
+Date: 2013-03-11
 Author: Paul E. Johnson <pauljohn@ku.edu>
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for ease of

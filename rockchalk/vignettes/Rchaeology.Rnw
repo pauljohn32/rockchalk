@@ -121,7 +121,7 @@
 
 \begin{document}
 
-\title{Rchaeology}
+\title{Rchaeology: Idioms of R Programming}
 
 
 \author{Paul E. Johnson <pauljohn @ ku.edu>}
@@ -151,6 +151,9 @@ than ``what works.''
 \item It is written with Sweave (using Harrell's Sweavel style) so that
 code examples work.
 \end{enumerate}
+Where did the ``R Style'' section go? It was removed to a separate
+vignette, RStyle, in the rockchalk package.
+
 \tableofcontents{}
 
 <<echo=F>>=
@@ -173,37 +176,83 @@ pdf.options(onefile=F,family="Times",pointsize=12)
 @
 
 
-\section{R Idioms. What's In R Guts?}
+\section{Introduction: R Idioms.}
+
+This vignette is about the R idioms I have learned while working on
+the rockchalk package. At the current time, I don't understand all
+of the R idioms that are common in the advanced R programmers' conversation,
+but I have a grasp on many of the staples that I have noticed before,
+and not understood. 
+
+There is a language gap between an R user and an R programmer. Users
+write ``scripts'' that use functions from R packages. Users don't
+write (many) functions. Users don't make packages. And many users
+are happy to keep it that way. For users who want to become programmers,
+there is usually a harsh awakening. R for development is a different
+language. Well, that's wrong. It is a different dialect. 
+
+A transitional R user will have to learn a lot of terminology and
+undergo a change of paradigm. There are resources available! Everybody
+should subscribe to the email lists for the R project (\url{http://www.r-project.org/mail.html}),
+especially r-help (for user questions) and r-devel. Rchaeologically
+speaking, that is the native habitat of the R programmers. There is
+also a burgeoning collection of blogs and Web forums, perhaps most
+notably the R section on StackExchange (\url{http://stackoverflow.com/questions/tagged/r}).
+Excellent books have been published. As an Rcheologist, I am drawn
+to the books that are written by the R insiders. \emph{S Programming},
+by William Venables and Brian Ripley (2000), is a classic. Books by
+pioneering developers Robert Gentleman, \emph{R Programming for Bioinformatics}
+(2009), and John Chambers, \emph{Software for Data Analysis} (2009),
+are, well, awesome. In 2012, I started teaching R programming using
+Norman Matloff's, \emph{The Art of R Programming} (2012), which I
+think is great and recommend strongly (even though Professor Matloff
+is not one of the R Core Team members, so far as I know). 
+
+There are now three types of object-oriented programming in R (S3,
+S4, and reference classes) and the programmer is apparently free to
+select among them without prejudice. The best brief explanation of
+S3 that I've found is in Friedrich Leisch's brief note about R packaging,
+``Creating R Packages: A Tutorial'' (2009). One should be mindful
+of the fact that R is provided with several manuals, one of which
+is the \emph{R Language Definition}. I find that one difficult to
+understand, and I usually can't understand it until I search through
+the R source code and packages for usage examples.
 
 
 \section{do.call(), eval(), substitute(), formula().}
+
+If the transitional programmer understands these four functions, R
+programming will become much more understandable.
 
 
 \subsection{Rewriting Formulas. My Introductory Puzzle.}
 
 On May 29, 2012, I was working on a regression problem in the rockchalk
-package. The functions like meanCenter() and residualCenter() receive
-a fitted regression model and transform some variables. The non-centered
-variable ``x1'' is renamed to ``x1c'', and then the regression
-is executed with the new data. Thus it is necessary to take something
-that is fitted with a formula like y \textasciitilde{} x1{*}x2, and
-then re-fit with a formula like y \textasciitilde{} x1c{*}x2c. In
-the end, the answer is a single, if complicated line of code that
-speaks volumes about the way the advanced R user interacts with the
-system.
+package. I have a number of functions that receive elementary regressions
+and then change them. 
 
-My first effort used R's update function. It is fairly easy to replace
-x1 with x1c in the formula, but not when x1 is logged or otherwise
-transformed. In exasperation, I wrote to r-help and described the
-problem with this working example. 
+The functions meanCenter() and residualCenter() receive a fitted regression
+model, transform some variables, and then fit a new regression. They
+have to change the data used by the regressions, and they have to
+revise the regression formulae. The non-centered variable ``x1''
+is has to be centered to create ``x1c''. The original formula y
+\textasciitilde{} x1{*}x2 must be replaced with y \textasciitilde{}
+x1c{*}x2c. I found this to be a very complicated problem with a very
+satisfying answer. 
+
+My first effort used R's update function. That is the most obvious
+approach, it is the one that was recommended on r-help. I learned
+that update() is not sufficient. It is fairly easy to replace x1 with
+x1c in the formula, but not when x1 is logged or otherwise transformed.
+Here is the runable example code that demonstrates the problem. 
 
 <<include=T, results=hide>>=
-dat <- data.frame(x1=rnorm(100,m=50), x2=rnorm(100,m=50),
-x3=rnorm(100,m=50), x4 = rnorm(100, m=50), y=rnorm(100))
-m2 <- lm(y ~ log(x1) + x2*x3, data=dat)
+dat <- data.frame(x1 = rnorm(100, m=50), x2 = rnorm(100, m=50),
+  x3 = rnorm(100, m = 50), x4 = rnorm(100, m=50), y = rnorm(100))
+m2 <- lm(y ~ log(x1) + x2*x3, data = dat)
 suffixX <- function(fmla, x, s){
-upform <- as.formula(paste(". ~ .", "-", x, "+", paste(x, s, sep=""), sep=""))
-update.formula(fmla, upform)
+    upform <- as.formula(paste(". ~ .", "-", x, "+", paste(x, s, sep=""), sep=""))
+    update.formula(fmla, upform)
 }
 newFmla <- formula(m2)
 newFmla
@@ -223,23 +272,9 @@ y ~ log(x1) + x3 + x2c + x2:x3
 > suffixX(newFmla, "x1", "c")
 y ~ log(x1) + x2 + x3 + x1c + x2:x3
 \end{lstlisting}
-It gets the target if the target is all by itself, but not otherwise.
 
-While struggling with this, I noticed this really interesting thing.
-The object ``newFmla'' is not just a text string. It is actually
-a list. Its parts can be probed recursively, to eventually reveal
-all of the individual pieces:
 
-<<newFla10>>=
-newFmla
-newFmla[[1]]
-newFmla[[2]]
-newFmla[[3]]
-newFmla[[3]][[2]]
-newFmla[[3]][[2]][[2]]
-@
-
-How could I put that information to use? I asked the members of r-help.
+I asked the members of r-help.
 
 Lately I've had very good luck with r-help. Gabor Grothendieck wrote
 an answer to r-help on May 29, 2012, ``Try substitute:''
@@ -250,27 +285,46 @@ y ~ log(x1c) + x2 * x3
 \end{lstlisting}
 
 
-Bingo. 
+Problem solved, in a single line. 
 
 That's quintessential R. It packs together a half-dozen very deep
-thoughts that I will try to explain in the rest of this section. It
-has most of the essential secrets of R's guts, laid out in a single
-line. It has do.call, substitute, it interprets a formula as a list,
-and it shows that every command in R is, when it comes down to brass
-tacks, a list. 
+thoughts. It has most of the essential secrets of R's guts, laid out
+in a single line. It has do.call(), substitute(), it interprets a
+formula as a list, and it shows that every command in R is, when it
+comes down to brass tacks, a list. 
 
 I would like to take up these separate pieces in order.
 
 
-\subsection{do.call and eval}
+\subsection{A Formula Object is a List.}
+
+While struggling with this, I noticed this really interesting thing.
+The solution depends on it. The object ``newFmla'' is not just a
+text string. It prints out as if it were text, but it is actually
+an R list object. Its parts can be probed recursively, to eventually
+reveal all of the individual pieces:
+
+<<newFla10>>=
+newFmla
+newFmla[[1]]
+newFmla[[2]]
+newFmla[[3]]
+newFmla[[3]][[2]]
+newFmla[[3]][[2]][[2]]
+@
+
+How could I put that information to use? Read on.
+
+
+\subsection{do.call() and eval()}
 
 In my early work as an Rchaeologist, I had noticed eval and do.call,
 but did not understand their significance in the mind of the R programmers.
 Whenever difficult problems arose in r-help, the answer almost invariably
-involved do.call or eval. Maybe both. 
+involved do.call or eval. 
 
 
-\subsubsection{do.call}
+\subsubsection{do.call()}
 
 Let's concentrate on do.call first. The syntax is like this
 
@@ -304,9 +358,9 @@ all.equal(m1, m2)
 The object regargs is a list of arguments that R can understand when
 they are supplied to the lm function. 
 
-do.call is a powerful, mysterious symbol. It holds flexibility; we
-can calculate commands and then run them. I first needed it when we
-had a simulation project that ran very slowly when confronted with
+do.call() is a powerful, mysterious symbol. It holds flexibility;
+we can calculate commands and then run them. I first needed it when
+we had a simulation project that ran very slowly when confronted with
 medium or large sized problems. There's a writeup in the working examples
 distributed with rockchalk called stackListItems-01.R. I was using
 rbind over and over to join the results of simulation runs. Basically,
@@ -320,8 +374,8 @@ for (i in 1:10000){
 \end{lstlisting}
 
 
-That will call rbind 10000 times. I had not realized that rbind is
-a comparatively time-consuming task because it accesses a new chunk
+That will call rbind() 10000 times. I had not realized that rbind()
+is a comparatively time-consuming task because it accesses a new chunk
 of memory each time it is run. On the other hand, we could collect
 those results in a list, then we can call rbind one time to smash
 together all of the results.
@@ -367,13 +421,13 @@ eureka! A call object is a quoted command plus a list of arguments
 for that command. 
 
 
-\subsubsection{eval}
+\subsubsection{eval()}
 
 Where does eval fit into the picture? As far as I can tell, do.call(\textquotedbl{}rbind\textquotedbl{},
-mylist) is basically the same as eval(call(``rbind'', mylist). The
-call function manufactures the call object, the eval function tells
-it to do its work. I think of do.call as a contraction of ``eval''
-and ``call''. eval can handle evaluates any valid R expression,
+mylist) is basically the same as eval(call(``rbind'', mylist)).
+The call() function manufactures the call object, the eval() function
+tells it to do its work. I think of do.call() as a contraction of
+``eval'' and ``call''. eval() evaluates any valid R expression,
 and a call is a valid expression. I'm leaving the question of ``what
 is an expression'' to a later time.
 
@@ -449,15 +503,15 @@ The point here is that the pieces of an ordinary use command can be
 separated and put back together again before the work of doing calculations
 begins. 
 
-Now we turn back to the main theme. How is eval used in functions?
+Now we turn back to the main theme. How is eval() used in functions?
 Some functions take a lot of arguments. They need to pick some arguments,
 and send those to some functions. 
 
-Let's consider the lm code in some detail. Suppose a user submits
-a command like ``lm(y \textasciitilde{} x, data=dat, x = TRUE, y
-= TRUE).'' Inside lm, it is necessary to pick through those arguments
+Let's consider the lm() code in some detail. Suppose a user submits
+a command like ``lm(y \textasciitilde{} x, data = dat, x = TRUE,
+y = TRUE).'' Inside lm(), it is necessary to pick through those arguments
 and then pass them off to other functions in order to build the data
-matrix and so forth. Here are the first lines of the lm function
+matrix and so forth. Here are the first lines of the lm() function
 
 \begin{lstlisting}[breaklines=true,numbers=left,numberstyle={\footnotesize},tabsize=4]
 lm <- function (formula, data, subset, weights, na.action, method = "qr",
@@ -534,7 +588,7 @@ users to input whatever they want for a formula and data, and then
 lm takes what it needs to build a model frame.
 
 
-\subsection{substitute}
+\subsection{substitute()}
 
 Most R users I know have not used substitute, except as it arises
 in the plotmath. In the context of plotmath, the problem is as follows.
@@ -587,7 +641,7 @@ not so off putting. But ``parse tree''? Really?
 This is one of those points at which being an Rchaeologist has real
 benefits. The manual page gives us some insights into the R programmer,
 and it is his or her view of his or her own actions, but it doesn't
-necessarily speak to how we should understand substitute. For me,
+necessarily speak to how we should understand substitute(). For me,
 the only workable approach is to build up a sequence of increasingly
 complicated examples. 
 
@@ -606,15 +660,16 @@ that already exist. Consider:
 substitute(expression(x1 + x2 + log(x1) + x3), sublist)
 @
 
-The special things to note are that the substitution 1) leaves other
-variables alone (since they are not named in sublist) and 2) it finds
-all valid use of the symbols x1 and x2 and replaces them.
+Note that the substitution 1) leaves other variables alone (since
+they are not named in sublist) and 2) it finds all valid use of the
+symbols x1 and x2 and replaces them.
 
 This isn't quite what I wanted, however, because the strings have
-been inserted into the middle of my expression. I just want symbols.
-It turns out that the functions as.name and as.symbol are exactly
-the same, and usually I use as.symbol, but in Gabor's answer to my
-question, as.name is used, so I will illustrate that here.
+been inserted into the middle of my expression. I don't want text.
+I just want symbols. It turns out that the functions as.name() and
+as.symbol() are exactly the same, and usually I use as.symbol() because
+that name has more intuition for me, but in Gabor's answer to my question,
+as.name() is used. Using as.name(), so I will illustrate that.
 
 <<>>=
 sublist <- list(x1 = as.name("alphabet"), x2 = as.name("zoology"))
@@ -646,7 +701,7 @@ colnames(dat)
 @
 
 While used interactively, this is convenient, but it is a bit tedious
-because we have to create dat first, and then set the names. The setNames
+because we have to create dat first, and then set the names. The setNames()
 function allows us to do this in one shot. I'll paste the data frame
 creating commands and the name vector in for a first try:
 
@@ -658,7 +713,7 @@ head(dat2, 2)
 In order to make this more generally useful, the first step is to
 take the data-frame-creating code and set it into an expression that
 is not immediately evaluated (that's datcommand). When I want the
-data frame to be created, I use eval, and then the newnames vector
+data frame to be created, I use eval(), and then the newnames vector
 is put to use. 
 
 <<>>=
@@ -682,9 +737,9 @@ setNames(list(as.name("x1c")), "x1")))
 Consider this from the inside out. 
 \begin{enumerate}
 \item as.name(``x1c'') is an R symbol object,
-\item list(as.name(``x1c'')) is an list with just one object, which is
+\item list(as.name(``x1c'')) is a list with just one object, which is
 that symbol object. 
-\item Use setNames. The object has no name! We would like to name it ``x1''. 
+\item Use setNames(). The object has no name! We would like to name it ``x1''. 
 \end{enumerate}
 It is as if we had run the command list(x1 = x1c). The big difference,
 of course, is that this way is much more flexible because we can calculate
@@ -693,7 +748,7 @@ replacements.
 
 \subsection{The Big Finish}
 
-In the meanCenter function in rockchalk, some predictors are mean-centered
+In the meanCenter() function in rockchalk, some predictors are mean-centered
 and their names are revised. A variable named ``age'' becomes ``agec''
 or ``x1'' becomes ``x1c''. So the user's regression formula that
 uses variables agec or x1 must be revised. This is a function that
@@ -701,12 +756,12 @@ takes a formula ``fmla'' and replaces a symbol xname with newname.
 
 \begin{lstlisting}
 formulaReplace <- function(fmla, xname, newname){ 
-do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname))) 
+    do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname))) 
 }
 \end{lstlisting}
 
 
-This is put to use in meanCenter. Suppose a vector of variable names
+This is put to use in meanCenter(). Suppose a vector of variable names
 called nc (stands for ``needs centering'') has already been calculated.
 The function std creates a centered variable.
 
@@ -723,6 +778,173 @@ for (i in seq_along(nc)){
 
 If one has a copy of rockchalk 1.6 or newer, the evidence of the success
 of this approach should be evident in the output of the command example(meanCenter). 
+
+
+\section{Function Arguments (Stub). }
+
+While surveying R packages, we see many different styles for handling
+arguments. This section will discuss some pros and cons of various
+styles.
+
+How much argument checking is required? 
+
+Is it better to default arguments to NULL?
+
+myfn <- function(x = NULL, y = NULL)
+
+
+\subsection{Make Re-Usable Tools (Rather than Cutting and Pasting)}
+
+We seek concise solutions that are generalizable. It is almost never
+right to cut and paste and then make minor edits in each copy to achieve
+particular purposes. This advice goes against the grain of the graduate
+students that I work with. They will almost always use cut and paste
+solutions. 
+
+Here is an example of the problem. A person needed ``dummy variables''.
+The code had several pages like this:
+
+\begin{lstlisting}
+  if(setcorr == 1){
+        corr.10 <-1
+        corr.20 <-0
+        corr.30 <-0
+        corr.40 <-0
+        corr.50 <-0
+        corr.60 <-0
+        corr.70 <-0
+        corr.80 <-0
+    }
+    if(setcorr == 2){
+        corr.10 <-1
+        corr.20 <-1
+        corr.30 <-0
+        corr.40 <-0
+        corr.50 <-0
+        corr.60 <-0
+        corr.70 <-0
+        corr.80 <-0
+    }
+    if(setcorr == 3){
+        corr.10 <-1
+        corr.20 <-1
+        corr.30 <-1
+        corr.40 <-0
+        corr.50 <-0
+        corr.60 <-0
+        corr.70 <-0
+        corr.80 <-0
+    }
+\end{lstlisting}
+
+
+Well, that's understandable, but a little bit embarrassing. I asked
+``why do you declare these separate variables, why not make a vector?''
+and ``can't you see a more succinct way to declare those things?''
+The answer is ``we do it that way in SAS'' or ``this runs''. 
+
+If the mission is to create a vector with a certain number of 1's
+at the beginning, surely either of these functions would be better:
+
+<<>>=
+biVec1 <- function(n = 3, n1s = 1) {
+    c(rep(1, n1s), rep(0, n - n1s))
+}
+
+biVec2 <- function(n = 3, n1s = 1){
+    x <- numeric(length = n)
+    x[1:n1s] <- 1
+    x
+}
+
+(corr <- biVec1(n = 8, n1s = 3))
+(corr <- biVec2(n = 8, n1s = 3))
+@
+
+The cut and paste way is not wrong, exactly. Its tedious. 
+
+I think any reasonable user should want a vector, rather than the
+separate variables. But suppose the user is determined, and really
+wants the individual variables named corr.10, corr.20, and so forth.
+We can re-design this so that those variables will be sitting out
+in the workspace after the function is run. Read help(``assign'')
+and try
+
+<<>>=
+biVec3 <- function(n = 3, n1s = 1) {
+    X <- c(rep(1, n1s), rep(0, n - n1s))
+    xnam <- paste("corr.", 1:8, "0", sep = "")
+    for(i in 1:n) assign(xnam[i], X[i], envir = .GlobalEnv) 
+}
+ls()
+biVec3(n = 8, n1s = 3)
+ls()
+@
+
+I don't think most people will actually want that kind of result,
+but if they do, there is a way to get it.
+
+If we want to turn biVec1() or biVec2() into general purpose functions,
+we need to start thinking about the problem of unexpected user input.
+Notice what happens if we ask for more 1's than the result vector
+is supposed to contain:
+
+\begin{lstlisting}
+> biVec1(n = 3, n1s = 7)
+Error in rep(0, n - n1s) (from #2) : invalid 'times' argument
+> biVec2(n = 3, n1s = 7)
+[1] 1 1 1 1 1 1 1
+\end{lstlisting}
+
+
+Perhaps I prefer biVec1() because it throws an error when there is
+unreasonable input, while biVec2() returns a longer vector than expected
+with no error. 
+
+If the user mistakenly enters non-integers, neither function generates
+an error, and they give us unexpected output.
+
+<<>>=
+biVec1(3.3, 1.8)
+biVec2(3.3, 1.8)
+@
+
+To my surprise, it is not an easy thing to ask a number if it is a
+whole number (see help(``is.integer'')). For that, we introduce
+a new function, is.wholenumber(), and put it to use in our new and
+improved function
+
+<<>>=
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5){
+ abs(x - round(x)) < tol
+}
+
+biVec1 <- function(n = 3, n1s = 1) {
+    if(!(is.wholenumber(n) & is.wholenumber(n1s)))
+        stop("Both n and n1s must be whole numbers (integers)")
+    if(n1s > n)
+        stop("n must be greater than or equal to n1s")
+    c(rep(1, n1s), rep(0, n - n1s))
+}
+@
+
+In all of the test cases I've tried, that works, although the real
+numbers 7.0 and 4.0 are able to masquerade as integers.
+
+\begin{lstlisting}
+> biVec1(3, 7)
+Error in biVec1(3, 7) (from #4) : n must be greater than or equal to n1s
+> biVec1(7, 3)
+[1] 1 1 1 0 0 0 0
+> biVec1(3.3, 4.4)
+Error in biVec1(3.3, 4.4) (from #2) : 
+  Both n and n1s must be whole numbers (integers)
+> biVec1(7.0, 4.0)
+[1] 1 1 1 1 0 0 0
+> biVec1(7.0, 4.0)
+[1] 1 1 1 1 0 0 0
+\end{lstlisting}
+
 
 
 \section{Do This, Not That (Stub)}
@@ -753,6 +975,37 @@ performance
 
 Balance time spent optimizing code versus time spent running program.
 
+
+\section{Suggested Chores}
+
+I suggest the would be programmer should take on some basic challenges. 
+\begin{enumerate}
+\item Try to create a generic function and several methods to handle classes
+of various types. If the term ``generic function'' and ``method''
+cause disorientation, that means the reader is a user, not a programmer
+yet. 
+\item Consider developing a routine (or package) for statistical estimation
+or presentation. Find several R packages and compare the R code in
+them. Let me know if you agree with me about these points.\end{enumerate}
+\begin{itemize}
+\item Good code is compartmentalized. Separate pieces of work are handled
+by separated functions and results are returned in a well organized
+way.
+\item Functions should not be HUGE. 
+
+
+The components of a project should be small enough so that we can
+comprehend them. Generally speaking, if we are reading code and we
+come to a line that uses a variable that we cannot find on the screen,
+that's a problem. I used to correspond with a programmer at the University
+of Michigan who said he began to feel uncomfortable when a function
+filled up the entire terminal screen. 
+
+\item People who copy and paste sections over and over in order to handle
+slightly different cases are causing trouble for themselves and others.
+They should think harder on ways to separate that work into re-usable
+functions. 
+\end{itemize}
 \bibliographystyle{chicago}
 \bibliography{rockchalk}
 

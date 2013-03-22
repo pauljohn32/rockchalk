@@ -1,3 +1,4 @@
+export(addLines)
 export(centerNumerics)
 export(centralValues)
 export(combineLevels)

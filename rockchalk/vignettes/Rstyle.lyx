@@ -65,27 +65,13 @@
 
 }
 
-
-%\usepackage{listings}
-% Make ordinary listings look as if they come from Sweave
-\lstset{tabsize=2, breaklines=true,style=Rstyle}
-
 % In document Latex options:
 \fvset{listparameters={\setlength{\topsep}{0em}}}
-\def\Sweavesize{\scriptsize} 
+\def\Sweavesize{\normalsize} 
 \def\Rcolor{\color{black}} 
-\def\Rbackground{\color[gray]{0.90}}
-
-
-
-\usepackage{babel}
-
-\usepackage[samesize]{cancel}
-
-
-
-\usepackage{ifthen}
-
+\def\Rbackground{\color[gray]{0.95}}
+\def\Routbackground{\color{white}}
+\def\Routcolor{\color{black}}
 
 
 \usepackage{listings}% Make ordinary listings look as if they come from Sweave
@@ -101,7 +87,7 @@ enumitem
 \language english
 \language_package default
 \inputencoding latin9
-\fontencoding T1
+\fontencoding global
 \font_roman lmodern
 \font_sans lmss
 \font_typewriter cmtt
@@ -167,7 +153,9 @@ enumitem
 \begin_body
 
 \begin_layout Title
-R Style 
+R Style.
+ An Rchaeological Commentary.
+ 
 \end_layout
 
 \begin_layout Author
@@ -175,16 +163,59 @@ Paul E.
  Johnson <pauljohn @ ku.edu>
 \end_layout
 
+\begin_layout Section
+Introduction: Ugly Code that Runs
+\end_layout
+
 \begin_layout Standard
-It is an unofficial R style guide, but it is more official in spirit than
- some others.
- I'm trying to understand R style from the perspective of the R Core Development
- team (this is my first effort in Rchaeology
+Because there is no comprehensive official R style manual, students and
+ package writers seem to think that there is no style whatsoever to be followed.
+ While it may be true that 
+\begin_inset Quotes eld
+\end_inset
+
+ugly code runs,
+\begin_inset Quotes erd
+\end_inset
+
+ it is also 1) difficult to read and 2) frustrating to extend, and 3) tiring
+ to debug.
+ Code is a language, a medium of communication, and one should not feel
+ free no ignore its customs.
+ 
+\end_layout
+
+\begin_layout Standard
+After students have finished a semester of statistics with R, they may be
+ ready to start preparing functions or packages.
+ Those R users are the ones I'm trying to address with this note.
+ It is important to realize that the readability of code makes a difference.
+ It sometimes difficult to know that there is a 
+\begin_inset Quotes eld
+\end_inset
+
+right way
+\begin_inset Quotes erd
+\end_inset
+
+ and a 
+\begin_inset Quotes eld
+\end_inset
+
+wrong way
+\begin_inset Quotes erd
+\end_inset
+
+ because there are so many examples to study on CRAN.
+\end_layout
+
+\begin_layout Standard
+This note describes R style from an Rchaeological
 \begin_inset Foot
 status collapsed
 
 \begin_layout Plain Layout
-Which I invented! Definitions:
+Definitions:
 \end_layout
 
 \begin_layout Description
@@ -199,12 +230,102 @@ Rchaeologist: One who practices Rchaeology.
 
 \end_inset
 
-).
- From now on, I'm going to ask people who write R code for my review to
- follow these guidelines.
- It will make their code easier for me to read and it will improve the chances
- that their code will be understandable to members of the R Core Development
- team if the need ever arises to ask for help.
+ perspective.
+ By examining the work of the R Core Development Team 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "RCore"
+
+\end_inset
+
+ and other notable package writers, we are able to discern an implicit style
+ guide.
+ However, this note is not 
+\begin_inset Quotes eld
+\end_inset
+
+official
+\begin_inset Quotes erd
+\end_inset
+
+ or endorsed from R Core.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Yet :)
+\end_layout
+
+\end_inset
+
+ With one exception at the end of this note, none of the advice here is
+ 
+\begin_inset Quotes eld
+\end_inset
+
+my
+\begin_inset Quotes erd
+\end_inset
+
+ advice.
+ Instead, it is my best description of the standards followed by the leading
+ R programmers.
+ 
+\end_layout
+
+\begin_layout Standard
+At one point, the only guide was the Google R style guide
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+, which was used as a policy for R-related 
+\begin_inset Quotes eld
+\end_inset
+
+Google Summer of Code
+\begin_inset Quotes erd
+\end_inset
+
+ projects.
+ That guide imposes some value judgments that are not widely shared and
+ it doesn't try to explain why there might be differences of opinion.
+ There are many excellent suggestions in Hadley Wickham's Style Guide
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://github.com/hadley/devtools/wiki/Style
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
  
 \end_layout
 
@@ -275,7 +396,7 @@ status open
 
 \begin_layout Plain Layout
 
-options(width=100, continue="  ")
+options(width=100, continue="+ ")
 \end_layout
 
 \begin_layout Plain Layout
@@ -304,124 +425,55 @@ pdf.options(onefile=F,family="Times",pointsize=12)
 \end_layout
 
 \begin_layout Section
-Style Guides (or the Lack Thereof)
+Rchaeological Methodology
 \end_layout
 
 \begin_layout Standard
-I have often wished there were a concise, official, comprehensive mandatory
- R style guide, but there isn't.
- The 
-\emph on
-R Internals
-\emph default
- section 
+I am a student of R as a programming language.
+ I am also student of the R community as an international success that created
+ a working open source computer program.
+ One of the most interesting differences between R and other open source
+ projects I have observed is that R attracts non-programmers.
+ There is an abundance of statistical novices and untrained computer programmers
+ in the R user community.
+ Many students begin with R as a way of learning about computer programming.
+ In contrast, the developers of R are world-class software engineers.
+ They have formal training in computer programming and years of experience
+ in a variety of computer languages.
+ The diversity creates a healthy tension that is easy to see in the r-help
+ email list or on Web forums for R users.
+ 
+\end_layout
+
+\begin_layout Subsection
 \begin_inset Quotes eld
 \end_inset
 
-R coding standards,
+Use the Source, Luke,
 \begin_inset Quotes erd
 \end_inset
 
- is quite brief.
- It suggests that indentation should be 4 blank spaces, not much more.
- 
+ said Obi-Wan
 \end_layout
 
 \begin_layout Standard
-Nature abhors a vacuum, as they say.
- Many others have seen fit to try to fill in the gaps (Google R style guide
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-; Hadley Wickham's Style Guide
-\begin_inset Foot
-status open
-
-\begin_layout Plain Layout
-\begin_inset Flex URL
-status collapsed
-
-\begin_layout Plain Layout
-
-https://github.com/hadley/devtools/wiki/Style
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-).
- In my R group at the University of Kansas, we have sought to do the same.
- 
+What should R code look like? Stop guessing.
+ The implicit style guide for R is the R source code itself.
+ If users want to communicate with R Core developers, they ought to communicate
+ using the style that developers use.
 \end_layout
 
 \begin_layout Standard
-This writeup attempts to stay as close as possible to the Rchaeological
- evidence, the actual source code of the R Core Development Team.
- I try to lay bare the areas of agreement, the many components of style
- that probably seem so obvious inside R Core that they are barely even worth
- mentioning.
- And I try to explain why there are differing bits of style advice from
- various corners and then use the R source code to try to discern which
- methods are preferred.
- 
-\end_layout
-
-\begin_layout Section
-The Implicit Style Guide: The R Source Code
-\end_layout
-
-\begin_layout Standard
-Although the official requirements for R code are not stated in all-encompassing
- detail in any document from R Core Development team, there is a generally
- accepted standard for writing R code.
- The experts know what code ought to 
-\begin_inset Quotes eld
-\end_inset
-
-look like.
-\begin_inset Quotes erd
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-What should your code look like? Stop guessing.
- 
-\begin_inset Quotes eld
-\end_inset
-
-Use the Source, Luke.
-\begin_inset Quotes erd
-\end_inset
-
- 
+I'm often surprised to find that R users--even experienced ones--have never
+ looked at the R source code.
+ Before going any further,
 \end_layout
 
 \begin_layout Quote
-Open the source code for R itself.
- I mean, literally, download R-2.15.2.tar.gz (or whatever is current when you
- read this), and navigate to the directory src/library/stats/R.
+Open the source code for R.
+ I mean, literally, download R-2.15.3.tar.gz (or whatever is current when you
+ read this).
+ Unpack that, navigate to the directory src/library/stats/R.
  Open the file 
 \begin_inset Quotes eld
 \end_inset
@@ -431,33 +483,175 @@ lm.R
 \end_inset
 
 .
- There's your answer.
+ 
 \end_layout
 
 \begin_layout Standard
-The view is just about the same if you ask R what code it is using to do
- its work.
- Open an R session, run the following commands
+That's what R code should look like.
+ 
 \end_layout
 
 \begin_layout Standard
+Browse other R files in the source code.
+ Notice the files are suffixed by R, not r! 
+\end_layout
+
+\begin_layout Standard
+Then go read a lot of R packages.
+ Begin with the recommended packages (in the R source code under src/library/Rec
+ommended).
+ Then draw some samples from CRAN.
+ Choose packages that are prepared by members of R Core, and then sample
+ a few packages that are widely installed, such as John Fox's car package
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "fox_r_2011"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+After that, pick a random sample of packages on CRAN.
+ Don't be surprised by ugly code in a randomly chosen R package.
+ 
+\end_layout
+
+\begin_layout Subsection
+Notice How R Describes its Own Style
+\end_layout
+
+\begin_layout Standard
+Type the name of a function at the R command prompt.
+ That is the same as using the function called 
 \begin_inset listings
-inline false
+inline true
 status open
 
 \begin_layout Plain Layout
 
+print.function()
+\end_layout
+
+\end_inset
+
+ to review the contents of a function from an R package.
+ For example, try 
+\begin_inset Quotes eld
+\end_inset
+
+lm
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The first few lines are
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Soutput
+
 > lm
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Soutput
 
-> summary.lm
+function (formula, data, subset, weights, na.action, method = "qr",
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Soutput
 
-> stats:::print.summary.lm
+    model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE,
+\end_layout
+
+\begin_layout Soutput
+
+    contrasts = NULL, offset, ...)
+\end_layout
+
+\begin_layout Soutput
+
+{
+\end_layout
+
+\begin_layout Soutput
+
+    ret.x <- x
+\end_layout
+
+\begin_layout Soutput
+
+    ret.y <- y
+\end_layout
+
+\begin_layout Soutput
+
+    cl <- match.call()
+\end_layout
+
+\begin_layout Soutput
+
+    mf <- match.call(expand.dots = FALSE)
+\end_layout
+
+\begin_layout Soutput
+
+    m <- match(c("formula", "data", "subset", "weights", "na.action",
+\end_layout
+
+\begin_layout Soutput
+
+        "offset"), names(mf), 0L)
+\end_layout
+
+\begin_layout Soutput
+
+    mf <- mf[c(1L, m)]
+\end_layout
+
+\begin_layout Soutput
+
+    mf$drop.unused.levels <- TRUE
+\end_layout
+
+\begin_layout Soutput
+
+    mf[[1L]] <- as.name("model.frame")
+\end_layout
+
+\begin_layout Soutput
+
+    mf <- eval(mf, parent.frame())
+\end_layout
+
+\begin_layout Soutput
+
+    if (method == "model.frame")
+\end_layout
+
+\begin_layout Soutput
+
+        return(mf)
+\end_layout
+
+\begin_layout Soutput
+
+    else if (method != "qr")
+\end_layout
+
+\begin_layout Soutput
+
+        warning(gettextf("method = '%s' is not supported.
+ Using 'qr'",
+\end_layout
+
+\begin_layout Soutput
+
+            method), domain = NA)
 \end_layout
 
 \end_inset
@@ -466,96 +660,266 @@ status open
 \end_layout
 
 \begin_layout Standard
-There's your answer again.
+That's quite a bit like the code in the file lm.R, but it is not exactly
+ the same.
+ Even if the code in lm.R were an ugly, horrible mess, its output in the
+ terminal would be indented and spaced just right.
+ That is an important Rchaeological finding!
 \end_layout
 
 \begin_layout Standard
-Students say 
+Why can there be a difference between the code for a function in a file
+ (like 
 \begin_inset Quotes eld
 \end_inset
 
-my ugly code runs, I don't want to bother with that.
+lm.R
 \begin_inset Quotes erd
 \end_inset
 
- That's missing the point.
- With few exceptions, coding style is not about making things 
+) and the output of the command (like 
 \begin_inset Quotes eld
 \end_inset
 
-work,
+lm
 \begin_inset Quotes erd
 \end_inset
 
- it is about making them work in a way that is understood by the widest
- possible audience.
- Sometimes ugly code runs, but it is hard to understand, hard to debug.
+)? Admittedly, this is difficult to understand.
+ The on-screen output is not (by default, anyway) the source that went into
+ R, but rather it is R's rendition of the internal structure of the function.
+ I recently had an epiphany while reading a section in the 
+\emph on
+Writing R Extensions
+\emph default
+ manual called 
+\begin_inset Quotes eld
+\end_inset
+
+Tidying R code
+\begin_inset Quotes erd
+\end_inset
+
+.
+ That title is a bit misleading.
+ It is not about tidying R source code; rather, it is about beautifying
+ the rendition of internal structures for the the terminal.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+R treats function code loaded from packages and code entered by users differentl
+y.
+ By default code entered by users has the source code stored internally,
+ and when the function is listed, the original source is reproduced.
+ Loading code from a package (by default) discards the source code, and
+ the function listing is re-created from the parse tree of the function.
+\begin_inset Quotes erd
+\end_inset
+
+ That is to say, if ugly code is syntatically valid, R can parse it and
+ structure it according to the internal dictates of the R runtime system,
+ and when we ask to see the function, we get a nice looking result.
+\end_layout
+
+\begin_layout Subsection
+Formulate SEA estimates.
+\end_layout
+
+\begin_layout Standard
+As already noted, there is no mandatory style for R code.
+ The 
+\emph on
+R Internals
+\emph default
+ manual has a section 
+\begin_inset Quotes eld
+\end_inset
+
+R coding standards,
+\begin_inset Quotes erd
+\end_inset
+
+ but it is quite brief.
+ The main point that most readers take away concerns indentation: subsections
+ in code should be preceded by 4 blank spaces, not a tab character.
+ 
+\end_layout
+
+\begin_layout Standard
+But there is a larger point in 
+\emph on
+R Internals
+\emph default
+, but novices don't recognize the importance of it.
+ R is a GNU project, and there are GNU coding standards.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.gnu.org/prep/standards/standard.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ The R project's C code follows the standard closely.
+ In the entire body of the R source code, we find the GNU thumb print.
+ The importance of that fact is missed by untrained readers, who mistake
+ the lack of a comprehensive discussion of style for an encouragement to
+ 
+\begin_inset Quotes eld
+\end_inset
+
+do anything you want.
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+In the following, I will try to point out the areas of greatest agreement
+ by assigning an SEA score to each point.
+ SEA stands for 
+\begin_inset Quotes eld
+\end_inset
+
+Subjective and completely unscientific personal Estimate of Agreement.
+\begin_inset Quotes erd
+\end_inset
+
+ These are my Bayesian priors.
+ If I could survey my favorite R programmers, I'd find some variety, and
+ I am trying to make it clear where the disagreements might lie.
+ But, then again, I may have been fooling myself.
+ It has recently been suggested to me that these recommendations are not
+ descriptions of the Rchaeological community I'm studying, they are rather
+ my personal litmus test for admirable R programmers.
  
 \end_layout
 
 \begin_layout Section
-Rchaeological Findings
-\end_layout
-
-\begin_layout Standard
-From my expertise as an Rchaeologist, I have accumulated a list of bits
- of style advice.
- These proceed in order, from things that every knowledgeable expert will
- accept, to matters of personal taste that are more widely accepted, to
- things that I like, but nobody else does.
- In the remainder, I'm going to try to help the reader sort between my advice
- and the advice of 
-\begin_inset Quotes eld
-\end_inset
-
-good
-\begin_inset Quotes erd
-\end_inset
-
- R programmers by assigning subjective probabilities of agreement for each
- of these points.
- If we could draw a random R programmer from the set of programmers that
- I admire, what is the probability that the programmer would agree with
- this advice? Let's call that the 
-\begin_inset Quotes eld
-\end_inset
-
-Subjective and completely unscientific personal Estimate of Agreement,
-\begin_inset Quotes erd
-\end_inset
-
- or SEA.
-\end_layout
-
-\begin_layout Subsection
 Nearly Universally accepted standards.
 \end_layout
 
-\begin_layout Enumerate
+\begin_layout Subsection
+(SEA 1.0) Indentation of code sections is required.
+ 
+\end_layout
+
+\begin_layout Standard
+This is explicitly spelled out in the R documentation.
+ No tabs! Insert 4 blank spaces.
+ Personally, I prefer 2 spaces, which has been the default in Emacs.
+ But I'm changing my code to use 4 spaces.
+ If you find my code with 2 spaces, please accept this apology and believe
+ that it is an oversight.
+ 
+\end_layout
+
+\begin_layout Subsection
 
 \series bold
-(SEA 1.0) Indentation of sections is required.
+(SEA .95).
+ Use 
+\begin_inset Quotes eld
+\end_inset
+
+<-
+\begin_inset Quotes erd
+\end_inset
+
+, not 
+\begin_inset Quotes eld
+\end_inset
+
+=
+\begin_inset Quotes erd
+\end_inset
+
+, for assignments.
 
 \series default
- This is one of the few guidelines that is explicitly spelled out in the
- R documentation from the core team.
- They discourage the use of the tab key for indentation, instead suggesting
- 4 blank spaces.
- Personally, I prefer 2 spaces, and until 2011 that is what I used.
- The documentation provides a brief example of startup code for Emacs so
- that indentions are set correctly at 4 spaces.
- Otherwise, Emacs will provide 2 spaces while editing R files.
+ 
+\end_layout
+
+\begin_layout Standard
+One cannot find the equal sign used for assignments in any file in the R
+ source code.
+ Nor can one find it in any of the Recommended packages (so far as I can
+ tell).
+ 
+\end_layout
+
+\begin_layout Standard
+Students who have learned R in introductory textbooks are sometimes shocked
+ to learn that they were taught wrong.
+ I'm sympathetic to their outrage.
+ How can this be? 
+\end_layout
+
+\begin_layout Standard
+The equal sign was used by mistake so frequently that the R system was re-design
+ed to tolerate that mistake.
+ 
+\emph on
+Most
+\emph default
+ usages of the equal sign for assignments do not cause runtime errors.
+ Not all possible problems were eliminated, however.
+ Thus the equal sign is not recommended, it is tolerated.
+ Nevertheless, A horrible profusion of textbooks and packages ensued using
+ the equal sign for assignment.
+ 
+\end_layout
+
+\begin_layout Subsection
+
+\series bold
+(
+\series default
+SEA .98) Blank spaces around symbols are required.
+ 
+\end_layout
+
+\begin_layout Standard
+This is a general GNU coding standard.
  
 \end_layout
 
 \begin_layout Enumerate
+Insert spaces before and after 
+\end_layout
 
-\series bold
-(SEA .98) Blank spaces around symbols are required.
+\begin_deeper
+\begin_layout Enumerate
+mathematical symbols like: 
+\begin_inset Quotes eld
+\end_inset
 
-\series default
- Put blank spaces on both sides of assignment symbols, equal signs and mathemati
-cal symbols like 
+=
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes erd
+\end_inset
+
+<-
+\begin_inset Quotes erd
+\end_inset
+
+, 
 \begin_inset Quotes eld
 \end_inset
 
@@ -563,7 +927,7 @@ cal symbols like
 \begin_inset Quotes erd
 \end_inset
 
-,
+, 
 \begin_inset Quotes eld
 \end_inset
 
@@ -571,7 +935,7 @@ cal symbols like
 \begin_inset Quotes erd
 \end_inset
 
-,
+, 
 \begin_inset Quotes erd
 \end_inset
 
@@ -579,9 +943,77 @@ cal symbols like
 \begin_inset Quotes erd
 \end_inset
 
-, and so forth.
- Put one space after commas.
- This is purely a matter of convention and judgment, it does not affect
+
+\end_layout
+
+\begin_layout Enumerate
+R binary operations like: 
+\begin_inset Quotes eld
+\end_inset
+
+%*%
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+%o%
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+%in%
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Put one space after commas.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Insert one space before the opening squiggly braces 
+\begin_inset Quotes eld
+\end_inset
+
+{
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Put one space after the closing parenthesis 
+\begin_inset Quotes eld
+\end_inset
+
+)
+\begin_inset Quotes erd
+\end_inset
+
+ and the closing squiggly brace 
+\begin_inset Quotes eld
+\end_inset
+
+}
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This is purely a matter of convention and legibility, it does not affect
  the 
 \begin_inset Quotes eld
 \end_inset
@@ -591,31 +1023,37 @@ rightness
 \end_inset
 
  of code.
- But every finished program by a well-qualified programmer will do this.
- While developing code, it sometimes helps me to leave spaces inside parentheses
- and squiggly braces.
- It helps me keep the logic straight.
- The experts never leave those spaces in their final version, however, and
- I try to remember to fix them.
+ 
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
-I believe 99.8% of the R programmers that I admire follow those first two
- standards.
- I believe that 95% of my favorites adhere to these principles for the placement
- of squiggly braces.
+Other observations about spaces,
 \end_layout
 
-\end_deeper
 \begin_layout Enumerate
+Do not insert spaces between function names and their opening parentheses.
+\end_layout
 
-\series bold
-(SEA .90) Place squiggly braces (
+\begin_layout Enumerate
+Do not insert 
 \begin_inset Quotes eld
 \end_inset
 
-{
+extra spaces
+\begin_inset Quotes erd
+\end_inset
+
+ inside parentheses.
+ 
+\end_layout
+
+\begin_layout Enumerate
+After reviewing the R source code, I am uncertain about whether one ought
+ to insert one space after the function names 
+\begin_inset Quotes eld
+\end_inset
+
+if
 \begin_inset Quotes erd
 \end_inset
 
@@ -623,485 +1061,362 @@ I believe 99.8% of the R programmers that I admire follow those first two
 \begin_inset Quotes eld
 \end_inset
 
-}
+for
 \begin_inset Quotes erd
 \end_inset
 
- carefully.
-
-\series default
- This is partly a matter of appearance, but there are some conditions under
- which code will break if the braces are not placed properly.
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-In R, the opening squiggly braces, 
+.
+ In a language like C, 
 \begin_inset Quotes eld
 \end_inset
+
+if
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+ are keywords, and there would be a space, as in 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+if (x < 7)
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+.
+ However, in R, 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+if()
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+for()
+\end_layout
+
+\end_inset
+
+ are functions, and we do not insert spaces between function names and their
+ parentheses.
+ About 90% of the time, the R source does not include a space after 
+\begin_inset Quotes eld
+\end_inset
+
+if
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Programmers who have written in the BASH scripting language may recall that
+ a space inside brackets is required.
+ That training causes me to think that R code is a little bit 
+\begin_inset Quotes eld
+\end_inset
+
+jammed together.
+\begin_inset Quotes erd
+\end_inset
+
+ This is pleasant to my eye:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if ( (x==1) & (y == 2) ) {
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+but, from an Rchaeological point of view, more the correct style is:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if((x == 1) & (y == 2)) {
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The insertion of the interior parentheses for the smaller conditions inside
+ the if statement is consistent with the GNU standard for C.
+\end_layout
+
+\begin_layout Subsubsection*
+Is there an 
+\begin_inset Quotes eld
+\end_inset
+
+argument exception
+\begin_inset Quotes erd
+\end_inset
+
+ to the space rule for equal signs?
+\end_layout
+
+\begin_layout Standard
+Package writers are not entirely consistent, and Rchaeologically speaking,
+ we cannot be sure if these variations are accidental.
+ We sometimes find no spaces, as in
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plot(x, y, lwd=4, col=green, main="My Title")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It would surely be more correct like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plot(x, y, lwd = 4, col = green, main = "My Title")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Spaces may sometimes be omitted in an effort to keep code on one line.
+ Especially where publishers are concerned about the use of scarce paper,
+ the omission of spaces around equal signs is not uncommon.
+ Please note, however, that it is NEVER acceptable to omit the spaces after
+ commas!
+\end_layout
+
+\begin_layout Subsubsection*
+What about indentation of long function declarations?
+\end_layout
+
+\begin_layout Standard
+One of the interesting space related questions is the indentation of function
+ declarations when there are many arguments.
+ Consider the R source code for the function lm():
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm <- function (formula, data, subset, weights, na.action,
+\end_layout
+
+\begin_layout Plain Layout
+
+                method = "qr", model = TRUE, x = FALSE, y = FALSE,
+\end_layout
+
+\begin_layout Plain Layout
+
+                qr = TRUE, singular.ok = TRUE, contrasts = NULL,
+\end_layout
+
+\begin_layout Plain Layout
+
+                offset, ...)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that lines 2-4 are indented under the letter 
+\begin_inset Quotes eld
+\end_inset
+
+f
+\begin_inset Quotes erd
+\end_inset
+
+ in formula.
+ If the function's name were longer, it would push all of that indented
+ code to the right, probably causing line wraps.
+ The solution is to put the function's name and the assignment symbol on
+ separate line.
+ This is the format of R's function plot.lm().
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plot.lm <-
+\end_layout
+
+\begin_layout Plain Layout
+
+function (x, which = c(1L:3L,5L), ## was which = 1L:4L,
+\end_layout
+
+\begin_layout Plain Layout
+
+          caption = list("Residuals vs Fitted", "Normal Q-Q",
+\end_layout
+
+\begin_layout Plain Layout
+
+          "Scale-Location", "Cook's distance",
+\end_layout
+
+\begin_layout Plain Layout
+
+          "Residuals vs Leverage",
+\end_layout
+
+\begin_layout Plain Layout
+
+          expression("Cook's dist vs Leverage  " * h[ii] / (1 - h[ii]))),
+\end_layout
+
+\begin_layout Plain Layout
+
+          panel = if(add.smooth) panel.smooth else points,
+\end_layout
+
+\begin_layout Plain Layout
+
+          sub.caption = NULL, main = "",
+\end_layout
+
+\begin_layout Plain Layout
+
+          ask = prod(par("mfcol")) < length(which) && dev.interactive(),
+ ...,
+\end_layout
+
+\begin_layout Plain Layout
+
+          id.n = 3, labels.id = names(residuals(x)), cex.id = 0.75,
+\end_layout
+
+\begin_layout Plain Layout
+
+          qqline = TRUE, cook.levels = c(0.5, 1.0),
+\end_layout
+
+\begin_layout Plain Layout
+
+          add.smooth = getOption("add.smooth"),
+\end_layout
+
+\begin_layout Plain Layout
+
+          label.pos = c(4,2), cex.caption = 1)
+\end_layout
+
+\begin_layout Plain Layout
 
 {
-\begin_inset Quotes erd
+\end_layout
+
 \end_inset
 
- should be at the end of the line of code, rather than at the beginning
- of the next line.
- This is recommended with for and if statements.
- And it is vital in if/else statements.
+
 \end_layout
 
 \begin_layout Standard
-In the C language, this is known as the 
+The continuation is indented to be below the first argument.
+ The benefit of this 
 \begin_inset Quotes eld
 \end_inset
 
-K&R style
+declaration by itself
 \begin_inset Quotes erd
 \end_inset
 
- (named after 
-\begin_inset CommandInset citation
-LatexCommand citealp
-key "kernighan_c_1988"
-
-\end_inset
-
-).
- Here is an example of some code that follows the guideline, and it works.
+ approach is that the additional lines are always re-formatted with consistent
+ indentation and we are not creating a huge empty white space due to indentation.
 \end_layout
 
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-> x <- 1
-\end_layout
-
-\begin_layout Plain Layout
-
-> if (x < 10) {
-\end_layout
-
-\begin_layout Plain Layout
-
-  print("hello")
-\end_layout
-
-\begin_layout Plain Layout
-
-  } else {
-\end_layout
-
-\begin_layout Plain Layout
-
-  print("goodbye")
-\end_layout
-
-\begin_layout Plain Layout
-
-  }
-\end_layout
-
-\begin_layout Plain Layout
-
-[1] "hello"
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Programmers who don't follow this guideline should expect trouble.
- The trouble arrives in two flavors.
-\end_layout
-
-\begin_layout Enumerate
-
-\series bold
-The unexpected else problem
-\series default
-.
- Sometimes the 
-\begin_inset Quotes eld
-\end_inset
-
-else
-\begin_inset Quotes erd
-\end_inset
-
- part of an if/else statement will be 
-\begin_inset Quotes eld
-\end_inset
-
-broken
-\begin_inset Quotes erd
-\end_inset
-
- if R does not realize that a command is continuing.
- Try this at the command line.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-> if (x < 10) print("hello") 
-\end_layout
-
-\begin_layout Plain Layout
-
-[1] "hello" 
-\end_layout
-
-\begin_layout Plain Layout
-
-> else print("goodbye") 
-\end_layout
-
-\begin_layout Plain Layout
-
-Error: unexpected 'else' in "else"
-\end_layout
-
-\end_inset
-
-The else is not understood because it is not tied to the if statement.
- If we keep the braces on a line with the else, the danger is eliminated.
-\end_layout
-
-\begin_layout Standard
-This is the problem that the help page ?if is referring to when it says,
- 
-\begin_inset Quotes eld
-\end_inset
-
-In particular, you should not have a newline between ‘}’ and ‘else’ to avoid
- a syntax error in entering a ‘if ...
- else’ construct at the keyboard or via ‘source’.
- For that reason, one (somewhat extreme) attitude of defensive programming
- is to always use braces, e.g., for ‘if’ clauses.
-\begin_inset Quotes erd
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Standard
-This is a confusing area because sometimes code will work if the else is
- 
-\begin_inset Quotes eld
-\end_inset
-
-out in the open
-\begin_inset Quotes erd
-\end_inset
-
- without any squiggly braces nearby.
- For example, when an if/else is wrapped inside a larger structure--say
- a function--then R will correctly interpret else on a line by itself.
- This works
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-myfn <- function(x){
-\end_layout
-
-\begin_layout Plain Layout
-
-    if (x < 7)
-\end_layout
-
-\begin_layout Plain Layout
-
-    {
-\end_layout
-
-\begin_layout Plain Layout
-
-        print("x is less than 7")
-\end_layout
-
-\begin_layout Plain Layout
-
-    }
-\end_layout
-
-\begin_layout Plain Layout
-
-    else
-\end_layout
-
-\begin_layout Plain Layout
-
-    {
-\end_layout
-
-\begin_layout Plain Layout
-
-        print("x is excessive")
-\end_layout
-
-\begin_layout Plain Layout
-
-    }
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-myfn(3)
-\end_layout
-
-\begin_layout Plain Layout
-
-myfn(88)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The danger, however, is that code in that format cannot be run line-by-line,
- so developing it by running the individual lines will always result in
- failure.
- The else is disconnected from the if, when each individual line is executed
- in R.
- 
-\end_layout
-
-\begin_layout Standard
-As a result, I believe one is well advised to take the defensive approach
- that is mentioned in the help page and write like so:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if (x < 7){
-\end_layout
-
-\begin_layout Plain Layout
-
-    print("so far, so good")
-\end_layout
-
-\begin_layout Plain Layout
-
-} else {
-\end_layout
-
-\begin_layout Plain Layout
-
-    print("this is the "defensive" style mentioned in the R documents")
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Enumerate
-
-\series bold
-The accidental breakage of else statements
-\series default
-.
- 
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-It is not necessary to use squiggly braces at all.
- We can write an if/else statement all on one line if we want to.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if (x < 7) print("so far, so good") else print("this is else")
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-This would be legal.
- In fact, it is the method in which if and else are documented in ?if.
- 
-\end_layout
-
-\begin_layout Standard
-We can also 
-\begin_inset Quotes eld
-\end_inset
-
-dangle
-\begin_inset Quotes erd
-\end_inset
-
- the else at the end of the if statement, without any squiggly braces.
- R knows that there is more coming on the next line.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if (x < 7) print("so far, so good") else
-\end_layout
-
-\begin_layout Plain Layout
-
-print("this is else")
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-There is some danger in that way of writing.
- Suppose we want to add another command to be performed within the scope
- of the else command.
- Add something on (carelessly):
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if (x < 7) print("so far, so good") else
-\end_layout
-
-\begin_layout Plain Layout
-
-print("this is else")
-\end_layout
-
-\begin_layout Plain Layout
-
-print("and this other thing if else is true")
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-That's broken.
- But every programmer I know has done it, at least once.
- The first print will run only when else is true, but the second one runs
- all the time.
- This will work properly:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-if (x < 7) print("so far, so good") else{
-\end_layout
-
-\begin_layout Plain Layout
-
-    print("this is else")
-\end_layout
-
-\begin_layout Plain Layout
-
-    print("and this other thing if else is true")
-\end_layout
-
-\begin_layout Plain Layout
-
-}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If we forget the squiggly braces, the logic of the situation will not hold
- up.
- Thus, especially while developing and testing code, I insert squiggly braces
- even when they are not required.
- The squiggly braces reduce the chance that I will make a mistake while
- revising this code.
- Perhaps, when a program is done, I'll go back and 
-\begin_inset Quotes eld
-\end_inset
-
-tighten it up
-\begin_inset Quotes erd
-\end_inset
-
- so that I use fewer lines (and won't look so much like a novice).
-\end_layout
-
-\end_deeper
-\end_deeper
 \begin_layout Subsubsection*
-Summary of points 1-3
+Try formatR::tidy.source()
 \end_layout
 
 \begin_layout Standard
@@ -1113,25 +1428,14 @@ white space
 \begin_inset Quotes erd
 \end_inset
 
- in code.
- A programmer's text editor, such as Emacs, will generally have built-in
- functionality to correctly indent sections.
- It may automatically insert spaces.
- It generally will not re-position the squiggly braces for us, however.
+.
+ We would like a programmer's text editor to handle automatically as much
+ of that as possible.
+ 
 \end_layout
 
 \begin_layout Standard
-There is a recently introduced R function that can do all three of these
- chores.
- This function, which is called 
-\begin_inset Quotes eld
-\end_inset
-
-tidy.source
-\begin_inset Quotes erd
-\end_inset
-
-, is available in the 
+The R package 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1139,44 +1443,19 @@ formatR
 \begin_inset Quotes erd
 \end_inset
 
- package 
+ 
 \begin_inset CommandInset citation
 LatexCommand citep
-key "xie_formatr:_2012"
+key "formatr"
 
 \end_inset
 
-.
- The style that is followed in formatR is not 
-\begin_inset Quotes eld
-\end_inset
-
-officially sanctioned,
-\begin_inset Quotes erd
-\end_inset
-
- but in my experience, it does very well.
- I've put it to the test with some very ugly tangles of code that students
- have submitted and it works well.
- One of its very useful features is that it scans the input and refuses
- to re-format when there are coding errors.
- This helps in proof-reading student projects.
-\end_layout
-
-\begin_layout Standard
-The tidy.source function can handle code files, but there is a quick 
-\begin_inset Quotes eld
-\end_inset
-
-clipboard copy
-\begin_inset Quotes erd
-\end_inset
-
- feature.
+ has a function called tidy.source() which can often (but not always) clean
+ up code.
  Below I've pasted in part of an Emacs session.
- I wrote a badly formatted function myfn, and copied it to the clipboard,
+ I wrote a badly formatted function, myfn(), and copied it to the clipboard,
  and then tidy.source() reads the clipboard.
- It seems like magic!.
+ It works like magic.
  
 \end_layout
 
@@ -1238,11 +1517,7 @@ function(x) {
 
 \begin_layout Plain Layout
 
-} 
-\end_layout
-
-\begin_layout Plain Layout
-
+}
 \end_layout
 
 \end_inset
@@ -1251,14 +1526,9 @@ function(x) {
 \end_layout
 
 \begin_layout Standard
-By adding the source parameter, a file name can be provided.
- 
-\end_layout
-
-\begin_layout Standard
-That output is not quite right, in my opinion, because it allows the equal
- sign for assignment of the variable i.
- However, tidy.source has an option to correct that.
+The tidy.source() function can get rid of equals sign assignments if we ask
+ it to.
+ (In my opinion, it should do that by default.)
 \end_layout
 
 \begin_layout Standard
@@ -1317,116 +1587,1091 @@ function(x) {
 \end_layout
 
 \begin_layout Standard
-I believe that the style advice to this point will be almost universally
- supported, or at least understood and accepted.
- I don't think anybody could possibly be embarrassed by following those
- standards.
- There is no downside to tidiness! 
+The tidy.source() function can receive input as files or whole directories.
+\end_layout
+
+\begin_layout Standard
+There are two reasons why tidy.source() is not a panacea.
+ First, by design, tidy.source() will fail if there are programming errors
+ in the original source code.
+ That leads to a Catch-22.
+ I want to clean up the code to find out why it does not run, but tidy.source()
+ cannot clean it up because it does not run.
+ Second, quite often it happens that tidy.source() chokes on unexpected user
+ code.
+ Especially problematic is code that has comments inserted in unexpected
+ places.
+ For example, I recently ran tidy.source() on the file emb.r in the package
+ Amelia 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Amelia"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> library(formatR)
+\end_layout
+
+\begin_layout Plain Layout
+
+> tidy.source("emb.r")
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in base::parse(text = text, srcfile = NULL) :
+\end_layout
+
+\begin_layout Plain Layout
+
+  152:88: unexpected SPECIAL
+\end_layout
+
+\begin_layout Plain Layout
+
+151: }
+\end_layout
+
+\begin_layout Plain Layout
+
+152: if (ncol(as.matrix(startvals)) == AMp+1 && nrow(as.matrix(startvals))
+ == AMp+1)        %InLiNe_IdEnTiFiEr%
+\end_layout
+
+\begin_layout Plain Layout
+
+                                                                       
+                    ^
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I would estimate that tidy.source() fails on about one-third of the R code
+ I randomly select from CRAN.
 \end_layout
 
 \begin_layout Subsection
-Widely accepted style advice
+(SEA .70) The 
+\begin_inset Quotes eld
+\end_inset
+
+} else {
+\begin_inset Quotes erd
+\end_inset
+
+ policy.
+ 
+\end_layout
+
+\begin_layout Standard
+Did you notice 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ in the 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+tidy.source()
+\end_layout
+
+\end_inset
+
+ output for 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+myfn()
+\end_layout
+
+\end_inset
+
+? That's the correct style.
+ We should not have the left squiggly brace 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ on a separate line from the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+else
+\end_layout
+
+\end_inset
+
+,
+\begin_inset Quotes erd
+\end_inset
+
+ and the right squiggly brace 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ should be on that same line.
+ This is, well, obviously good (in my opinion).
+\end_layout
+
+\begin_layout Standard
+Why? Try this at the command line.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> if (x < 10) print("hello") 
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] "hello" 
+\end_layout
+
+\begin_layout Plain Layout
+
+> else print("goodbye") 
+\end_layout
+
+\begin_layout Plain Layout
+
+Error: unexpected 'else' in "else"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+R does not realize that it is not yet finished with the if keyword's work.
+ The keyword else appears to begin a new thought, which is illegal.
+ The if's help page (run 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+help("if")
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+?"if"
+\end_layout
+
+\end_inset
+
+) is referring to this problem when it says, 
+\end_layout
+
+\begin_layout Quote
+In particular, you should not have a newline between ‘}’ and ‘else’ to avoid
+ a syntax error in entering a ‘if ...
+ else’ construct at the keyboard or via ‘source’.
+ For that reason, one (somewhat extreme) attitude of defensive programming
+ is to always use braces, e.g., for ‘if’ clauses.
+\end_layout
+
+\begin_layout Standard
+I agree with the somewhat extreme attitude, but will compromise: If one
+ uses squiggly braces, always follow the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ policy.
+ 
+\end_layout
+
+\begin_layout Standard
+Some might follow a soft line on this, suggesting only that 
+\series bold
+users should not
+\series default
+ 
+\series bold
+begin a line with the word else
+\series default
+.
+ That does not go quite far enough for me.
+ I'd add, 
+\series bold
+always use squiggles after else.
+
+\series default
+ This is simply a way of avoiding a very common coding error.
+ This code is OK:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (x < 7) print("so far, so good") else
+\end_layout
+
+\begin_layout Plain Layout
+
+print("this is else")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But it invites a coding error like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (x < 7) print("so far, so good") else
+\end_layout
+
+\begin_layout Plain Layout
+
+print("this is else")
+\end_layout
+
+\begin_layout Plain Layout
+
+print("and we want this also to be with else, but it is not")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To be perfectly clear, and to protect ourselves against editing errors in
+ the future, we could follow the 
+\begin_inset Quotes eld
+\end_inset
+
+somewhat extreme
+\begin_inset Quotes erd
+\end_inset
+
+ advice and write this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (x < 7) {
+\end_layout
+
+\begin_layout Plain Layout
+
+	print("so far, so good") 
+\end_layout
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\begin_layout Plain Layout
+
+    print("this is else")
+\end_layout
+
+\begin_layout Plain Layout
+
+    print("and we want this also to be with else")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Counter-argument based on the R source code
+\end_layout
+
+\begin_layout Standard
+This would be a completely closed case if not for the fact that the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ policy is ignored in vast expanses of the R source code.
+ In the R source code, scan for the keyword else and in almost every file,
+ one finds:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+  else
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+A naked else! This is frustrating for writers of style guides.
+ It ignores the advice in the 
+\begin_inset Quotes eld
+\end_inset
+
+if
+\begin_inset Quotes erd
+\end_inset
+
+ help page.
+ We cannot run this code line-by-line.
+ 
+\end_layout
+
+\begin_layout Standard
+On the other hand, the function that includes that apparently runs! Why
+ doesn't that code crash? When an if/else statement is enclosed in a larger
+ area that is demarcated by squiggly braces, then R will understand the
+ naked else when it finds it.
+ Observe the fix at the command line:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> x <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+> {
+\end_layout
+
+\begin_layout Plain Layout
+
++ if (x < 10) print("hello")
+\end_layout
+
+\begin_layout Plain Layout
+
++ else
+\end_layout
+
+\begin_layout Plain Layout
+
++ print("My dangling else")
+\end_layout
+
+\begin_layout Plain Layout
+
++ }
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] "hello"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I don't think I'm going to have any luck persuading the R Core Development
+ Team that their naked elses need to be fixed.
+ The best I can do is to urge code writers to use 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ and make them responsible for errors that result from ignoring that rule.
+ 
+\end_layout
+
+\begin_layout Standard
+One will note another interesting anomaly while reviewing R source code.
+ Unlike programs written in C, where a consistent style for the placement
+ of squiggly braces will be followed, in R we observe files that do not
+ follow a particular rule.
+ In src/library/src/logLik.R, we find functions in both the K&R (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "kernighan_c_1988"
+
+\end_inset
+
+) C style
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+nobs.logLik <- function(object, ...) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    res <- attr(object, "nobs")
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (is.null(res)) stop("no 
+\backslash
+"nobs
+\backslash
+" attribute is available")
+\end_layout
+
+\begin_layout Plain Layout
+
+    res
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and we also find the vertically aligned squiggly braces approach:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+print.logLik <- function(x, digits = getOption("digits"), ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    cat("'log Lik.' ", paste(format(c(x), digits=digits), collapse=", "),
+\end_layout
+
+\begin_layout Plain Layout
+
+        " (df=",format(attr(x,"df")),")
+\backslash
+n",sep="")
+\end_layout
+
+\begin_layout Plain Layout
+
+    invisible(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I am at a loss to explain these stylistic variations, so I conclude that
+ R users can follow either style, while keeping in mind the 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+} else {
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ policy, which strongly pushes us toward the K&R style.
+\end_layout
+
+\begin_layout Section
+How to name functions.
 \end_layout
 
 \begin_layout Standard
 Now we begin to consider some issues that are more subjective.
-\end_layout
-
-\begin_layout Enumerate-Resume
-How to name functions.
- This is a difficult area because many styles are legal, but some are more
- easily understood.
- The programmer's experience may affect whether code looks 
-\begin_inset Quotes eld
-\end_inset
-
-right
-\begin_inset Quotes erd
-\end_inset
-
- or not.
- It is also difficult because R syntax has changed over the years, and some
- things that were illegal are now allowed.
+ Many styles are legal, but some are more easily understood.
+ R syntax has changed over the years, and some things that were illegal
+ are now allowed.
+ And some styles that were standard might now be discouraged.
  
 \end_layout
 
-\begin_deeper
-\begin_layout Enumerate
-(.98 SEA) Avoid using names that are already in use, especially common ones.
- Don't write functions named 
+\begin_layout Subsection
+(.98 SEA) Avoid using names that are already in use by R, especially common
+ ones.
+\end_layout
+
+\begin_layout Standard
+Don't write functions named 
 \begin_inset Quotes eld
 \end_inset
 
-rep
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+rep()
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
- 
+, 
 \begin_inset Quotes eld
 \end_inset
 
-seq
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+seq()
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
- 
+, 
 \begin_inset Quotes eld
 \end_inset
 
-lm
+
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+c()
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
 , and so forth.
- Don't do this, even though R (since 2.14) has a graceful mechanism to tolerate
- duplicated names.
- All functions exist within packages, so one could run base::rep to get
- the built-in version of rep, while using rep for a package-specific function.
- Doing that will likely to make code very difficult for the experts to read
- because (almost always) they assume 
-\begin_inset Quotes eld
-\end_inset
+ Notice that my new function 
+\begin_inset listings
+inline true
+status open
 
-seq
-\begin_inset Quotes erd
-\end_inset
+\begin_layout Plain Layout
 
- is 
-\begin_inset Quotes eld
-\end_inset
-
-seq
-\begin_inset Quotes erd
-\end_inset
-
- from base.
- Why confuse the R programmers by making a new function 
-\begin_inset Quotes eld
-\end_inset
-
-seq
-\begin_inset Quotes erd
-\end_inset
-
- that does something different? Pick a new name.
+lm()
 \end_layout
 
-\begin_layout Enumerate
-(.65 SEA)Use periods to indicate classes, otherwise don't use periods in
- function names.
- Instead, use camel case to name functions.
- myFunction or getCalculatedValues are better function names than my.thing
- or get.calculated.values.
- A camel cased function may be ugly in the eyes of some, but it will never
- send the reader searching for a class called 
-\begin_inset Quotes eld
 \end_inset
 
-calculated.values
-\begin_inset Quotes erd
+ does not obliterate the one from the stats package, but it sure does make
+ it harder to use it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> lm <- function(z) print("Hi, I'm z where lm was")
+\end_layout
+
+\begin_layout Plain Layout
+
+> x <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+> y <- rnorm(100)
+\end_layout
+
+\begin_layout Plain Layout
+
+> lm (y ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] "Hi, I'm z where lm was"
+\end_layout
+
+\begin_layout Plain Layout
+
+> stats::lm(y ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Call:
+\end_layout
+
+\begin_layout Plain Layout
+
+stats::lm(formula = y ~ x)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Coefficients:
+\end_layout
+
+\begin_layout Plain Layout
+
+(Intercept)            x
+\end_layout
+
+\begin_layout Plain Layout
+
+    0.02688      0.01796
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As long as we remember that 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+lm()
+\end_layout
+
+\end_inset
+
+ is in the namespace stats, we can find it.
+ 
+\end_layout
+
+\begin_layout Standard
+Similarly, packages can declare namespaces of their own.
+ (Since R version 2.14, all packages 
+\emph on
+must
+\emph default
+ do so.) We are allowed to place a new function like 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+seq()
+\end_layout
+
 \end_inset
 
  or 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+lm()
+\end_layout
+
+\end_inset
+
+ into a package if we want to.
+ Nevertheless, almost everybody will hate to read code like that.
+ 
+\end_layout
+
+\begin_layout Standard
+The danger that user functions might interfere with core functionality was
+ at one time very serious.
+ Now it is, for the most part, a historical footnote.
+ It is still possible to obliterate a function that is embedded within a
+ namespace, but doing so requires a bit of effort and mischief.
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+In case you wonder, here's how to cause the worst case scenario.
+\end_layout
+
+\begin_layout LyX-Code
+nseq <- function(x) print("Hello, good to see you")
+\end_layout
+
+\begin_layout LyX-Code
+assignInNamespace("seq.default", nseq, "base")
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When we say that a namespace is imported, it means that all of the functions
+ in that namespace can be accessed by the function's name, without the namespace
+ name as a prefix.
+ We might write 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+base::seq(1, 10, length.out = 40)
+\end_layout
+
+\end_inset
+
+ to be clear, but we need only write 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+seq(1, 10, length.out = 40)
+\end_layout
+
+\end_inset
+
+ because an R session imports the namespace base.
+ I notice a trend in R to suggest that one should not import whole namespaces
+ unless that is truly necessary, and even if a namespace is imported, we
+ should strive for clarity by using syntax that includes the namespace name.
+ In the source code for many R examples, one will find syntax like 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+graphics::par()
+\end_layout
+
+\end_inset
+
+ where, until recently, that would have simply been 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+par()
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+(.65 SEA)Use periods to indicate classes, otherwise don't use periods in
+ function names.
+ 
+\end_layout
+
+\begin_layout Standard
+Instead, use camel case to name functions.
+ This function name 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+mySuperThing()
+\end_layout
+
+\end_inset
+
+ is better than 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+my.super.thing()
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The period in a function name has a special meaning in the S3 object-oriented
+ framework.
+ A 
+\begin_inset Quotes eld
+\end_inset
+
+generic function
+\begin_inset Quotes erd
+\end_inset
+
+ (such as print() or summary()) is accompanied by methods that implement
+ its work for particular kinds of objects, such as 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+print.function()
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+print.lm()
+\end_layout
+
+\end_inset
+
+.
+ Before the period, we have a function's name, and after the period, we
+ have the class name of the object being managed.
+ The function name 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+my.super.thing()
+\end_layout
+
+\end_inset
+
+ suggests the user might have an object of class 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1434,49 +2679,303 @@ thing
 \begin_inset Quotes erd
 \end_inset
 
+ and that 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+my.super(x)
+\end_layout
+
+\end_inset
+
+ would diagnose the class of x and send the work to 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+my.super.thing()
+\end_layout
+
+\end_inset
+
+.
+ A camel cased function name 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+mySuperThing()
+\end_layout
+
+\end_inset
+
+ will not convey the wrong meaning.
+ 
+\end_layout
+
+\begin_layout Standard
+If we were starting with a clean slate, I believe many R functions would
+ be re-named for the purposes of consistency.
+ Since we do not have a clean slate, we live with an accumulation of function
+ names from olde S and R.
+ Changes in computer science--the growth of object-oriented programming--cause
+ new naming conventions.
+ Consider some of the traditional S function names that are still used in
+ R, like 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+read.table
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+read.csv
+\end_layout
+
+\end_inset
+
+.
+ Those are not method implementations of a generic function read().
+ The period is simply part of a shorthand of the form 
+\begin_inset Quotes eld
+\end_inset
+
+action.qualifier
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Otherwise, if one had an object of type table, then read(x) would call
+ read.table(x).
+ But it does not:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> example(table)
+\end_layout
+
+\begin_layout Plain Layout
+
+> class(tab) 
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] "xtabs" "table"
+\end_layout
+
+\begin_layout Plain Layout
+
+> read(tab) 
+\end_layout
+
+\begin_layout Plain Layout
+
+Error: could not find function "read" 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I believe that, if these functions were being created today, they would
+ be named 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+readTable()
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+readCSV()
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+In the R source code, there are some very confusing function names and I
+ have a hard time believing we would use them if we were re-designing everything
+ today.
+ The file src/library/base/readhttp.R has a function called 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+url.show()
+\end_layout
+
+\end_inset
+
+, which follows none of the styles that I recognize.
+ There's no class 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+show
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+url()
+\end_layout
+
+\end_inset
+
+ is not a generic function.
+ In the 
+\begin_inset Quotes eld
+\end_inset
+
+action.qualifier
+\begin_inset Quotes erd
+\end_inset
+
+ tradition, it would be 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+show.url()
+\end_layout
+
+\end_inset
+
+.
+ And why not 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+showURL()
+\end_layout
+
+\end_inset
+
+? I hasten to point out that the same file includes some camel cased functions
+ like 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+defaultUserAgent()
+\end_layout
+
+\end_inset
+
 .
 \end_layout
 
-\begin_deeper
 \begin_layout Standard
-This is my opinion, but it is not unanimously shared.
- I bet one-half or two-thirds of the R programmers that I admire would agree.
- As a spot check, consider two of my favorite packages, MASS and car.
- There are not many camel case function names in the MASS package 
+I like camel cased function names.
+ They are common in Objective-C and Java.
+ Some programmers vigorously disagree.
+ Programmers trained in C++ seem to hate camel case names, almost at a visceral
+ level.
+ As a result, we find a division of opinion on function names.
+ As a spot check, consider two of my favorite packages, MASS 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "venables_modern_2002"
 
 \end_inset
 
-, which is distributed with R.
- The preferred style in MASS is to give functions brief, all lower case
- letters, such as 
-\begin_inset Quotes eld
-\end_inset
-
-boxcox.
-\begin_inset Quotes erd
-\end_inset
-
- Contrast that with the car package 
+ and car 
 \begin_inset CommandInset citation
 LatexCommand citep
 key "fox_r_2011"
 
 \end_inset
 
-, which is very widely used, which has a similar function called 
-\begin_inset Quotes eld
+.
+ There are not many camel case function names in the MASS, where we find
+ brief names in lower case letters (such as 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+boxcox()
+\end_layout
+
 \end_inset
 
-boxCox
-\begin_inset Quotes erd
+).
+ In contrast, car calls that 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+boxCox()
+\end_layout
+
 \end_inset
 
 .
- Some time ago, Professor Fox systematically revised car to change the period-st
-yle function names to camel case.
+ When I started using R, Professor Fox used function names with periods,
+ but he has been systematically weeding them out and replacing them with
+ camel case names.
  If those two packages are counterbalancing each other in my mind (for and
  against camel case functions), the leading packages for mixed effects models,
  nlme 
@@ -1489,390 +2988,80 @@ key "pinheiro_nlme:_2012"
  and lme4 
 \begin_inset CommandInset citation
 LatexCommand citep
-key "bates_lme4:_????"
+key "lme4"
 
 \end_inset
 
-, weigh in on 
-\begin_inset Quotes eld
-\end_inset
-
-my side
-\begin_inset Quotes erd
-\end_inset
-
-.
+, weigh in on the camel case side of the ledger.
  
 \end_layout
 
 \begin_layout Standard
-Why would a period in a function name be distracting to some readers? Some
- readers are trained in Java or C++.
- In those languages, the period is a 
-\begin_inset Quotes eld
-\end_inset
-
-connective
-\begin_inset Quotes erd
-\end_inset
-
- symbol that can join an object name with its variables or member functions.
- In Java, one would write myThing.x to extract a variable x from an object
- myThing.
- When I read R code, I am still (after 10 years) distracted by periods in
- function names for this reason.
-\end_layout
-
-\begin_layout Standard
-In R, the period is not used to extract variables, instead we write (in
- S3) myThing$x or (in S4) myThing@x.
- However, in R we do use the period as connective tissue between a generic
- function name and the type of object to which it must be applied.
- The 
-\begin_inset Quotes eld
-\end_inset
-
-full name
-\begin_inset Quotes erd
-\end_inset
-
- of a function will often include a suffix, even though the R interface
- tries to conceal those suffixes from the readers.
- Observe the output from the methods function, which lists the class-specific
- methods, but indicates that they are not exported for easy use.
- 
-\end_layout
-
-\begin_layout Standard
+In conclusion, users should avoid gratuitous periods in function names because,
+ after S3, the period has special meaning in R.
+ When a function has been declared as a generic, then that function's name
+ followed by a period has an object-oriented meaning.
+ A period is not merely word separation.
+ New functions introduced in R tend to use either camel case names (
 \begin_inset listings
-inline false
+inline true
 status open
 
 \begin_layout Plain Layout
 
-> methods("confint")
-\end_layout
-
-\begin_layout Plain Layout
-
-[1] confint.default confint.glm*    confint.lm*     confint.nls*   
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-   Non-visible functions are asterisked
-\end_layout
-
-\begin_layout Plain Layout
-
-> methods("summary")
-\end_layout
-
-\begin_layout Plain Layout
-
- [1] summary.aov             summary.aovlist         summary.aspell*      
-  
-\end_layout
-
-\begin_layout Plain Layout
-
- [4] summary.connection      summary.data.frame      summary.Date          
- 
-\end_layout
-
-\begin_layout Plain Layout
-
- [7] summary.default         summary.ecdf*           summary.factor       
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[10] summary.glm             summary.infl            summary.lm           
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[13] summary.loess*          summary.manova          summary.matrix       
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[16] summary.mlm             summary.nls*            summary.packageStatus*
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-[19] summary.PDF_Dictionary* summary.PDF_Stream*     summary.POSIXct      
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[22] summary.POSIXlt         summary.ppr*            summary.prcomp*      
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[25] summary.princomp*       summary.srcfile         summary.srcref       
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[28] summary.stepfun         summary.stl*            summary.table        
-  
-\end_layout
-
-\begin_layout Plain Layout
-
-[31] summary.tukeysmooth*   
-\end_layout
-
-\begin_layout Plain Layout
-
-   Non-visible functions are asterisked
-\end_layout
-
-\begin_layout Plain Layout
-
-> methods("predict")
-\end_layout
-
-\begin_layout Plain Layout
-
- [1] predict.ar*                predict.Arima*            
-\end_layout
-
-\begin_layout Plain Layout
-
- [3] predict.arima0*            predict.glm               
-\end_layout
-
-\begin_layout Plain Layout
-
- [5] predict.HoltWinters*       predict.lm                
-\end_layout
-
-\begin_layout Plain Layout
-
- [7] predict.loess*             predict.mlm               
-\end_layout
-
-\begin_layout Plain Layout
-
- [9] predict.nls*               predict.poly              
-\end_layout
-
-\begin_layout Plain Layout
-
-[11] predict.ppr*               predict.prcomp*           
-\end_layout
-
-\begin_layout Plain Layout
-
-[13] predict.princomp*          predict.smooth.spline*    
-\end_layout
-
-\begin_layout Plain Layout
-
-[15] predict.smooth.spline.fit* predict.StructTS*         
-\end_layout
-
-\begin_layout Plain Layout
-
-   Non-visible functions are asterisked
+browseVignettes()
 \end_layout
 
 \end_inset
 
-
-\end_layout
-
-\begin_layout Standard
-Observe that when the user runs 
-\begin_inset Quotes eld
-\end_inset
-
-confint(myThing)
-\begin_inset Quotes erd
-\end_inset
-
- or 
-\begin_inset Quotes eld
-\end_inset
-
-summary(myThing)
-\begin_inset Quotes erd
-\end_inset
-
-, the R system has to select one particular method with which to get the
- work done.
- R checks for the class of myThing.
- If the class is 
-\begin_inset Quotes eld
-\end_inset
-
-glm
-\begin_inset Quotes erd
-\end_inset
-
-, and there is a function confint.glm, summary.glm, or so forth, then those
- specific methods are used to answer the user's request.
- If there is no class-specific method available, then the work is sent to
- confint.default or summary.default.
- 
-\end_layout
-
-\begin_layout Standard
-Many R commands create new objects of particular types that require specialized
- processing.
- The command
-\end_layout
-
-\begin_layout Standard
+) or underscores (
 \begin_inset listings
-inline false
+inline true
 status open
 
 \begin_layout Plain Layout
 
-m1summ <- summary(m1)
+get_all_vars()
 \end_layout
 
 \end_inset
 
-
+).
+ Considering recent additions to R, I believe that the chance of finding
+ a decorative period in a new function name is almost zero.
+ But we are still living with an awful lot of older counter-examples.
 \end_layout
 
-\begin_layout Standard
-creates a new object from the class 
-\begin_inset Quotes eld
-\end_inset
-
-summary.lm
-\begin_inset Quotes erd
-\end_inset
-
-.
- And in order to show that result to the user, the R system uses a function
- called 
-\begin_inset Quotes eld
-\end_inset
-
-print.summary.lm,
-\begin_inset Quotes erd
-\end_inset
-
- but the user would ordinarily not notice that a specialized print function
- exists.
- The same result is produced by these three commands:
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-m1summ
-\end_layout
-
-\begin_layout Plain Layout
-
-print(m1summ)
-\end_layout
-
-\begin_layout Plain Layout
-
-stats:::print.summary.lm(m1summ)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The first two are equivalent because typing an object's name is always understoo
-d as a request for a print function.
- The R design discourages us from using the last approach.
- We are supposed to let the R system select methods to match the classes
- of the objects being processed.
- That's why the print.summary.lm function is not exported from the stats package,
- and thus it is necessary to use the three colons when I want to access
- it directly.
- 
-\end_layout
-
-\begin_layout Standard
-The whole point is that, inside the R system, the periods are not just punctuati
-on.
- They may indicate the class type of the object that is being received.
- Thus, I avoid gratuitous periods in function names.
- 
-\end_layout
-
-\begin_layout Standard
-Admittedly, many programmers, especially the ones who are trained in C++,
- find camel cased functions to be very ugly.
- On the other hand, Java and Objective-C programmers are used to them, and
- may even find them attractive.
- But the key point is that periods are distracting.
- 
-\end_layout
-
-\begin_layout Standard
-It seems to me that new functions introduced in R tend to have either camel
- case or underscores for punctuation.
- Run ?get_all_vars.
- That's an eye-opener.
- Some parts of R, especially the old parts, were developed before 
-\begin_inset Quotes eld
-\end_inset
-
-object oriented
-\begin_inset Quotes erd
-\end_inset
-
- programming had come to the forefront and, as a result, they do not comply
- with this advice.
- However, newer functions generally do.
- Observe ?browseVignettes.
- If I knew how to use SVN very well, I'd download the R-devel code and then
- list all functions by the date on which they were introduced.
- I will bet a cup of coffee with anybody that the probability of camel cases
- is higher in the more recent commits.
- I also would bet that the chance of finding a period in a function name
- for purely punctuation reasons is almost zero in the most recent commits.
- Instead of periods, we find either short lower case names, camel case,
- or punctuation with underscores.
- I hasten to admit that the underscores look really strange to me!
-\end_layout
-
-\end_deeper
-\end_deeper
-\begin_layout Enumerate-Resume
+\begin_layout Section
 
 \series bold
 How to name variables
 \series default
- (and objects and other things you need to keep track of).
+ (and objects).
 \end_layout
 
-\begin_deeper
+\begin_layout Subsection
+(1.0 SEA) Follow the 
+\begin_inset Quotes eld
+\end_inset
+
+letters and numbers
+\begin_inset Quotes erd
+\end_inset
+
+ rule.
+\end_layout
+
+\begin_layout Standard
+R variable names must 
+\end_layout
+
 \begin_layout Enumerate
-(1.0 SEA) Officially, R variable names must begin with an alphabetical character
- and must include only letters, numbers and the symbols 
+begin with an alphabetical character
+\end_layout
+
+\begin_layout Enumerate
+include only letters, numbers and the symbols 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1897,7 +3086,11 @@ _
 \end_inset
 
 .
- They must not include 
+ 
+\end_layout
+
+\begin_layout Standard
+They must not include 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1930,44 +3123,101 @@ _
 \end_inset
 
  or other special symbols.
- 
+ They must not include spaces.
 \end_layout
 
-\begin_layout Enumerate
-(1.0 SEA) Never name a variable T or F.
- 
-\end_layout
-
-\begin_deeper
 \begin_layout Standard
-This is one thing that almost everybody (99.9%) will agree with.
- NEVER name variables 
+One peculiar side effect of this rule is that the ellipsis symbol, three
+ periods, 
 \begin_inset Quotes eld
 \end_inset
 
-T
+...
 \begin_inset Quotes erd
 \end_inset
 
- or 
+, is actually a legal object name.
+ That's three periods, which is just as legal as aaa or bbb.
+ Many R functions allow the argument 
 \begin_inset Quotes eld
 \end_inset
 
-F
+...
+\begin_inset Quotes erd
+\end_inset
+
+, most users don't realize it literally is a word.
+ When that is listed as a function argument, then any argument that the
+ user includes is gobbled up by 
+\begin_inset Quotes eld
+\end_inset
+
+...
 \begin_inset Quotes erd
 \end_inset
 
 .
+ 
+\end_layout
+
+\begin_layout Subsection
+(1.0 SEA) Never name a variable T or F.
+ 
+\end_layout
+
+\begin_layout Standard
+Almost everybody (99.999%) will agree with this.
  These are too easily mistaken for TRUE and FALSE values.
  Since R uses TRUE and FALSE as vital elements of almost all commands and
  functions, and since users are allowed to abbreviate those as T or F, a
  horrible confusion can develop if variables are named T or F.
+ 
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
+\begin_layout Standard
+Here's some good news.
+ R will not allow users to name variables TRUE or FALSE:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> TRUE <- 7
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in TRUE <- 7 : invalid (do_set) left-hand side to assignment
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+But R will not prevent the usage of T and R for variable names.
+\end_layout
+
+\begin_layout Subsection
 (.75 SEA) Avoid declaring variables that have the same names as widely used
  functions.
+\end_layout
+
+\begin_layout Standard
+This is just a handy rule of thumb now, but it used to be a 
+\begin_inset Quotes eld
+\end_inset
+
+watch out for that tree!
+\begin_inset Quotes erd
+\end_inset
+
+ warning.
  In 2001, I created a variable 
 \begin_inset Quotes eld
 \end_inset
@@ -1978,8 +3228,33 @@ rep
 
  (for Republican party members) and nothing worked in my program.
  In exasperation, I wrote to the r-help list, and learned that I had obliterated
- R's own function rep with my variable.
- That kind of mistake was common.
+ R's own function 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+rep()
+\end_layout
+
+\end_inset
+
+ with my variable.
+ 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+rep()
+\end_layout
+
+\end_inset
+
+ is used inside many R functions and thus obliterating it was a very serious
+ mistake.
  In 2002 or so, the R system was revised so that user-declared variables
  cannot 
 \begin_inset Quotes eld
@@ -2016,64 +3291,20 @@ seq
 \end_inset
 
 , and so forth.
- Its distracting; its confusing.
+ 
 \end_layout
 
-\begin_layout Enumerate
-(0.40) I avoid underscores in variable names.
- To understand why, please understand the history of S and R.
- At one time, the underscore 
-\begin_inset Quotes eld
-\end_inset
-
-_
-\begin_inset Quotes erd
-\end_inset
-
- was used as the assignment symbol.
- That's right, instead of 
-\begin_inset Quotes eld
-\end_inset
-
-<-
-\begin_inset Quotes erd
-\end_inset
-
-, we used to write
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-y _ x + x^2
-\end_layout
-
-\end_inset
-
-
+\begin_layout Subsection
+(0.50 SEA) Use long names for infrequently used variables.
+ 
 \end_layout
 
 \begin_layout Standard
-The underscore for assignment was allowed, but discouraged, when I started
- using R.
- In those days, R functions that imported data would translate underscores
- into other symbols.
- Underscore for assignment has since been forbidden altogether.
- A while after that, the underscore was allowed in variable and function
- names.
- Because of that history, R veterans may still consider it jarring if your
- variables include underscores.
+And use short names for variables that will be used very often.
 \end_layout
 
-\end_deeper
-\begin_layout Enumerate
-(0.40 SEA) Use long names for infrequently used variables.
- If a variable is going to be used twice, we might as well be verbose about
+\begin_layout Standard
+If a variable is going to be used twice, we might as well be verbose about
  it.
  
 \begin_inset Quotes eld
@@ -2098,13 +3329,25 @@ xl
  stands for.
 \end_layout
 
-\begin_layout Enumerate
-(0.10 SEA) This is my personal naming scheme, nobody else knows about it,
- unless they have heard about it from me.
- But they might like it if they think it over.
- I suggest we use an alphabetical scheme for naming related things so that
- they always stay together in the workspace.
- As seen by ls(), the related bits should always be together.
+\begin_layout Subsection
+(0.10 SEA) Suggested naming scheme: keep related objects in an alphabetically
+ sorted scheme.
+\end_layout
+
+\begin_layout Standard
+This is my personal naming scheme.
+ Nobody but me follows this policy now, but I like it so much I'm tacking
+ it onto the end of this essay.
+ I believe that R code is much more readable if objects that 
+\begin_inset Quotes eld
+\end_inset
+
+go together
+\begin_inset Quotes erd
+\end_inset
+
+ begin with the common series of letters.
+ As seen by ls(), the related pieces should always be together.
  From now on, when I work with a variable named 
 \begin_inset Quotes eld
 \end_inset
@@ -2139,6 +3382,7 @@ logx
 \end_inset
 
  and so forth.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -2152,6 +3396,8 @@ dummy
 \end_inset
 
  variables that correspond.
+ I include the output in order to emphasize the clarity due to the alphabetical
+ emphasis:
 \end_layout
 
 \begin_layout Standard
@@ -2210,8 +3456,13 @@ head(dat)
 \end_layout
 
 \begin_layout Standard
+I have not included the output of these code chunks, but the alphabetical
+ emphasis is demonstrated in them.
+\end_layout
+
+\begin_layout Standard
 Example 2.
- Estimate a regression, calculate the summary, extract summary statistics.
+ Estimate a regression, calculate summary information.
 \end_layout
 
 \begin_layout Standard
@@ -2220,7 +3471,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<echo=T>>=
+<<echo=T, eval=F>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -2260,22 +3511,22 @@ m1summary <- summary(m1)
 
 \begin_layout Plain Layout
 
-(m1se <- m1summary$sigma)
+m1se <- m1summary$sigma
 \end_layout
 
 \begin_layout Plain Layout
 
-(m1rsq <- m1summary$r.squared)
+m1rsq <- m1summary$r.squared
 \end_layout
 
 \begin_layout Plain Layout
 
-(m1coef <- m1summary$coef)
+m1coef <- m1summary$coef
 \end_layout
 
 \begin_layout Plain Layout
 
-(m1aic <- AIC(m1))
+m1aic <- AIC(m1)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2291,7 +3542,7 @@ m1summary <- summary(m1)
 \begin_layout Standard
 Example 3.
  Run a regression, collect mean-centered and residual centered variants
- of it, summarize each, and compare them.
+ of it.
 \end_layout
 
 \begin_layout Standard
@@ -2300,7 +3551,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<ps10, fig=T, include=F, height=5, width=9>>=
+<<ps10, fig=T, eval=F, height=5, width=9>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -2335,43 +3586,7 @@ m1ps <- plotSlopes(m1, plotx = "x1", modx = "x2")
 
 \begin_layout Plain Layout
 
-m1ips <- plotSlopes(m1i, plotx = "x1", modx = "x2")	
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-includegraphics[width=6.5in]{plots/plot-ps10}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=tex>>=
+m1ips <- plotSlopes(m1i, plotx = "x1", modx = "x2")
 \end_layout
 
 \begin_layout Plain Layout
@@ -2381,13 +3596,7 @@ m1imc <- meanCenter(m1i)
 
 \begin_layout Plain Layout
 
-m1irc <- residualCenter(m1i)
-\end_layout
-
-\begin_layout Plain Layout
-
-outreg(list(m1, m1i, m1imc, m1irc), tight = TRUE, modelLabels = c("Linear",
- "Interaction", "Mean Centered", "Residual Centered"))
+m1irc <- residualCenter(m1i)	
 \end_layout
 
 \begin_layout Plain Layout
@@ -2398,6 +3607,102 @@ outreg(list(m1, m1i, m1imc, m1irc), tight = TRUE, modelLabels = c("Linear",
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+R can be understood at several levels, varying in sophistication from an
+ elementary statistics course or to an advanced platform for the development
+ of computer programming concepts.
+ In the future, I will be more cautious to teach new R users about coding
+ style.
+ I intend to prevent the accumulation of bad habits that result in code
+ that is difficult to read and hard to debug.
+ 
+\end_layout
+
+\begin_layout Standard
+Users who ask for help in the r-help email list 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://www.r-project.org/mail.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ or on web forums 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+e.g., 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://stackoverflow.com/questions/tagged/r
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ are well advised to remember the importance of style.
+ Most newcomers believe that the experts will understand what they write,
+ but that's not true.
+ Experts will find it much easier to spot errors in code that has the correct
+ indentation and uses a proper naming scheme for variables and functions.
+ In my experience, the most likely source of trouble in R code is not actually
+ the style, but rather poor compartmentalization of separate calculations.
+ The potential to compartmentalize, however, is obscured by bad style.
+ 
+\end_layout
+
+\begin_layout Standard
+When users throw together 2000 lines of spaghetti code with no indentation
+ (I can point to examples on CRAN), there's almost no chance than anyone
+ except the author will be able to understand and extend that kind of code.
+ Ugly code writers will respond, 
+\begin_inset Quotes eld
+\end_inset
+
+my ugly code runs!
+\begin_inset Quotes erd
+\end_inset
+
+ That misses the point.
+ Coding style is not about making things 
+\begin_inset Quotes eld
+\end_inset
+
+work,
+\begin_inset Quotes erd
+\end_inset
+
+ it is about making them work in a way that is understood by the widest
+ possible audience.
+ And where possible, the code should be re-usable and extended to other
+ purposes.
+ 
 \end_layout
 
 \begin_layout Standard

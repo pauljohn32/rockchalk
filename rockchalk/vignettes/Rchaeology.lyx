@@ -167,7 +167,7 @@ enumitem
 \begin_body
 
 \begin_layout Title
-Rchaeology
+Rchaeology: Idioms of R Programming
 \end_layout
 
 \begin_layout Author
@@ -268,6 +268,19 @@ what works.
 \begin_layout Enumerate
 It is written with Sweave (using Harrell's Sweavel style) so that code examples
  work.
+\end_layout
+
+\begin_layout Standard
+Where did the 
+\begin_inset Quotes eld
+\end_inset
+
+R Style
+\begin_inset Quotes erd
+\end_inset
+
+ section go? It was removed to a separate vignette, RStyle, in the rockchalk
+ package.
 \end_layout
 
 \begin_layout Standard
@@ -395,12 +408,128 @@ pdf.options(onefile=F,family="Times",pointsize=12)
 \end_layout
 
 \begin_layout Section
-R Idioms.
- What's In R Guts?
+Introduction: R Idioms.
+\end_layout
+
+\begin_layout Standard
+This vignette is about the R idioms I have learned while working on the
+ rockchalk package.
+ At the current time, I don't understand all of the R idioms that are common
+ in the advanced R programmers' conversation, but I have a grasp on many
+ of the staples that I have noticed before, and not understood.
+ 
+\end_layout
+
+\begin_layout Standard
+There is a language gap between an R user and an R programmer.
+ Users write 
+\begin_inset Quotes eld
+\end_inset
+
+scripts
+\begin_inset Quotes erd
+\end_inset
+
+ that use functions from R packages.
+ Users don't write (many) functions.
+ Users don't make packages.
+ And many users are happy to keep it that way.
+ For users who want to become programmers, there is usually a harsh awakening.
+ R for development is a different language.
+ Well, that's wrong.
+ It is a different dialect.
+ 
+\end_layout
+
+\begin_layout Standard
+A transitional R user will have to learn a lot of terminology and undergo
+ a change of paradigm.
+ There are resources available! Everybody should subscribe to the email
+ lists for the R project 
+(
+\lang english
+
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://www.r-project.org/mail.html
+\end_layout
+
+\end_inset
+
+), especially r-help (for user questions) and r-devel.
+ Rchaeologically speaking, that is the native habitat of the R programmers.
+ There is also a burgeoning collection of blogs and Web forums, perhaps
+ most notably the R section on StackExchange (
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+http://stackoverflow.com/questions/tagged/r
+\end_layout
+
+\end_inset
+
+).
+ Excellent books have been published.
+ As an Rcheologist, I am drawn to the books that are written by the R insiders.
+ 
+\emph on
+S Programming
+\emph default
+, by William Venables and Brian Ripley (2000), is a classic.
+ Books by pioneering developers Robert Gentleman, 
+\emph on
+R Programming for Bioinformatics
+\emph default
+ (2009), and John Chambers, 
+\emph on
+Software for Data Analysis
+\emph default
+ (2009), are, well, awesome.
+ In 2012, I started teaching R programming using Norman Matloff's, 
+\emph on
+The Art of R Programming
+\emph default
+ (2012), which I think is great and recommend strongly (even though Professor
+ Matloff is not one of the R Core Team members, so far as I know).
+ 
+\end_layout
+
+\begin_layout Standard
+There are now three types of object-oriented programming in R (S3, S4, and
+ reference classes) and the programmer is apparently free to select among
+ them without prejudice.
+ The best brief explanation of S3 that I've found is in Friedrich Leisch's
+ brief note about R packaging, 
+\begin_inset Quotes eld
+\end_inset
+
+Creating R Packages: A Tutorial
+\begin_inset Quotes erd
+\end_inset
+
+ (2009).
+ One should be mindful of the fact that R is provided with several manuals,
+ one of which is the 
+\emph on
+R Language Definition
+\emph default
+.
+ I find that one difficult to understand, and I usually can't understand
+ it until I search through the R source code and packages for usage examples.
 \end_layout
 
 \begin_layout Section
 do.call(), eval(), substitute(), formula().
+\end_layout
+
+\begin_layout Standard
+If the transitional programmer understands these four functions, R programming
+ will become much more understandable.
 \end_layout
 
 \begin_layout Subsection
@@ -411,8 +540,16 @@ Rewriting Formulas.
 \begin_layout Standard
 On May 29, 2012, I was working on a regression problem in the rockchalk
  package.
- The functions like meanCenter() and residualCenter() receive a fitted regressio
-n model and transform some variables.
+ I have a number of functions that receive elementary regressions and then
+ change them.
+ 
+\end_layout
+
+\begin_layout Standard
+The functions meanCenter() and residualCenter() receive a fitted regression
+ model, transform some variables, and then fit a new regression.
+ They have to change the data used by the regressions, and they have to
+ revise the regression formulae.
  The non-centered variable 
 \begin_inset Quotes eld
 \end_inset
@@ -421,7 +558,7 @@ x1
 \begin_inset Quotes erd
 \end_inset
 
- is renamed to 
+ is has to be centered to create 
 \begin_inset Quotes eld
 \end_inset
 
@@ -429,19 +566,20 @@ x1c
 \begin_inset Quotes erd
 \end_inset
 
-, and then the regression is executed with the new data.
- Thus it is necessary to take something that is fitted with a formula like
- y ~ x1*x2, and then re-fit with a formula like y ~ x1c*x2c.
- In the end, the answer is a single, if complicated line of code that speaks
- volumes about the way the advanced R user interacts with the system.
+.
+ The original formula y ~ x1*x2 must be replaced with y ~ x1c*x2c.
+ I found this to be a very complicated problem with a very satisfying answer.
+ 
 \end_layout
 
 \begin_layout Standard
 My first effort used R's update function.
+ That is the most obvious approach, it is the one that was recommended on
+ r-help.
+ I learned that update() is not sufficient.
  It is fairly easy to replace x1 with x1c in the formula, but not when x1
  is logged or otherwise transformed.
- In exasperation, I wrote to r-help and described the problem with this
- working example.
+ Here is the runable example code that demonstrates the problem.
  
 \end_layout
 
@@ -456,17 +594,17 @@ status open
 
 \begin_layout Plain Layout
 
-dat <- data.frame(x1=rnorm(100,m=50), x2=rnorm(100,m=50),
+dat <- data.frame(x1 = rnorm(100, m=50), x2 = rnorm(100, m=50),
 \end_layout
 
 \begin_layout Plain Layout
 
-x3=rnorm(100,m=50), x4 = rnorm(100, m=50), y=rnorm(100))
+  x3 = rnorm(100, m = 50), x4 = rnorm(100, m=50), y = rnorm(100))
 \end_layout
 
 \begin_layout Plain Layout
 
-m2 <- lm(y ~ log(x1) + x2*x3, data=dat)
+m2 <- lm(y ~ log(x1) + x2*x3, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -476,13 +614,13 @@ suffixX <- function(fmla, x, s){
 
 \begin_layout Plain Layout
 
-upform <- as.formula(paste(".
+    upform <- as.formula(paste(".
  ~ .", "-", x, "+", paste(x, s, sep=""), sep=""))
 \end_layout
 
 \begin_layout Plain Layout
 
-update.formula(fmla, upform)
+    update.formula(fmla, upform)
 \end_layout
 
 \begin_layout Plain Layout
@@ -567,11 +705,73 @@ y ~ log(x1) + x2 + x3 + x1c + x2:x3
 
 \end_inset
 
-It gets the target if the target is all by itself, but not otherwise.
+
+\end_layout
+
+\begin_layout Standard
+I asked the members of r-help.
+\end_layout
+
+\begin_layout Standard
+Lately I've had very good luck with r-help.
+ Gabor Grothendieck wrote an answer to r-help on May 29, 2012, 
+\begin_inset Quotes eld
+\end_inset
+
+Try substitute:
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> do.call("substitute", list(newFmla, setNames(list(as.name("x1c")), "x1")))
+\end_layout
+
+\begin_layout Plain Layout
+
+y ~ log(x1c) + x2 * x3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Problem solved, in a single line.
+ 
+\end_layout
+
+\begin_layout Standard
+That's quintessential R.
+ It packs together a half-dozen very deep thoughts.
+ It has most of the essential secrets of R's guts, laid out in a single
+ line.
+ It has do.call(), substitute(), it interprets a formula as a list, and it
+ shows that every command in R is, when it comes down to brass tacks, a
+ list.
+ 
+\end_layout
+
+\begin_layout Standard
+I would like to take up these separate pieces in order.
+\end_layout
+
+\begin_layout Subsection
+A Formula Object is a List.
 \end_layout
 
 \begin_layout Standard
 While struggling with this, I noticed this really interesting thing.
+ The solution depends on it.
  The object 
 \begin_inset Quotes eld
 \end_inset
@@ -581,7 +781,7 @@ newFmla
 \end_inset
 
  is not just a text string.
- It is actually a list.
+ It prints out as if it were text, but it is actually an R list object.
  Its parts can be probed recursively, to eventually reveal all of the individual
  pieces:
 \end_layout
@@ -636,64 +836,11 @@ newFmla[[3]][[2]][[2]]
 \end_layout
 
 \begin_layout Standard
-How could I put that information to use? I asked the members of r-help.
-\end_layout
-
-\begin_layout Standard
-Lately I've had very good luck with r-help.
- Gabor Grothendieck wrote an answer to r-help on May 29, 2012, 
-\begin_inset Quotes eld
-\end_inset
-
-Try substitute:
-\begin_inset Quotes erd
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-> do.call("substitute", list(newFmla, setNames(list(as.name("x1c")), "x1")))
-\end_layout
-
-\begin_layout Plain Layout
-
-y ~ log(x1c) + x2 * x3
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Bingo.
- 
-\end_layout
-
-\begin_layout Standard
-That's quintessential R.
- It packs together a half-dozen very deep thoughts that I will try to explain
- in the rest of this section.
- It has most of the essential secrets of R's guts, laid out in a single
- line.
- It has do.call, substitute, it interprets a formula as a list, and it shows
- that every command in R is, when it comes down to brass tacks, a list.
- 
-\end_layout
-
-\begin_layout Standard
-I would like to take up these separate pieces in order.
+How could I put that information to use? Read on.
 \end_layout
 
 \begin_layout Subsection
-do.call and eval
+do.call() and eval()
 \end_layout
 
 \begin_layout Standard
@@ -701,12 +848,11 @@ In my early work as an Rchaeologist, I had noticed eval and do.call, but
  did not understand their significance in the mind of the R programmers.
  Whenever difficult problems arose in r-help, the answer almost invariably
  involved do.call or eval.
- Maybe both.
  
 \end_layout
 
 \begin_layout Subsubsection
-do.call
+do.call()
 \end_layout
 
 \begin_layout Standard
@@ -821,7 +967,7 @@ The object regargs is a list of arguments that R can understand when they
 \end_layout
 
 \begin_layout Standard
-do.call is a powerful, mysterious symbol.
+do.call() is a powerful, mysterious symbol.
  It holds flexibility; we can calculate commands and then run them.
  I first needed it when we had a simulation project that ran very slowly
  when confronted with medium or large sized problems.
@@ -862,9 +1008,9 @@ for (i in 1:10000){
 \end_layout
 
 \begin_layout Standard
-That will call rbind 10000 times.
- I had not realized that rbind is a comparatively time-consuming task because
- it accesses a new chunk of memory each time it is run.
+That will call rbind() 10000 times.
+ I had not realized that rbind() is a comparatively time-consuming task
+ because it accesses a new chunk of memory each time it is run.
  On the other hand, we could collect those results in a list, then we can
  call rbind one time to smash together all of the results.
 \end_layout
@@ -989,7 +1135,7 @@ From all of this (and a peek at ?call), I arrive at an Rchaeological eureka!
 \end_layout
 
 \begin_layout Subsubsection
-eval
+eval()
 \end_layout
 
 \begin_layout Standard
@@ -1002,10 +1148,10 @@ rbind
 \begin_inset Quotes erd
 \end_inset
 
-, mylist).
- The call function manufactures the call object, the eval function tells
+, mylist)).
+ The call() function manufactures the call object, the eval() function tells
  it to do its work.
- I think of do.call as a contraction of 
+ I think of do.call() as a contraction of 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1022,8 +1168,7 @@ call
 \end_inset
 
 .
- eval can handle evaluates any valid R expression, and a call is a valid
- expression.
+ eval() evaluates any valid R expression, and a call is a valid expression.
  I'm leaving the question of 
 \begin_inset Quotes eld
 \end_inset
@@ -1323,24 +1468,24 @@ The point here is that the pieces of an ordinary use command can be separated
 
 \begin_layout Standard
 Now we turn back to the main theme.
- How is eval used in functions? Some functions take a lot of arguments.
+ How is eval() used in functions? Some functions take a lot of arguments.
  They need to pick some arguments, and send those to some functions.
  
 \end_layout
 
 \begin_layout Standard
-Let's consider the lm code in some detail.
+Let's consider the lm() code in some detail.
  Suppose a user submits a command like 
 \begin_inset Quotes eld
 \end_inset
 
-lm(y ~ x, data=dat, x = TRUE, y = TRUE).
+lm(y ~ x, data = dat, x = TRUE, y = TRUE).
 \begin_inset Quotes erd
 \end_inset
 
- Inside lm, it is necessary to pick through those arguments and then pass
+ Inside lm(), it is necessary to pick through those arguments and then pass
  them off to other functions in order to build the data matrix and so forth.
- Here are the first lines of the lm function
+ Here are the first lines of the lm() function
 \end_layout
 
 \begin_layout Standard
@@ -1590,7 +1735,7 @@ It would not do to simply write that into the lm function, however, because
 \end_layout
 
 \begin_layout Subsection
-substitute
+substitute()
 \end_layout
 
 \begin_layout Standard
@@ -1726,7 +1871,7 @@ parse tree
 This is one of those points at which being an Rchaeologist has real benefits.
  The manual page gives us some insights into the R programmer, and it is
  his or her view of his or her own actions, but it doesn't necessarily speak
- to how we should understand substitute.
+ to how we should understand substitute().
  For me, the only workable approach is to build up a sequence of increasingly
  complicated examples.
  
@@ -1793,18 +1938,20 @@ substitute(expression(x1 + x2 + log(x1) + x3), sublist)
 \end_layout
 
 \begin_layout Standard
-The special things to note are that the substitution 1) leaves other variables
- alone (since they are not named in sublist) and 2) it finds all valid use
- of the symbols x1 and x2 and replaces them.
+Note that the substitution 1) leaves other variables alone (since they are
+ not named in sublist) and 2) it finds all valid use of the symbols x1 and
+ x2 and replaces them.
 \end_layout
 
 \begin_layout Standard
 This isn't quite what I wanted, however, because the strings have been inserted
  into the middle of my expression.
+ I don't want text.
  I just want symbols.
- It turns out that the functions as.name and as.symbol are exactly the same,
- and usually I use as.symbol, but in Gabor's answer to my question, as.name
- is used, so I will illustrate that here.
+ It turns out that the functions as.name() and as.symbol() are exactly the
+ same, and usually I use as.symbol() because that name has more intuition
+ for me, but in Gabor's answer to my question, as.name() is used.
+ Using as.name(), so I will illustrate that.
 \end_layout
 
 \begin_layout Standard
@@ -1924,7 +2071,7 @@ colnames(dat)
 \begin_layout Standard
 While used interactively, this is convenient, but it is a bit tedious because
  we have to create dat first, and then set the names.
- The setNames function allows us to do this in one shot.
+ The setNames() function allows us to do this in one shot.
  I'll paste the data frame creating commands and the name vector in for
  a first try:
 \end_layout
@@ -1963,7 +2110,7 @@ head(dat2, 2)
 In order to make this more generally useful, the first step is to take the
  data-frame-creating code and set it into an expression that is not immediately
  evaluated (that's datcommand).
- When I want the data frame to be created, I use eval, and then the newnames
+ When I want the data frame to be created, I use eval(), and then the newnames
  vector is put to use.
  
 \end_layout
@@ -2058,12 +2205,12 @@ x1c
 \begin_inset Quotes erd
 \end_inset
 
-)) is an list with just one object, which is that symbol object.
+)) is a list with just one object, which is that symbol object.
  
 \end_layout
 
 \begin_layout Enumerate
-Use setNames.
+Use setNames().
  The object has no name! We would like to name it 
 \begin_inset Quotes eld
 \end_inset
@@ -2088,7 +2235,7 @@ The Big Finish
 \end_layout
 
 \begin_layout Standard
-In the meanCenter function in rockchalk, some predictors are mean-centered
+In the meanCenter() function in rockchalk, some predictors are mean-centered
  and their names are revised.
  A variable named 
 \begin_inset Quotes eld
@@ -2148,7 +2295,7 @@ formulaReplace <- function(fmla, xname, newname){
 
 \begin_layout Plain Layout
 
-do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname)))
+    do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname)))
  
 \end_layout
 
@@ -2163,7 +2310,7 @@ do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname)))
 \end_layout
 
 \begin_layout Standard
-This is put to use in meanCenter.
+This is put to use in meanCenter().
  Suppose a vector of variable names called nc (stands for 
 \begin_inset Quotes eld
 \end_inset
@@ -2226,6 +2373,659 @@ If one has a copy of rockchalk 1.6 or newer, the evidence of the success
  of this approach should be evident in the output of the command example(meanCen
 ter).
  
+\end_layout
+
+\begin_layout Section
+Function Arguments (Stub).
+ 
+\end_layout
+
+\begin_layout Standard
+While surveying R packages, we see many different styles for handling arguments.
+ This section will discuss some pros and cons of various styles.
+\end_layout
+
+\begin_layout Standard
+How much argument checking is required? 
+\end_layout
+
+\begin_layout Standard
+Is it better to default arguments to NULL?
+\end_layout
+
+\begin_layout Standard
+myfn <- function(x = NULL, y = NULL)
+\end_layout
+
+\begin_layout Subsection
+Make Re-Usable Tools (Rather than Cutting and Pasting)
+\end_layout
+
+\begin_layout Standard
+We seek concise solutions that are generalizable.
+ It is almost never right to cut and paste and then make minor edits in
+ each copy to achieve particular purposes.
+ This advice goes against the grain of the graduate students that I work
+ with.
+ They will almost always use cut and paste solutions.
+ 
+\end_layout
+
+\begin_layout Standard
+Here is an example of the problem.
+ A person needed 
+\begin_inset Quotes eld
+\end_inset
+
+dummy variables
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The code had several pages like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+  if(setcorr == 1){
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.10 <-1
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.20 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.30 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.40 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.50 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.60 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.70 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.80 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(setcorr == 2){
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.10 <-1
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.20 <-1
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.30 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.40 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.50 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.60 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.70 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.80 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(setcorr == 3){
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.10 <-1
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.20 <-1
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.30 <-1
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.40 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.50 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.60 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.70 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+        corr.80 <-0
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Well, that's understandable, but a little bit embarrassing.
+ I asked 
+\begin_inset Quotes eld
+\end_inset
+
+why do you declare these separate variables, why not make a vector?
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+can't you see a more succinct way to declare those things?
+\begin_inset Quotes erd
+\end_inset
+
+ The answer is 
+\begin_inset Quotes eld
+\end_inset
+
+we do it that way in SAS
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+this runs
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+If the mission is to create a vector with a certain number of 1's at the
+ beginning, surely either of these functions would be better:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec1 <- function(n = 3, n1s = 1) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    c(rep(1, n1s), rep(0, n - n1s))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec2 <- function(n = 3, n1s = 1){
+\end_layout
+
+\begin_layout Plain Layout
+
+    x <- numeric(length = n)
+\end_layout
+
+\begin_layout Plain Layout
+
+    x[1:n1s] <- 1
+\end_layout
+
+\begin_layout Plain Layout
+
+    x
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+(corr <- biVec1(n = 8, n1s = 3))
+\end_layout
+
+\begin_layout Plain Layout
+
+(corr <- biVec2(n = 8, n1s = 3))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The cut and paste way is not wrong, exactly.
+ Its tedious.
+ 
+\end_layout
+
+\begin_layout Standard
+I think any reasonable user should want a vector, rather than the separate
+ variables.
+ But suppose the user is determined, and really wants the individual variables
+ named corr.10, corr.20, and so forth.
+ We can re-design this so that those variables will be sitting out in the
+ workspace after the function is run.
+ Read help(
+\begin_inset Quotes eld
+\end_inset
+
+assign
+\begin_inset Quotes erd
+\end_inset
+
+) and try
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec3 <- function(n = 3, n1s = 1) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    X <- c(rep(1, n1s), rep(0, n - n1s))
+\end_layout
+
+\begin_layout Plain Layout
+
+    xnam <- paste("corr.", 1:8, "0", sep = "")
+\end_layout
+
+\begin_layout Plain Layout
+
+    for(i in 1:n) assign(xnam[i], X[i], envir = .GlobalEnv) 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+ls()
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec3(n = 8, n1s = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+ls()
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I don't think most people will actually want that kind of result, but if
+ they do, there is a way to get it.
+\end_layout
+
+\begin_layout Standard
+If we want to turn biVec1() or biVec2() into general purpose functions,
+ we need to start thinking about the problem of unexpected user input.
+ Notice what happens if we ask for more 1's than the result vector is supposed
+ to contain:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> biVec1(n = 3, n1s = 7)
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in rep(0, n - n1s) (from #2) : invalid 'times' argument
+\end_layout
+
+\begin_layout Plain Layout
+
+> biVec2(n = 3, n1s = 7)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] 1 1 1 1 1 1 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Perhaps I prefer biVec1() because it throws an error when there is unreasonable
+ input, while biVec2() returns a longer vector than expected with no error.
+ 
+\end_layout
+
+\begin_layout Standard
+If the user mistakenly enters non-integers, neither function generates an
+ error, and they give us unexpected output.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec1(3.3, 1.8)
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec2(3.3, 1.8)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+To my surprise, it is not an easy thing to ask a number if it is a whole
+ number (see help(
+\begin_inset Quotes eld
+\end_inset
+
+is.integer
+\begin_inset Quotes erd
+\end_inset
+
+)).
+ For that, we introduce a new function, is.wholenumber(), and put it to use
+ in our new and improved function
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+is.wholenumber <- function(x, tol = .Machine$double.eps^0.5){
+\end_layout
+
+\begin_layout Plain Layout
+
+ abs(x - round(x)) < tol
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+biVec1 <- function(n = 3, n1s = 1) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(!(is.wholenumber(n) & is.wholenumber(n1s)))
+\end_layout
+
+\begin_layout Plain Layout
+
+        stop("Both n and n1s must be whole numbers (integers)")
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(n1s > n)
+\end_layout
+
+\begin_layout Plain Layout
+
+        stop("n must be greater than or equal to n1s")
+\end_layout
+
+\begin_layout Plain Layout
+
+    c(rep(1, n1s), rep(0, n - n1s))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In all of the test cases I've tried, that works, although the real numbers
+ 7.0 and 4.0 are able to masquerade as integers.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> biVec1(3, 7)
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in biVec1(3, 7) (from #4) : n must be greater than or equal to n1s
+\end_layout
+
+\begin_layout Plain Layout
+
+> biVec1(7, 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] 1 1 1 0 0 0 0
+\end_layout
+
+\begin_layout Plain Layout
+
+> biVec1(3.3, 4.4)
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in biVec1(3.3, 4.4) (from #2) : 
+\end_layout
+
+\begin_layout Plain Layout
+
+  Both n and n1s must be whole numbers (integers)
+\end_layout
+
+\begin_layout Plain Layout
+
+> biVec1(7.0, 4.0)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] 1 1 1 1 0 0 0
+\end_layout
+
+\begin_layout Plain Layout
+
+> biVec1(7.0, 4.0)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] 1 1 1 1 0 0 0
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -2296,6 +3096,77 @@ ce
 
 \begin_layout Standard
 Balance time spent optimizing code versus time spent running program.
+\end_layout
+
+\begin_layout Section
+Suggested Chores
+\end_layout
+
+\begin_layout Standard
+I suggest the would be programmer should take on some basic challenges.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Try to create a generic function and several methods to handle classes of
+ various types.
+ If the term 
+\begin_inset Quotes eld
+\end_inset
+
+generic function
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+method
+\begin_inset Quotes erd
+\end_inset
+
+ cause disorientation, that means the reader is a user, not a programmer
+ yet.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Consider developing a routine (or package) for statistical estimation or
+ presentation.
+ Find several R packages and compare the R code in them.
+ Let me know if you agree with me about these points.
+\end_layout
+
+\begin_layout Itemize
+Good code is compartmentalized.
+ Separate pieces of work are handled by separated functions and results
+ are returned in a well organized way.
+\end_layout
+
+\begin_layout Itemize
+Functions should not be HUGE.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The components of a project should be small enough so that we can comprehend
+ them.
+ Generally speaking, if we are reading code and we come to a line that uses
+ a variable that we cannot find on the screen, that's a problem.
+ I used to correspond with a programmer at the University of Michigan who
+ said he began to feel uncomfortable when a function filled up the entire
+ terminal screen.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+People who copy and paste sections over and over in order to handle slightly
+ different cases are causing trouble for themselves and others.
+ They should think harder on ways to separate that work into re-usable functions.
+ 
 \end_layout
 
 \begin_layout Standard

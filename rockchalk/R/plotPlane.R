@@ -68,17 +68,36 @@
 ##' @seealso \code{\link[graphics]{persp}}, \code{\link[scatterplot3d]{scatterplot3d}}, \code{\link[HH]{regr2.plot}}
 ##' @example inst/examples/plotPlane-ex.R
 
-plotPlane <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE, plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5, x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1, llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3, alength = 0.1, linesFrom, lfcol = "red", lflwd = 3, envir = environment(formula(model)),  ...){
-  UseMethod("plotPlane")
+plotPlane <-
+function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
+         plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5,
+         x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1,
+         llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4,
+         alwd = 0.3, alength = 0.1, linesFrom, lfcol = "red",
+         lflwd = 3, envir = environment(formula(model)),  ...){
+    UseMethod("plotPlane")
 }
 
 
-##' @return  The main point is the plot that is drawn, but for record keeping the return object is a list including 1) res: the transformation matrix that was created by persp 2) the call that was issued, 3) x1seq, the "plot sequence" for the x1 dimension, 4) x2seq, the "plot sequence" for the x2 dimension, 5) zplane, the values of the plane corresponding to locations x1seq and x2seq.
+##' @return The main point is the plot that is drawn, but for record
+##' keeping the return object is a list including 1) res: the
+##' transformation matrix that was created by persp 2) the call that
+##' was issued, 3) x1seq, the "plot sequence" for the x1 dimension, 4)
+##' x2seq, the "plot sequence" for the x2 dimension, 5) zplane, the
+##' values of the plane corresponding to locations x1seq and x2seq.
 ##'
 ##' @rdname plotPlane
 ##' @method plotPlane default
 ##' @S3method plotPlane default
-plotPlane.default <- function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE, plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5, x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1, llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3, alength = 0.1, linesFrom,  lfcol = "red", lflwd = 3, envir = environment(formula(model)),  ...){
+
+plotPlane.default <-
+function(model = NULL, plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
+         plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5,
+         x2floor = 5, pch = 1, pcol = "blue", plwd = 0.5, pcex = 1,
+         llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3,
+         alength = 0.1, linesFrom, lfcol ="red", lflwd = 3,
+         envir = environment(formula(model)), ...){
+
     if (is.null(model))
         stop("plotPlane requires a fitted regression model.")
     if (is.null(plotx1) | is.null(plotx2))
@@ -217,13 +236,12 @@ NULL
 ##' @param lty line type of added lines (default: 1)
 ##' @return NULL, nothing, nicht, nada.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @rdname plotPlane
-##' @export plotPlane
+##' @export
 ##' @example inst/examples/addLines-ex.R
 
 addLines <- function(to = NULL, from = NULL, col = "red", lwd = 2, lty = 1){
     if (!class(from) %in% "rockchalk") stop("addLines: from must be an output object from plotSlopes or plotCurves, of class rockchalk")
-    if (!class(from) %in% "rockchalk3d") stop("addLines: to must be a 3d plot object created by plotPlane or such")
+    if (!class(to) %in% "rockchalk3d") stop("addLines: to must be a 3d plot object created by plotPlane or such")
     if ( !(from$call[["modx"]] %in% to$call[["plotx1"]] | from$call[["modx"]] %in% to$call[["plotx2"]]) ) stop("Mismatched plotPlanes and plotSlopes objects")
 
     dataSplits <- split(from$newdata, f = from$newdata[[from$call[["modx"]]]])
