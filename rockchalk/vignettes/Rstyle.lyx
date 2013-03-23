@@ -274,7 +274,7 @@ my
 \end_layout
 
 \begin_layout Standard
-At one point, the only guide was the Google R style guide
+At one point, the only guide was the Google R style guide,
 \begin_inset Foot
 status open
 
@@ -294,7 +294,7 @@ http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html
 
 \end_inset
 
-, which was used as a policy for R-related 
+ which was used as a policy for R-related 
 \begin_inset Quotes eld
 \end_inset
 
@@ -303,9 +303,7 @@ Google Summer of Code
 \end_inset
 
  projects.
- That guide imposes some value judgments that are not widely shared and
- it doesn't try to explain why there might be differences of opinion.
- There are many excellent suggestions in Hadley Wickham's Style Guide
+ There are many excellent suggestions in Hadley Wickham's Style Guide.
 \begin_inset Foot
 status open
 
@@ -325,8 +323,9 @@ https://github.com/hadley/devtools/wiki/Style
 
 \end_inset
 
-.
- 
+ In what follows, I'll try to explain why there are some variations among
+ these projects and offer some advice about how we (the users) should sort
+ through their advice.
 \end_layout
 
 \begin_layout Standard
@@ -703,7 +702,7 @@ Tidying R code
 .
  That title is a bit misleading.
  It is not about tidying R source code; rather, it is about beautifying
- the rendition of internal structures for the the terminal.
+ the rendition of internal structures for the terminal.
  
 \begin_inset Quotes eld
 \end_inset
