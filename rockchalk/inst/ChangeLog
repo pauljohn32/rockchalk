@@ -1,3 +1,14 @@
+2013-03-24  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/utils.R (cutNumeric): New function to integrate work that
+	was duplicated in many separate functions, plotSlopes, plotCurves
+	* ../R/plotSlopes.R (plotSlopes): interval argument
+	* Use new cutNumeric function to find interesting values in a
+	numeric plotx
+	* plot sub-routine for shaded pred or conf intervals
+	* incorporate newdata() function, replace ad-hoc code
+	* n argument to feed to newdata()
+
 2013-02-19  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/testSlopes.R (testSlopes): Sunthud Pornprasertmanit

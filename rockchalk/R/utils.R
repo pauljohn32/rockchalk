@@ -52,7 +52,7 @@ plotSeq <- function (x, length.out = length(x))
     }
   }
 }
-
+NULL
 
 
 ##' Select most frequently occurring values from numeric or categorical variables.
@@ -157,3 +157,61 @@ cutBySD <- function(x, n = 3){
         invisible(qs)
     }
 }
+
+##' Can select focal values from a numeric variable's observed
+##' values.
+##'
+##' This is used in functions like \code{plotSlopes} or
+##' \code{plotCurves}.
+##'
+##' @param x Required. A numeric variable
+##' @param xvals Optional. If \code{xvals} is not provided, the
+##' cutByQuantile() function will return \code{n} values.
+##' \code{xvals} can be a text string to select an algorithm,
+##' "quantile", "std.dev", or "table". If xvals is specified as a
+##' vector, cutNumeric will not change them. It will, however, issue a
+##' warning if some values in \code{xvals} requested are outside the
+##' (slightly magnified) range of observed scores.
+##' @param n Optional. The number of focal values to be returned
+##' @return A vector.
+##' @export cutNumeric
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @examples
+##' x <- rnorm(100)
+##' cutNumeric(x)
+##' cutNumeric(x, xvals = "quantile")
+##' cutNumeric(x, xvals = "quantile", n = 5)
+##' cutNumeric(x, xvals = "std.dev")
+##' cutNumeric(x, xvals = "std.dev", n = 5)
+##' cutNumeric(x, xvals = c(-1000, 0.2, 0,5))
+cutNumeric <- function(x, xvals = NULL, n = 3)
+{
+    xRange <- magRange(range(x, na.rm=TRUE), 1.1)
+
+    if (is.null(xvals))
+        return(xfocal <- rockchalk:::cutByQuantile(x, n))
+
+    if (is.numeric(xvals)) {
+        if ((xvals > max(xRange)) || (xvals < min(xRange))){
+            warning("values requested out of observed range in cutNumeric")
+        }
+        xvals <- sort(xvals)
+        return(xvals)
+    }
+
+    if (is.character(xvals)) {
+        xvals <- match.arg(tolower(xvals),
+                           c("quantile", "std.dev.","table"))
+        xfocal <- switch(xvals,
+                         table = rockchalk:::cutByTable(x, n),
+                         quantile = rockchalk:::cutByQuantile(x, n),
+                         "std.dev." = rockchalk:::cutBySD(x, n),
+                         stop("unknown 'xvals' algorithm in cutNumeric"))
+        return(xfocal)
+    }
+    stop("cutNumeric received unexpected input for xvals")
+}
+
+
+
+
