@@ -82,7 +82,7 @@ sweave
 \maintain_unincluded_children false
 \language american
 \language_package default
-\inputencoding default
+\inputencoding utf8
 \fontencoding global
 \font_roman default
 \font_sans default
