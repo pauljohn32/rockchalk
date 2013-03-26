@@ -113,19 +113,19 @@ plotSlopes <-
 
     if (is.factor(modxVar)) { ## modxVar is a factor
         n <- ifelse(missing(n), nlevels(modxVar), n)
-        if (is.null(modxVals)) {
-            modxVals <- names(rockchalk:::cutByTable(modxVar, n))
-        } else if (is.vector(modxVals)) {
-            if (!all(modxVals %in% levels(modxVar))) stop("modxVals includes non-observed levels of modxVar")
-        } else if (is.function(modxVals)) {
-            modxVals <- modxVals(x, n)
-        } else if (is.character(modxVar)){
-            modxVals <- match.arg(tolower(modxVals),
-                                 c("table"))
-            modxVals <- switch(modxVals,
-                               table = rockchalk:::cutByTable(modxVar, n),
-                               stop("Sorry, only known algorithm for factors is 'table'"))
-        }
+        modxVals <- cutFactor(modxVar, xvals = modxVals, n)
+        ## if (is.null(modxVals)) {
+        ##     modxVals <- rockchalk:::cutByTable(modxVar, n)
+        ## } else if (is.vector(modxVals)) {
+        ##     if (!all(modxVals %in% levels(modxVar))) stop("modxVals includes non-observed levels of modxVar")
+        ## } else if (is.function(modxVals)) {
+        ##     modxVals <- modxVals(x, n)
+        ## } else if (is.character(modxVar)){
+        ##     modxVals <- match.arg(tolower(modxVals), c("table"))
+        ##     modxVals <- switch(modxVals,
+        ##                        table = rockchalk:::cutByTable(modxVar, n),
+        ##                        stop("Sorry, only known algorithm for factors is 'table'"))
+        ## } else { stop("Sorry, cannot understand modxVals") }
     } else {
         n <- ifelse(missing(n), 3, n)
         modxVals <- cutNumeric(modxVar, xvals = modxVals, n)
@@ -140,11 +140,11 @@ plotSlopes <-
     }
     ##fails: why?
     ## focalVals <- ifelse( missing(interval), list(modxVals, plotxRange), list(modxVals, plotxVals) )
-    focalVals <-  if (missing(interval)) {
-        list(modxVals, plotxRange)
-    } else {
-        list(modxVals, plotxVals)
-    }
+    ## focalVals <-  if (missing(interval)) {
+    ##    list(modxVals, plotxRange)
+    ## } else {
+    ##    list(modxVals, plotxVals)
+    ## }
     names(focalVals) <- c(modx, plotx)
     newdf <- newdata(model, fl = focalVals)
 
@@ -167,6 +167,7 @@ plotSlopes <-
     parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
                   type = "n")
     parms <- modifyList(parms, dotargs)
+
     do.call("plot", parms)
 
     if (!missing(interval)){
@@ -193,22 +194,18 @@ plotSlopes <-
         legnd <- paste(names(modxVals), sep = "")
     }
 
-        if (plotPoints){
-            parms <- list(x = mm[, plotx], y = depVar, xlab = plotx, ylab = ylab,
+    if (plotPoints){
+        parms <- list(x = mm[, plotx], y = depVar, xlab = plotx, ylab = ylab,
                       cex = 0.5, lwd = 0.2)
         if (is.factor(modxVar)) {
             parms[["col"]] <- col
-            parms <- modifyList(parms, dotargs)
-            do.call("points", parms)
-        } else {
-            parms <- modifyList(parms, dotargs)
-            do.call("points", parms)
         }
+        parms <- modifyList(parms, dotargs)
+        do.call("points", parms)
     }
 
-
-    if(plotLegend) legend("topleft", legend = legnd, lty = 1:lmx, col = col, lwd = llwd,
-                          bg = "white", title= paste("moderator:", modx))
+    if(plotLegend) legend("topleft", legend = legnd, lty = 1:lmx, col = col,
+                          lwd = llwd, bg = "white", title= paste("moderator:", modx))
 
     z <- list(call = cl, newdata = newdf, modxVals = modxVals)
     class(z) <- "rockchalk"

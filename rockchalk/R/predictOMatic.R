@@ -63,7 +63,9 @@ newdata <- function (model = NULL, fl = NULL, emf = NULL){
 ##' to the input data that would be required to fit the given model.
 ##'
 ##' Unlike model.frame and model.matrix, this does not return transformed
-##' variables.
+##' variables. It deals with regression formulae that have
+##' functions like poly(x, d) in them. It differentiates x from d in
+##' those expressions. And it also manages log(x + 10).
 ##'
 ##' @param model A fitted regression model in which the data argument
 ##' is specified. This function will fail if the model was not fit
@@ -73,14 +75,11 @@ newdata <- function (model = NULL, fl = NULL, emf = NULL){
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/model.data-ex.R
 model.data <- function(model){
-    #from nls, returns -1 for missing variables
+    ## from nls, returns -1 for missing variables
     lenVar <- function(var, data) tryCatch(length(eval(as.name(var),
                          data, env)), error = function(e) -1)
     fmla <- formula(model)
     varNames <- all.vars(fmla) ## all variable names
-    ## varNames includes d in poly(x,d), possibly other "constants"
-    ## varNamesRHS <- all.vars(formula(delete.response(terms(model))))
-    ## previous same as nls way?
     fmla2 <- fmla
     fmla2[[2L]] <- 0
     varNamesRHS <- all.vars(fmla2)
@@ -90,18 +89,23 @@ model.data <- function(model){
         env <- parent.frame()
 
     dataOrig <-  eval(model$call$data, environment(formula(model)))
-    rndataOrig <- row.names(dataOrig)
-    n <- sapply(varNames, lenVar, data=dataOrig)
+    dataOrigRN <- row.names(dataOrig)
+    n <- sapply(varNames, lenVar, data = dataOrig)
     targetLength <- length(eval(as.name(varNamesLHS[1]), dataOrig, env))
-    varNames <- varNames[ n == targetLength ]
-    ldata <- lapply(varNames, function(x) eval(as.name(x), dataOrig, env))
+    varNames <- varNames[n == targetLength]
+    ldata <- lapply(varNames, function(x) {
+        myv <- eval(as.name(x), dataOrig, env)
+        row.names(myv) <- NULL
+        myv
+    }
+                    )
     names(ldata) <- varNames
     data <- data.frame(ldata[varNames])
-    if (!is.null(rndataOrig)) row.names(data) <- rndataOrig
+    if (!is.null(dataOrigRN)) row.names(data) <- dataOrigRN
     ## remove rows listed in model's na.action
     ## TODO: question: what else besides OMIT might be called for?
     if ( !is.null(model$na.action)){
-        data <- data[ -as.vector(model$na.action),  , drop=FALSE]
+        data <- data[ -as.vector(model$na.action), , drop = FALSE]
     }
     ## keep varNamesRHS that exist in datOrig
     attr(data, "varNamesRHS") <- setdiff(colnames(data), varNamesLHS)

@@ -214,4 +214,21 @@ cutNumeric <- function(x, xvals = NULL, n = 3)
 
 
 
+cutFactor <- function(x, xvals = NULL, n = 3)
+{
+    if (is.null(xvals)) {
+        xvals <- rockchalk:::cutByTable(x, n)
+    } else if (is.vector(xvals)) {
+        if (!all(xvals %in% levels(x))) stop("xvals includes non-observed levels of x")
+    } else if (is.function(xvals)) {
+        xvals <- xvals(x, n)
+    } else if (is.character(x)) {
+        xvals <- match.arg(tolower(xvals),
+                           c("table"))
+        xvals <- switch(xvals,
+                        table = rockchalk:::cutByTable(x, n),
+                        stop("Sorry, only known algorithm for factors is 'table'"))
+    } else { stop("cutFactor received unexpected input xvals") }
+}
+
 

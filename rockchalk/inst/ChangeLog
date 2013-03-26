@@ -1,3 +1,13 @@
+2013-03-26  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* predictOMatic.R (model.data):  silencing warning
+	about re-used row names. Warning was triggered by
+	this "data <- data.frame(ldata[varNames])" "Warning in 
+	data.row.names(row.names, rowsi, i) :  some row.names duplicated:
+	3,5, --> row.names NOT used" This was a harmless warning, but
+	bothersome to users.
+	* Rename rnOrigData -> origDataRN
+
 2013-03-24  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/utils.R (cutNumeric): New function to integrate work that
