@@ -1,6 +1,4 @@
-##cd /home/pauljohn/unk/rockchalk/rockchalk/vignettes
-cd /home/pauljohn/GIT/R-crmda/packages/rockchalk/rockchalk/vignettes
-
+#!/bin/bash
 
 lyx -e pdf2 Rstyle.lyx
 lyx -e sweave Rstyle.lyx

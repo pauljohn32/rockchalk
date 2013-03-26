@@ -91,7 +91,7 @@
 \usepackage{babel}
 \begin{document}
 
-\title{Using rockchalk for Regression Presentations}
+\title{Using rockchalk for Regression Presentations (1.7.x development)}
 
 
 \author{Paul Johnson}
@@ -120,28 +120,42 @@ this category. It speeds up the preparation of lectures immensely
 to include table generating code that ``just works'' with R output.
 Some functions in R are very hard to use and get right consistently,
 especially where 3 dimensional plotting is concerned. That's where
-functions like mcGraph1, mcGraph2, mcGraph3, and plotPlane come in
-handy. These don't do any work that is particularly original, but
-they do help to easily make the multidimensional plots that turn out
-``about right'' most of the time. 
+functions like mcGraph1(), mcGraph2(), mcGraph3(), and plotPlane()
+come in handy. These don't do any work that is particularly original,
+but they do help to easily make the multidimensional plots that turn
+out ``about right'' most of the time. 
 \item Functions simplify vital chores that are difficult for regression
 students. I keep track of the R idioms that bother the students and
 try to craft functions that simplify them. I have often asked students
 to plot several regression lines, ``one for each sub-group of respondents,''
-and this sometimes proves frustrating. The function plotSlopes is
+and this sometimes proves frustrating. The functions plotSlopes is
 offered as my suggestion for creating interaction plots of ``simple
-slopes''. This handles the work of calculating predicted values and
-drawing them for several possible values of a third variable. plotPlane
+slopes''. The plotSlopes() function is intended for ``straight lines,''
+but as soon a students discover log(x) or poly(x, 2), then they want
+predicted lines plotted as well. That is why I created plotCurves().
+These functions handle the work of calculating predicted values and
+drawing them for several possible values of a third variable. plotPlane()
 is along the same line. If students find that useful, they can then
-use the examples to build up more complicated drawings.
+use the examples to build up more complicated drawings. Most recently,
+a function to transfer the lines from plotSlopes() and plotCurves()
+onto the plotPlane() drawings was added (look for the function addLines().
 \item Functions that people often ask for, even if they might be unwise
 to use them. A function to estimate a ``standardized regression''
 is offered. Although that is clearly unwise (in the eyes of many),
-some folks still want to calculate ``beta weights.'' Some functions,
-such as meanCenter and residualCenter, are offered not because I need
-those tools, but because other people propose them to the students.
-Those procedures are, possibly, not truly helpful and in order to
-demonstrate that fact, I have to provide the functions.
+some folks still want to calculate ``beta weights.'' Hence the function
+standardize(). 
+
+
+A person might want to mean-center some predictors, or standardize
+variables selectively the model. The function meanCenter() can optionally
+center and/or standardize variables and re-run a regression. Mean
+centering of variables, or its cousin ``residual centering,'' are
+sometimes proposed enthusiastically as analytical simplifications
+or statistical fixes for various perceived maladies. Because other
+people propose those methods to the students, I have to provide functions
+to implement them so we can investigate. I've concluded that those
+methods are not truly helpful, and below I have an illustration. 
+
 \end{enumerate}
 
 \section{Facilitating Collection of Summary Information}
@@ -156,13 +170,13 @@ I'd like an indicator like entropy, which, roughly speaking, is a
 way of summarizing the chances that two observations (randomly drawn)
 do not fall into the same category. 
 
-As work progressed on a revision of summary, I realized there are
+As work progressed on a revision of summary(), I realized there are
 other things about R's summary that I wanted to change. First, I want
 to separate the numeric from the categorical (factor) variables. Second,
 I want the option to have alphabetized columns in the output. Third,
 I want more workable objects to be returned. I find it almost impossible
-to use the returned value from summary for further analysis. It offers
-a large block of text in a table format. 
+to use the returned value from summary() for further analysis. It
+offers a large block of text in a table format. 
 
 <<echo=F>>=
 library(rockchalk)
@@ -170,26 +184,26 @@ library(rockchalk)
 
 In order to create more workable output objects, some re-arrangement
 of the work behind the scenes can be done. Basically, it is necessary
-that the summarize function return the more-workable, less easily
+that the summarize() function return the more-workable, less easily
 printable output object, and then a print method is used to ``pretty
 print'' that output for the user. 
 
-The summarize function returns a list with two components, ``numerics''
+The summarize() function returns a list with two components, ``numerics''
 and ``factors''. The numeric summary is a data frame, with named
 rows, that can be used for further analysis. Users who wish to summarize
-only the numeric variables can run summarizeNumerics instead, while
-others who want to summarize only factors can run summarizeFactors.
-The output from summarizeFactors is a list of factor summaries. 
+only the numeric variables can run summarizeNumerics() instead, while
+others who want to summarize only factors can run summarizeFactors().
+The output from summarizeFactors() is a list of factor summaries. 
 
-Consider the results of applying the summarize function to Fox's Chile
-data set from the car package:
+Consider the results of applying summarize() to Fox's Chile data set
+from the car package:
 
 <<echo=T>>=
 data(Chile)
 (summChile <- summarize(Chile))
 @
 
-A companion function is centralValues, which will provide only one
+A companion function is centralValues(), which will provide only one
 number for each variable in a data frame. For numerics, it returns
 the mean, while for factor variables, it returns the mode. 
 
@@ -223,7 +237,7 @@ cases we find interesting. In R, one should create a ``newdata''
 data frame, which can then be used in a command like 
 
 \begin{lstlisting}
-predict(m1, newdata=myNewDF)
+predict(m1, newdata = myNewDF)
 \end{lstlisting}
 
 
@@ -233,11 +247,14 @@ were used in the regression formula. This makes it difficult for students
 to get the predictions they want without learning a lot about variable
 management in R. 
 
-I have sought to streamline this by developing a ``can't miss''
-sequence of steps. My preferred approach is as follows. First, create
-a new data frame that sets the predictors at their central values
-(mean or mode). Then specify some alternate levels for particular
-predictors in a new data frame, and then combine those special interest
+My first approach to this was to teach a streamlined sequence of ``can't
+miss'' steps. After that, I wrote functions newdata() and predictOMatic()
+that will do most of this automatically. In order to understand what's
+going on, I need the reader to understand the steps in principle. 
+
+First, create a new data frame that sets the predictors at their central
+values (mean or mode). Second, specify some alternate levels for particular
+predictors in a new data frame. Third, combine those special interest
 variables with the central values data set. 
 
 In the context of model m1, suppose we want to formulate predictions
@@ -288,6 +305,69 @@ preds <- predict(m1, newdata = mynewdf, interval="confidence")
 mynewdf <- cbind(mynewdf, preds)
 mynewdf
 @
+
+How to automate all of that, and make sure it works for most of the
+regression formulae that are likely to come along? It's not good enough
+to manage y \textasciitilde{} x1 + x2, we also need to handle y \textasciitilde{}
+x1 + log(x2 + alpha) + ploy(x3, d) and so forth. That was a hard problem
+for me, but I believed it is solved now (the secret recipe is a new
+function called model.data()). User's won't need to worry about those
+details. Instead, I suggest the use either newdata() with their own
+predict() code, or a new ``all in one'' function I'm offering called
+predictOMatic().
+
+The function newdata() is a way of asking for a new data frame that
+demonstrates certain focal values of one or more variables. First,
+fit a regression, such as m1 above, which used the Chile data frame.
+The newdata() function accepts an argument fl, which is short for
+``focus list.'' That list is a set of values on which we want to
+focus in the new data object. It is easier to understand with some
+examples. The specification of the possible values can either be specific
+values, as we see here:
+
+<<echo=T>>=
+mynewdf <- newdata(m1, fl = list(age = c(20, 30, 40), region = c("SA", "C","N")))
+mynewdf
+@\\
+or it may incorporate calculated values that select focal points for
+us:
+
+<<echo=T>>=
+mynewdf <- newdata(m1, fl = list(age = summChile$numerics[2:4, "age"], region = getFocal(Chile$region, n = 3)))
+mynewdf
+@\\
+The getFocal() function is new in rockchalk. It is a generic function,
+which means that it can receive variables of different types and it
+is supposed to notice and ``do the right thing.'' In this case,
+it notices that region is a factor, and it selects the 3 most frequently
+observed scores. The newdata() output can be used in a predict() function
+call as demonstrated above. 
+
+Note that I've tried to help users to catch typographical errors in
+the focus list. 
+
+\begin{Sinput}
+> mynewdf <- newdata(m1, fl = list(age = summChile$numerics[2:4, "age"], place = c("SA", "C","N")))
+Error. The focus list: fl requests variables that are not included in the original model. 
+The names of the variables in the focus list be drawn from this list: age income population region sex
+\end{Sinput}
+
+I've tried to go one step further, offering a function called predictOMatic().
+The user can optionally supply a ``focus list'', the focal values
+for which predictions are desired. However, if no fl argument is supplied,
+then predictOMatic() will cycle through the variables in a fitted
+model, calculating marginal predicted values for each of the variables. 
+
+<<echo=T>>=
+mypred1 <- predictOMatic(m1, fl = list(age = summChile$numerics[2:4, "age"], region = c("SA", "C","N")))
+mypred1
+mypred2 <- predictOMatic(m1)
+mypred2
+@
+
+Under the hood, this required some hard work, a frustrating chain
+of trial and error that is discussed in the vignette \emph{Rchaeology},
+which is distributed with this package. 
 
 
 \section{Better Regression Tables: Some outreg Examples.}
@@ -555,6 +635,41 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Pr
 \end{figure}
 
 
+A new feature in the 1.7.x series is the ``interval'' argument,
+which will draw shaded confidence or predicted value intervals. I
+don't calculate these intervals. These intervals are calculated by
+R's predict.lm() function. These intervals use ``transparent'' shading
+to help us see overlaps. In order to make this more useful, we limit
+the number of values of the moderator that are investigated. See Figure
+\ref{fig:ps21}.
+
+\begin{figure}
+<<ps21, fig=T, echo=F>>=
+m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"), xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
+@
+
+\caption{plotSlopes: the new interval option\label{fig:ps21}}
+\end{figure}
+
+
+This would work for any kind of regression model that supplies a predict
+function that answers to the interval argument. Unfortunately, predict.glm()
+does not do so. 
+
+Quite often, students want to display predicted values with pleasant
+confidence intervals. I've re-worked plotSlopes() so that it will
+make a pleasant plot for a single value of a moderator, as shown in
+Figure \ref{fig:ps22}
+
+\begin{figure}
+<<ps22, fig=T, echo=F>>=
+m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", n = 1,  xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
+@
+
+\caption{plotSlopes: the new interval option\label{fig:ps22}}
+\end{figure}
+
+
 
 \subsection{testSlopes, a companion of plotSlopes}
 
@@ -719,13 +834,13 @@ plane.
 
 \begin{figure}
 <<pp110, fig=T, echo=F, width=5, height=4>>=
-m6ps <- plotSlopes(m6, plotx="x1", modx="x2", xlab="Continuous Predictor", ylim=c(-25, 105))
+m6ps <- plotSlopes(m6, plotx = "x1", modx = "x2", xlab = "Continuous Predictor", ylim = c(-25, 105))
 @
-<<pp111, fig=T, echo=F, height=5>>=
-p110 <- plotPlane(m6, plotx1="x1", plotx2="x2", x1lab="Continuous Predictor", phi=30)
+<<pp111, fig = T, echo = F, height = 5>>=
+p110 <- plotPlane(m6, plotx1 = "x1", plotx2 = "x2", x1lab = "Continuous Predictor", phi = 30)
 for(j in unique(m6ps$newdata$x2)){
-subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
-lines(trans3d(subdat$x1, subdat$x2, subdat$pred, pmat=p110$res), col="red", lwd=3)
+    subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
+    lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat = p110$res), col = "red", lwd = 3)
 }
 @
 

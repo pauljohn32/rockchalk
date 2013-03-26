@@ -157,7 +157,7 @@ vignette, RStyle, in the rockchalk package.
 \tableofcontents{}
 
 <<echo=F>>=
-dir.create("plots", showWarnings=T)
+dir.create("plots", showWarnings=F)
 @
 
 % In document Latex options:

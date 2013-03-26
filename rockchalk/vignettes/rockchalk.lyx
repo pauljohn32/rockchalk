@@ -140,7 +140,7 @@ sweave
 \begin_body
 
 \begin_layout Title
-Using rockchalk for Regression Presentations
+Using rockchalk for Regression Presentations (1.7.x development)
 \end_layout
 
 \begin_layout Author
@@ -240,7 +240,7 @@ just works
  with R output.
  Some functions in R are very hard to use and get right consistently, especially
  where 3 dimensional plotting is concerned.
- That's where functions like mcGraph1, mcGraph2, mcGraph3, and plotPlane
+ That's where functions like mcGraph1(), mcGraph2(), mcGraph3(), and plotPlane()
  come in handy.
  These don't do any work that is particularly original, but they do help
  to easily make the multidimensional plots that turn out 
@@ -268,7 +268,7 @@ one for each sub-group of respondents,
 \end_inset
 
  and this sometimes proves frustrating.
- The function plotSlopes is offered as my suggestion for creating interaction
+ The functions plotSlopes is offered as my suggestion for creating interaction
  plots of 
 \begin_inset Quotes eld
 \end_inset
@@ -278,11 +278,24 @@ simple slopes
 \end_inset
 
 .
- This handles the work of calculating predicted values and drawing them
- for several possible values of a third variable.
- plotPlane is along the same line.
+ The plotSlopes() function is intended for 
+\begin_inset Quotes eld
+\end_inset
+
+straight lines,
+\begin_inset Quotes erd
+\end_inset
+
+ but as soon a students discover log(x) or poly(x, 2), then they want predicted
+ lines plotted as well.
+ That is why I created plotCurves().
+ These functions handle the work of calculating predicted values and drawing
+ them for several possible values of a third variable.
+ plotPlane() is along the same line.
  If students find that useful, they can then use the examples to build up
  more complicated drawings.
+ Most recently, a function to transfer the lines from plotSlopes() and plotCurve
+s() onto the plotPlane() drawings was added (look for the function addLines().
 \end_layout
 
 \begin_layout Enumerate
@@ -306,13 +319,34 @@ beta weights.
 \begin_inset Quotes erd
 \end_inset
 
- Some functions, such as meanCenter and residualCenter, are offered not
- because I need those tools, but because other people propose them to the
- students.
- Those procedures are, possibly, not truly helpful and in order to demonstrate
- that fact, I have to provide the functions.
+ Hence the function standardize().
+ 
 \end_layout
 
+\begin_deeper
+\begin_layout Standard
+A person might want to mean-center some predictors, or standardize variables
+ selectively the model.
+ The function meanCenter() can optionally center and/or standardize variables
+ and re-run a regression.
+ Mean centering of variables, or its cousin 
+\begin_inset Quotes eld
+\end_inset
+
+residual centering,
+\begin_inset Quotes erd
+\end_inset
+
+ are sometimes proposed enthusiastically as analytical simplifications or
+ statistical fixes for various perceived maladies.
+ Because other people propose those methods to the students, I have to provide
+ functions to implement them so we can investigate.
+ I've concluded that those methods are not truly helpful, and below I have
+ an illustration.
+ 
+\end_layout
+
+\end_deeper
 \begin_layout Section
 Facilitating Collection of Summary Information
 \end_layout
@@ -332,12 +366,12 @@ R's summary function has some limitations.
 \end_layout
 
 \begin_layout Standard
-As work progressed on a revision of summary, I realized there are other
+As work progressed on a revision of summary(), I realized there are other
  things about R's summary that I wanted to change.
  First, I want to separate the numeric from the categorical (factor) variables.
  Second, I want the option to have alphabetized columns in the output.
  Third, I want more workable objects to be returned.
- I find it almost impossible to use the returned value from summary for
+ I find it almost impossible to use the returned value from summary() for
  further analysis.
  It offers a large block of text in a table format.
  
@@ -370,9 +404,9 @@ library(rockchalk)
 \begin_layout Standard
 In order to create more workable output objects, some re-arrangement of
  the work behind the scenes can be done.
- Basically, it is necessary that the summarize function return the more-workable
-, less easily printable output object, and then a print method is used to
- 
+ Basically, it is necessary that the summarize() function return the more-workab
+le, less easily printable output object, and then a print method is used
+ to 
 \begin_inset Quotes eld
 \end_inset
 
@@ -385,7 +419,7 @@ pretty print
 \end_layout
 
 \begin_layout Standard
-The summarize function returns a list with two components, 
+The summarize() function returns a list with two components, 
 \begin_inset Quotes eld
 \end_inset
 
@@ -405,15 +439,15 @@ factors
  The numeric summary is a data frame, with named rows, that can be used
  for further analysis.
  Users who wish to summarize only the numeric variables can run summarizeNumeric
-s instead, while others who want to summarize only factors can run summarizeFact
-ors.
- The output from summarizeFactors is a list of factor summaries.
+s() instead, while others who want to summarize only factors can run summarizeFa
+ctors().
+ The output from summarizeFactors() is a list of factor summaries.
  
 \end_layout
 
 \begin_layout Standard
-Consider the results of applying the summarize function to Fox's Chile data
- set from the car package:
+Consider the results of applying summarize() to Fox's Chile data set from
+ the car package:
 \end_layout
 
 \begin_layout Standard
@@ -446,7 +480,7 @@ data(Chile)
 \end_layout
 
 \begin_layout Standard
-A companion function is centralValues, which will provide only one number
+A companion function is centralValues(), which will provide only one number
  for each variable in a data frame.
  For numerics, it returns the mean, while for factor variables, it returns
  the mode.
@@ -567,7 +601,7 @@ status open
 
 \begin_layout Plain Layout
 
-predict(m1, newdata=myNewDF)
+predict(m1, newdata = myNewDF)
 \end_layout
 
 \end_inset
@@ -586,7 +620,7 @@ The newdata must include one column for each variable in the model, and
 \end_layout
 
 \begin_layout Standard
-I have sought to streamline this by developing a 
+My first approach to this was to teach a streamlined sequence of 
 \begin_inset Quotes eld
 \end_inset
 
@@ -594,13 +628,21 @@ can't miss
 \begin_inset Quotes erd
 \end_inset
 
- sequence of steps.
- My preferred approach is as follows.
- First, create a new data frame that sets the predictors at their central
+ steps.
+ After that, I wrote functions newdata() and predictOMatic() that will do
+ most of this automatically.
+ In order to understand what's going on, I need the reader to understand
+ the steps in principle.
+ 
+\end_layout
+
+\begin_layout Standard
+First, create a new data frame that sets the predictors at their central
  values (mean or mode).
- Then specify some alternate levels for particular predictors in a new data
- frame, and then combine those special interest variables with the central
- values data set.
+ Second, specify some alternate levels for particular predictors in a new
+ data frame.
+ Third, combine those special interest variables with the central values
+ data set.
  
 \end_layout
 
@@ -818,6 +860,243 @@ mynewdf
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+How to automate all of that, and make sure it works for most of the regression
+ formulae that are likely to come along? It's not good enough to manage
+ y ~ x1 + x2, we also need to handle y ~ x1 + log(x2 + alpha) + ploy(x3,
+ d) and so forth.
+ That was a hard problem for me, but I believed it is solved now (the secret
+ recipe is a new function called model.data()).
+ User's won't need to worry about those details.
+ Instead, I suggest the use either newdata() with their own predict() code,
+ or a new 
+\begin_inset Quotes eld
+\end_inset
+
+all in one
+\begin_inset Quotes erd
+\end_inset
+
+ function I'm offering called predictOMatic().
+\end_layout
+
+\begin_layout Standard
+The function newdata() is a way of asking for a new data frame that demonstrates
+ certain focal values of one or more variables.
+ First, fit a regression, such as m1 above, which used the Chile data frame.
+ The newdata() function accepts an argument fl, which is short for 
+\begin_inset Quotes eld
+\end_inset
+
+focus list.
+\begin_inset Quotes erd
+\end_inset
+
+ That list is a set of values on which we want to focus in the new data
+ object.
+ It is easier to understand with some examples.
+ The specification of the possible values can either be specific values,
+ as we see here:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- newdata(m1, fl = list(age = c(20, 30, 40), region = c("SA", "C","N"))
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+or it may incorporate calculated values that select focal points for us:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- newdata(m1, fl = list(age = summChile$numerics[2:4, "age"], region
+ = getFocal(Chile$region, n = 3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The getFocal() function is new in rockchalk.
+ It is a generic function, which means that it can receive variables of
+ different types and it is supposed to notice and 
+\begin_inset Quotes eld
+\end_inset
+
+do the right thing.
+\begin_inset Quotes erd
+\end_inset
+
+ In this case, it notices that region is a factor, and it selects the 3
+ most frequently observed scores.
+ The newdata() output can be used in a predict() function call as demonstrated
+ above.
+ 
+\end_layout
+
+\begin_layout Standard
+Note that I've tried to help users to catch typographical errors in the
+ focus list.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+> mynewdf <- newdata(m1, fl = list(age = summChile$numerics[2:4, "age"],
+ place = c("SA", "C","N")))
+\end_layout
+
+\begin_layout Plain Layout
+
+Error.
+ The focus list: fl requests variables that are not included in the original
+ model.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+The names of the variables in the focus list be drawn from this list: age
+ income population region sex
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I've tried to go one step further, offering a function called predictOMatic().
+ The user can optionally supply a 
+\begin_inset Quotes eld
+\end_inset
+
+focus list
+\begin_inset Quotes erd
+\end_inset
+
+, the focal values for which predictions are desired.
+ However, if no fl argument is supplied, then predictOMatic() will cycle
+ through the variables in a fitted model, calculating marginal predicted
+ values for each of the variables.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred1 <- predictOMatic(m1, fl = list(age = summChile$numerics[2:4, "age"],
+ region = c("SA", "C","N")))
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred1
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred2 <- predictOMatic(m1)
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Under the hood, this required some hard work, a frustrating chain of trial
+ and error that is discussed in the vignette 
+\emph on
+Rchaeology
+\emph default
+, which is distributed with this package.
+ 
 \end_layout
 
 \begin_layout Section
@@ -1958,6 +2237,171 @@ name "fig:ps20"
 
 \end_layout
 
+\begin_layout Standard
+A new feature in the 1.7.x series is the 
+\begin_inset Quotes eld
+\end_inset
+
+interval
+\begin_inset Quotes erd
+\end_inset
+
+ argument, which will draw shaded confidence or predicted value intervals.
+ I don't calculate these intervals.
+ These intervals are calculated by R's predict.lm() function.
+ These intervals use 
+\begin_inset Quotes eld
+\end_inset
+
+transparent
+\begin_inset Quotes erd
+\end_inset
+
+ shading to help us see overlaps.
+ In order to make this more useful, we limit the number of values of the
+ moderator that are investigated.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps21"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps21, fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"),
+ xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)),
+ interval = "conf")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotSlopes: the new interval option
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ps21"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This would work for any kind of regression model that supplies a predict
+ function that answers to the interval argument.
+ Unfortunately, predict.glm() does not do so.
+ 
+\end_layout
+
+\begin_layout Standard
+Quite often, students want to display predicted values with pleasant confidence
+ intervals.
+ I've re-worked plotSlopes() so that it will make a pleasant plot for a
+ single value of a moderator, as shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps22"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps22, fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", n = 1,  xlab = "x1 is
+ a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotSlopes: the new interval option
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ps22"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 testSlopes, a companion of plotSlopes
 \end_layout
@@ -2587,8 +3031,8 @@ status open
 
 \begin_layout Plain Layout
 
-m6ps <- plotSlopes(m6, plotx="x1", modx="x2", xlab="Continuous Predictor",
- ylim=c(-25, 105))
+m6ps <- plotSlopes(m6, plotx = "x1", modx = "x2", xlab = "Continuous Predictor",
+ ylim = c(-25, 105))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2598,13 +3042,13 @@ m6ps <- plotSlopes(m6, plotx="x1", modx="x2", xlab="Continuous Predictor",
 
 \begin_layout Plain Layout
 
-<<pp111, fig=T, echo=F, height=5>>=
+<<pp111, fig = T, echo = F, height = 5>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-p110 <- plotPlane(m6, plotx1="x1", plotx2="x2", x1lab="Continuous Predictor",
- phi=30)
+p110 <- plotPlane(m6, plotx1 = "x1", plotx2 = "x2", x1lab = "Continuous
+ Predictor", phi = 30)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2614,13 +3058,13 @@ for(j in unique(m6ps$newdata$x2)){
 
 \begin_layout Plain Layout
 
-subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
+    subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
 \end_layout
 
 \begin_layout Plain Layout
 
-lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat=p110$res), col="red",
- lwd=3)
+    lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat = p110$res), col
+ = "red", lwd = 3)
 \end_layout
 
 \begin_layout Plain Layout
