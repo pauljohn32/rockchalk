@@ -1991,7 +1991,7 @@ plotx
  value of the moderator variable.
  The user should first run plotSlopes, and then submit the output object
  to testSlopes.
- The usual use case would be the following:
+ The usual case would be the following:
 \end_layout
 
 \begin_layout Standard
@@ -2619,7 +2619,7 @@ subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
 
 \begin_layout Plain Layout
 
-lines(trans3d(subdat$x1, subdat$x2, subdat$pred, pmat=p110$res), col="red",
+lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat=p110$res), col="red",
  lwd=3)
 \end_layout
 

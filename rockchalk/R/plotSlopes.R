@@ -51,7 +51,7 @@
 ##' lines are desired. May be a vector of values or the name of an
 ##' algorithm, "quantile", "std.dev.", or "table".
 ##' @param interval Optional. Intervals provided by the
-##' \cod{predict.lm} may be supplied, either "conf" (95% confidence
+##' \code{predict.lm} may be supplied, either "conf" (95% confidence
 ##' interval for the estimated conditional mean) or "pred" (95%
 ##' interval for observed values of y given the rest of the model).
 ##' @param plotPoints Optional. TRUE or FALSE: Should the plot include
@@ -176,7 +176,7 @@ plotSlopes <-
             pdat <- newdf[newdf[, modx] %in% modxVals[i], ]
             parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = i)
             parms <- modifyList(parms, dotargs)
-            parms <- modifyList(parms, list(border = rgb(red = t(nCol), alpha = 50, max = 255), col = rgb(red = t(nCol), alpha = 15, max = 255), lwd = 0.3* llwd[i]))
+            parms <- modifyList(parms, list(border = rgb(red = t(nCol), alpha = 50, maxColorValue = 255), col = rgb(red = t(nCol), alpha = 15, maxColorValue = 255), lwd = 0.3* llwd[i]))
             do.call("polygon", parms)
         }
     }

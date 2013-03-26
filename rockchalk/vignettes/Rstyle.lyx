@@ -339,7 +339,7 @@ status open
 
 \begin_layout Plain Layout
 
-dir.create("plots", showWarnings=T)
+dir.create("plots", showWarnings=F)
 \end_layout
 
 \begin_layout Plain Layout

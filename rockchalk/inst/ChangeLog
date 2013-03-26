@@ -1,5 +1,10 @@
 2013-03-26  pauljohn  <pauljohn@debian.sunflower.com>
 
+	* ../R/utils.R (cutBySD): Changed "cutNumeric" and "cutFactor" to
+	a generic function "getFocal" with methods getFocal.default and
+	getFocal.factor.
+	(getFocal.factor): convert to if/return stanzas.
+
 	* predictOMatic.R (model.data):  silencing warning
 	about re-used row names. Warning was triggered by
 	this "data <- data.frame(ldata[varNames])" "Warning in 

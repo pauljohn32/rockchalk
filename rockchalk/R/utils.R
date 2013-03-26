@@ -178,38 +178,34 @@ cutBySD <- function(x, n = 3){
 ##' variables, "table" is default for factors).
 ##' @param n Optional. The number of focal values to be returned
 ##' @return A vector.
-##' @export cutNumeric
+##' @rdname getFocal
+##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @examples
-##' x <- rnorm(100)
-##' cutNumeric(x)
-##' cutNumeric(x, xvals = "quantile")
-##' cutNumeric(x, xvals = "quantile", n = 5)
-##' cutNumeric(x, xvals = "std.dev")
-##' cutNumeric(x, xvals = "std.dev", n = 5)
-##' cutNumeric(x, xvals = c(-1000, 0.2, 0,5))
-##'
-##'
 
 getFocal <-
-    function(x, xvals = NULL, n = 3){
-        UseMethod("focal")
-    }
+    function(x, xvals = NULL, n = 3)
+{
+    UseMethod("getFocal")
+}
 
 NULL
-##' @param xvals  If \code{xvals} is not provided, the \code{n}
-##' quantile values will be returned. \code{xvals} can specify an
-##' algorithm by name, one of "quantile", "std.dev", or "table".
-##' \code{xvals} can also be a user-created function that selects
-##' values and receives arguments (x, xvals, n). If xvals is specified
-##' as a vector, focal will not change them. It will, however,
-##' issue a warning if some values in \code{xvals} requested are
-##' outside the (slightly magnified) range of observed scores.
+
+
 ##' @return A named vector of values.
-##' @rdname utils
+##' @export
+##' @rdname getFocal
+##' @author <pauljohn@@ku.edu>
 ##' @method getFocal default
 ##' @S3method getFocal default
-
+##' @examples
+##' x <- rnorm(100)
+##' getFocal(x)
+##' getFocal(x, xvals = "quantile")
+##' getFocal(x, xvals = "quantile", n = 5)
+##' getFocal(x, xvals = "std.dev")
+##' getFocal(x, xvals = "std.dev", n = 5)
+##' getFocal(x, xvals = c(-1000, 0.2, 0,5))
+##'
 getFocal.default <- function(x, xvals = NULL, n = 3)
 {
     xRange <- magRange(range(x, na.rm=TRUE), 1.1)
@@ -219,7 +215,7 @@ getFocal.default <- function(x, xvals = NULL, n = 3)
 
     if (is.numeric(xvals)) {
         if ((xvals > max(xRange)) || (xvals < min(xRange))){
-            warning("values requested out of observed range in cutNumeric")
+            warning("values requested out of observed range in getFocal")
         }
         xvals <- sort(xvals)
         return(xvals)
@@ -232,42 +228,48 @@ getFocal.default <- function(x, xvals = NULL, n = 3)
                          table = rockchalk:::cutByTable(x, n),
                          quantile = rockchalk:::cutByQuantile(x, n),
                          "std.dev." = rockchalk:::cutBySD(x, n),
-                         stop("unknown 'xvals' algorithm in cutNumeric"))
+                         stop("unknown 'xvals' algorithm in getFocal"))
         return(xfocal)
     }
-    stop("cutNumeric received unexpected input for xvals")
+    stop("getFocal received unexpected input for xvals")
 }
 
 NULL
 
-##' @param xvals If \code{xvals} is not provided, the \code{n} most
-##' frequently occurring values are selected. \code{xvals} can specify
-##' an algorithm by name, currently only "table" is implemented.
-##' \code{xvals} can also be a user-created function that selects
-##' values and receives arguments (x, xvals, n). If xvals is specified
-##' as a vector of valid levels of the factor, getFocal will not
-##' change them. However, it will generate an error if levels that are
-##' not observed in the data are requested.
+
 ##' @return A named vector of values.
-##' @rdname utils
+##' @rdname getFocal
+##' @export
+##' @author <pauljohn@@ku.edu>
 ##' @method getFocal factor
 ##' @S3method getFocal factor
-
+##' @examples
+##' x <- factor(c("A","B","A","B","C"))
+##' getFocal(x)
 getFocal.factor <- function(x, xvals = NULL, n = 3)
 {
     if (is.null(xvals)) {
         xvals <- rockchalk:::cutByTable(x, n)
-    } else if (is.vector(xvals)) {
-        if (!all(xvals %in% levels(x))) stop("xvals includes non-observed levels of x")
-    } else if (is.function(xvals)) {
+        return(xvals)
+    }
+   if (is.vector(xvals)) {
+       if (!all(xvals %in% levels(x))) stop("xvals includes non-observed levels of x")
+       return(xvals)
+    }
+    if (is.function(xvals)) {
         xvals <- xvals(x, n)
-    } else if (is.character(x)) {
+        return(xvals)
+    }
+
+    if (is.character(x)) {
         xvals <- match.arg(tolower(xvals),
                            c("table"))
         xvals <- switch(xvals,
                         table = rockchalk:::cutByTable(x, n),
                         stop("Sorry, only known algorithm for factors is 'table'"))
-    } else { stop("cutFactor received unexpected input xvals") }
+        return(xvals)
+    }
+    stop("getFocal received unexpected input xvals")
 }
 
 

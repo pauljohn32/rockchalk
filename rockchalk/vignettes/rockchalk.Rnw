@@ -567,8 +567,8 @@ Aiken and West (and later Cohen, Cohen, West, and Aiken) propose using
 the t test to find out if the effect of the ``plotx'' variable is
 statistically significantly different from zero for each particular
 value of the moderator variable. The user should first run plotSlopes,
-and then submit the output object to testSlopes. The usual use case
-would be the following:
+and then submit the output object to testSlopes. The usual case would
+be the following:
 
 \begin{lstlisting}
 m4 <- lm (y1 ~ x1*x2 + x3, data=dat)

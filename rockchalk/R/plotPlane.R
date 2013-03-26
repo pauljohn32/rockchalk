@@ -208,7 +208,7 @@ function(model = NULL, plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
     if (!missing(linesFrom)){
         dataSplits <- split(linesFrom$newdata, f = linesFrom$newdata[[linesFrom$call[["modx"]]]])
         lapply(dataSplits, function(nd){
-            lines(trans3d( nd[[plotx1]], nd[[plotx2]], nd$pred, pmat=res), col = lfcol, lwd = lflwd)})
+            lines(trans3d( nd[[plotx1]], nd[[plotx2]], nd$fit, pmat=res), col = lfcol, lwd = lflwd)})
     }
 
     retval <- list(res=res, call=cl, "x1seq"=x1seq, "x2seq"=x2seq, "zplane"=zplane)
@@ -245,7 +245,7 @@ addLines <- function(to = NULL, from = NULL, col = "red", lwd = 2, lty = 1){
 
     dataSplits <- split(from$newdata, f = from$newdata[[from$call[["modx"]]]])
     lapply(dataSplits, function(nd){
-        lines(trans3d( nd[[to$call[["plotx1"]]]], nd[[to$call[["plotx2"]]]], nd$pred, pmat = to$res), col = col, lwd = lwd, lty = lty)})
+        lines(trans3d( nd[[to$call[["plotx1"]]]], nd[[to$call[["plotx2"]]]], nd$fit, pmat = to$res), col = col, lwd = lwd, lty = lty)})
     NULL
 }
 

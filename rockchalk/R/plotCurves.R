@@ -16,10 +16,10 @@
 ##' and 37 of the moderator.
 ##'
 ##' If the user does not specify the parameter \code{modxVals},
-##' built-in algorithms will select the "cut points". Three algorithms
+##' built-in algorithms will select the "focal points". Three algorithms
 ##' have been prepared so far, \code{quantile}, \code{std.dev.}, and
 ##' \code{table}. If the number of unique observed values is smaller
-##' than 6, the \code{table} method is used.  The 5 most frequently
+##' than 6, the \code{table} method is used.  The \code{n} most frequently
 ##' observed values of modx are selected. Otherwise, the quantile
 ##' method is used. Predictive lines are plotted for the following
 ##' percentiles {0.25,0.50,0.75}. The algorithm \code{std.dev.} plots
@@ -28,16 +28,33 @@
 ##' standard deviation.
 ##'
 ##'
-##' @param model Required. Fitted regression object. Must have a predict method
+##' @param model Required. Fitted regression object. Must have a
+##' predict method
 ##' @param plotx Required. String with name of IV to be plotted on x axis
-##' @param modx Required. String for moderator variable name. May be either numeric or factor.
-##' @param modxVals Optional. If modx is numeric, either a character string, "quantile", "std.dev.",
-##' or "table", or a vector of values for which plotted lines are
-##' sought. If modx is a factor, the default approach will create one
-##' line for each level, but the user can supply a vector of levels if
-##' a subset is desired.
-##' @param plotPoints Optional. Should the plot include the scatterplot points along with the lines.
-##' @param col Optional. A color vector.  By default, the R's builtin colors will be used,  which are "black", "red", and so forth.  Instead, a vector of color names can be supplied, as in c("pink","black", "gray70").  A color-vector generating function like rainbow(10) or gray.colors(5) can also be used. A vector of color names can be supplied with this function. Color names will be recycled if the plot requires more different colors than the user provides.
+##' @param modx Required. String for moderator variable name. May be
+##' either numeric or factor.
+##' @param n Optional.  Number of focal values of \code{modx}, used by
+##' algorithms specified by modxVals; will be ignored if modxVals
+##' supplies a vector of focal values.  ##' @param modxVals
+##' Optional. If modx is numeric, either a vector of values, or a
+##' character string to select an algorithm ("quantile","std.dev." or
+##' "table"), or a user-supplied function to select focal values (a
+##' new method similar to \code{getFocal}). If modx is a factor, may
+##' be a vector of valid levels of \code{modx}, a function, or an
+##' algorithm name. Currently, the only available algorithm is "table"
+##' (see \code{getFocal.factor}.
+##' @param interval Optional. Intervals provided by the
+##' \code{predict.lm} may be supplied, either "conf" (95% confidence
+##' interval for the estimated conditional mean) or "pred" (95%
+##' interval for observed values of y given the rest of the model).
+##' @param plotPoints Optional. TRUE or FALSE: Should the plot include
+##' the scatterplot points along with the lines.
+##' @param col Optional.  A color vector for predicted value lines (and
+##' intervals if requested). If not specified, the R's builtin palette()
+##' will be used. User may supply a vector of valid color names,
+##' either explicitly c("pink","black", "gray70") or implicitly,
+##' rainbow(10) or gray.colors(5). Color names will be recycled if there
+##' are more focal values of \code{modx} than colors provided.
 ##' @param envir environment to search for variables.
 ##' @param llwd Optional. Line widths for predicted values. Can be
 ##' single value or a vector, which will be recycled as necessary.
@@ -49,9 +66,8 @@
 ##' plotted, 3) a vector modxVals, the values for which curves were drawn.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example  inst/examples/plotCurves-ex.R
-
 plotCurves <-
-    function (model, plotx, modx, n,  modxVals = NULL, interval,
+    function (model, plotx, modx, n, modxVals = NULL, interval,
               plotPoints = TRUE, col, llwd, envir = environment(formula(model)), ...)
 {
     if (missing(model))
@@ -83,10 +99,10 @@ plotCurves <-
     ##TODO: Abstract this LATER
     if (is.factor(modxVar)) { ## modxVar is a factor
         n <- ifelse(missing(n), nlevels(modxVar), n)
-        modxVals <- cutFactor(modxVar, xvals = modxVals, n)
+        modxVals <- getFocal(modxVar, xvals = modxVals, n)
     } else {
         n <- ifelse(missing(n), 3, n)
-        modxVals <- cutNumeric(modxVar, xvals = modxVals, n)
+        modxVals <- getFocal(modxVar, xvals = modxVals, n)
     }
 
 
@@ -143,7 +159,7 @@ plotCurves <-
             pdat <- newdf[newdf[, modx] %in% modxVals[i], ]
             parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = i)
             parms <- modifyList(parms, dotargs)
-            parms <- modifyList(parms, list(border = rgb(red = t(nCol), alpha = 50, max = 255), col = rgb(red = t(nCol), alpha = 15, max = 255), lwd = 0.3* llwd[i]))
+            parms <- modifyList(parms, list(border = rgb(red = t(nCol), alpha = 50, maxColorValue = 255), col = rgb(red = t(nCol), alpha = 15, maxColorValue = 255), lwd = 0.3* llwd[i]))
             do.call("polygon", parms)
         }
     }
