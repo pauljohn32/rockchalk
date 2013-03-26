@@ -158,20 +158,24 @@ cutBySD <- function(x, n = 3){
     }
 }
 
-##' Can select focal values from a numeric variable's observed
-##' values.
+
+
+
+
+##' Select focal values from an observed variable.
+##'
+##' This is a generic function with 2 methods, getFocal.default
+##' handles numeric variables, while getFocal.factor handles
+##' factors. No other methods have been planned for preparation.
 ##'
 ##' This is used in functions like \code{plotSlopes} or
 ##' \code{plotCurves}.
 ##'
 ##' @param x Required. A numeric variable
-##' @param xvals Optional. If \code{xvals} is not provided, the
-##' cutByQuantile() function will return \code{n} values.
-##' \code{xvals} can be a text string to select an algorithm,
-##' "quantile", "std.dev", or "table". If xvals is specified as a
-##' vector, cutNumeric will not change them. It will, however, issue a
-##' warning if some values in \code{xvals} requested are outside the
-##' (slightly magnified) range of observed scores.
+##' @param xvals Optional. Optional. \code{xvals} can be a vector, an
+##' algorithm name, or a function. If \code{xvals} is not provided, a
+##' default method will be selected ("quantile" is default for numeric
+##' variables, "table" is default for factors).
 ##' @param n Optional. The number of focal values to be returned
 ##' @return A vector.
 ##' @export cutNumeric
@@ -184,7 +188,29 @@ cutBySD <- function(x, n = 3){
 ##' cutNumeric(x, xvals = "std.dev")
 ##' cutNumeric(x, xvals = "std.dev", n = 5)
 ##' cutNumeric(x, xvals = c(-1000, 0.2, 0,5))
-cutNumeric <- function(x, xvals = NULL, n = 3)
+##'
+##'
+
+getFocal <-
+    function(x, xvals = NULL, n = 3){
+        UseMethod("focal")
+    }
+
+NULL
+##' @param xvals  If \code{xvals} is not provided, the \code{n}
+##' quantile values will be returned. \code{xvals} can specify an
+##' algorithm by name, one of "quantile", "std.dev", or "table".
+##' \code{xvals} can also be a user-created function that selects
+##' values and receives arguments (x, xvals, n). If xvals is specified
+##' as a vector, focal will not change them. It will, however,
+##' issue a warning if some values in \code{xvals} requested are
+##' outside the (slightly magnified) range of observed scores.
+##' @return A named vector of values.
+##' @rdname utils
+##' @method getFocal default
+##' @S3method getFocal default
+
+getFocal.default <- function(x, xvals = NULL, n = 3)
 {
     xRange <- magRange(range(x, na.rm=TRUE), 1.1)
 
@@ -212,9 +238,22 @@ cutNumeric <- function(x, xvals = NULL, n = 3)
     stop("cutNumeric received unexpected input for xvals")
 }
 
+NULL
 
+##' @param xvals If \code{xvals} is not provided, the \code{n} most
+##' frequently occurring values are selected. \code{xvals} can specify
+##' an algorithm by name, currently only "table" is implemented.
+##' \code{xvals} can also be a user-created function that selects
+##' values and receives arguments (x, xvals, n). If xvals is specified
+##' as a vector of valid levels of the factor, getFocal will not
+##' change them. However, it will generate an error if levels that are
+##' not observed in the data are requested.
+##' @return A named vector of values.
+##' @rdname utils
+##' @method getFocal factor
+##' @S3method getFocal factor
 
-cutFactor <- function(x, xvals = NULL, n = 3)
+getFocal.factor <- function(x, xvals = NULL, n = 3)
 {
     if (is.null(xvals)) {
         xvals <- rockchalk:::cutByTable(x, n)

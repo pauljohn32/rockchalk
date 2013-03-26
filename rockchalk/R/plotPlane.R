@@ -85,7 +85,6 @@ function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
 ##' was issued, 3) x1seq, the "plot sequence" for the x1 dimension, 4)
 ##' x2seq, the "plot sequence" for the x2 dimension, 5) zplane, the
 ##' values of the plane corresponding to locations x1seq and x2seq.
-##'
 ##' @rdname plotPlane
 ##' @method plotPlane default
 ##' @S3method plotPlane default

@@ -113,7 +113,7 @@ plotSlopes <-
 
     if (is.factor(modxVar)) { ## modxVar is a factor
         n <- ifelse(missing(n), nlevels(modxVar), n)
-        modxVals <- cutFactor(modxVar, xvals = modxVals, n)
+        modxVals <- getFocal(modxVar, xvals = modxVals, n)
         ## if (is.null(modxVals)) {
         ##     modxVals <- rockchalk:::cutByTable(modxVar, n)
         ## } else if (is.vector(modxVals)) {
@@ -128,7 +128,7 @@ plotSlopes <-
         ## } else { stop("Sorry, cannot understand modxVals") }
     } else {
         n <- ifelse(missing(n), 3, n)
-        modxVals <- cutNumeric(modxVar, xvals = modxVals, n)
+        modxVals <- getFocal(modxVar, xvals = modxVals, n)
     }
 
     ## if no interval plot requested, we only need 2 points from plotx
