@@ -80,9 +80,9 @@
 sweave
 \end_modules
 \maintain_unincluded_children false
-\language english
+\language american
 \language_package default
-\inputencoding auto
+\inputencoding default
 \fontencoding global
 \font_roman default
 \font_sans default

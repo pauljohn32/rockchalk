@@ -84,9 +84,9 @@ sweave
 enumitem
 \end_modules
 \maintain_unincluded_children false
-\language english
+\language american
 \language_package default
-\inputencoding latin9
+\inputencoding default
 \fontencoding global
 \font_roman lmodern
 \font_sans lmss

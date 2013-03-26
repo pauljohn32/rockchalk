@@ -98,9 +98,9 @@ sweave
 enumitem
 \end_modules
 \maintain_unincluded_children false
-\language english
+\language american
 \language_package default
-\inputencoding latin9
+\inputencoding default
 \fontencoding T1
 \font_roman lmodern
 \font_sans lmss
@@ -445,10 +445,7 @@ scripts
 A transitional R user will have to learn a lot of terminology and undergo
  a change of paradigm.
  There are resources available! Everybody should subscribe to the email
- lists for the R project 
-(
-\lang english
-
+ lists for the R project (
 \begin_inset Flex URL
 status collapsed
 
