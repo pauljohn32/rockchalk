@@ -1,3 +1,16 @@
+2013-03-27  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/testSlopes.R (testSlopes): separate calculation of
+	testSlopes data from plotting and printing methods.
+	(plot.testSlopes): plot.testSlopes is sorta-working now,
+	not cleaned up.
+
+	* massively clean up logic, eliminate nested loops by
+	returning when phase of calculation is finished.
+	* fix VERY STUPID variable names that have the dash
+	in them. "hypo-test" was just dumb.
+
+
 2013-03-26  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/utils.R (cutBySD): Changed "cutNumeric" and "cutFactor" to
@@ -7,7 +20,7 @@
 
 	* predictOMatic.R (model.data):  silencing warning
 	about re-used row names. Warning was triggered by
-	this "data <- data.frame(ldata[varNames])" "Warning in 
+	this "data <- data.frame(ldata[varNames])" "Warning in
 	data.row.names(row.names, rowsi, i) :  some row.names duplicated:
 	3,5, --> row.names NOT used" This was a harmless warning, but
 	bothersome to users.

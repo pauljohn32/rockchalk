@@ -2,9 +2,11 @@
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{article}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{url}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
@@ -105,6 +107,47 @@ options(device = pdf)
 options(width=80, prompt=" ", continue="  ")
 options(useFancyQuotes = FALSE) 
 @
+
+
+\section*{Development on version 1.7.x}
+
+The ``stable'' version of rockchalk on CRAN is 1.6.3. Version 1.7.x
+is an ``unstable'' testing branch to add features. The next stable
+release will be numbered 1.8.0. 
+
+Test versions can be downloaded \& installed from our local test repository,
+can be retrieved with:
+
+\begin{Sinput}
+install.packages("rockchalk", repos = "http://rweb.quant.ku.edu/kran", type = "source")
+\end{Sinput}I don't upload versions unless they ``run'' and pass the usual tests
+for uploading packages on CRAN, so I think they are mostly safe for
+you to test. CRAN now asks we not upload packages frequently, so the
+KRAN alternative is used for rapid-release development.
+
+As always, the best way to learn what this does is to run the examples.
+
+Installed with the package will be a directory called ``examples''.
+I recently learned that it is possible to include not only the examples
+that you run with the R function example(), but also other demonstration
+files. These demonstration files are not linked to particular functions
+in the package, they are ``just there'' waiting for you to explore.
+For programming tutorial examples, look for ``noWords-{*}.R'' and
+other filenames that do not end in ``{*}-ex.R''. 
+
+The vignettes distributed with the package are
+\begin{itemize}
+\item rockchalk: a survey of package features, lags behind development slightly
+(because I don't write out explanations until things actually work)
+\item Rstyle: an essay about how my students should write R code
+\item Rchaeology: an essay about difficult problems that I've had to solve
+while working on rockchalk.
+\end{itemize}
+In case you want to be involved in development, the source code is
+available on GitHub. Please browse http://github.com/pauljohn32. The
+read-only git archive address is \url{git://github.com/pauljohn32/rockchalk.git}.
+Once you learn how to ``clone'' the repository with a git client,
+then we can discuss ways for you to contribute.
 
 
 \section{Introduction}
@@ -225,20 +268,20 @@ m1mf <- model.frame(m1)
 
 \noindent If we were to run
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 predict(m1)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent we would receive a predicted value for each observation.
 We want a smaller set of calculations, just predictions for a few
 cases we find interesting. In R, one should create a ``newdata''
 data frame, which can then be used in a command like 
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 predict(m1, newdata = myNewDF)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent The newdata must include one column for each variable in
 the model, and those variables must have exactly the same names as
@@ -566,11 +609,11 @@ regression model, and then we pass that object to plotSlopes. Suppose
 we estimate the model in equation \ref{eq:plotSl10}. Then use plotSlopes
 to illustrate the effect of $x1$ as it depends on $x2$. 
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
 plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent The plotx argument is variable x1, meaning that x1 will
 be on the horizontal axis, and x2 serves as the moderator variable.
@@ -684,12 +727,12 @@ value of the moderator variable. The user should first run plotSlopes,
 and then submit the output object to testSlopes. The usual case would
 be the following:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
 m4ps <- plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
 testSlopes(m4ps)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent The output from that testSlopes usage is illustrated in
 Figure \ref{fig:ts10}.
@@ -787,11 +830,11 @@ The plotPlane function offers a visualization of the mutual effect
 of two predictors in m4. See Figure \ref{fig:pp100} for the plot
 created by
 
-\noindent 
+\noindent \inputencoding{latin9}
 \begin{lstlisting}
 plotPlane(m4, plotx1="x1", plotx2="x2")
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \begin{figure}
 <<pp100, fig=T>>=
@@ -911,17 +954,17 @@ y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+e_{i}
 \noindent and then wonder, ``is there an interaction between $x1_{i}$
 and $x2_{i}$?'' The natural inclination is to run this model, 
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 m1 <- lm(y ~ x1*x2)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent or its equivalent
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 m2 <- lm(y ~ x1 + x2 + x1:x2)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 For a variety of reasons, researchers have been advised that they
 should not run the ordinary interaction model. Instead, they should
@@ -954,11 +997,11 @@ involved in an interaction, and it leaves the others unchanged. If
 the user wants all of the numeric predictors to be mean-centered,
 the usage would be
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 m4mc <- meanCenter(m4, centerOnlyInteractors = FALSE)
 summary(m1mc4)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 By default, it does not standardize while centering (but the user
 can request standardization). Users who want to standardize the variables
@@ -1063,10 +1106,10 @@ Virtually everybody who has experimented with regression has had the
 consider the Table \ref{tab:meancenter10-1}. In the first column,
 we have the ordinary linear specification
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 lm(y ~ x1 + x2, data=dat2).
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent The coefficients of $x1$ and $x2$ appear to be ``statistically
 significant,'' a very gratifying regression indeed. It appears we
@@ -1078,10 +1121,10 @@ an interaction between $x1$ and $x2$?'' The second column in Table
 an interaction term. That interaction model, which adds the product
 variable $x1\times x2$, is estimated in R with
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 lm(y ~ x1 * x2, data=dat2)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 \noindent A quick scan of column two usually lead to the ``what the
 heck?'' or ``Holy Cow!'' response. The regression went to hell!
@@ -1367,13 +1410,11 @@ the Behavioral Sciences} (Third.). Routledge Academic.
 
 \bibitem{key-3}Echambadi, R., \& Hess, J. D. (2007). Mean-Centering
 Does Not Alleviate Collinearity Problems in Moderated Multiple Regression
-\emph{Models. Marketing Science}, 26(3), 438\textendash{}445. doi:
-10.1287/mksc.1060.0263
+\emph{Models. Marketing Science}, 26(3), 438–445. doi: 10.1287/mksc.1060.0263
 
 \bibitem{key-4}Kromrey, J. D., \& Foster-Johnson, L. (1998). Mean
 Centering in Moderated Multiple Regression: Much Ado about Nothing.
-\emph{Educational and Psychological Measurement}, 58(1), 42 \textendash{}67.
-doi:10.1177/0013164498058001005
+\emph{Educational and Psychological Measurement}, 58(1), 42 –67. doi:10.1177/0013164498058001005
 
 \bibitem{key-7}Little, T. D., Bovaird, J. A., and Widaman, K. F.
 (2006). On the Merits of Orthogonalizing Powered and Product Terms:
@@ -1383,7 +1424,7 @@ Equation Modeling}, 13(4), 497-519.
 \bibitem{key-6}Preacher, K. J., Curran, P. J., \& Bauer, D. J. (2006).
 Computational Tools for Probing Interactions in Multiple Linear Regression,
 Multilevel Modeling, and Latent Curve Analysis. \emph{Journal of Educational
-and Behavioral Statistics}, 31(4), 437\textendash{}448.
+and Behavioral Statistics}, 31(4), 437–448.
 
 \bibitem{key-5}Quinn, G.P, and Keough, Michael J. (2002) Experimental
 Design and Data Analysis for Biologists. Cambridge University Press.The

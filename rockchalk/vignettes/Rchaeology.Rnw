@@ -5,6 +5,7 @@
 \renewcommand{\sfdefault}{lmss}
 \renewcommand{\ttdefault}{cmtt}
 \usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
@@ -262,7 +263,7 @@ suffixX(newFmla, "x1", "c")
 Run that and check the last few lines of the output. See how the update
 misses x1 inside log(x1) or in the interaction?
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > newFmla <- formula(m2)
 > newFmla
 y ~ log(x1) + x2 * x3
@@ -271,18 +272,18 @@ y ~ log(x1) + x3 + x2c + x2:x3
 > suffixX(newFmla, "x1", "c")
 y ~ log(x1) + x2 + x3 + x1c + x2:x3
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 I asked the members of r-help.
 
 Lately I've had very good luck with r-help. Gabor Grothendieck wrote
 an answer to r-help on May 29, 2012, ``Try substitute:''
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > do.call("substitute", list(newFmla, setNames(list(as.name("x1c")), "x1")))
 y ~ log(x1c) + x2 * x3
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 Problem solved, in a single line. 
 
@@ -327,17 +328,17 @@ involved do.call or eval.
 
 Let's concentrate on do.call first. The syntax is like this
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 do.call("someRFunction", aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 It is as if we were telling R to run this:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 someRFunction(aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 Let's consider an example that runs a regression the ordinary way,
 and then with do.call. In this example, the role of ``someRFunction''
@@ -365,13 +366,13 @@ distributed with rockchalk called stackListItems-01.R. I was using
 rbind over and over to join the results of simulation runs. Basically,
 the code was like this
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 for (i in 1:10000){
    dat <- someHugeSimulation(i)
    result <- rbind(result, dat)
 }
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 That will call rbind() 10000 times. I had not realized that rbind()
 is a comparatively time-consuming task because it accesses a new chunk
@@ -379,29 +380,29 @@ of memory each time it is run. On the other hand, we could collect
 those results in a list, then we can call rbind one time to smash
 together all of the results.
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 for (i in 1:10000){
    mylist[[i]] <- someHugeSimulation(i)
 }
 result <- do.call("rbind", mylist)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 It is much faster to run rbind only once. It would be OK if we typed
 it all out like this:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 result <- rbind(mylist[[1]],mylist[[2]],mylist[[3]],mylist[[4]], ..., mylist[[10000])
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 But who wants to do all of that typing? How tiresome! Thanks to Erik
 Iverson in r-help, I understand that
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 result <- do.call("rbind", mylist)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 is doing the EXACT same thing. ``mylist'' is a list of arguments.
 do.call is \emph{constructing} a function call from the list of arguments.
@@ -471,11 +472,11 @@ f1[[3]][[3]]
 Note that f1 created in this way must be a syntactically valid R formula;
 it cannot include any other regression options.
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > f1 <- y ~ x1 + x2 + x3 + log(x4), data=dat 
 Error: unexpected ',' in "f1 <- y ~ x1 + x2 + x3 + log(x4),"
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 If I declare f1exp as an expression, then R does not re-interpret
 it as a formula (f1exp is an unevaluated expression, the R parser
@@ -512,7 +513,7 @@ y = TRUE).'' Inside lm(), it is necessary to pick through those arguments
 and then pass them off to other functions in order to build the data
 matrix and so forth. Here are the first lines of the lm() function
 
-\begin{lstlisting}[breaklines=true,numbers=left,numberstyle={\footnotesize},tabsize=4]
+\inputencoding{latin9}\begin{lstlisting}[breaklines=true,numbers=left,numberstyle={\footnotesize},tabsize=4]
 lm <- function (formula, data, subset, weights, na.action, method = "qr",
     model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE,
     contrasts = NULL, offset, ...)
@@ -528,14 +529,14 @@ lm <- function (formula, data, subset, weights, na.action, method = "qr",
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 Lets consider what those lines do with a command like this.
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 m1 <- lm(y ~ x1*x2, data=dat, x = TRUE, y = TRUE)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 The lm function notices that I supply some arguments. In line 8, the
 match.call function is used to grab a copy of the command that I typed.
@@ -543,11 +544,11 @@ If we use R's debugging facility to stop the program at that point,
 we would see that mf is exactly the same as my command, except R has
 named the arguments:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > mf
 lm(formula = y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 That's not just a string of letters, however. It is a call object,
 a list with individual pieces that we can revise. Lines 10 and 11
@@ -556,7 +557,7 @@ away the rest. It only wants the arguments we would be needed to run
 the function model.frame. Line 12 adds an argument to the list, drop.unused.levels.
 Up to that point, then, we can look at the individual pieces of mf:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > names(mf) [1] ""                   "formula"            "data" [4] "drop.unused.levels"
 > mf[[1]]
 lm
@@ -567,18 +568,18 @@ dat
 > mf[[4]] 
 [1] TRUE
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 The object mf has separate pieces that can be revised and then evaluated.
 Line 13 replaces the element 1 in mf with the symbol ``model.frame''.
-That's the function that will be called. Line 14 is the coup de gr�ce,
+That's the function that will be called. Line 14 is the coup de grâce,
 when the revised call ``mf'' is sent to eval. In the end, it is
 \emph{as if} lm had directly submitted the command
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 mf <- model.frame(y ~ x1 * x2, data=dat, drop.unused.levels=TRUE)
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 It would not do to simply write that into the lm function, however,
 because some people use variables that have names different from y,
@@ -595,23 +596,23 @@ Plotmath causes the R plot functions to convert expressions into mathematical
 symbols in a way that is reminiscent of \LaTeX{}. For example, a command
 like this:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 text(4, 4, expression(gamma))
 \end{lstlisting}
-will draw the gamma symbol at the position (4,4). We can use paste
+\inputencoding{utf8}will draw the gamma symbol at the position (4,4). We can use paste
 to combine symbolic commands and text like so:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 text(4, 4, expression(paste(gamma, " = 7")))
 \end{lstlisting}
-The number 7 is a nice number, but what if we want to calculate something
+\inputencoding{utf8}The number 7 is a nice number, but what if we want to calculate something
 and insert it into the expression? Your first guess might be to insert
 a function that makes a calculation, such as the mean, but this fails:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 text(4, 4, expression(paste(gamma, mean(x))))
 \end{lstlisting}
-In order to smuggle the result of a calculation into an expression,
+\inputencoding{utf8}In order to smuggle the result of a calculation into an expression,
 some fancy footwork is required. In the help page for plotmath, examples
 using the functions bquote and substitute are offered. 
 
@@ -630,9 +631,8 @@ text(5, 2, expression(paste(gamma, " is the mean of x1")))
 Run ?substitute and one is brought to a famous piece of Rchaeological
 pottery: 
 \begin{quote}
-\textquoteleft{}substitute\textquoteright{} returns the parse tree
-for the (unevaluated) expression \textquoteleft{}expr\textquoteright{},
-substituting any variables bound in \textquoteleft{}env\textquoteright{}. 
+‘substitute’ returns the parse tree for the (unevaluated) expression
+‘expr’, substituting any variables bound in ‘env’. 
 \end{quote}
 Pardon me. parse tree? We've seen expressions already, that part is
 not so off putting. But ``parse tree''? Really?
@@ -728,10 +728,10 @@ the names, and creates the data frame, and then they all come together.
 What if we have just one element in a list? In Gabor's answer to my
 question, there is this idiom
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 setNames(list(as.name("x1c")), "x1")))
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 Consider this from the inside out. 
 \begin{enumerate}
@@ -753,18 +753,18 @@ or ``x1'' becomes ``x1c''. So the user's regression formula that
 uses variables agec or x1 must be revised. This is a function that
 takes a formula ``fmla'' and replaces a symbol xname with newname.
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 formulaReplace <- function(fmla, xname, newname){ 
     do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname))) 
 }
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 This is put to use in meanCenter(). Suppose a vector of variable names
 called nc (stands for ``needs centering'') has already been calculated.
 The function std creates a centered variable.
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 newFmla <- mc$formula
 for (i in seq_along(nc)){
     icenter <- std(stddat[, nc[i]])
@@ -773,7 +773,7 @@ for (i in seq_along(nc)){
     nc[i] <- newname
 }
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 If one has a copy of rockchalk 1.6 or newer, the evidence of the success
 of this approach should be evident in the output of the command example(meanCenter). 
@@ -803,7 +803,7 @@ solutions.
 Here is an example of the problem. A person needed ``dummy variables''.
 The code had several pages like this:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
   if(setcorr == 1){
         corr.10 <-1
         corr.20 <-0
@@ -835,7 +835,7 @@ The code had several pages like this:
         corr.80 <-0
     }
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 Well, that's understandable, but a little bit embarrassing. I asked
 ``why do you declare these separate variables, why not make a vector?''
@@ -888,13 +888,13 @@ we need to start thinking about the problem of unexpected user input.
 Notice what happens if we ask for more 1's than the result vector
 is supposed to contain:
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > biVec1(n = 3, n1s = 7)
 Error in rep(0, n - n1s) (from #2) : invalid 'times' argument
 > biVec2(n = 3, n1s = 7)
 [1] 1 1 1 1 1 1 1
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 Perhaps I prefer biVec1() because it throws an error when there is
 unreasonable input, while biVec2() returns a longer vector than expected
@@ -930,7 +930,7 @@ biVec1 <- function(n = 3, n1s = 1) {
 In all of the test cases I've tried, that works, although the real
 numbers 7.0 and 4.0 are able to masquerade as integers.
 
-\begin{lstlisting}
+\inputencoding{latin9}\begin{lstlisting}
 > biVec1(3, 7)
 Error in biVec1(3, 7) (from #4) : n must be greater than or equal to n1s
 > biVec1(7, 3)
@@ -943,7 +943,7 @@ Error in biVec1(3.3, 4.4) (from #2) :
 > biVec1(7.0, 4.0)
 [1] 1 1 1 1 0 0 0
 \end{lstlisting}
-
+\inputencoding{utf8}
 
 
 \section{Do This, Not That (Stub)}

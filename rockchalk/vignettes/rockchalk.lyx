@@ -213,6 +213,171 @@ options(useFancyQuotes = FALSE)
 
 \end_layout
 
+\begin_layout Section*
+Development on version 1.7.x
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Quotes eld
+\end_inset
+
+stable
+\begin_inset Quotes erd
+\end_inset
+
+ version of rockchalk on CRAN is 1.6.3.
+ Version 1.7.x is an 
+\begin_inset Quotes eld
+\end_inset
+
+unstable
+\begin_inset Quotes erd
+\end_inset
+
+ testing branch to add features.
+ The next stable release will be numbered 1.8.0.
+ 
+\end_layout
+
+\begin_layout Standard
+Test versions can be downloaded & installed from our local test repository,
+ can be retrieved with:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+install.packages("rockchalk", repos = "http://rweb.quant.ku.edu/kran", type
+ = "source")
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+I don't upload versions unless they 
+\begin_inset Quotes eld
+\end_inset
+
+run
+\begin_inset Quotes erd
+\end_inset
+
+ and pass the usual tests for uploading packages on CRAN, so I think they
+ are mostly safe for you to test.
+ CRAN now asks we not upload packages frequently, so the KRAN alternative
+ is used for rapid-release development.
+\end_layout
+
+\begin_layout Standard
+As always, the best way to learn what this does is to run the examples.
+\end_layout
+
+\begin_layout Standard
+Installed with the package will be a directory called 
+\begin_inset Quotes eld
+\end_inset
+
+examples
+\begin_inset Quotes erd
+\end_inset
+
+.
+ I recently learned that it is possible to include not only the examples
+ that you run with the R function example(), but also other demonstration
+ files.
+ These demonstration files are not linked to particular functions in the
+ package, they are 
+\begin_inset Quotes eld
+\end_inset
+
+just there
+\begin_inset Quotes erd
+\end_inset
+
+ waiting for you to explore.
+ For programming tutorial examples, look for 
+\begin_inset Quotes eld
+\end_inset
+
+noWords-*.R
+\begin_inset Quotes erd
+\end_inset
+
+ and other filenames that do not end in 
+\begin_inset Quotes eld
+\end_inset
+
+*-ex.R
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+The vignettes distributed with the package are
+\end_layout
+
+\begin_layout Itemize
+rockchalk: a survey of package features, lags behind development slightly
+ (because I don't write out explanations until things actually work)
+\end_layout
+
+\begin_layout Itemize
+Rstyle: an essay about how my students should write R code
+\end_layout
+
+\begin_layout Itemize
+Rchaeology: an essay about difficult problems that I've had to solve while
+ working on rockchalk.
+\end_layout
+
+\begin_layout Standard
+In case you want to be involved in development, the source code is available
+ on GitHub.
+ Please browse http://github.com/pauljohn32.
+ The read-only git archive address is 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+git://github.com/pauljohn32/rockchalk.git
+\end_layout
+
+\end_inset
+
+.
+ Once you learn how to 
+\begin_inset Quotes eld
+\end_inset
+
+clone
+\begin_inset Quotes erd
+\end_inset
+
+ the repository with a git client, then we can discuss ways for you to contribut
+e.
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
