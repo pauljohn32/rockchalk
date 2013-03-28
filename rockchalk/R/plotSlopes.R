@@ -94,58 +94,48 @@ plotSlopes <-
         stop("plotSlopes requires a fitted regression model.")
     if (missing(plotx))
         stop("plotSlopes requires the name of the variable to be drawn on the x axis")
-    if (missing(modx))
-        stop("plotSlopes requires the name of moderator variable for which several slopes are to be drawn")
 
     cl <- match.call()
     mm <- model.matrix(model)
     depVar <- model$model[, 1]
-    modxVar <- model$model[, modx]
     plotxVar <- model$model[, plotx]
     if (!is.numeric(plotxVar))
         stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
     ylab <- colnames(model$model)[1]
-    plotyRange <- magRange(depVar, mult=c(1,1.2))
+    plotyRange <- magRange(depVar, mult = c(1, 1.1))
     plotxRange <- range(mm[, plotx], na.rm = TRUE)
 
     plotxVals <- plotSeq(plotxRange, length.out = 40)
 
-
-    if (is.factor(modxVar)) { ## modxVar is a factor
-        n <- ifelse(missing(n), nlevels(modxVar), n)
-        modxVals <- getFocal(modxVar, xvals = modxVals, n)
-        ## if (is.null(modxVals)) {
-        ##     modxVals <- rockchalk:::cutByTable(modxVar, n)
-        ## } else if (is.vector(modxVals)) {
-        ##     if (!all(modxVals %in% levels(modxVar))) stop("modxVals includes non-observed levels of modxVar")
-        ## } else if (is.function(modxVals)) {
-        ##     modxVals <- modxVals(x, n)
-        ## } else if (is.character(modxVar)){
-        ##     modxVals <- match.arg(tolower(modxVals), c("table"))
-        ##     modxVals <- switch(modxVals,
-        ##                        table = rockchalk:::cutByTable(modxVar, n),
-        ##                        stop("Sorry, only known algorithm for factors is 'table'"))
-        ## } else { stop("Sorry, cannot understand modxVals") }
+    ## Create focalVals object, needed by newdata
+    if (missing(modx) || is.null(modx)){
+        if (missing(interval)) {
+            focalVals <- list(plotxRange)
+        } else {
+            focalVals <- list(plotxVals)
+        }
+        names(focalVals) <- c(plotx)
     } else {
-        n <- ifelse(missing(n), 3, n)
-        modxVals <- getFocal(modxVar, xvals = modxVals, n)
+        modxVar <- model$model[, modx]
+        if (is.factor(modxVar)) { ## modxVar is a factor
+            n <- ifelse(missing(n), nlevels(modxVar), n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n)
+        } else {
+            n <- ifelse(missing(n), 3, n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n)
+        }
+
+        ## if no interval plot requested, we only need 2 points from plotx
+        ## to plot lines
+        if (missing(interval)) {
+            focalVals <- list(modxVals, plotxRange)
+        } else {
+            focalVals <- list(modxVals, plotxVals)
+        }
+
+        names(focalVals) <- c(modx, plotx)
     }
 
-    ## if no interval plot requested, we only need 2 points from plotx
-    ## to plot lines
-    if (missing(interval)) {
-        focalVals <- list(modxVals, plotxRange)
-    } else {
-        focalVals <- list(modxVals, plotxVals)
-    }
-    ##fails: why?
-    ## focalVals <- ifelse( missing(interval), list(modxVals, plotxRange), list(modxVals, plotxVals) )
-    ## focalVals <-  if (missing(interval)) {
-    ##    list(modxVals, plotxRange)
-    ## } else {
-    ##    list(modxVals, plotxVals)
-    ## }
-    names(focalVals) <- c(modx, plotx)
     newdf <- newdata(model, fl = focalVals)
 
     if (!missing(interval)) {
@@ -158,22 +148,31 @@ plotSlopes <-
     dotargs <- list(...)
 
     ## Now begin the plotting work.
-    lmx <- length(modxVals)
+    if (missing(modx) || is.null(modx)) {
+        lmx <- 1
+    } else {
+        lmx <- length(modxVals)
+    }
+
     if (missing(col)) col <- 1:lmx
     if (length(col) < lmx) col <- rep(col, length.out = lmx)
     if (missing(llwd)) llwd <- 2
     if (length(llwd) < lmx) llwd <- rep(llwd, length.out = lmx)
 
     parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
-                  type = "n")
+                  ylim = plotyRange, type = "n")
     parms <- modifyList(parms, dotargs)
 
     do.call("plot", parms)
 
-    if (!missing(interval)){
+    if (!missing(interval)) {
         for (i in 1:lmx) {
             nCol <- col2rgb(col[i])
-            pdat <- newdf[newdf[, modx] %in% modxVals[i], ]
+            if(missing(modx) || is.null(modx)) {
+                pdat <- newdf
+            } else {
+                pdat <- newdf[newdf[ , modx] %in% modxVals[i], ]
+            }
             parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = i)
             parms <- modifyList(parms, dotargs)
             parms <- modifyList(parms, list(border = rgb(red = t(nCol), alpha = 50, maxColorValue = 255), col = rgb(red = t(nCol), alpha = 15, maxColorValue = 255), lwd = 0.3* llwd[i]))
@@ -182,32 +181,43 @@ plotSlopes <-
     }
 
     for (i in 1:lmx) {
-        pdat <- newdf[newdf[, modx] %in% modxVals[i], ]
+        if(missing(modx) || is.null(modx)) {
+            pdat <- newdf
+        } else {
+            pdat <- newdf[newdf[ , modx] %in% modxVals[i], ]
+        }
         parms <- list(x = pdat[, plotx], y = pdat$fit, lty = i)
         parms <- modifyList(parms, dotargs)
         parms <- modifyList(parms, list(col = col[i], lwd = llwd[i]))
         do.call("lines", parms)
     }
-    if (is.null(names(modxVals))) {
-        legnd <- paste(modxVals, sep = "")
-    } else {
-        legnd <- paste(names(modxVals), sep = "")
-    }
 
     if (plotPoints){
         parms <- list(x = mm[, plotx], y = depVar, xlab = plotx, ylab = ylab,
                       cex = 0.5, lwd = 0.2)
-        if (is.factor(modxVar)) {
-            parms[["col"]] <- col
+        if (exists("modxVar") && is.factor(modxVar)) {
+            parms[["col"]] <- col[as.numeric(modxVar)]
         }
         parms <- modifyList(parms, dotargs)
         do.call("points", parms)
     }
 
-    if(plotLegend) legend("topleft", legend = legnd, lty = 1:lmx, col = col,
-                          lwd = llwd, bg = "white", title= paste("moderator:", modx))
-
-    z <- list(call = cl, newdata = newdf, modxVals = modxVals)
+    if (plotLegend){
+        if (missing(modx) || is.null(modx)){
+            titl <- "Regression Analysis"
+            legnd <- c("Predicted Values")
+            if (!missing(interval)) legnd[2] <- paste(interval, "interval")
+        } else if (is.null(names(modxVals))) {
+            titl <- paste("Moderator:", modx)
+            legnd <- paste(modxVals, sep = "")
+        } else {
+            titl <- paste("Moderator:", modx)
+            legnd <- paste(names(modxVals), sep = "")
+        }
+        legend("topleft", legend = legnd, lty = 1:lmx, col = col,
+               lwd = llwd, bg = "white", title = titl)
+    }
+    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = col)
     class(z) <- "rockchalk"
 
     invisible(z)

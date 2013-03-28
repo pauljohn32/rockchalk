@@ -55,16 +55,16 @@
 ##' m3ps <- plotSlopes(m3, modx = "sex", plotx = "income")
 ##' testSlopes(m3ps)
 ##'
-##' m4 <- lm(statusquo ~ region * income, data= Chile)
+##' m4 <- lm(statusquo ~ region * income, data = Chile)
 ##' m4ps <- plotSlopes(m4, modx = "region", plotx = "income", plotPoints = FALSE)
 ##' ##' testSlopes(m4ps)
 ##'
 ##'
-##' m5 <- lm(statusquo ~ region * income + sex + age, data= Chile)
+##' m5 <- lm(statusquo ~ region * income + sex + age, data = Chile)
 ##' m5ps <- plotSlopes(m5, modx = "region", plotx = "income")
 ##' testSlopes(m5ps)
 ##'
-##' m6 <- lm(statusquo ~ income * age + education + sex + age, data=Chile)
+##' m6 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
 ##' m6ps <- plotSlopes(m6, modx = "income", plotx = "age")
 ##' testSlopes(m6ps)
 ##'
@@ -122,67 +122,74 @@ testSlopes <- function(pso)
         cat(paste("These are the straight-line \"simple slopes\" of the variable", plotx, " \n for the selected moderator values. \n"))
         print(testSlopes)
         res <- list("hypotests" = testSlopes, pso = pso)
+        class(res) <- "testSlopes"
         invisible(res)
-    } else {
-        bmodx <- NULL
-        bplotx <- bs[plotx]
+    }
 
-        bmodx <- bs[interactionsIn]
-        bsimple <- bplotx + bmodx * modxVals
-        covbsimple <- cbind(1, modxVals^2, 2 * modxVals) %*%
-            c(V[plotx, plotx], V[names(bmodx), names(bmodx)], V[plotx, names(bmodx)])
-        tbsimple <- bsimple/sqrt(covbsimple)
-
-        testSlopes <- data.frame( modx = modxVals, b = bsimple,
-                                 se = sqrt(covbsimple), t = tbsimple,
-                                 p = 2 * pt(abs(tbsimple),
-                                 df = model$df.residual, lower.tail = FALSE))
-
-        colnames(testSlopes) <- c(deparse(modx), "slope", "Std. Error", "t value", "Pr(>|t|)")
+    ## Aha! We did not return. So this input is numeric. Continue.
 
 
 
-        ## Just for numeric variables, the J-N calculation
-        roots <- NULL
+    bmodx <- NULL
+    bplotx <- bs[plotx]
 
-        mm <- model.matrix(model)
-        b2 <- bmodx <- NULL
-        b1 <- bplotx <- bs[plotx]
+    bmodx <- bs[interactionsIn]
+    bsimple <- bplotx + bmodx * modxVals
+    covbsimple <- cbind(1, modxVals^2, 2 * modxVals) %*%
+        c(V[plotx, plotx], V[names(bmodx), names(bmodx)], V[plotx, names(bmodx)])
+    tbsimple <- bsimple/sqrt(covbsimple)
 
-        b2 <- bs[interactionsIn]
+    testSlopes <- data.frame( modx = modxVals, b = bsimple,
+                             se = sqrt(covbsimple), t = tbsimple,
+                             p = 2 * pt(abs(tbsimple),
+                             df = model$df.residual, lower.tail = FALSE))
 
-        if(is.null(b2)) stop("b2 is null, there's no interation! Logic error")
+    colnames(testSlopes) <- c(deparse(modx), "slope", "Std. Error", "t value", "Pr(>|t|)")
 
-        Tcrit <- qt(0.975, model$df)
+    ## Just for numeric variables, the J-N calculation
+    roots <- NULL
 
-        ## Quadratic formula. Solve
-        ## Tcrit < T = (b1 + b2*modx)/s.e.(b1 + b2*modx)
-        ## Tcrit < T = (b1 + b2*modx)/sqrt(Var(b1) + modx^2*Var(b2) + 2 Var[b1,b2])
+    mm <- model.matrix(model)
+    b2 <- bmodx <- NULL
+    b1 <- bplotx <- bs[plotx]
 
-        jn <- list()
-        jn$a <- b2^2 - (Tcrit^2) * V[interactionsIn, interactionsIn]
-        jn$b <- 2*b1*b2 - (Tcrit^2) * 2 * V[plotx, interactionsIn]
-        jn$c <- b1^2 - (Tcrit^2) * V[plotx, plotx]
-        inroot <- (jn$b^2) - 4 * jn$a * jn$c
+    b2 <- bs[interactionsIn]
 
-        ##complex root check, if yes, exit with message.
-        if (inroot <= 0) {
-            print(paste("There are no real roots to the quadratic equation that represents regions of statistical significance."))
+    if(is.null(b2)) stop("b2 is null, there's no interation! Logic error")
+
+    Tcrit <- qt(0.975, model$df)
+
+    ## Quadratic formula. Solve
+    ## Tcrit < T = (b1 + b2*modx)/s.e.(b1 + b2*modx)
+    ## Tcrit < T = (b1 + b2*modx)/sqrt(Var(b1) + modx^2*Var(b2) + 2 Var[b1,b2])
+
+    jn <- list()
+    jn$a <- b2^2 - (Tcrit^2) * V[interactionsIn, interactionsIn]
+    jn$b <- 2*b1*b2 - (Tcrit^2) * 2 * V[plotx, interactionsIn]
+    jn$c <- b1^2 - (Tcrit^2) * V[plotx, plotx]
+    inroot <- (jn$b^2) - 4 * jn$a * jn$c
+
+    ##complex root check, if yes, exit with message.
+    if (inroot <= 0) {
+        print(paste("There are no real roots to the quadratic equation that represents regions of statistical significance."))
             if (jn$a > 0) {
                 paste("That means the slope (b1 + b2modx)plotx is statistically significant for all values of modx")
             } else {
                 paste("In this case, that means the  slope (b1 + b2modx)plotx is never statistically significant")
             }
-            res <- list("hypotests" = testSlopes, "jn" = jn, pso = pso)
-            invisible(res)
-        }
+        res <- list("hypotests" = testSlopes, "jn" = jn, pso = pso)
+        class(res) <- "testSlopes"
+        invisible(res)
+    }
 
-        ## Whew. Roots not complex, otherwise would have returned
-        jn$roots <- c( (-jn$b - sqrt(inroot))/(2*jn$a),
-                      (-jn$b + sqrt(inroot))/(2*jn$a) )
-        jn$roots <- sort(jn$roots)
-        names(jn$roots) <- c("lo","hi")
-        if (jn$a > 0) {
+
+    ## else (!inroot <= 0)
+    ## Whew. Roots not complex, otherwise would have returned
+    jn$roots <- c( (-jn$b - sqrt(inroot))/(2*jn$a),
+                  (-jn$b + sqrt(inroot))/(2*jn$a) )
+    jn$roots <- sort(jn$roots)
+    names(jn$roots) <- c("lo","hi")
+    if (jn$a > 0) {
             cat(paste("Values of", modx, "OUTSIDE this interval:\n"))
             print(jn$roots)
             cat(paste("cause the slope of (b1 + b2*", modx,")", plotx, " to be statistically significant\n", sep = ""))
@@ -192,16 +199,17 @@ testSlopes <- function(pso)
             cat(paste("cause the slope of (b1 + b2*", modx,")", plotx, " to be statistically significant\n", sep = ""))
         }
 
-
-        ## print(paste("b1 = b2x at", -b1/b2))
-        ## print(paste("quadratic minimum/maximum point at", -jn$b/(2*jn$a)))
-        ## if(jn$a > 0) print("that is a minimum") else print("that is a maximum")
-        res <- list("hypotests" = testSlopes, "jn" = jn, pso = pso)
-        invisible(res)
-    }
+    ## print(paste("b1 = b2x at", -b1/b2))
+    ## print(paste("quadratic minimum/maximum point at", -jn$b/(2*jn$a)))
+    ## if(jn$a > 0) print("that is a minimum") else print("that is a maximum")
+    res <- list("hypotests" = testSlopes, "jn" = jn, pso = pso)
+    class(res) <- "testSlopes"
+    invisible(res)
 }
 
-
+##' @author <pauljohn@@ku.edu>
+##' @method plot testSlopes
+##' @S3method plot testSlopes
 plot.testSlopes <- function(tso){
     model <-  eval(parse(text = tso$pso$call$model))
     mm <- model.matrix(model)
@@ -316,32 +324,5 @@ plot.testSlopes <- function(tso){
     }
     abline(h=0, col="gray80")
 }
-
-
-
-a <- 1.1
-b <- -3
-
-plot(1:10, 1:10, type = "n", axes = FALSE)
-
-text( 5, 5,  label = expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx,
-                      " is significant in the red zone")))
-
-text( 5, 3,  label = expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx,
-                      "\n is significant in the red zone")))
-
-## This is OK
-legend("topleft", legend = c(expression(paste(hat(b)[1] == 7, " that's beta to you")), expression(hat(b)[1])))
-
-legend("bottomleft", legend = c(expression(paste(widehat(b[1]) == 8, " that's beta to you")), "Regular Text"))
-
-legend("topright", legend = as.expression(c(substitute(hat(b)[1] == AA, list(AA = a)), "Regular Text")))
-
-legend("left", legend= substitute(widehat(b[1]) == AA, list(AA = a)))
-
-legend("bottomright", legend = c(substitute(hat(b[1]) == AA, list(AA = a)), substitute(hat(b[2]) == BB, list(BB = b))))
-
-
-xlab <- paste0("beta", seq(2, 10, by=2))
 
 

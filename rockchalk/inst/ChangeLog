@@ -1,3 +1,9 @@
+2013-03-28  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotSlopes.R (plotSlopes): revise to allow missing or null
+	modx.
+	* note bug in color assignment for points with factors. Fixed.
+
 2013-03-27  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/testSlopes.R (testSlopes): separate calculation of
