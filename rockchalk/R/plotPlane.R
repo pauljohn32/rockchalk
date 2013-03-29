@@ -238,14 +238,28 @@ NULL
 ##' @export
 ##' @example inst/examples/addLines-ex.R
 
-addLines <- function(to = NULL, from = NULL, col = "red", lwd = 2, lty = 1){
-    if (!class(from) %in% "rockchalk") stop("addLines: from must be an output object from plotSlopes or plotCurves, of class rockchalk")
-    if (!class(to) %in% "rockchalk3d") stop("addLines: to must be a 3d plot object created by plotPlane or such")
-    if ( !(from$call[["modx"]] %in% to$call[["plotx1"]] | from$call[["modx"]] %in% to$call[["plotx2"]]) ) stop("Mismatched plotPlanes and plotSlopes objects")
+addLines <- function(to = NULL, from = NULL, col, lwd = 2, lty = 1){
+    if (!class(from) %in% "rockchalk")
+        stop("addLines: from must be an output object from plotSlopes or plotCurves, of class rockchalk")
+    if (!class(to) %in% "rockchalk3d")
+        stop("addLines: to must be a 3d plot object created by plotPlane or such")
+    if ( !(from$call[["modx"]] %in% to$call[["plotx1"]] | from$call[["modx"]] %in% to$call[["plotx2"]]) )
+        stop("Mismatched plotPlanes and plotSlopes objects")
 
     dataSplits <- split(from$newdata, f = from$newdata[[from$call[["modx"]]]])
-    lapply(dataSplits, function(nd){
-        lines(trans3d( nd[[to$call[["plotx1"]]]], nd[[to$call[["plotx2"]]]], nd$fit, pmat = to$res), col = col, lwd = lwd, lty = lty)})
+    if(missing(col)) {
+        col = from$col
+    } else {
+        if (length(col) < length(dataSplits)) col <- rep(col, length.out = length(dataSplits))
+    }
+
+    if (length(lwd) < length(dataSplits)) lwd <- rep(lwd, length.out = length(dataSplits))
+    i <- 0
+    for (i in seq_along(dataSplits)) {
+        nd <- dataSplits[[i]]
+        lines(trans3d(nd[[to$call$plotx1]], nd[[to$call$plotx2]],
+                      nd$fit, pmat = to$res), col = col[i], lwd = lwd[i], lty = lty);
+    }
     NULL
 }
 

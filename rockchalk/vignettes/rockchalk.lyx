@@ -2610,13 +2610,13 @@ status open
 
 \begin_layout Plain Layout
 
-m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
+m4 <- lm (y1 ~ x1*x2 + x3, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-m4ps <- plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor
-")
+m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous
+ Predictor")
 \end_layout
 
 \begin_layout Plain Layout
@@ -2658,7 +2658,12 @@ status open
 
 \begin_layout Plain Layout
 
-testSlopes(m4psa)
+(m4psats <- testSlopes(m4psa))
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(m4psats)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3006,7 +3011,7 @@ status open
 
 \begin_layout Plain Layout
 
-p100 <- plotPlane(m4, plotx1="x1", plotx2="x2")
+p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3092,7 +3097,7 @@ status open
 
 \begin_layout Plain Layout
 
-plotPlane(m6, plotx1="x1", plotx2="x2")
+plotPlane(m6, plotx1 = "x1", plotx2 = "x2")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3116,7 +3121,7 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(m6, tight=FALSE)
+outreg(m6, tight = FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3218,23 +3223,28 @@ p110 <- plotPlane(m6, plotx1 = "x1", plotx2 = "x2", x1lab = "Continuous
 
 \begin_layout Plain Layout
 
-for(j in unique(m6ps$newdata$x2)){
+addLines(from = m6ps, to = p110, col = m6ps$col)
 \end_layout
 
 \begin_layout Plain Layout
 
-    subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
+#for(j in unique(m6ps$newdata$x2)){
 \end_layout
 
 \begin_layout Plain Layout
 
-    lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat = p110$res), col
+#    subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
+\end_layout
+
+\begin_layout Plain Layout
+
+#    lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat = p110$res), col
  = "red", lwd = 3)
 \end_layout
 
 \begin_layout Plain Layout
 
-}
+#}
 \end_layout
 
 \begin_layout Plain Layout
@@ -3352,7 +3362,7 @@ status open
 
 \begin_layout Plain Layout
 
-m4 <- lm (y4 ~ x1 * x2, data=dat)
+m4 <- lm (y4 ~ x1 * x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3436,7 +3446,8 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m4,m4s), tight=F, modelLabels=c("Not Standardized","Standardized"))
+outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardize
+d"))
 \end_layout
 
 \begin_layout Plain Layout

@@ -1,3 +1,13 @@
+2013-03-29  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotPlane.R (addLines): saved the col value in the
+	return of plotSlopes. Use that in addLines unless user said
+	otherwise in col argument.
+
+	* ../R/plotSlopes.R: working through assinine decisions I
+	carelessly made on changing handling of interval in plotSlopes.
+	Now behavior slightly more predictable. But frustating.
+
 2013-03-28  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/plotSlopes.R (plotSlopes): revise to allow missing or null

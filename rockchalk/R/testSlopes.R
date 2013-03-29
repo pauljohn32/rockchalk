@@ -3,8 +3,10 @@
 ##' Conducts t-test of the hypothesis that the "simple slope" line for
 ##' one predictor is statistically significantly different from zero
 ##' for each value of a moderator variable. The user must first run
-##' \code{plotSlopes()}, which generates an object that testSlopes
-##' can investigate.
+##' \code{plotSlopes()}, and then give the output object to
+##' \code{plotSlopes()}. A plot method has been implemented for
+##' testSlopes objects. It will create an interesting display, but
+##' only when the moderator is a numeric variable.
 ##'
 ##' This function scans the input object to detect the focal values of
 ##' the moderator variable (the variable declared as \code{modx} in
@@ -25,16 +27,16 @@
 ##' Bonferroni correction).
 ##'
 ##' When \code{modx} is a numeric variable, it is possible to conduct
-##' further analysis. We can ask not only, "is this particular line's
-##' slope statistically significant?" but also "for which values of
-##' \code{modx} would the effect of \code{plotx} be statistically
-##' significant?"  This is called a Johnson-Neyman (Johnson-Neyman,
-##' 1936) approach in Preacher, Curran, and Bauer (2006). The interval
-##' is calculated here.  A plot method is provided that displays the
-##' result in a couple of ways.   Where the t-test considers the question, is the
-##' @param pso (short for plotSlopesObject) Output from the plotSlopes function
-##' @return A list including the hypothesis test table. For numeric
-##' modx variables, also the Johnson-Neyman (J-N) interval boundaries.
+##' further analysis. We ask "for which values of \code{modx} would
+##' the effect of \code{plotx} be statistically significant?"  This is
+##' called a Johnson-Neyman (Johnson-Neyman, 1936) approach in
+##' Preacher, Curran, and Bauer (2006). The interval is calculated
+##' here.  A plot method is provided to illustrate the result.
+##'
+##' @param object Output from the plotSlopes function
+##' @return A list including 1) the hypothesis test table, 2) a copy of
+##' the plotSlopes object, and, for numeric
+##' modx variables, 3) the Johnson-Neyman (J-N) interval boundaries.
 ##' @export
 ##' @import car
 ##' @seealso plotSlopes
@@ -53,31 +55,33 @@
 ##' library(car)
 ##' m3 <- lm(statusquo ~ income * sex, data = Chile)
 ##' m3ps <- plotSlopes(m3, modx = "sex", plotx = "income")
-##' testSlopes(m3ps)
-##'
-##' m4 <- lm(statusquo ~ region * income, data = Chile)
-##' m4ps <- plotSlopes(m4, modx = "region", plotx = "income", plotPoints = FALSE)
-##' ##' testSlopes(m4ps)
-##'
+##' m3psts <- testSlopes(m3ps)
+##' ## Note, plot.testSlopes does nothing because sex is a factor
+##' plot(m3psts)
 ##'
 ##' m5 <- lm(statusquo ~ region * income + sex + age, data = Chile)
 ##' m5ps <- plotSlopes(m5, modx = "region", plotx = "income")
-##' testSlopes(m5ps)
+##' m5psts <- testSlopes(m5ps)
+##'
 ##'
 ##' m6 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
 ##' m6ps <- plotSlopes(m6, modx = "income", plotx = "age")
-##' testSlopes(m6ps)
+##' m6psts <- testSlopes(m6ps)
+##' ## Finally, an interesting one to plot
+##' plot(m6psts)
 ##'
 ##' ## Finally, if model has no relevant interactions, testSlopes does nothing.
 ##' m9 <- lm(statusquo ~ age + income * education + sex + age, data=Chile)
 ##' m9ps <- plotSlopes(m9, modx = "education", plotx = "age", plotPoints = FALSE)
-##' testSlopes(m9ps)
+##' m9psts <- testSlopes(m9ps)
 
-testSlopes <- function(pso)
+testSlopes <- function(object)
 {
-    model <-  eval(parse(text=pso$call$model))
-    plotx <- pso$call$plotx
-    modx <- pso$call$modx
+    if (!inherits(object, "rockchalk"))
+        stop("use only with \"rockchalk\" objects")
+    model <-  eval(parse(text=object$call$model))
+    plotx <- object$call$plotx
+    modx <- object$call$modx
 
     ivs <- attr(terms(model), "term.labels")
     relevantInteractions <- c(paste(plotx, ":", modx, sep = ""),
@@ -86,15 +90,13 @@ testSlopes <- function(pso)
     interactionsIn <- relevantInteractions[which(relevantInteractions %in% ivs)]
 
     if (!any(relevantInteractions %in% ivs)) {
-
-        if (is.null(res)) cat("There were no interactions in the plotSlopes object, so testSlopes can't offer any advice.\n")
+        cat("There were no interactions in the plotSlopes object, so testSlopes can't offer any advice.\n")
         return(NULL)
     }
 
-
     ## Whew. We did not return, so let's get down to business.
-    modxVar <- pso$newdata[ , modx]
-    modxVals <- pso$modxVals
+    modxVar <- object$newdata[ , modx]
+    modxVals <- object$modxVals
     bs <- coef(model)
     V <- vcov(model)
 
@@ -121,9 +123,9 @@ testSlopes <- function(pso)
 
         cat(paste("These are the straight-line \"simple slopes\" of the variable", plotx, " \n for the selected moderator values. \n"))
         print(testSlopes)
-        res <- list("hypotests" = testSlopes, pso = pso)
+        res <- list("hypotests" = testSlopes, pso = object)
         class(res) <- "testSlopes"
-        invisible(res)
+        return(invisible(res))
     }
 
     ## Aha! We did not return. So this input is numeric. Continue.
@@ -177,9 +179,9 @@ testSlopes <- function(pso)
             } else {
                 paste("In this case, that means the  slope (b1 + b2modx)plotx is never statistically significant")
             }
-        res <- list("hypotests" = testSlopes, "jn" = jn, pso = pso)
+        res <- list("hypotests" = testSlopes, "jn" = jn, pso = object)
         class(res) <- "testSlopes"
-        invisible(res)
+        return(invisible(res))
     }
 
 
@@ -190,34 +192,46 @@ testSlopes <- function(pso)
     jn$roots <- sort(jn$roots)
     names(jn$roots) <- c("lo","hi")
     if (jn$a > 0) {
-            cat(paste("Values of", modx, "OUTSIDE this interval:\n"))
-            print(jn$roots)
-            cat(paste("cause the slope of (b1 + b2*", modx,")", plotx, " to be statistically significant\n", sep = ""))
-        } else {
-            cat(paste("Values of", modx, "INSIDE this interval:\n"))
-            print(jn$roots)
-            cat(paste("cause the slope of (b1 + b2*", modx,")", plotx, " to be statistically significant\n", sep = ""))
-        }
+        cat(paste("Values of", modx, "OUTSIDE this interval:\n"))
+        print(jn$roots)
+        cat(paste("cause the slope of (b1 + b2*", modx,")", plotx, " to be statistically significant\n", sep = ""))
+    } else {
+        cat(paste("Values of", modx, "INSIDE this interval:\n"))
+        print(jn$roots)
+        cat(paste("cause the slope of (b1 + b2*", modx,")", plotx, " to be statistically significant\n", sep = ""))
+    }
+
 
     ## print(paste("b1 = b2x at", -b1/b2))
     ## print(paste("quadratic minimum/maximum point at", -jn$b/(2*jn$a)))
     ## if(jn$a > 0) print("that is a minimum") else print("that is a maximum")
-    res <- list("hypotests" = testSlopes, "jn" = jn, pso = pso)
+    res <- list("hypotests" = testSlopes, "jn" = jn, pso = object)
     class(res) <- "testSlopes"
-    invisible(res)
+    return(invisible(res))
 }
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method plot testSlopes
 ##' @S3method plot testSlopes
-plot.testSlopes <- function(tso){
+plot.testSlopes <- function(x, ...){
+    if (!inherits(x, "testSlopes"))
+        stop("use only with \"testSlopes\" objects")
+    tso <- x
     model <-  eval(parse(text = tso$pso$call$model))
-    mm <- model.matrix(model)
-
-    plotx <- tso$pso$call$plotx
     modx <- tso$pso$call$modx
 
-    modxRange <- magRange(mm[ ,modx], 1.1)
+    modxVar <- model$model[, modx]
+    ## Previous oops. Don't use model.matrix(), that gives nothing if modx is a factor
+    if (!is.numeric(modxVar)){
+        print("Sorry, but I can't see how it makes sense to use a non-numeric moderator in these plots")
+        warning("testSlopes: non-numeric moderator")
+        return(NULL)
+    }
+
+    plotx <- tso$pso$call$plotx
+
+
+    modxRange <- magRange(modxVar, 1.1)
     modxSeq <- plotSeq(modxRange, length.out=100)
 
     depVarVals <- model.response(model.frame(model))
@@ -237,92 +251,119 @@ plot.testSlopes <- function(tso){
     bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + Tcrit * modxSeq * V[plotx, interactionsIn])
 
     ## MM marginal matrix, similar to return of the predict() function
-    MM <- cbind(fit = bsslope, lwr = bsslope - Tcrit * bsse, upr = bsslope + Tcrit * bsse, modxSeq = modxSeq, se = bsse, p = 2*pt(abs(bsslope/bsse), lower.tail = FALSE, df = model$df))
-    MMlwr <- MM[(tso$jn$roots[1] >= modxRange[1]) & (MM[ , "p"] < 0.05), , drop = F]
-    MMupr <- MM[(tso$jn$roots[2] <= modxRange[2]) & (MM[ , "p"] < 0.05), , drop = F]
+    MM <- cbind(fit = bsslope,
+                lwr = bsslope - Tcrit * bsse,
+                upr = bsslope + Tcrit * bsse,
+                modxSeq = modxSeq, se = bsse,
+                p = 2*pt(abs(bsslope/bsse),
+                lower.tail = FALSE, df = model$df))
 
-    ## Thin by keeping only even-numbered rows
-    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[ seq(1, nrow(MMlwr), by = 2),  ]
-    if (nrow(MMupr) >= 3) MMupr <- MMupr[ seq(1, nrow(MMupr), by = 2),  ]
 
-
-    ylab <- substitute("Marginal Effect of" ~~ AA: ~~ "(" * hat(b)[AA] + hat(b)[BB:AA]*BB *")", list(AA=plotx, BB=modx))
+    ylab <- substitute("Marginal Effect of" ~~ AA: ~~ "(" * hat(b)[AA] + hat(b)[BB:AA]*BB[i] *")", list(AA=plotx, BB=modx))
     ylim <- magRange(range(c(MM[ , "lwr"],MM[, "upr"])), c(1.15, 1))
 
     op1 <- par(no.readonly = TRUE)
-    par(mar = par("mar") + c(0,1,0,0))
+    par(mar = par("mar") + c(0,0.2,0,0))
 
-    plot(fit ~ modxSeq, data = MM, type="l", xlab = paste("The Moderator: ", modx, ")"), ylim = ylim, ylab = ylab)
+    plot(fit ~ modxSeq, data = MM, type="l", xlab = paste("The Moderator: ", modx), ylim = ylim, ylab = ylab)
     par <- op1
 
     abline(h = 0, col = gray(.80))
     lines(upr ~ modxSeq, data = MM, lty = 2, col = gray(.50))
     lines(lwr ~ modxSeq, data = MM, lty = 2, col = gray(.50))
 
-    ## can't imagine a useful case where a < 0.
+
+    ## MMlwr is the "lower" significant region (possibly the only) if jn$a < 0
+    MMlwr <- MM[(tso$jn$roots[1] >= modxRange[1]) & (MM[ , "p"] < 0.05), , drop = F]
+    ## Thin by keeping every third row
+    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[ seq(1, nrow(MMlwr), by = 3),  ]
+
+    ## I thought there would be no useful case a < 0, but
+    ## the first example I tried had that. So we have to plan for both.
+    ## TODO: Note dumb "cut and paste" coding here, needs to be re-done.
+
+
+    if ((k <- nrow(MMlwr)) > 0) {
+        arrows(x0 = MMlwr[ ,"modxSeq"], y0 = MMlwr[ ,"lwr"],
+               x1 = MMlwr[ ,"modxSeq"], y1 = MMlwr[ ,"upr"],
+               angle = 90, length = 0.05, code = 3, col = gray(.70))
+        lines(x = rep(MMlwr[k, "modxSeq"],2),
+              y = c(MMlwr[k ,"lwr"], ylim[1]), lty=4, col = gray(.70) )
+        mtext(text = round(MMlwr[k, "modxSeq"], 2),
+              at = MMlwr[k, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
+    }
+    ## if jn$a < 0, put a left side marker on that interval
+    if (tso$jn$a < 0) {
+        lines(x = rep(MMlwr[1, "modxSeq"],2),
+              y = c(MMlwr[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
+        mtext(text = round(MMlwr[1, "modxSeq"], 2),
+              at = MMlwr[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
+    }
+
+    ## if jn$a > 0, we need to shade the upper right as well.
     if (tso$jn$a > 0) {
-        if (k <- nrow(MMlwr) > 0) {
-            arrows(x0 = MMlwr[ ,"modxSeq"], y0 = MMlwr[ ,"lwr"], x1 = MMlwr[ ,"modxSeq"], y1 = MMlwr[ ,"upr"], angle = 90, length = 0.05, code = 3, col = gray(.70))
-
-            lines(x = rep(MMlwr[k, "modxSeq"],2), y = c(MMlwr[k ,"lwr"], ylim[1]), lty=4, col = gray(.80) )
-            mtext(text = round(MMlwr[k, "modxSeq"], 2), at = MMlwr[k, "modxSeq"],  side = 1, line = 2)
-        }
-
-
-        if (k <- nrow(MMupr) > 0) {
-            arrows(x0 = MMupr[ ,"modxSeq"], y0 = MMupr[ ,"lwr"], x1 = MMupr[ ,"modxSeq"], y1 = MMupr[ ,"upr"], angle = 90, length = 0.05, code = 3, col = gray(.70))
-            lines(x = rep(MMupr[1, "modxSeq"],2), y = c(MMupr[1 ,"lwr"], ylim[1]), lty=4, col = gray(.80))
-            mtext(text = round(MMupr[1, "modxSeq"], 2), at = MMupr[1, "modxSeq"],  side = 1, line = 2)
+        MMupr <- MM[(tso$jn$roots[2] <= modxRange[2]) & (MM[ , "p"] < 0.05), , drop = F]
+        if (nrow(MMupr) >= 3) MMupr <- MMupr[ seq(1, nrow(MMupr), by = 3),  ]
+        if ((k <- nrow(MMupr)) > 0) {
+            arrows(x0 = MMupr[ ,"modxSeq"], y0 = MMupr[ ,"lwr"],
+                   x1 = MMupr[ ,"modxSeq"], y1 = MMupr[ ,"upr"],
+                   angle = 90, length = 0.05, code = 3, col = gray(.70))
+            lines(x = rep(MMupr[1, "modxSeq"],2),
+                  y = c(MMupr[1 ,"lwr"], ylim[1]), lty=4, col = gray(.80))
+            mtext(text = round(MMupr[1, "modxSeq"], 2),
+                  at = MMupr[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
         }
     }
 
-    ## shaded on either end.
+    ## Should a polygon be shaded on either end, or only in
+    ## middle. Lets think more carefully than the arrows case
+
+    polygon(x = c(MMlwr[ ,"modxSeq"], rev(MMlwr[ ,"modxSeq"])),
+            y = c(MMlwr[ ,"upr"], rev(MMlwr[ , "lwr"]) ),
+            col = rgb(1, 0, 0, 0.10), border = gray(.80))
+
     if (tso$jn$a > 0) {
-
-        polygon( x = c(MMlwr[ ,"modxSeq"], rev(MMlwr[ ,"modxSeq"])),
-                y = c(MMlwr[ ,"lwr"], rev(MMlwr[ , "lwr"]) ),
-                col = rgb(1, 0, 0, 0.10), border = gray(.80))
-
-
-        polygon( x = c(MMupr[ ,"modxSeq"], rev(MMupr[ ,"modxSeq"])),
+        polygon(x = c(MMupr[ ,"modxSeq"], rev(MMupr[ ,"modxSeq"])),
                 y = c(MMupr[ ,"upr"], rev(MMupr[ , "lwr"])),
                 col = rgb(1, 0, 0, 0.10), border = gray(.80))
-
     }
 
     legend("topleft", legend = c("Marginal Effect", "95% Conf. Int."),
-           lty = c(1, 2), col = c(1, gray(.50)))
+           lty = c(1, 2), col = c(1, gray(.50)), bg = "white")
 
     legend("bottomright", title = "Shaded Region: Null Hypothesis",
-       legend = substitute(b[AA] + b[BB:AA]*BB == 0 ~~ "rejected", list(AA=plotx, BB=modx)),
-           fill = c(rgb(1,0,0, 0.10)))
+       legend = substitute(b[AA] + b[BB:AA]*BB[i] == 0 ~~ "rejected", list(AA=plotx, BB=modx)),
+           fill = c(rgb(1,0,0, 0.10)), bg = "white")
 
 
-    ## Now draw the quadratic equation, to show the solution of slope/se - Tcrit = 0
 
-    ##print("A plot of the quadratic equation should appear now, just for fun")
-    if (tso$jn$a > 0) {
-        xps <- plotSeq(magRange(tso$jn$roots, 1.3), length.out=100)
-        ## cat(paste("Values of modx OUTSIDE this interval:\n"))
-    } else {
-        xps <- plotSeq(magRange(mm[, modx], 1.5), length.out=100)
-    }
+    if (0){
+        ## Now draw the quadratic equation, to show the solution of slope/se - Tcrit = 0
 
-    y <- tso$jn$a * xps^2 + tso$jn$b*xps + tso$jn$c
-    plot(xps, y, type="l", xlab=paste("Values of the Moderator:", modx), ylab="slope/se - Tcrit")
-    if( !is.null(tso$jn$roots) ){
-        if(tso$jn$a < 0 ){
-            arrows( tso$jn$roots[1], 0, tso$jn$roots[2], 0, col="red", angle=90, lwd=3, code=3, length=0.1)
-            text( mean(range(xps)), range(y)[1], pos=3, label=expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx, " is significant in the red zone")))
+        ##print("A plot of the quadratic equation should appear now, just for fun")
+        if (tso$jn$a > 0) {
+            xps <- plotSeq(magRange(tso$jn$roots, 1.3), length.out=100)
+            ## cat(paste("Values of modx OUTSIDE this interval:\n"))
         } else {
-            arrows(min(xps), 0, tso$jn$roots[1], 0, col="red", angle=90, lwd=3, code=2, length=0.1)
-            arrows(tso$jn$roots[2], 0, max(xps), 0, col="red", angle=90, lwd=3, code=1, length=0.1)
-            text( mean(range(xps)), range(y)[2], pos=1,
-                 label = expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx,
-                     " is significant in the red zone")))
+            xps <- plotSeq(magRange(modxVar, 1.5), length.out=100)
         }
+
+        y <- tso$jn$a * xps^2 + tso$jn$b*xps + tso$jn$c
+        plot(xps, y, type="l", xlab=paste("The Moderator:", modx), ylab="slope/se - Tcrit")
+        if( !is.null(tso$jn$roots) ){
+            if(tso$jn$a < 0 ){
+                arrows( tso$jn$roots[1], 0, tso$jn$roots[2], 0, col="red", angle=90, lwd=3, code=3, length=0.1)
+                text( mean(range(xps)), range(y)[1], pos=3, label=expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx, " is significant in the red zone")))
+            } else {
+                arrows(min(xps), 0, tso$jn$roots[1], 0, col="red", angle=90, lwd=3, code=2, length=0.1)
+                arrows(tso$jn$roots[2], 0, max(xps), 0, col="red", angle=90, lwd=3, code=1, length=0.1)
+                text( mean(range(xps)), range(y)[2], pos=1,
+                     label = expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx,
+                         " is significant in the red zone")))
+            }
+        }
+        abline(h=0, col="gray80")
     }
-    abline(h=0, col="gray80")
 }
 
 

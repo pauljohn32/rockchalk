@@ -638,8 +638,8 @@ for the moderator, which in this case are \{8, 10.5, 12\}.
 <<ps10, fig=T, echo=F, height=9, width=6>>=
 m4 <- lm (y4 ~ x1*x2 + x3, data=dat)
 par(mfcol=c(2,1))
-m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a Continuous Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$x1, c(1.2,1)))
-m4psb <- plotSlopes(m4, plotx = "x1", modx = "x2", modxVals=c(8, 10.5, 12), xlab="Continuous Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$x1, c(1.2,1)))
+m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a Continuous Predictor", ylim = magRange(dat$y4, c(1,1.3)), xlim = magRange(dat$x1, c(1.2,1)))
+m4psb <- plotSlopes(m4, plotx = "x1", modx = "x2", modxVals=c(8, 10.5, 12), xlab = "Continuous Predictor", ylim = magRange(dat$y4, c(1,1.3)), xlim = magRange(dat$x1, c(1.2,1)))
 par(mfcol=c(1,1))
 @
 
@@ -651,8 +651,8 @@ plotSlopes is intended for linear models with multiplicative interactions,
 but it will also draw ordinary linear models. It returns an object
 that may facilitate further analysis. The output object includes the
 newdata object that was used to construct the plots that are draw.
-That output object is used by the function testSlopes, which is discussed
-below.
+That output object is used by the function testSlopes(), which is
+discussed below.
 
 The plotSlopes function also works well if the moderator is a categorical
 variable. When modx is categorical, the points and lines are drawn
@@ -728,9 +728,10 @@ and then submit the output object to testSlopes. The usual case would
 be the following:
 
 \inputencoding{latin9}\begin{lstlisting}
-m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
+m4 <- lm (y4 ~ x1*x2 + x3, data=dat)
 m4ps <- plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
-testSlopes(m4ps)
+m4psts <- testSlopes(m4ps)
+plot(m4psts)
 \end{lstlisting}
 \inputencoding{utf8}
 
@@ -738,9 +739,10 @@ testSlopes(m4ps)
 Figure \ref{fig:ts10}.
 
 \begin{figure}
-<<ts10, fig=T, echo=T, height=4, width=6>>=
-testSlopes(m4psa)
-@
+%<<ts10, fig=T, echo=T, height=4, width=6>>=
+%m4psats <- testSlopes(m4psa)
+%plot(m4psats)
+%@
 
 \caption{testSlopes for an Interactive Model\label{fig:ts10}}
 \end{figure}
@@ -760,7 +762,7 @@ H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+b_{plotx\cdot modx}modx
 plotted on the horizontal axis in the plotSlopes output. 
 
 Following a suggestion of Preacher, Curran, and Bauer (2006), the
-testSlopes function also tries to calculate the Johnson-Neyman (1936)
+testSlopes() function also tries to calculate the Johnson-Neyman (1936)
 interpretation of the same test. It presents a plot, as illustrated
 in Figure \ref{fig:ts10}. The J-N test would have us ask, ``for
 which values of the moderator would the value $\hat{b}_{simple\, slope}$

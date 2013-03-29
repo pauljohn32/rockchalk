@@ -110,7 +110,9 @@ cutByQuantile <- function(x, n = 3){
         qs <- cutByTable(x, n)
         invisible(qs)
     } else {
-        cutVector <- if(n < 4){
+        cutVector <- if(n == 1){
+            c(0.50)
+        }else if(n < 4){
             c(0.25, 0.50, 0.75)
         }else if(n == 4){
             c(0.20, 0.40, 0.60, 0.80)
@@ -119,7 +121,7 @@ cutByQuantile <- function(x, n = 3){
         }else if(n > 5) {
             if(n %% 2 == 0) {
                 g <- 0.5 / n %/% 2
-                c(seq(0, 0.5-g, by=g), 0.5, seq(0.5+g, 1.0, by=g))
+                c(seq(0, 0.5-g, by = g), 0.5, seq(0.5+g, 1.0, by = g))
             } else {
                 pretty(c(0, 1), n = n-1)
             }
@@ -137,7 +139,9 @@ cutByQuantile <- function(x, n = 3){
 ##' @return A named vector
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @param x A numeric variable
-##' @param n Should be either 3 or 5. If 3, values that divide the data at c(m-sd, m, m+sd) are returned. If 5, the returned values are c(m-2sd, m-sd, m, m+sd, m+2sd). Other values of n will be rounded to 3 or 5.
+##' @param n Should be 1, 3 or 5. If 2 < n < 5, values that divide 
+##' the data at c(m-sd, m, m+sd) are returned. If n > 4, the 
+##' returned values are c(m-2sd, m-sd, m, m+sd, m+2sd).
 cutBySD <- function(x, n = 3){
     uniqueVals <- unique(x)
     if (length(uniqueVals) < 6) {
@@ -146,9 +150,12 @@ cutBySD <- function(x, n = 3){
     } else {
         mx <- round(mean(x, na.rm=T),2)
         sdx <- round(sd(x, na.rm=T),2)
-        if (n <= 4) {
+        if (n == 1){
+            qs <- c( mx )
+            suffix <- c("(m)")
+        } else if (n <= 4) {
             qs <- c(mx - sdx, mx, mx + sdx)
-            suffix <- c("(m-sd)","(m)","(m+sd)")
+            suffix <- c("(m-sd)", "(m)", "(m+sd)")
         } else {
             qs <- c(mx - 2*sdx, mx - sdx, mx, mx + sdx, mx + 2*sdx)
             suffix <- c("(m-2sd)","(m-sd)","(m)","(m+sd)","(m+2sd)")
