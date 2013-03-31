@@ -1,3 +1,15 @@
+##' Generic function for plotting regressions and interaction effects
+##'
+##'
+##' @param model Required. A fitted Regression
+##' @param plotx Required. Name of one predictor from the fitted model to be plotted on horizontal axis
+##' @param ... Additional arguments passed to methods.
+##' @export
+##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @seealso \code{\link[rockchalk]{testSlopes}} \code{\link[rockchalk]{plotCurves}}
+##' @return Creates a plot and an output object that summarizes it.
+plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
+
 ##' Plot predicted values for focal values of a moderator variable.
 ##'
 ##' This is a "simple slope" plotter for linear regression objects
@@ -45,10 +57,7 @@
 ##' in the newdata object that is created as a part of the output from
 ##' this function
 ##'
-##' @param model Required. Fitted regression object. Must have a
-##' predict method
-##' @param plotx Required. Must be a numeric variable. String with
-##' name of predictor to be plotted on horizontal axis
+
 ##' @param modx Optional. String for moderator variable name. May be
 ##' either numeric or factor. If omitted, a single predicted value line
 ##' will be drawn.
@@ -84,15 +93,15 @@
 ##' used to create the plot, along with the "modxVals" vector, the
 ##' values of the moderator for which lines were drawn, and the color
 ##' vector. It also includes the call that generated the plot.
-##' @seealso plotCurves and testSlopes
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @seealso \code{\link[rockchalk]{testSlopes}} \code{\link[rockchalk]{plotCurves}}
+##' ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @references
 ##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
 ##'
 ##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences (Third.). Routledge Academic.
 ##' @example inst/examples/plotSlopes-ex.R
 
-plotSlopes <-
+plotSlopes.lm <-
   function (model, plotx, modx, n = 3, modxVals = NULL ,
             interval = c("none", "confidence", "prediction"),
             plotPoints = TRUE, plotLegend = TRUE, col, llwd, ...)
