@@ -1,3 +1,18 @@
+2013-03-31  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* Examples: plotCurves-ex, plotSlopes-ex: show new features
+	
+	* ../R/testSlopes.R (testSlopes): pass inroot into jn, so the plot
+	function can check it.
+
+	* ../R/plotCurves.R (plotCurves): now accepts modx as option,
+	will plot without it.
+	* legend and color re-fitted.  Nearly going insane maintaining
+	almost identical plotSlopes and plotCurves. Must regain sanity.
+
+	* ../R/plotSlopes.R (plotSlopes.lm): clean up color
+	access, fix legend
+
 2013-03-29  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/plotPlane.R (addLines): saved the col value in the

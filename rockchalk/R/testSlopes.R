@@ -53,17 +53,6 @@
 
 ##' @examples
 ##' library(car)
-##' m3 <- lm(statusquo ~ income * sex, data = Chile)
-##' m3ps <- plotSlopes(m3, modx = "sex", plotx = "income")
-##' m3psts <- testSlopes(m3ps)
-##' ## Note, plot.testSlopes does nothing because sex is a factor
-##' plot(m3psts)
-##'
-##' m5 <- lm(statusquo ~ region * income + sex + age, data = Chile)
-##' m5ps <- plotSlopes(m5, modx = "region", plotx = "income")
-##' m5psts <- testSlopes(m5ps)
-##'
-##'
 ##' m6 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
 ##' m6ps <- plotSlopes(m6, modx = "income", plotx = "age")
 ##' m6psts <- testSlopes(m6ps)
@@ -169,15 +158,15 @@ testSlopes <- function(object)
     jn$a <- b2^2 - (Tcrit^2) * V[interactionsIn, interactionsIn]
     jn$b <- 2*b1*b2 - (Tcrit^2) * 2 * V[plotx, interactionsIn]
     jn$c <- b1^2 - (Tcrit^2) * V[plotx, plotx]
-    inroot <- (jn$b^2) - 4 * jn$a * jn$c
+    jn$inroot <- (jn$b^2) - 4 * jn$a * jn$c
 
     ##complex root check, if yes, exit with message.
-    if (inroot <= 0) {
+    if (jn$inroot <= 0) {
         print(paste("There are no real roots to the quadratic equation that represents regions of statistical significance."))
             if (jn$a > 0) {
-                paste("That means the slope (b1 + b2modx)plotx is statistically significant for all values of modx")
+                print("That means the slope (b1 + b2modx)plotx is statistically significant for all values of modx")
             } else {
-                paste("In this case, that means the  slope (b1 + b2modx)plotx is never statistically significant")
+                print("In this case, that means the  slope (b1 + b2modx)plotx is never statistically significant")
             }
         res <- list("hypotests" = testSlopes, "jn" = jn, pso = object)
         class(res) <- "testSlopes"
@@ -187,8 +176,8 @@ testSlopes <- function(object)
 
     ## else (!inroot <= 0)
     ## Whew. Roots not complex, otherwise would have returned
-    jn$roots <- c( (-jn$b - sqrt(inroot))/(2*jn$a),
-                  (-jn$b + sqrt(inroot))/(2*jn$a) )
+    jn$roots <- c( (-jn$b - sqrt(jn$inroot))/(2*jn$a),
+                  (-jn$b + sqrt(jn$inroot))/(2*jn$a) )
     jn$roots <- sort(jn$roots)
     names(jn$roots) <- c("lo","hi")
     if (jn$a > 0) {
@@ -219,6 +208,11 @@ plot.testSlopes <- function(x, ...){
     tso <- x
     model <-  eval(parse(text = tso$pso$call$model))
     modx <- tso$pso$call$modx
+
+    if (x$jn$inroot <= 0) {
+        print("There are no real roots. There is nothing worth plotting")
+        return(NULL)
+    }
 
     modxVar <- model$model[, modx]
     ## Previous oops. Don't use model.matrix(), that gives nothing if modx is a factor

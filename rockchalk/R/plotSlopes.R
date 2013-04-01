@@ -1,11 +1,16 @@
 ##' Generic function for plotting regressions and interaction effects
 ##'
+##' This is a generic function for plotting regression objects.
 ##'
 ##' @param model Required. A fitted Regression
 ##' @param plotx Required. Name of one predictor from the fitted model to be plotted on horizontal axis
-##' @param ... Additional arguments passed to methods.
-##' @export
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @param ... Additional arguments passed to methods. Often
+##' includes arguments that are passed to plot. Any
+##' arguments that customize plot output, such as lwd, cex, and so
+##' forth, may be supplied.
+##' @export plotSlopes
+##' @rdname plotSlopes
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @seealso \code{\link[rockchalk]{testSlopes}} \code{\link[rockchalk]{plotCurves}}
 ##' @return Creates a plot and an output object that summarizes it.
 plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
@@ -57,7 +62,6 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' in the newdata object that is created as a part of the output from
 ##' this function
 ##'
-
 ##' @param modx Optional. String for moderator variable name. May be
 ##' either numeric or factor. If omitted, a single predicted value line
 ##' will be drawn.
@@ -84,23 +88,20 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' are more focal values of \code{modx} than colors provided.
 ##' @param llwd Optional. Line widths for predicted values. Can be
 ##' single value or a vector, which will be recycled as necessary.
-##' @param ... further arguments that are passed to plot. Any
-##' arguments that customize plot output, such as lwd, cex, and so
-##' forth, may be supplied.
 ##' @export
+##' @method plotSlopes lm
+##' @S3method plotSlopes lm
+##' @rdname plotSlopes
 ##' @import car
 ##' @return The return object includes the "newdata" object that was
 ##' used to create the plot, along with the "modxVals" vector, the
 ##' values of the moderator for which lines were drawn, and the color
 ##' vector. It also includes the call that generated the plot.
-##' @seealso \code{\link[rockchalk]{testSlopes}} \code{\link[rockchalk]{plotCurves}}
-##' ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @references
 ##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
 ##'
 ##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences (Third.). Routledge Academic.
 ##' @example inst/examples/plotSlopes-ex.R
-
 plotSlopes.lm <-
   function (model, plotx, modx, n = 3, modxVals = NULL ,
             interval = c("none", "confidence", "prediction"),
@@ -119,7 +120,7 @@ plotSlopes.lm <-
     if (!is.numeric(plotxVar))
         stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
     ylab <- colnames(model$model)[1]
-    plotyRange <- magRange(depVar, mult = c(1, 1.1))
+    plotyRange <- magRange(depVar, mult = c(1, 1.2))
     plotxRange <- range(mm[, plotx], na.rm = TRUE)
 
     plotxVals <- plotSeq(plotxRange, length.out = 40)
@@ -181,9 +182,15 @@ plotSlopes.lm <-
 
     do.call("plot", parms)
 
+
+    ## iCol: rgb color matrix. Why does rgb insist the columns be
+    iCol <- col2rgb(col)
+    ### bCol: border color
+    bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 50, maxColorValue = 255)
+    ### sCol: shade color
+    sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 15, maxColorValue = 255)
     if (interval != "none") {
         for (i in 1:lmx) {
-            nCol <- col2rgb(col[i])
             if(missing(modx) || is.null(modx)) {
                 pdat <- newdf
             } else {
@@ -191,7 +198,7 @@ plotSlopes.lm <-
             }
             parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = i)
             parms <- modifyList(parms, dotargs)
-            parms <- modifyList(parms, list(border = rgb(red = t(nCol), alpha = 50, maxColorValue = 255), col = rgb(red = t(nCol), alpha = 15, maxColorValue = 255), lwd = 0.3* llwd[i]))
+            parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[i]))
             do.call("polygon", parms)
         }
     }
@@ -219,10 +226,16 @@ plotSlopes.lm <-
     }
 
     if (plotLegend){
+        lty <- 1:lmx
         if (missing(modx) || is.null(modx)){
-            titl <- "Regression Analysis"
-            legnd <- c("Predicted Values")
-            if (interval != "none") legnd[2] <- paste(interval, "interval")
+            titl <- "Regression analysis"
+            legnd <- c("Predicted values")
+            if (interval != "none") {
+                legnd[2] <- paste("95%", interval, "interval")
+                col <- c(col, 0)
+                lty <- c(lty, 0)
+                llwd <- c(llwd, 0)
+            }
         } else if (is.null(names(modxVals))) {
             titl <- paste("Moderator:", modx)
             legnd <- paste(modxVals, sep = "")
