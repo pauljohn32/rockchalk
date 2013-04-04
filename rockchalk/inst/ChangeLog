@@ -1,7 +1,16 @@
+2013-04-02  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* examples/meanCenter-ex.R: use new "terms" argument to specify
+	variable to be centered.
+
+	* ../R/meanCenter.R (print.summary.stdreg): meanCenter=add
+	terms argument to allow user to circumvent the automatic
+	variable selection and force the centering to be done.
+
 2013-03-31  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* Examples: plotCurves-ex, plotSlopes-ex: show new features
-	
+
 	* ../R/testSlopes.R (testSlopes): pass inroot into jn, so the plot
 	function can check it.
 

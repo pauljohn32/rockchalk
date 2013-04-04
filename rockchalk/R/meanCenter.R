@@ -95,7 +95,6 @@ ill-advised, but you asked for it by running standardize().\n
 The rockchalk function meanCenter is a smarter option, probably. \n
 The summary statistics of the variables in the design matrix. \n")
     print(x$summstat)
-    ##NextMethod(generic = "print", x = x, ...)
     NextMethod()
 }
 NULL
@@ -114,26 +113,60 @@ NULL
 ##' of mean-centered models with others by automatically
 ##' re-calculating centered variables.  The defaults will cause a
 ##' regression's numeric interactive variables to be mean
-##' centered. That is to say, if an interaction x1:x2 is present in
-##' the model, then x1 and x2 are replaced by (m1-mean(m1)) and
-##' (m2-mean(m2) in all of the terms in which they appear in the model
-##' (the main effect and the interaction).  If one wants all
-##' predictors to be centered, the option \code{centerOnlyInteractors}
-##' should be set to FALSE. The dependent variable will not be
-##' centered, unless the user explicitly requests it by setting
-##' centerDV = TRUE. The centered variables can be standardized
-##' (optionally, of course).
+##' centered. Variations on the arguments are discussed in details.
+##'
+##' Suppose the user's formula that fits the original model is
+##' \code{m1 <- lm(y ~ x1*x2 + x3 + x4, data = dat)}. The fitted model
+##' will include estimates for predictors \code{x1}, \code{x2},
+##' \code{x1:x2}, \code{x3} and \code{x4}. By default,
+##' \code{meanCenter(m1)} scans the output to see if there are
+##' interaction terms of the form \code{x1:x2}. If so, then x1 and x2
+##' are replaced by centered versions (m1-mean(m1)) and
+##' (m2-mean(m2)). The model is re-estimated with those new variables.
+##' model (the main effect and the interaction). The resulting thing
+##' is "just another regression model", which can be analyzed or
+##' plotted like any R regression object.
+##'
+##' The user can claim control over which variables are centered in
+##' several ways. Most directly, by specifying a vector of variable
+##' names, the user can claim direct control. For example, the
+##' argument \code{terms=c("x1","x2","x3")} would cause 3 predictors
+##' to be centered. If one wants all predictors to be centered, the
+##' argument \code{centerOnlyInteractors} should be set to
+##' FALSE. Please note, this WILL NOT center factor variables. But it
+##' will find all numeric predictors and center them.
+##'
+##' The  dependent variable will not be centered, unless the user
+##' explicitly requests it by setting centerDV = TRUE.
+##'
+##' As an additional convenience to the user, the argument
+##' \code{standardize = TRUE} can be used.  This will divide each
+##' centered variable by its observed standard deviation. For people
+##' who like standardized regression, I suggest this is a better
+##' approach than the \code{standardize} function (which is brain-dead
+##' in the style of SPSS). meanCenter with \code{standardize = TRUE}
+##' will only try to standardize the numeric predictors.
+##'
+##' To be completely clear, I believe mean-centering is not helpful
+##' with the multicollinearity problem. It doesn't help, it doesn't
+##' hurt.  Only a misunderstanding leads its proponents to claim
+##' otherwise. This is emphasized in the vignette "rockchalk" that is
+##' distributed with this package.
+##'
 ##' @title meanCenter
 ##' @param model a fitted regression model (presumably from lm)
-##' @param centerOnlyInteractors If false, all predictors in the
-##' regression data frame are centered before the regression is
-##' conducted.
-##' @param centerDV Should the dependent variable be centered?
-##' @param standardize Instead of simply mean-centering the variables, should they also be "standardized" by first mean-centering and then dividing by the estimated standard deviation.
+##' @param centerOnlyInteractors Default TRUE. If FALSE, all numeric
+##' predictors in the regression data frame are centered before the
+##' regression is conducted.
+##' @param centerDV Default FALSE. Should the dependent variable be centered?
+##' @param standardize Default FALSE. Instead of simply mean-centering the variables, should they also be "standardized" by first mean-centering and then dividing by the estimated standard deviation.
+##' @param terms Optional. A vector of variable names to be
+##' centered. Supplying this argument will stop meanCenter from
+##' searching for interaction terms that might need to be centered.
 ##' @export meanCenter
 ##' @rdname meanCenter
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @seealso \code{\link[pequod]{lmres}}
+##' @seealso \code{\link[pequod]{lmres}} \code{\link[rockchalk]{standardize}} \code{\link[rockchalk]{residualCenter}}
 ##' @references
 ##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
 ##'
@@ -141,7 +174,7 @@ NULL
 ##'
 ##' Echambadi, R., and Hess, J. D. (2007). Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple Regression Models. Marketing Science, 26(3), 438-445.
 ##' @example inst/examples/meanCenter-ex.R
-meanCenter <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standardize=FALSE){
+meanCenter <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standardize=FALSE, terms = NULL){
     UseMethod("meanCenter")
 }
 
@@ -152,7 +185,7 @@ meanCenter <- function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standa
 ##' @method meanCenter default
 ##' @S3method meanCenter default
 meanCenter.default <-
-    function(model, centerOnlyInteractors=TRUE, centerDV=FALSE, standardize=FALSE)
+    function(model, centerOnlyInteractors = TRUE, centerDV = FALSE, standardize = FALSE, terms = NULL)
 {
 
     std <- function(x) {
@@ -180,22 +213,28 @@ meanCenter.default <-
     ##Build "nc", a vector of variable names that "need centering"
     ##
     if (!centerDV) {
-        if (centerOnlyInteractors == FALSE){
+        if (!is.null(terms)){
+            nc <- as.vector(terms)
+            nc <- unique(nc)
+        } else if (centerOnlyInteractors == FALSE){
             nc <- isNumeric[-1] #-1 excludes response
-            unique(nc)
+            nc <- unique(nc)
         } else {
             interactTerms <- tl[grep(":", tl)]
             nc <- unique(unlist(strsplit( interactTerms, ":")))
             nc <-  nc[which(nc %in% isNumeric)]
         }
     } else {
-        if (centerOnlyInteractors == FALSE){
+        if (!is.null(terms)){
+            nc <- as.vector(terms)
+            nc <- c(names(tmdc)[1] , nc)
+        } else if (centerOnlyInteractors == FALSE){
             nc <- isNumeric
         } else {
             interactTerms <- tl[grep(":", tl)]
             nc <- unique(unlist(strsplit( interactTerms, ":")))
             nc <- nc[which(nc %in% isNumeric)]
-            nc <- c( names(tmdc)[1] , nc)
+            nc <- c(names(tmdc)[1] , nc)
         }
     }
 
