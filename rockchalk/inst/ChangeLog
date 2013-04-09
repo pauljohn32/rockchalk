@@ -1,3 +1,22 @@
+2013-04-08  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/testSlopes.R (plot.testSlopes): add shade argument to
+	stop the pink shading. TODO. allow user color choice.
+	* Found Bug on MMlwr and MMupr: don't exclude middle
+	in two-ended significant interval. Must think harder.
+
+	* ../R/utils.R (cutByQuantile): now allow n=2 imply quantiles 25
+	and 75.
+
+	* examples/testSlopes-ex.R: new example for testSlopes, cut
+	example code from testSlopes.R
+
+	* ../R/testSlopes.R (testSlopes): requires plotSlopes object
+
+	* ../R/plotSlopes.R (plotSlopes.lm): class now "plotSlopes" and
+	"rockChalk". plotPlane works with all 2d rockchalk objects, but
+	testSlopes only works with plotSlopes so far
+
 2013-04-02  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* examples/meanCenter-ex.R: use new "terms" argument to specify

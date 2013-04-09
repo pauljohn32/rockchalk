@@ -50,24 +50,11 @@
 ##' Johnson, P.O. and Neyman, J. (1936). "Tests of certain linear
 ##' hypotheses and their applications to some educational problems.
 ##' Statistical Research Memoirs, 1, 57-93.
-
-##' @examples
-##' library(car)
-##' m6 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
-##' m6ps <- plotSlopes(m6, modx = "income", plotx = "age")
-##' m6psts <- testSlopes(m6ps)
-##' ## Finally, an interesting one to plot
-##' plot(m6psts)
-##'
-##' ## Finally, if model has no relevant interactions, testSlopes does nothing.
-##' m9 <- lm(statusquo ~ age + income * education + sex + age, data=Chile)
-##' m9ps <- plotSlopes(m9, modx = "education", plotx = "age", plotPoints = FALSE)
-##' m9psts <- testSlopes(m9ps)
-
+##' @example inst/examples/testSlopes-ex.R
 testSlopes <- function(object)
 {
-    if (!inherits(object, "rockchalk"))
-        stop("use only with \"rockchalk\" objects")
+    if (!inherits(object, "plotSlopes"))
+        stop("use only with \"plotSlopes\" objects")
     model <-  eval(parse(text=object$call$model))
     plotx <- object$call$plotx
     modx <- object$call$modx
@@ -118,8 +105,6 @@ testSlopes <- function(object)
     }
 
     ## Aha! We did not return. So this input is numeric. Continue.
-
-
 
     bmodx <- NULL
     bplotx <- bs[plotx]
@@ -202,7 +187,7 @@ testSlopes <- function(object)
 ##' @author <pauljohn@@ku.edu>
 ##' @method plot testSlopes
 ##' @S3method plot testSlopes
-plot.testSlopes <- function(x, ...){
+plot.testSlopes <- function(x, ..., shade = TRUE){
     if (!inherits(x, "testSlopes"))
         stop("use only with \"testSlopes\" objects")
     tso <- x
@@ -266,16 +251,29 @@ plot.testSlopes <- function(x, ...){
     lines(upr ~ modxSeq, data = MM, lty = 2, col = gray(.50))
     lines(lwr ~ modxSeq, data = MM, lty = 2, col = gray(.50))
 
+    ## TODO FIX ME HIGH PRIORITY: ping regions do not exclude middle
+    ## MMexcluded <- which(MM[ , "p"] > 0.05)
 
+    ## if (length(MMexcluded) > 0)
     ## MMlwr is the "lower" significant region (possibly the only) if jn$a < 0
-    MMlwr <- MM[(tso$jn$roots[1] >= modxRange[1]) & (MM[ , "p"] < 0.05), , drop = F]
+    MMsig <- MM[ , "p"] < 0.05
+    MMsigRle <- rle(MMsig)
+    ##immitate zoo:xblocks.default
+    idxBounds <- cumsum(c(1,  MMsigRle$lengths))
+    idxStart <- head(idxBounds, -1)
+    idxEnd <- tail(idxBounds, -1) - 1
+    idxEnd[length(idxEnd)] <- length(MMsig)
+    intervals <- which(MMsigRle$values == TRUE)
+    if(length(intervals) > 2)  stop("Error in testSlopes, illogical condition occured")
+
+    MMlwr <- MM[seq.int(idxStart[intervals[1]], idxEnd[intervals[1]]), , drop = FALSE]
+
     ## Thin by keeping every third row
-    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[ seq(1, nrow(MMlwr), by = 3),  ]
+    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[ seq(1, nrow(MMlwr), by = 3), ]
 
     ## I thought there would be no useful case a < 0, but
     ## the first example I tried had that. So we have to plan for both.
     ## TODO: Note dumb "cut and paste" coding here, needs to be re-done.
-
 
     if ((k <- nrow(MMlwr)) > 0) {
         arrows(x0 = MMlwr[ ,"modxSeq"], y0 = MMlwr[ ,"lwr"],
@@ -295,8 +293,11 @@ plot.testSlopes <- function(x, ...){
     }
 
     ## if jn$a > 0, we need to shade the upper right as well.
-    if (tso$jn$a > 0) {
-        MMupr <- MM[(tso$jn$roots[2] <= modxRange[2]) & (MM[ , "p"] < 0.05), , drop = F]
+    if (tso$jn$a > 0 && length(intervals) > 1) {
+        ## MMupr <- MM[(tso$jn$roots[2] <= modxRange[2]) & (MM[ , "p"] < 0.05), , drop = F]
+        MMupr <- MM[seq.int(idxStart[intervals[2]], idxEnd[intervals[2]]), , drop = FALSE]
+        interval <- 3
+
         if (nrow(MMupr) >= 3) MMupr <- MMupr[ seq(1, nrow(MMupr), by = 3),  ]
         if ((k <- nrow(MMupr)) > 0) {
             arrows(x0 = MMupr[ ,"modxSeq"], y0 = MMupr[ ,"lwr"],
@@ -309,8 +310,13 @@ plot.testSlopes <- function(x, ...){
         }
     }
 
+    legend("topleft", legend = c("Marginal Effect", "95% Conf. Int."),
+           lty = c(1, 2), col = c(1, gray(.50)), bg = "white")
+
+
     ## Should a polygon be shaded on either end, or only in
-    ## middle. Lets think more carefully than the arrows case
+    ## middle? Lets think more carefully than the arrows case
+    if (shade == FALSE) return()
 
     polygon(x = c(MMlwr[ ,"modxSeq"], rev(MMlwr[ ,"modxSeq"])),
             y = c(MMlwr[ ,"upr"], rev(MMlwr[ , "lwr"]) ),
@@ -322,8 +328,6 @@ plot.testSlopes <- function(x, ...){
                 col = rgb(1, 0, 0, 0.10), border = gray(.80))
     }
 
-    legend("topleft", legend = c("Marginal Effect", "95% Conf. Int."),
-           lty = c(1, 2), col = c(1, gray(.50)), bg = "white")
 
     legend("bottomright", title = "Shaded Region: Null Hypothesis",
        legend = substitute(b[AA] + b[BB:AA]*BB[i] == 0 ~~ "rejected", list(AA=plotx, BB=modx)),

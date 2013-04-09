@@ -89,7 +89,7 @@ NULL
 ## TODO:2012-04-23 now this only supplies the median, median+/-25.
 ## It ignores n, should fix.
 
-##' Calculates the "center" quantiles, always including the median.
+##' Calculates the "center" quantiles, always including the median, when n is odd.
 ##'
 ##' If the numeric variable has fewer than 6 unique observed values,
 ##' this will send the data to cutByTable.
@@ -112,7 +112,9 @@ cutByQuantile <- function(x, n = 3){
     } else {
         cutVector <- if(n == 1){
             c(0.50)
-        }else if(n < 4){
+        }else if(n == 2){
+            c(0.25, 0.75)
+        }else if(n == 3){
             c(0.25, 0.50, 0.75)
         }else if(n == 4){
             c(0.20, 0.40, 0.60, 0.80)
@@ -139,8 +141,8 @@ cutByQuantile <- function(x, n = 3){
 ##' @return A named vector
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @param x A numeric variable
-##' @param n Should be 1, 3 or 5. If 2 < n < 5, values that divide 
-##' the data at c(m-sd, m, m+sd) are returned. If n > 4, the 
+##' @param n Should be 1, 3 or 5. If 2 < n < 5, values that divide
+##' the data at c(m-sd, m, m+sd) are returned. If n > 4, the
 ##' returned values are c(m-2sd, m-sd, m, m+sd, m+2sd).
 cutBySD <- function(x, n = 3){
     uniqueVals <- unique(x)

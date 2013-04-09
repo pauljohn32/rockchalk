@@ -247,7 +247,7 @@ plotSlopes.lm <-
                lwd = llwd, bg = "white", title = titl)
     }
     z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = col)
-    class(z) <- "rockchalk"
+    class(z) <- c("plotSlopes", "rockchalk")
 
     invisible(z)
 }
