@@ -38,6 +38,7 @@
 ##' the plotSlopes object, and, for numeric
 ##' modx variables, 3) the Johnson-Neyman (J-N) interval boundaries.
 ##' @export
+##' @rdname testSlopes
 ##' @import car
 ##' @seealso plotSlopes
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -184,12 +185,19 @@ testSlopes <- function(object)
     return(invisible(res))
 }
 
+NULL
+
+##' @return \code{NULL}
 ##' @author <pauljohn@@ku.edu>
 ##' @method plot testSlopes
 ##' @S3method plot testSlopes
-plot.testSlopes <- function(x, ..., shade = TRUE){
-    if (!inherits(x, "testSlopes"))
-        stop("use only with \"testSlopes\" objects")
+##' @param shade Optional. Create colored polygon for significant regions.
+##' @param col Optional. Color of the shaded area. Default transparent pink.
+##' @rdname testSlopes
+plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
+    ## Following should be unnecessary.
+    ## if (!inherits(x, "testSlopes"))
+    ##     stop("use only with \"testSlopes\" objects")
     tso <- x
     model <-  eval(parse(text = tso$pso$call$model))
     modx <- tso$pso$call$modx
@@ -269,7 +277,7 @@ plot.testSlopes <- function(x, ..., shade = TRUE){
     MMlwr <- MM[seq.int(idxStart[intervals[1]], idxEnd[intervals[1]]), , drop = FALSE]
 
     ## Thin by keeping every third row
-    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[ seq(1, nrow(MMlwr), by = 3), ]
+    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[round(plotSeq(1:nrow(MMlwr), nrow(MMlwr)/3)), ]
 
     ## I thought there would be no useful case a < 0, but
     ## the first example I tried had that. So we have to plan for both.
@@ -298,7 +306,7 @@ plot.testSlopes <- function(x, ..., shade = TRUE){
         MMupr <- MM[seq.int(idxStart[intervals[2]], idxEnd[intervals[2]]), , drop = FALSE]
         interval <- 3
 
-        if (nrow(MMupr) >= 3) MMupr <- MMupr[ seq(1, nrow(MMupr), by = 3),  ]
+        if (nrow(MMupr) >= 3) MMupr <- MMupr[round(plotSeq(1:nrow(MMupr), nrow(MMupr)/3)),  ]
         if ((k <- nrow(MMupr)) > 0) {
             arrows(x0 = MMupr[ ,"modxSeq"], y0 = MMupr[ ,"lwr"],
                    x1 = MMupr[ ,"modxSeq"], y1 = MMupr[ ,"upr"],
@@ -320,12 +328,12 @@ plot.testSlopes <- function(x, ..., shade = TRUE){
 
     polygon(x = c(MMlwr[ ,"modxSeq"], rev(MMlwr[ ,"modxSeq"])),
             y = c(MMlwr[ ,"upr"], rev(MMlwr[ , "lwr"]) ),
-            col = rgb(1, 0, 0, 0.10), border = gray(.80))
+            col = col, border = gray(.80))
 
-    if (tso$jn$a > 0) {
+    if (exists("MMupr")) {
         polygon(x = c(MMupr[ ,"modxSeq"], rev(MMupr[ ,"modxSeq"])),
                 y = c(MMupr[ ,"upr"], rev(MMupr[ , "lwr"])),
-                col = rgb(1, 0, 0, 0.10), border = gray(.80))
+                col = col, border = gray(.80))
     }
 
 

@@ -64,7 +64,6 @@ summary.stdreg <- function(object, ...){
     dmmeans <- apply(dm, 2, mean)
     dmstds <- apply(dm, 2, sd)
     summstat <- zapsmall(data.frame("mean" = dmmeans, "std.dev." = dmstds))
-    ##summ <- c(summary(object, ...), summstat)
     summ <- NextMethod(generic = "summary", object = object, ...)
     summ$summstat <- summstat
     class(summ) <- paste("summary.", class(object), sep="")

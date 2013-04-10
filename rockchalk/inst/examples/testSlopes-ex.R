@@ -1,23 +1,38 @@
-library(car)
-m6 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
-m6ps <- plotSlopes(m6, modx = "income", plotx = "age")
-m6psts <- testSlopes(m6ps)
-## Finally, an interesting one to plot
-plot(m6psts)
+library(rockchalk)
+m1 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
+m1ps <- plotSlopes(m1, modx = "income", plotx = "age")
+m1psts <- testSlopes(m1ps)
+plot(m1psts)
 
 
-dat2a <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2, 0, 0.1, 0.4))
-m2a <- lm(y ~ x1*x2, data=dat2a)
-m2aps <- plotSlopes(m2a, plotx="x1", modx="x2")
+dat2 <- genCorrelatedData(N=400, rho=.1, means = c(50, -20), stde=300, beta=c(2, 0, 0.1, -0.4))
+m2 <- lm(y ~ x1*x2, data=dat2)
+m2ps <- plotSlopes(m2, plotx="x1", modx="x2")
+m2psts <- testSlopes(m2ps)
+plot(m2psts)
+m2ps <- plotSlopes(m2, plotx="x1", modx="x2", modxVals = "std.dev", n = 5)
+m2psts <- testSlopes(m2ps)
+plot(m2psts)
+
+## Try again with longer variable names
+
+colnames(dat2) <- c("oxygen","hydrogen","species")
+m2a <- lm(species ~ oxygen*hydrogen, data=dat2)
+m2aps <- plotSlopes(m2a, plotx="oxygen", modx="hydrogen")
 m2apsts <- testSlopes(m2aps)
-plot(m2apsts)
+plot(m2psts)
+m2aps <- plotSlopes(m2a, plotx="oxygen", modx="hydrogen", modxVals = "std.dev", n = 5)
+m2psts <- testSlopes(m2ps)
+plot(m2psts)
 
-dat2b <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2, 0, 0.3, 0.15), means = c(50,0), sds = c(10, 40))
-m2b <- lm(y ~ x1*x2, data=dat2b)
-m2bps <- plotSlopes(m2b, plotx="x1", modx="x2")
-m2bsts <- testSlopes(m2bps)
-plot(testSlopes(m2bps))
-plot(testSlopes(m2bps), shade = FALSE)
+
+
+dat3 <- genCorrelatedData(N=400, rho=.1, stde=300, beta=c(2, 0, 0.3, 0.15), means = c(50,0), sds = c(10, 40))
+m3 <- lm(y ~ x1*x2, data=dat3)
+m3ps <- plotSlopes(m3, plotx="x1", modx="x2")
+m3sts <- testSlopes(m3ps)
+plot(testSlopes(m3ps))
+plot(testSlopes(m3ps), shade = FALSE)
 
 ## Finally, if model has no relevant interactions, testSlopes does nothing.
 m9 <- lm(statusquo ~ age + income * education + sex + age, data=Chile)

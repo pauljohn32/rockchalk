@@ -1,3 +1,8 @@
+2013-04-09  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/testSlopes.R (plot.testSlopes): Fixing MMupr and MMlwr
+	selection and thinning.
+
 2013-04-08  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/testSlopes.R (plot.testSlopes): add shade argument to

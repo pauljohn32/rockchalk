@@ -239,9 +239,9 @@ NULL
 ##' @example inst/examples/addLines-ex.R
 
 addLines <- function(to = NULL, from = NULL, col, lwd = 2, lty = 1){
-    if (!class(from) %in% "rockchalk")
+    if (!inherits(from, "rockchalk"))
         stop("addLines: from must be an output object from plotSlopes or plotCurves, of class rockchalk")
-    if (!class(to) %in% "rockchalk3d")
+    if (!inherits(to, "rockchalk3d"))
         stop("addLines: to must be a 3d plot object created by plotPlane or such")
     if ( !(from$call[["modx"]] %in% to$call[["plotx1"]] | from$call[["modx"]] %in% to$call[["plotx2"]]) )
         stop("Mismatched plotPlanes and plotSlopes objects")
