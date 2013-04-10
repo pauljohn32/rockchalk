@@ -1,3 +1,11 @@
+2013-04-10  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/testSlopes.R (plot.testSlopes): because of mis-match
+	between roots and edges of MMlwr and MMupr, re-designed this
+	to calculate interval types and ranges exactly, iterate
+	over intervals to shade appropriately. Still Ugly code,
+	only slightly less embarrassing.
+
 2013-04-09  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/testSlopes.R (plot.testSlopes): Fixing MMupr and MMlwr

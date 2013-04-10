@@ -201,13 +201,41 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
     tso <- x
     model <-  eval(parse(text = tso$pso$call$model))
     modx <- tso$pso$call$modx
+    modxVar <- model$model[, modx]
+    modxRange <- magRange(modxVar, 1.1)
 
     if (x$jn$inroot <= 0) {
         print("There are no real roots. There is nothing worth plotting")
         return(NULL)
     }
 
-    modxVar <- model$model[, modx]
+    if ((x$jn$roots["hi"] < modxRange[1]) || (x$jn$roots["lo"] > modxRange[2])) {
+            ## both roots outside observed x
+    }
+
+    ## tedious exercise to figure out which type of interval of significant values we have
+    if (x$jn$roots["lo"] > modxRange[1] && x$jn$roots["hi"] < modxRange[2]){
+        ##2 roots inside
+        idxStart <- c(modxRange[1], x$jn$roots)
+        idxEnd <- c(x$jn$roots, modxRange[2])
+        intervals <- if(x$jn$a > 0) c(1,3) else c(2)
+        idxType <- 2
+    } else if (modxRange[1] < x$jn$roots["lo"]){
+        ## lowroot inside
+        idxStart <- c(modxRange[1], x$jn$roots["lo"])
+        idxEnd <- c(x$jn$roots["lo"], modxRange[2])
+        intervals <- if(x$jn$a > 0) c(1) else c(2)
+        idxType <- 1
+    } else if (x$jn$roots["hi"] < modxRange[2]){
+        ## hi root inside
+        idxStart <- c(modxRange[1], x$jn$roots["hi"])
+        idxEnd <- c(x$jn$roots["hi"], modxRange[2])
+        intervals <- if(x$jn$a > 0) c(2) else c(1)
+        idxType <- 3
+    } else {
+        stop("Illogical intervals outcome")
+    }
+
     ## Previous oops. Don't use model.matrix(), that gives nothing if modx is a factor
     if (!is.numeric(modxVar)){
         print("Sorry, but I can't see how it makes sense to use a non-numeric moderator in these plots")
@@ -217,8 +245,6 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
 
     plotx <- tso$pso$call$plotx
 
-
-    modxRange <- magRange(modxVar, 1.1)
     modxSeq <- plotSeq(modxRange, length.out=100)
 
     depVarVals <- model.response(model.frame(model))
@@ -238,6 +264,7 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
     bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + Tcrit * modxSeq * V[plotx, interactionsIn])
 
     ## MM marginal matrix, similar to return of the predict() function
+    ## This makes reasonable looking confidence intervals
     MM <- cbind(fit = bsslope,
                 lwr = bsslope - Tcrit * bsse,
                 upr = bsslope + Tcrit * bsse,
@@ -262,85 +289,55 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
     ## TODO FIX ME HIGH PRIORITY: ping regions do not exclude middle
     ## MMexcluded <- which(MM[ , "p"] > 0.05)
 
-    ## if (length(MMexcluded) > 0)
-    ## MMlwr is the "lower" significant region (possibly the only) if jn$a < 0
-    MMsig <- MM[ , "p"] < 0.05
-    MMsigRle <- rle(MMsig)
-    ##immitate zoo:xblocks.default
-    idxBounds <- cumsum(c(1,  MMsigRle$lengths))
-    idxStart <- head(idxBounds, -1)
-    idxEnd <- tail(idxBounds, -1) - 1
-    idxEnd[length(idxEnd)] <- length(MMsig)
-    intervals <- which(MMsigRle$values == TRUE)
-    if(length(intervals) > 2)  stop("Error in testSlopes, illogical condition occured")
+    for (i in intervals){
+        modxSeq <- seq(idxStart[i], idxEnd[i],
+                   length.out = as.integer(40*(idxEnd[i] - idxStart[i])/diff(modxRange)))
+        bsslope <-  bs[plotx] + bs[interactionsIn]*modxSeq
+        bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + Tcrit * modxSeq * V[plotx, interactionsIn])
 
-    MMlwr <- MM[seq.int(idxStart[intervals[1]], idxEnd[intervals[1]]), , drop = FALSE]
+        ## MM marginal matrix, similar to return of the predict() function
+        ## This makes reasonable looking confidence intervals
+        MMsm <- cbind(fit = bsslope,
+                       lwr = bsslope - Tcrit * bsse,
+                       upr = bsslope + Tcrit * bsse,
+                       modxSeq = modxSeq, se = bsse,
+                       p = 2*pt(abs(bsslope/bsse),
+                       lower.tail = FALSE, df = model$df))
 
-    ## Thin by keeping every third row
-    if (nrow(MMlwr) >= 3) MMlwr <- MMlwr[round(plotSeq(1:nrow(MMlwr), nrow(MMlwr)/3)), ]
-
-    ## I thought there would be no useful case a < 0, but
-    ## the first example I tried had that. So we have to plan for both.
-    ## TODO: Note dumb "cut and paste" coding here, needs to be re-done.
-
-    if ((k <- nrow(MMlwr)) > 0) {
-        arrows(x0 = MMlwr[ ,"modxSeq"], y0 = MMlwr[ ,"lwr"],
-               x1 = MMlwr[ ,"modxSeq"], y1 = MMlwr[ ,"upr"],
+        arrows(x0 = MMsm[ ,"modxSeq"], y0 = MMsm[ ,"lwr"],
+               x1 = MMsm[ ,"modxSeq"], y1 = MMsm[ ,"upr"],
                angle = 90, length = 0.05, code = 3, col = gray(.70))
-        lines(x = rep(MMlwr[k, "modxSeq"],2),
-              y = c(MMlwr[k ,"lwr"], ylim[1]), lty=4, col = gray(.70) )
-        mtext(text = round(MMlwr[k, "modxSeq"], 2),
-              at = MMlwr[k, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
-    }
-    ## if jn$a < 0, put a left side marker on that interval
-    if (tso$jn$a < 0) {
-        lines(x = rep(MMlwr[1, "modxSeq"],2),
-              y = c(MMlwr[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
-        mtext(text = round(MMlwr[1, "modxSeq"], 2),
-              at = MMlwr[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
-    }
 
-    ## if jn$a > 0, we need to shade the upper right as well.
-    if (tso$jn$a > 0 && length(intervals) > 1) {
-        ## MMupr <- MM[(tso$jn$roots[2] <= modxRange[2]) & (MM[ , "p"] < 0.05), , drop = F]
-        MMupr <- MM[seq.int(idxStart[intervals[2]], idxEnd[intervals[2]]), , drop = FALSE]
-        interval <- 3
+        ## type 2 or 3, put a left side marker on that interval
+        if (idxType %in% c(2,3)) {
+            lines(x = rep(MMsm[1, "modxSeq"],2),
+                  y = c(MMsm[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
+            mtext(text = round(MMsm[1, "modxSeq"], 2),
+                  at = MMsm[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
+        }
+        ## type 1 or 2, put marker on right side
+        if (idxType %in% c(1,2)) {
+            lines(x = rep(MMsm[nrow(MMsm), "modxSeq"],2),
+                  y = c(MMsm[nrow(MMsm) ,"lwr"], ylim[1]), lty=4, col = gray(.70))
+            mtext(text = round(MMsm[nrow(MMsm), "modxSeq"], 2),
+                  at = MMsm[nrow(MMsm), "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
+        }
 
-        if (nrow(MMupr) >= 3) MMupr <- MMupr[round(plotSeq(1:nrow(MMupr), nrow(MMupr)/3)),  ]
-        if ((k <- nrow(MMupr)) > 0) {
-            arrows(x0 = MMupr[ ,"modxSeq"], y0 = MMupr[ ,"lwr"],
-                   x1 = MMupr[ ,"modxSeq"], y1 = MMupr[ ,"upr"],
-                   angle = 90, length = 0.05, code = 3, col = gray(.70))
-            lines(x = rep(MMupr[1, "modxSeq"],2),
-                  y = c(MMupr[1 ,"lwr"], ylim[1]), lty=4, col = gray(.80))
-            mtext(text = round(MMupr[1, "modxSeq"], 2),
-                  at = MMupr[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
+        if (shade == TRUE){
+            polygon(x = c(MMsm[ ,"modxSeq"], rev(MMsm[ ,"modxSeq"])),
+                    y = c(MMsm[ ,"upr"], rev(MMsm[ , "lwr"]) ),
+                    col = col, border = gray(.80))
         }
     }
 
     legend("topleft", legend = c("Marginal Effect", "95% Conf. Int."),
            lty = c(1, 2), col = c(1, gray(.50)), bg = "white")
 
-
-    ## Should a polygon be shaded on either end, or only in
-    ## middle? Lets think more carefully than the arrows case
-    if (shade == FALSE) return()
-
-    polygon(x = c(MMlwr[ ,"modxSeq"], rev(MMlwr[ ,"modxSeq"])),
-            y = c(MMlwr[ ,"upr"], rev(MMlwr[ , "lwr"]) ),
-            col = col, border = gray(.80))
-
-    if (exists("MMupr")) {
-        polygon(x = c(MMupr[ ,"modxSeq"], rev(MMupr[ ,"modxSeq"])),
-                y = c(MMupr[ ,"upr"], rev(MMupr[ , "lwr"])),
-                col = col, border = gray(.80))
+    if (shade == TRUE){
+        legend("bottomright", title = "Shaded Region: Null Hypothesis",
+               legend = substitute(b[AA] + b[BB:AA]*BB[i] == 0 ~~ "rejected", list(AA=plotx, BB=modx)),
+               fill = c(rgb(1,0,0, 0.10)), bg = "white")
     }
-
-
-    legend("bottomright", title = "Shaded Region: Null Hypothesis",
-       legend = substitute(b[AA] + b[BB:AA]*BB[i] == 0 ~~ "rejected", list(AA=plotx, BB=modx)),
-           fill = c(rgb(1,0,0, 0.10)), bg = "white")
-
 
 
     if (0){
