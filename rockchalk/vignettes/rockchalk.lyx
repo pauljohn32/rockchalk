@@ -2653,12 +2653,12 @@ status open
 
 \begin_layout Plain Layout
 
-<<ts10, fig=T, echo=T, height=4, width=6>>=
+<<ts10, fig=T, echo=T, height=6, width=6>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-(m4psats <- testSlopes(m4psa))
+m4psats <- testSlopes(m4psa)
 \end_layout
 
 \begin_layout Plain Layout

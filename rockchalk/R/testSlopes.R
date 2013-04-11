@@ -10,7 +10,7 @@
 ##'
 ##' This function scans the input object to detect the focal values of
 ##' the moderator variable (the variable declared as \code{modx} in
-##' \code{plotSlopes}. Consider a regression with interactions
+##' \code{plotSlopes}). Consider a regression with interactions
 ##'
 ##' y <- b0 + b1*x1 + b2*x2 + b3*(x1*x2) + b4*x3 + ... + error
 ##'
@@ -187,17 +187,26 @@ testSlopes <- function(object)
 
 NULL
 
+##' Plot testSlopes objects
+##'
+##' plot.testSlopes is a method for the
+##' generic function plot. It has been revised so that it creates a plot
+##' illustrating the marginal effect, using the
+##' Johnson-Neyman interval calculations to highlight the
+##' "statistically significantly different from zero" slopes.
 ##' @return \code{NULL}
 ##' @author <pauljohn@@ku.edu>
 ##' @method plot testSlopes
 ##' @S3method plot testSlopes
+##' @param x   A testSlopes object.
+##' @param ... Additional arguments that are ignored currently.
 ##' @param shade Optional. Create colored polygon for significant regions.
 ##' @param col Optional. Color of the shaded area. Default transparent pink.
 ##' @rdname testSlopes
 plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
     ## Following should be unnecessary.
-    ## if (!inherits(x, "testSlopes"))
-    ##     stop("use only with \"testSlopes\" objects")
+    if (!inherits(x, "testSlopes"))
+         stop("use only with \"testSlopes\" objects")
     tso <- x
     model <-  eval(parse(text = tso$pso$call$model))
     modx <- tso$pso$call$modx

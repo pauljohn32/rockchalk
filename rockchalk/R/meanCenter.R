@@ -53,7 +53,7 @@ standardize.lm <- function(model){
 }
 
 
-##' @author <pauljohn@@ku.edu>
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method summary stdreg
 ##' @S3method summary stdreg
 summary.stdreg <- function(object, ...){
@@ -72,7 +72,7 @@ summary.stdreg <- function(object, ...){
 NULL
 
 
-##' @author <pauljohn@@ku.edu>
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method print stdreg
 ##' @S3method print stdreg
 print.stdreg <- function(x, ...){
@@ -81,7 +81,7 @@ print.stdreg <- function(x, ...){
 }
 NULL
 
-##' @author <pauljohn@@ku.edu>
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method print summary.stdreg
 ##' @S3method print summary.stdreg
 print.summary.stdreg <- function (x, ...){
