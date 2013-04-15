@@ -29,13 +29,16 @@
 ##' from the regression formula.  It is not needed to call this
 ##' directly if one is satisfied with the results from predictOMatic.
 ##' @param model Required. Fitted regression model
-##' @param fl Optional. "focus list" of variables. Named list of variables and values for which to create a new data object.
+##' @param fl Optional. "focus list" of variables. Named list of variables and values for which to create a new data object. Keyword "AUTO" can be used to allow
+##' automatic level selection for particular variable, e.g., fl = list(x1 = "AUTO")
 ##' @param emf Optional. data frame used to fit model (not a model
 ##' frame, which may include transformed variables like
 ##' log(x1). Instead, use output from function \code{model.data}). It
 ##' is UNTRANSFORMED variables ("x" as opposed to poly(x,2).1 and
 ##' poly(x,2).2).
-##' @return A data frame of x values that could be used as the data= argument in the original regression model. The attribute "varNamesRHS" is a vector of the predictor values.
+##' @return A data frame of x values that could be used as the
+##' data = argument in the original regression model. The attribute
+##' "varNamesRHS" is a vector of the predictor variable names.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @export
 ##' @seealso \code{predictOMatic}
@@ -111,6 +114,27 @@ model.data <- function(model){
     attr(data, "varNamesRHS") <- setdiff(colnames(data), varNamesLHS)
     invisible(data)
 }
+
+
+
+
+createFL <-
+    function(y, divider)
+{
+    if (is.numeric(y)) {
+        divider <- match.arg(tolower(divider),
+                             c("quantile", "std.dev.","table"))
+        res <- switch(divider,
+                      table = rockchalk:::cutByTable(y, n),
+                      quantile = rockchalk:::cutByQuantile(y, n),
+                      "std.dev." = rockchalk:::cutBySD(y, n),
+                      stop("unknown 'divider' algorithm"))
+    } else {
+        res <- rockchalk:::cutByTable(y, n)
+    }
+    res
+}
+
 
 
 
@@ -196,8 +220,36 @@ predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, 
             ndnew
         } )
        names(nd) <- varNamesRHS
-    }else{
+    } else {
         flnames <- names(fl)
+
+        for(x in flnames) {
+            if (is.character(fl[[x]]) && length(fl[[x]]) == 1)
+                if (fl[[x]] == "AUTO") {
+                    if (is.numeric(emf[ ,x])) {
+                        divider <- match.arg(tolower(divider),
+                                             c("quantile", "std.dev.","table"))
+                        fl[[x]] <- switch(divider,
+                                          table = rockchalk:::cutByTable(emf[,x], n),
+                                          quantile = rockchalk:::cutByQuantile(emf[,x], n),
+                                          "std.dev." = rockchalk:::cutBySD(emf[,x], n),
+                                          stop("unknown 'divider' algorithm"))
+                    } else {
+                        fl[[x]] <- rockchalk:::cutByTable(emf[ ,x], n)
+                    }
+                } else if (fl[[x]] %in% c("quantile", "std.dev.","table")){
+                    if (is.numeric(emf[ ,x])){
+                        fl[[x]] <- switch(fl[[x]],
+                                          table = rockchalk:::cutByTable(emf[,x], n),
+                                          quantile = rockchalk:::cutByQuantile(emf[,x], n),
+                                          "std.dev." = rockchalk:::cutBySD(emf[,x], n),
+                                          stop("unknown 'divider' algorithm"))
+                    } else {
+                        fl[[x]] <- rockchalk:::cutByTable(emf[ ,x], n)
+                    }
+                }
+        }
+
         nd <- newdata(model, fl, emf = emf)
         fit <- predict(model, newdata = nd, ...)
         nd <- cbind(fit, nd)

@@ -1,7 +1,12 @@
 2013-04-15  pauljohn  <pauljohn@debian.sunflower.com>
 
+	* ../R/predictOMatic.R (predictOMatic): introduce "AUTO"
+	keyword for focus list variables.
+
 	* ../R/outreg.R (gofPrint): rewrite to add extraFuns and
 	extraSums. Mostly working.
+	(outreg): fixing logical flaw when a model has NO summaries we
+	want. Fighting with nonNull attr
 
 2013-04-14  pauljohn  <pauljohn@debian.sunflower.com>
 

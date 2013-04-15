@@ -27,34 +27,36 @@ dat$y[sample(N, 5)] <- NA
 
 m0 <- lm(y ~ x1 + x2 + xcat1, data = dat)
 summary(m0)
+## The model.data() function in rockchalk creates as near as possible
+## the input data frame.
 m0.data <- model.data(m0)
 summarize(m0.data)
 
 (m0.p1 <- predictOMatic(m0))
 (m0.p2 <- predictOMatic(m0, interval = "confidence"))
 
-(m0.p3 <- predictOMatic(m0, divider="std.dev.", n=5))
+(m0.p3 <- predictOMatic(m0, divider = "std.dev.", n=5))
 
 (m0.p3 <- predictOMatic(m0, fl = list("x1" = c(6,7), "xcat1" = levels(m0.data$xcat1))))
 
-
-
-
-
+(m0.p4 <- predictOMatic(m0, fl = list(
+                            x1 = quantile(m0.data$x1, na.rm = T, probs = c(0, 0.1, 0.5, 0.8, 1.0)),
+                            xcat1 = levels(m0.data$xcat1))))
 
 m1 <- lm(y ~ log(10+x1) + sin(x2) + x3, data=dat)
 m1.data <- model.data(m1)
 summarize(m1.data)
 
 (newdata(m1))
-(newdata(m1, fl = list(x1=c(6, 8, 10))))
+(newdata(m1, fl = list(x1 = c(6, 8, 10))))
 (newdata(m1, fl = list(x1 = c(6, 8, 10), x3 = c(-1,0,1))))
 (newdata(m1, fl = list(x1 = c(6, 8, 10), x2 = quantile(m1.data$x2), x3 = c(-1,0,1))))
 
-(m1.p1 <- predictOMatic(m1, divider="std.dev", n = 5))
-(m1.p1 <- predictOMatic(m1, divider="quantile", n = 5))
+(m1.p1 <- predictOMatic(m1, divider = "std.dev", n = 5))
+(m1.p1 <- predictOMatic(m1, divider = "quantile", n = 5))
 
-(m1.p1 <- predictOMatic(m1, fl=list(x1=c(6, 8, 10), x2 = median(m1.data$x2, na.rm = TRUE))))
+(m1.p1 <- predictOMatic(m1, fl = list(x1 = c(6, 8, 10),
+                            x2 = median(m1.data$x2, na.rm = TRUE))))
 (m1.p1 <- predictOMatic(m1, fl=list(x1=c(6, 8, 10), x2 = quantile(m1.data$x2, na.rm = TRUE))))
 
 (m1.p1 <- predictOMatic(m1))

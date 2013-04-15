@@ -2011,7 +2011,7 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m1,gm1),modelLabels=c("OLS:y1","GLM: Categorized y1"))
+outreg(list(m1,gm1), modelLabels=c("OLS:y1","GLM: Categorized y1"))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2056,6 +2056,11 @@ status open
 \begin_layout Plain Layout
 
 <<outreg70>>
+\end_layout
+
+\begin_layout Plain Layout
+
+print(rnorm(10))
 \end_layout
 
 \begin_layout Plain Layout
