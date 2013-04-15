@@ -18,12 +18,12 @@ plot(m2psts)
 
 colnames(dat2) <- c("oxygen","hydrogen","species")
 m2a <- lm(species ~ oxygen*hydrogen, data=dat2)
-m2aps <- plotSlopes(m2a, plotx="oxygen", modx="hydrogen")
-m2apsts <- testSlopes(m2aps)
-plot(m2psts)
-m2aps <- plotSlopes(m2a, plotx="oxygen", modx="hydrogen", modxVals = "std.dev", n = 5)
-m2psts <- testSlopes(m2ps)
-plot(m2psts)
+m2aps1 <- plotSlopes(m2a, plotx="oxygen", modx="hydrogen")
+m2aps1ts <- testSlopes(m2aps1)
+plot(m2aps1ts)
+m2aps2 <- plotSlopes(m2a, plotx="oxygen", modx="hydrogen", modxVals = "std.dev", n = 5)
+m2bps2ts <- testSlopes(m2aps2)
+plot(m2bps2ts)
 
 
 

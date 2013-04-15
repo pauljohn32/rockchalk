@@ -230,19 +230,19 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
         intervals <- if(x$jn$a > 0) c(1,3) else c(2)
         idxType <- 2
     } else if (modxRange[1] < x$jn$roots["lo"]){
-        ## lowroot inside
+        ## hi root inside
         idxStart <- c(modxRange[1], x$jn$roots["lo"])
         idxEnd <- c(x$jn$roots["lo"], modxRange[2])
         intervals <- if(x$jn$a > 0) c(1) else c(2)
         idxType <- 1
     } else if (x$jn$roots["hi"] < modxRange[2]){
-        ## hi root inside
+        ## lo root inside
         idxStart <- c(modxRange[1], x$jn$roots["hi"])
         idxEnd <- c(x$jn$roots["hi"], modxRange[2])
         intervals <- if(x$jn$a > 0) c(2) else c(1)
         idxType <- 3
     } else {
-        stop("Illogical intervals outcome")
+        stop("Your observed moderator data does not overlap with the region on which the slope would be significant. So we are stopping now.")
     }
 
     ## Previous oops. Don't use model.matrix(), that gives nothing if modx is a factor
@@ -317,20 +317,36 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
                x1 = MMsm[ ,"modxSeq"], y1 = MMsm[ ,"upr"],
                angle = 90, length = 0.05, code = 3, col = gray(.70))
 
-        ## type 2 or 3, put a left side marker on that interval
-        if (idxType %in% c(2,3)) {
+        ## type 3, put a left side marker on that interval
+        if (idxType %in% c(3)) {
             lines(x = rep(MMsm[1, "modxSeq"],2),
                   y = c(MMsm[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
             mtext(text = round(MMsm[1, "modxSeq"], 2),
                   at = MMsm[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
         }
-        ## type 1 or 2, put marker on right side
-        if (idxType %in% c(1,2)) {
+        ## type 1, put marker on right side
+        if (idxType %in% c(1)) {
             lines(x = rep(MMsm[nrow(MMsm), "modxSeq"],2),
                   y = c(MMsm[nrow(MMsm) ,"lwr"], ylim[1]), lty=4, col = gray(.70))
             mtext(text = round(MMsm[nrow(MMsm), "modxSeq"], 2),
                   at = MMsm[nrow(MMsm), "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
         }
+
+        ## type 2: only mark side on middle
+        if (idxType %in% c(2)) {
+            if (i == 1){
+                lines(x = rep(MMsm[nrow(MMsm), "modxSeq"],2),
+                      y = c(MMsm[nrow(MMsm) ,"lwr"], ylim[1]), lty=4, col = gray(.70))
+                mtext(text = round(MMsm[nrow(MMsm), "modxSeq"], 2),
+                      at = MMsm[nrow(MMsm), "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
+            } else {
+                lines(x = rep(MMsm[1, "modxSeq"],2),
+                      y = c(MMsm[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
+                mtext(text = round(MMsm[1, "modxSeq"], 2),
+                      at = MMsm[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
+            }
+        }
+
 
         if (shade == TRUE){
             polygon(x = c(MMsm[ ,"modxSeq"], rev(MMsm[ ,"modxSeq"])),

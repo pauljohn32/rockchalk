@@ -1,3 +1,15 @@
+2013-04-15  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/outreg.R (gofPrint): rewrite to add extraFuns and
+	extraSums. Mostly working.
+
+2013-04-14  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/outreg.R (outreg): Reformat consistent with Rstyle
+	- change lyx = TRUE argument to float = FALSE.
+	(outreg): reworked to grab B and SE matrices, create PT
+	at top.
+
 2013-04-10  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/testSlopes.R (plot.testSlopes): because of mis-match
