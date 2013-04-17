@@ -40,19 +40,19 @@ summarize(m0.data)
 (m0.p3 <- predictOMatic(m0, fl = list("x1" = c(6,7), "xcat1" = levels(m0.data$xcat1))))
 
 (m0.p4 <- predictOMatic(m0, fl = list(
-                            x1 = quantile(m0.data$x1, na.rm = T, probs = c(0, 0.1, 0.5, 0.8, 1.0)),
+                            x1 = quantile(m0.data$x1, na.rm = TRUE, probs = c(0, 0.1, 0.5, 0.8, 1.0)),
                             xcat1 = levels(m0.data$xcat1))))
 
-(m0.p5 <- predictOMatic(m0, fl = list(x1 = "quantile", "xcat1" = levels(m0.data$xcat1)), n =  8) )
+(m0.p5 <- predictOMatic(m0, fl = list(x1 = "seq", "xcat1" = levels(m0.data$xcat1)), n =  8) )
 
 
-(m0.p6 <- predictOMatic(m0, fl = list(x1 = "quantile", "xcat1" = levels(m0.data$xcat1)), n =  8) )
+(m0.p6 <- predictOMatic(m0, fl = list(x1 = "quantile", "xcat1" = levels(m0.data$xcat1)), n =  5) )
 
 
-(m3.p7 <- predictOMatic(m3, fl = list(x1 = "AUTO"), divider="quantile", type="response", n = 10))
+(m0.p7 <- predictOMatic(m0, fl = list(x1 = "AUTO"), divider = "std.dev.", n = 10))
 
 
-(m3.p8 <- predictOMatic(m3, fl = list(x1 = "AUTO", xcat1 = "AUTO"), divider="quantile", type="response", n = 10))
+(m0.p8 <- predictOMatic(m0, fl = list(x1 = "AUTO", xcat1 = "AUTO"), n = 10))
 
 
 
@@ -66,16 +66,16 @@ summarize(m1.data)
 (newdata(m1, fl = list(x1 = c(6, 8, 10), x2 = quantile(m1.data$x2), x3 = c(-1,0,1))))
 
 (m1.p1 <- predictOMatic(m1, divider = "std.dev", n = 5))
-(m1.p1 <- predictOMatic(m1, divider = "quantile", n = 5))
+(m1.p2 <- predictOMatic(m1, divider = "quantile", n = 5))
 
-(m1.p1 <- predictOMatic(m1, fl = list(x1 = c(6, 8, 10),
+(m1.p3 <- predictOMatic(m1, fl = list(x1 = c(6, 8, 10),
                             x2 = median(m1.data$x2, na.rm = TRUE))))
-(m1.p1 <- predictOMatic(m1, fl=list(x1=c(6, 8, 10), x2 = quantile(m1.data$x2, na.rm = TRUE))))
+(m1.p4 <- predictOMatic(m1, fl=list(x1=c(6, 8, 10), x2 = quantile(m1.data$x2, na.rm = TRUE))))
 
-(m1.p1 <- predictOMatic(m1))
-(m1.p1 <- predictOMatic(m1, divider="std.dev."))
-(m1.p1 <- predictOMatic(m1, divider="std.dev.", n=5))
-(m1.p1 <- predictOMatic(m1, divider="std.dev.", interval="confidence"))
+(m1.p5 <- predictOMatic(m1))
+(m1.p6 <- predictOMatic(m1, divider="std.dev."))
+(m1.p7 <- predictOMatic(m1, divider="std.dev.", n=5))
+(m1.p8 <- predictOMatic(m1, divider="std.dev.", interval="confidence"))
 
 
 
@@ -148,12 +148,12 @@ summary(m3)
 m3.data <- model.data(m3)
 summarize(m3.data)
 
-(m3.p1 <- predictOMatic(m3, divider="std.dev.", type="response"))
+(m3.p1 <- predictOMatic(m3, divider="std.dev."))
 
-(m3.p2 <- predictOMatic(m3, fl = list(x2 = c(40, 50, 60), xcat1 = c("M","F")), divider="response", interval="conf"))
+(m3.p2 <- predictOMatic(m3, fl = list(x2 = c(40, 50, 60), xcat1 = c("M","F")), divider="std.dev.", interval="conf"))
 
 ## Want a full accounting for each value of x2?
-(m3.p3 <- predictOMatic(m3, fl = list(x2 = unique(m3.data$x2), xcat1 = c("M","F")), interval="conf", type="response"))
+(m3.p3 <- predictOMatic(m3, fl = list(x2 = unique(m3.data$x2), xcat1 = c("M","F")), interval="conf"))
 
 
 ## Would like to write a more beautiful print method

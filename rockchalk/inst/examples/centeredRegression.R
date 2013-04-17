@@ -49,18 +49,18 @@ plotPlane(m1, plotx1="x1", plotx2="x2")
 
 
 ## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
+##             Estimate Std. Error t value Pr(>|t|)
 ## (Intercept) 424.1485    45.8004   9.261 5.29e-15 ***
 ## x1           -8.9042     0.8499 -10.477  < 2e-16 ***
 ## x2           -9.2701     0.8039 -11.531  < 2e-16 ***
 ## ---
-## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 ## Residual standard error: 77.77 on 97 degrees of freedom
-## Multiple R-squared: 0.8011,	Adjusted R-squared: 0.797 
-## F-statistic: 195.4 on 2 and 97 DF,  p-value: < 2.2e-16 
+## Multiple R-squared: 0.8011,	Adjusted R-squared: 0.797
+## F-statistic: 195.4 on 2 and 97 DF,  p-value: < 2.2e-16
 ##
-## Yeah, its a "good model". Everything is "significant". 
+## Yeah, its a "good model". Everything is "significant".
 ##
 ##
 ## Now the problem.
@@ -74,21 +74,21 @@ plotPlane(m2, plotx1="x1", plotx2="x2", theta=-10)
 
 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(>|t|)   
-## (Intercept) -74.45719  179.94096  -0.414  0.67995   
-## x1            1.57257    3.75575   0.419  0.67636   
-## x2            0.64618    3.55471   0.182  0.85614   
+##              Estimate Std. Error t value Pr(>|t|)
+## (Intercept) -74.45719  179.94096  -0.414  0.67995
+## x1            1.57257    3.75575   0.419  0.67636
+## x2            0.64618    3.55471   0.182  0.85614
 ## x1:x2        -0.20526    0.07181  -2.859  0.00522 **
 ## ---
-## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 ## Residual standard error: 75.05 on 96 degrees of freedom
-## Multiple R-squared: 0.8167,	Adjusted R-squared: 0.811 
-## F-statistic: 142.6 on 3 and 96 DF,  p-value: < 2.2e-16 
+## Multiple R-squared: 0.8167,	Adjusted R-squared: 0.811
+## F-statistic: 142.6 on 3 and 96 DF,  p-value: < 2.2e-16
 
 
 ## Booh, the model's "no good". x1 and x2 "don't matter"
-## any more. 
+## any more.
 
 ## We'd better mean-center x1 and x2.
 
@@ -113,17 +113,17 @@ m2mcmanualpred <- fitted(m2manualmc)
 
 
 ## Coefficients:
-##               Estimate Std. Error t value Pr(>|t|)    
+##               Estimate Std. Error t value Pr(>|t|)
 ## (Intercept) -456.69849    8.01647 -56.970  < 2e-16 ***
 ## x1            -8.38383    0.84005  -9.980  < 2e-16 ***
 ## x2            -9.47969    0.77920 -12.166  < 2e-16 ***
-## x1:x2         -0.20526    0.07181  -2.859  0.00522 ** 
+## x1:x2         -0.20526    0.07181  -2.859  0.00522 **
 ## ---
-## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+## Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 
 ## Residual standard error: 75.05 on 96 degrees of freedom
-## Multiple R-squared: 0.8167,	Adjusted R-squared: 0.811 
-## F-statistic: 142.6 on 3 and 96 DF,  p-value: < 2.2e-16 
+## Multiple R-squared: 0.8167,	Adjusted R-squared: 0.811
+## F-statistic: 142.6 on 3 and 96 DF,  p-value: < 2.2e-16
 
 
 ## Yeah! Mean centering saved the day! Woo Hoo! All your
@@ -183,7 +183,7 @@ plot(fitted(m2), fitted(m2mc), xlab="predicted from uncentered x", ylab="predict
 ## are the same?  It seems obvious to me that, since the predicted
 ## value plane is identical in the two models, then the slopes have
 ## to be the same as well. But perhaps that relys on intuition that
-## is unique to me. 
+## is unique to me.
 
 ## Take the the noncentered model and calculate the slope and standard
 ## error at the mean of x1,x2.  The slope at that point in the x1
@@ -191,16 +191,16 @@ plot(fitted(m2), fitted(m2mc), xlab="predicted from uncentered x", ylab="predict
 
 ## b1 + b3*x2
 ## Which we estimate from the noncentered model as:
-coef(m2)["x1"] + coef(m2)["x1:x2"] * mean(dat3$x2, na.rm=T)
-##       x1 
-## -8.383827 
+coef(m2)["x1"] + coef(m2)["x1:x2"] * mean(dat3$x2, na.rm = TRUE)
+##       x1
+## -8.383827
 ##
 ## And the slope in the x2 dimension is
 ## b2 + b3*x1
 
-coef(m2)["x2"] + coef(m2)["x1:x2"] * mean(dat3$x1, na.rm=T)
-##      x2 
-## -9.479689 
+coef(m2)["x2"] + coef(m2)["x1:x2"] * mean(dat3$x1, na.rm = TRUE)
+##      x2
+## -9.479689
 ##
 ## Please note, those estimates of the slopes EXACTLY match the
 ## coefficient estimates reported by the centered model. That is to
@@ -306,8 +306,8 @@ cor(dat4)
 ## lm(formula = y ~ x1 * x2, data = dat3)
 
 ## Coefficients:
-## (Intercept)           x1           x2        x1:x2  
-##    -74.4572       1.5726       0.6462      -0.2053  
+## (Intercept)           x1           x2        x1:x2
+##    -74.4572       1.5726       0.6462      -0.2053
 
 
 ## From rockchalk:::residualCenter(m2):
@@ -315,24 +315,24 @@ cor(dat4)
 ## lm(formula = y ~ x1 + x2 + x1.X.x2, data = dat)
 
 ## Coefficients:
-## (Intercept)           x1           x2      x1.X.x2  
+## (Intercept)           x1           x2      x1.X.x2
 ##    424.1485      -8.9042      -9.2701      -0.2053
 
 
 
 ## From rockchalk:::meanCenter(m2)
 ## > m2mc
-## The centered variables are: 
+## The centered variables are:
 ## [1] "x1" "x2"
-## The call that requested centering was: 
+## The call that requested centering was:
 ## meanCenter.default(model = m2)
 
 ## Call:
 ## lm(formula = y ~ x1 * x2, data = stddat)
 
 ## Coefficients:
-## (Intercept)           x1           x2        x1:x2  
-##   -456.6985      -8.3838      -9.4797      -0.2053  
+## (Intercept)           x1           x2        x1:x2
+##   -456.6985      -8.3838      -9.4797      -0.2053
 
 
 
@@ -356,4 +356,4 @@ cor(dat4)
 
 ## I think if I were good at matrix algebra with partitioned
 ## matrices, I could demonstrate why the estimated coefficients
-## are actually equivalent. 
+## are actually equivalent.
