@@ -18,19 +18,61 @@
 
 
 
-##' Creates the newdata frame required in predict.
+##' Creates the newdata frame required in predict methods.
 ##'
-##' If not supplied with a focus list, newdata returns a data frame
-##' with one row-- the central values (means and modes) of the
-##' variables in the data that was used to fit the model.  To declare
-##' some variables that the user wants to focus on, the user should
-##' supply a fitted model "model" and a focus list "fl" of variable
-##' values. The fl list must be a named list, using names of variables
-##' from the regression formula.  It is not needed to call this
-##' directly if one is satisfied with the results from predictOMatic.
+##' This function uses various tricks to create a "newdata" object
+##' suitable for use in predict methods for R objects. The funcion
+##' scans the fitted model, discerns the names of the predictors, and
+##' then generates a new data frame that allows the user to obtain
+##' predictions for certain focal values.  The argument \code{fl} is
+##' very important. It determines which variables are selected for
+##' more careful inspection. See details.
+##'
+##' I did not originally intend that users would access this function
+##' directly. It was created as an intermediate function that
+##' is used by rockchalk functions like predictOMatic or
+##' plotSlopes. It may not be necessary for the user to call newdata
+##' explicitly, unless the results from those other functions are not
+##' what the user desires. However, I have found many occassions on which
+##' it is useful to create newdata objects.
+##'
+##' If not supplied with a focus list argument, newdata returns a data
+##' frame with one row -- the central values (means and modes) of the
+##' variables in the data frame that was used to fit the model.
+##'
+##' The focus list argument \code{fl} allows users to make
+##' fine-grained requests. \code{fl} must be a named list, using names
+##' of variables from the regression formula. This can be done
+##' explicitly, for example, \code{fl = list(x1 = c(10, 20, 30), x2 =
+##' c(40, 50), xcat = levels(xcat)))}. That will create a newdata
+##' object that has all of the "mix and match" combinations for those
+##' values, while the other predictors are set at their central values.
+##'
+##' In rockchalk 1.7.3, a convenience feature was added that gives
+##' automatic value selection via keywords. If the user declares a
+##' variable with the "AUTO" keyword, then the default divider
+##' algorithm is used to select focal values.  The default divider
+##' algorithm is an optional argument of this function. If the default
+##' is not desired, the user can specify a divider algorithm by
+##' character string, either "quantile", "std.dev.", "seq", or "table".
+##' The user can mix and match algorithms along with requests
+##' for specific focal values, as in
+##' \code{fl = list(x1 = "quantile", x2 = "std.dev.",
+##' x3 = c(10, 20, 30), xcat1 <- levels(xcat1))}
+##'
 ##' @param model Required. Fitted regression model
-##' @param fl Optional. "focus list" of variables. Named list of variables and values for which to create a new data object. Keyword "AUTO" can be used to allow
-##' automatic level selection for particular variable, e.g., fl = list(x1 = "AUTO")
+##' @param fl Optional. "focus list" of variables. Named list of
+##' variables and values for which to create a new data object.
+##' Keyword "AUTO" can be used to allow
+##' automatic level selection for particular variable, e.g.,
+##' fl = list(x1 = "AUTO"). Keywords "quantile", "std.dev.", and "table"
+##' can also be specified separately for each variable.
+##' @param n Optional. Default = 3. How many focal values are desired?
+##' This value is used when various divider algorithms are put to use
+##' if the user has specified keywords "AUTO", "quantile", "std.dev."
+##' "seq", and "table".
+##' @param divider Optional. Determines the method of
+##' selection. Should be one of c("quantile","std.dev", "seq", "table").
 ##' @param emf Optional. data frame used to fit model (not a model
 ##' frame, which may include transformed variables like
 ##' log(x1). Instead, use output from function \code{model.data}). It
@@ -43,8 +85,11 @@
 ##' @export
 ##' @seealso \code{predictOMatic}
 ##' @example inst/examples/predictOMatic-ex.R
-newdata <- function (model = NULL, fl = NULL, emf = NULL){
+newdata <- function (model = NULL, fl = NULL, emf = NULL, n = 3, divider = "quantile"){
     if (is.null(emf)) emf <- model.data(model = model)
+    divider <- match.arg(tolower(divider),
+                         c("quantile", "std.dev.","table","seq"))
+
     varNamesRHS <- attr(emf, "varNamesRHS")
     emf <- emf[ , varNamesRHS, drop = FALSE]
     modelcv <- centralValues(emf)
@@ -52,6 +97,15 @@ newdata <- function (model = NULL, fl = NULL, emf = NULL){
     if (sum(!names(fl) %in% varNamesRHS) > 0) stop(cat(c("Error. The focus list:  fl requests variables that are not included in the original model. The names of the variables in the focus list be drawn from this list: ",  varNamesRHS, "\n")))
     ## TODO: Consider "padding" range of fl for numeric variables so that we
     ## get newdata objects including the min and max values.
+    flnames <- names(fl)
+    for(x in flnames) {
+        if (is.character(fl[[x]]) && length(fl[[x]]) == 1)
+            if (fl[[x]] == "AUTO") {
+                fl[[x]] <- focalVals(emf[ ,x], divider, n)
+            } else if (fl[[x]] %in% c("quantile", "std.dev.", "table", "seq")){
+                fl[[x]] <- focalVals( emf[ ,x],  divider = fl[[x]], n)
+            }
+    }
 
     mixAndMatch <- expand.grid(fl)
     ## TODO: Its OK to select columns this way, but no better way add names?
@@ -117,35 +171,59 @@ model.data <- function(model){
 
 
 
-
-createFL <-
-    function(y, divider)
+##' Create a focal value vector.
+##'
+##' This selects some values of a variable and creates a new "focal vector"
+##' from them. Can use one "divider" algorithm, to be selected by name.
+##'
+##' This is a "wrapper" (or convenience) function that re-directs work
+##' to other functions. The functions that do the work to select the
+##' focal values for types ("table", "quantile", "std.dev.", "seq") are
+##' (cutByTable(), cutByQuantile(), cutBySD(), and plotSeq())
+##' @param x The input variable may be numeric or a factor.
+##' @param divider Default = "quantile" for numeric variables, "table" for factors. Other valid values: "seq" for an evenly spaced sequence from minimum to maximum, "std.dev." for a sequence that has the mean at the center and values on either side that are proportional to the standard deviation.
+##' @param n Desired number of focal values.
+##' @export
+##' @return A named vector of focal values selected from a variable. The
+##' values of the names should be informative and useful for plotting or
+##' other diagnostic work.
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @export
+##' @seealso \code{predictOMatic} \code{newdata}
+focalVals <-
+    function(x, divider = "quantile", n = 3)
 {
-    if (is.numeric(y)) {
+    if (is.numeric(x)) {
         divider <- match.arg(tolower(divider),
-                             c("quantile", "std.dev.","table"))
+                             c("quantile", "std.dev.","table", "seq"))
         res <- switch(divider,
-                      table = rockchalk:::cutByTable(y, n),
-                      quantile = rockchalk:::cutByQuantile(y, n),
-                      "std.dev." = rockchalk:::cutBySD(y, n),
+                      table = rockchalk:::cutByTable(x, n),
+                      quantile = rockchalk:::cutByQuantile(x, n),
+                      "std.dev." = rockchalk:::cutBySD(x, n),
+                      "seq" = rockchalk:::plotSeq(x, n),
                       stop("unknown 'divider' algorithm"))
     } else {
-        res <- rockchalk:::cutByTable(y, n)
+        res <- rockchalk:::cutByTable(x, n)
     }
+##  names(res) <- xname
     res
 }
 
 
 
 
-##' predictOMatic creates predicted values for a fitted regression model.
+##' predictOMatic creates predicted values for a fitted regression
+##' model. This is intended to facilitate analysis of marginal effects
+##' of the predictor variables.
 ##'
 ##' If a "focus list" is supplied, predictOMatic supplies predicted
 ##' values only for those selected input values.
 ##
 ##' If no "focus list" is supplied, predictOMatic supplies a
 ##' prediction summary for each separate independent variable. That
-##' is, in a model with formula y ~ x1 + x2 + x3, then separate tables of predicted values will be supplied, one for each of x1, x2, and x3.
+##' is, in a model with formula y ~ x1 + x2 + x3, then separate tables
+##' of predicted values will be supplied, one for each of x1, x2, and
+##' x3.
 ##'
 ##' It may be important to make sure that diagnostic plots and
 ##' summaries of predictions are calculated with the exact same data
@@ -162,7 +240,7 @@ createFL <-
 ##' a command like
 ##'
 ##' predictOMatic( m1, fl =
-##' list("x1" = median(m1dat$x1), "x2"=c(1,2,3), "x3" = quantile(m1dat$x3))
+##' list("x1" = median(m1dat$x1), "x2" = c(1,2,3), "x3" = quantile(m1dat$x3))
 ##'
 ##' @param model Required. A fitted regression model
 ##' @param fl (focus list). Optional. A named list of variables and
@@ -171,23 +249,24 @@ createFL <-
 ##' \code{model}.  Need not include all predictors in a model.
 ##' Predictor variables in \code{model} that are not named in fl will
 ##' be set to mean or mode values. See details and examples.
-##' @param divider Optional. If fl is not specified, automatic selection of
-##' predictor values is employed. \code{divider} determines the method of
-##' selection. Should be one of c("quantile","std.dev","table"). This
-##' determines whether values selected are quantile values, values
-##' based on the mean plus-or-minus standard deviation values, or a
-##' table of most frequently occurring values. Documentation for the
-##' details can be found in the functions \code{cutByTable},
-##' \code{cutByQuantile}, and \code{cutBySD}.
-##' @param n If fl is not specified, automatic selection of predictor
-##' values is employed. This determines the number of values for which
+##' @param divider Default = "quantile". If fl is not
+##' specified, automatic selection of predictor values is
+##' employed. \code{divider} determines the method of
+##' selection. Should be one of c("quantile","std.dev", "seq",
+##' "table"). This determines whether values selected are quantile
+##' values, values based on the mean plus-or-minus standard deviation
+##' values, or a table of most frequently occurring
+##' values. Documentation for the details can be found in the
+##' functions \code{cutByQuantile}, \code{cutBySD}, \code{plotSeq},
+##' and \code{cutByTable},.
+##' @param n Default = 3. Determines the number of values for which
 ##' predictions are sought.
 ##' @param ... Optional arguments to be passed to the predict function
 ##' @return A data frame or a list of data frames.
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/predictOMatic-ex.R
-predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3,  ...) {
+predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, ...) {
     dots <- list(...)
     dotnames <- names(dots)
     ## next should give c('digits', 'alphaSort')
@@ -201,57 +280,31 @@ predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, 
     if(missing(fl) || is.null(fl)){
         flxxx <- list()
         nd <- lapply (varNamesRHS, function(x) {
-            if (is.numeric(emf[ ,x])) {
-                divider <- match.arg(tolower(divider),
-                                  c("quantile", "std.dev.","table"))
-                flxxx[[x]] <- switch(divider,
-                         table = rockchalk:::cutByTable(emf[,x], n),
-                         quantile = rockchalk:::cutByQuantile(emf[,x], n),
-                         "std.dev." = rockchalk:::cutBySD(emf[,x], n),
-                         stop("unknown 'divider' algorithm"))
-            } else {
-                flxxx[[x]] <- rockchalk:::cutByTable(emf[ ,x], n)
-            }
-            ndnew <- newdata(model, fl=flxxx[x], emf = emf)
-            fit <- predict(model, newdata = ndnew, ...)
-            ndnew <- cbind(fit, ndnew)
-            attr(ndnew, "flnames") <- x
+            flxxx[[x]]  <- focalVals(emf[ ,x], divider, n)
+            ndnew <- newdata(model, fl = flxxx[x], emf = emf)
             row.names(ndnew) <- names(flxxx[[x]])
+            fit <- predict(model, newdata = ndnew, type = "response", ...)
+            ndnew <- cbind(fit, ndnew)
             ndnew
-        } )
-       names(nd) <- varNamesRHS
+        })
+        ## ndnew <- do.call("rbind", nd)
+        attr(nd, "flnames") <- varNamesRHS
+        ##names(nd) <- varNamesRHS
     } else {
         flnames <- names(fl)
 
         for(x in flnames) {
             if (is.character(fl[[x]]) && length(fl[[x]]) == 1)
                 if (fl[[x]] == "AUTO") {
-                    if (is.numeric(emf[ ,x])) {
-                        divider <- match.arg(tolower(divider),
-                                             c("quantile", "std.dev.","table"))
-                        fl[[x]] <- switch(divider,
-                                          table = rockchalk:::cutByTable(emf[,x], n),
-                                          quantile = rockchalk:::cutByQuantile(emf[,x], n),
-                                          "std.dev." = rockchalk:::cutBySD(emf[,x], n),
-                                          stop("unknown 'divider' algorithm"))
-                    } else {
-                        fl[[x]] <- rockchalk:::cutByTable(emf[ ,x], n)
-                    }
-                } else if (fl[[x]] %in% c("quantile", "std.dev.","table")){
-                    if (is.numeric(emf[ ,x])){
-                        fl[[x]] <- switch(fl[[x]],
-                                          table = rockchalk:::cutByTable(emf[,x], n),
-                                          quantile = rockchalk:::cutByQuantile(emf[,x], n),
-                                          "std.dev." = rockchalk:::cutBySD(emf[,x], n),
-                                          stop("unknown 'divider' algorithm"))
-                    } else {
-                        fl[[x]] <- rockchalk:::cutByTable(emf[ ,x], n)
-                    }
+                    fl[[x]] <- focalVals(emf[ ,x], divider, n)
+                } else if (fl[[x]] %in% c("quantile", "std.dev.","table","seq")){
+                    fl[[x]] <- focalVals(emf[ ,x],  divider = fl[[x]], n)
                 }
         }
 
         nd <- newdata(model, fl, emf = emf)
-        fit <- predict(model, newdata = nd, ...)
+       ## fit <- do.call("predict", list(model, newdata = nd, dots))
+        fit <- predict(model, newdata = nd, type = "response", ...)
         nd <- cbind(fit, nd)
         attr(nd, "flnames") <- flnames
     }

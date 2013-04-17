@@ -40,7 +40,7 @@
 plotSeq <- function (x, length.out = length(x))
 {
   if (is.numeric(x)){
-    xr <- range(x, na.rm=T)
+    xr <- range(x, na.rm = TRUE)
     pseq <- seq(xr[1], xr[2], length.out = length.out)
     return(pseq)
   }else{
@@ -150,8 +150,8 @@ cutBySD <- function(x, n = 3){
         qs <- cutByTable(x, n)
         invisible(qs)
     } else {
-        mx <- round(mean(x, na.rm=T),2)
-        sdx <- round(sd(x, na.rm=T),2)
+        mx <- round(mean(x, na.rm = TRUE),2)
+        sdx <- round(sd(x, na.rm = TRUE),2)
         if (n == 1){
             qs <- c( mx )
             suffix <- c("(m)")
@@ -217,7 +217,7 @@ NULL
 ##'
 getFocal.default <- function(x, xvals = NULL, n = 3)
 {
-    xRange <- magRange(range(x, na.rm=TRUE), 1.1)
+    xRange <- magRange(range(x, na.rm = TRUE), 1.1)
 
     if (is.null(xvals))
         return(xfocal <- rockchalk:::cutByQuantile(x, n))

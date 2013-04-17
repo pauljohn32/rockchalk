@@ -1,3 +1,13 @@
+2013-04-16  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/outreg.R (harvest): Again reworking arguments, rename
+	extraSums to "request" and extraFuns to "runFuns". More examples.
+	- new arguments, alpha.
+
+	* ../R/predictOMatic.R (focalVals): new function, a wrapper
+	around divider functions.
+	* outreg: renaming arguments
+
 2013-04-15  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/predictOMatic.R (predictOMatic): introduce "AUTO"

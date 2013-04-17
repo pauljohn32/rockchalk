@@ -43,6 +43,19 @@ summarize(m0.data)
                             x1 = quantile(m0.data$x1, na.rm = T, probs = c(0, 0.1, 0.5, 0.8, 1.0)),
                             xcat1 = levels(m0.data$xcat1))))
 
+(m0.p5 <- predictOMatic(m0, fl = list(x1 = "quantile", "xcat1" = levels(m0.data$xcat1)), n =  8) )
+
+
+(m0.p6 <- predictOMatic(m0, fl = list(x1 = "quantile", "xcat1" = levels(m0.data$xcat1)), n =  8) )
+
+
+(m3.p7 <- predictOMatic(m3, fl = list(x1 = "AUTO"), divider="quantile", type="response", n = 10))
+
+
+(m3.p8 <- predictOMatic(m3, fl = list(x1 = "AUTO", xcat1 = "AUTO"), divider="quantile", type="response", n = 10))
+
+
+
 m1 <- lm(y ~ log(10+x1) + sin(x2) + x3, data=dat)
 m1.data <- model.data(m1)
 summarize(m1.data)
