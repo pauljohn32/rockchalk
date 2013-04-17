@@ -107,8 +107,8 @@
 ##' @examples
 ##' set.seed(2134234)
 ##' dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
-##' dat$y1 <- 30 + 5 * rnorm(100) + 3 * x1 + 4 * x2
-##' dat$y2 <- rnorm(100) + 5 * x2
+##' dat$y1 <- 30 + 5 * rnorm(100) + 3 * dat$x1 + 4 * dat$x2
+##' dat$y2 <- rnorm(100) + 5 * dat$x2
 ##' m1 <- lm(y1 ~ x1, data = dat)
 ##' m2 <- lm(y1 ~ x2, data = dat)
 ##' m3 <- lm(y1 ~ x1 + x2, data = dat)
