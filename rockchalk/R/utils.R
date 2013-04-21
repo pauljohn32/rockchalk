@@ -1,53 +1,54 @@
-#' Create sequences for plotting
-#'
-#' \code{plotSeq} is a convenience for the creation of sequence
-#' that can be used for plotting example values and calculating
-#' predicted values. By default, the length of the plotting
-#' sequence will be equal to the length of the original sequence.
-#' In that case, the only effect is to create an evenly-spaced
-#' set of values. If \code{length.out} is specified, the user
-#' determines the number of elements in plotSeq.
-#'
-#' The primary intended usage is for the creation of
-#' plotting sequences of numeric variables.  It takes
-#' a variable's range and the fills in evenly spaced steps.
-#' If x is a factor variable, the levels will be returned.
-#' Uses of this functionality are planned in the future.
-#' @usage plotSeq(x, length.out = length(x))
-#' @param x an R vector variable
-#' @param length.out the number of elements in the desired plotting sequence.
-#' @export plotSeq
-#' @seealso \code{pretty}
-#' @examples
-#' #Create a quadratic regression
-#'
-#' stde <- 14
-#' x <- rnorm(100, m=50, s=10)
-#' y <- 0.2 - 02*x + 0.2*x^2 + stde*rnorm(100)
-#' mod1 <- lm (y ~ poly(x, 2))
-#'
-#' plot(x, y, main="The Quadratic Regression")
-#' seqx <- plotSeq(x, length.out=10)
-#' seqy <- predict(mod1, newdata=data.frame(x=seqx))
-#' lines(seqx, seqy, col="red")
-#'
-#' # Notice the bad result when a plotting sequence is
-#' # not used.
-#' plot(x, y, main="Bad Plot Result")
-#' seqy <- predict(mod1)
-#' lines(x, seqy, col="green")
-
-plotSeq <- function (x, length.out = length(x))
+##' Create sequences for plotting
+##'
+##' \code{plotSeq} is a convenience for the creation of sequence
+##' across the range of a variable. 
+##' By default, the length of the plotting
+##' sequence will be equal to the length of the original sequence.
+##' In that case, the only effect is to create an evenly-spaced
+##' set of values. If \code{length.out} is specified, the user
+##' determines the number of elements in plotSeq.
+##'
+##' The primary intended usage is for the creation of
+##' plotting sequences of numeric variables.  It takes
+##' a variable's range and the fills in evenly spaced steps.
+##' If x is a factor variable, the levels will be returned.
+##' Uses of this functionality are planned in the future.
+##' @usage plotSeq(x, length.out = length(x))
+##' @param x an R vector variable
+##' @param length.out the number of elements in the desired plotting sequence.
+##' @export plotSeq
+##' @seealso \code{pretty}
+##' @examples
+##' #Create a quadratic regression
+##'
+##' stde <- 14
+##' x <- rnorm(100, m = 50, s = 10)
+##' y <- 0.2 - 02*x + 0.2*x^2 + stde*rnorm(100)
+##' mod1 <- lm (y ~ poly(x, 2))
+##'
+##' plot(x, y, main="The Quadratic Regression")
+##' seqx <- plotSeq(x, length.out = 10)
+##' seqy <- predict(mod1, newdata = data.frame(x = seqx))
+##' lines(seqx, seqy, col = "red")
+##'
+##' # Notice the bad result when a plotting sequence is
+##' # not used.
+##' plot(x, y, main = "Bad Plot Result")
+##' seqy <- predict(mod1)
+##' lines(x, seqy, col = "green")
+##'
+plotSeq <-
+    function (x, length.out = length(x))
 {
-  if (is.numeric(x)){
+  if (is.numeric(x)) {
     xr <- range(x, na.rm = TRUE)
     pseq <- seq(xr[1], xr[2], length.out = length.out)
     return(pseq)
-  }else{
-    if (is.factor(x)){
+  } else {
+    if (is.factor(x)) {
       pseq <- levels(x)
       return(pseq)
-    }else{
+    } else {
       stop("plotSeq can only create plotting sequences for numeric or factor variables")
     }
   }
@@ -67,8 +68,11 @@ NULL
 ##' @param x A numeric or character variable
 ##' @param n The maximum number of values that may be returned.
 ##' @return A named vector.
+##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-cutByTable <- function(x, n = 5) {
+cutByTable <-
+    function(x, n = 5)
+{
     table1 <- table(x)
     n <- min(n, length(names(table1)))
     table1 <- sort(table1, decreasing = T)
@@ -76,8 +80,8 @@ cutByTable <- function(x, n = 5) {
     tabNames <- names(table1cut)
     res <- if(!is.factor(x)){
         as.numeric(tabNames)
-    }else{
-        as.factor( tabNames)
+    } else {
+        as.factor(tabNames)
     }
     freq <- 100*round(table1cut/sum(table1),1)
     names(res) <- paste(tabNames," (",freq,"%)", sep="")
@@ -103,25 +107,28 @@ NULL
 ##' @param x A numeric vector.
 ##' @param n The number of quantile points. See details.
 ##' @return A vector
+##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-cutByQuantile <- function(x, n = 3){
+cutByQuantile <-
+    function(x, n = 3)
+{
     uniqueVals <- unique(x)
     if (length(uniqueVals) < 6) {
         qs <- cutByTable(x, n)
         invisible(qs)
     } else {
-        cutVector <- if(n == 1){
+        cutVector <- if(n == 1) {
             c(0.50)
-        }else if(n == 2){
+        } else if(n == 2) {
             c(0.25, 0.75)
-        }else if(n == 3){
+        } else if(n == 3) {
             c(0.25, 0.50, 0.75)
-        }else if(n == 4){
+        } else if(n == 4) {
             c(0.20, 0.40, 0.60, 0.80)
-        }else if(n == 5){
+        } else if(n == 5) {
             c(0.10, 0.30, 0.50, 0.70, 0.90)
-        }else if(n > 5) {
-            if(n %% 2 == 0) {
+        } else if (n > 5) {
+            if (n %% 2 == 0) {
                 g <- 0.5 / n %/% 2
                 c(seq(0, 0.5-g, by = g), 0.5, seq(0.5+g, 1.0, by = g))
             } else {
@@ -144,7 +151,10 @@ cutByQuantile <- function(x, n = 3){
 ##' @param n Should be 1, 3 or 5. If 2 < n < 5, values that divide
 ##' the data at c(m-sd, m, m+sd) are returned. If n > 4, the
 ##' returned values are c(m-2sd, m-sd, m, m+sd, m+2sd).
-cutBySD <- function(x, n = 3){
+##' @export
+cutBySD <-
+    function(x, n = 3)
+{
     uniqueVals <- unique(x)
     if (length(uniqueVals) < 6) {
         qs <- cutByTable(x, n)
@@ -180,19 +190,14 @@ cutBySD <- function(x, n = 3){
 ##' This is used in functions like \code{plotSlopes} or
 ##' \code{plotCurves}.
 ##'
-##' @param x Required. A numeric variable
-##' @param xvals Optional. Optional. \code{xvals} can be a vector, an
-##' algorithm name, or a function. If \code{xvals} is not provided, a
-##' default method will be selected ("quantile" is default for numeric
-##' variables, "table" is default for factors).
-##' @param n Optional. The number of focal values to be returned
+##' @param x Required. A variable
+##' @param ... Other arguments that will be passed to the
+##' user-specified xvals function.
 ##' @return A vector.
-##' @rdname getFocal
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-
 getFocal <-
-    function(x, xvals = NULL, n = 3)
+    function(x, ...)
 {
     UseMethod("getFocal")
 }
@@ -200,6 +205,13 @@ getFocal <-
 NULL
 
 
+##' @param xvals \code{xvals} can be a vector, an
+##' algorithm name, or a function. If \code{xvals} is not provided, a
+##' default method will be selected ("quantile" is default for numeric
+##' variables, "table" is default for factors). The methods for
+##' choosing particular values can be drawn from c("quantile", "std.dev.",
+##' "table", "seq").
+##' @param n Number of values to be selected.
 ##' @return A named vector of values.
 ##' @export
 ##' @rdname getFocal
@@ -215,7 +227,7 @@ NULL
 ##' getFocal(x, xvals = "std.dev", n = 5)
 ##' getFocal(x, xvals = c(-1000, 0.2, 0,5))
 ##'
-getFocal.default <- function(x, xvals = NULL, n = 3)
+getFocal.default <- function(x, xvals = NULL, n = 3, ...)
 {
     xRange <- magRange(range(x, na.rm = TRUE), 1.1)
 
@@ -232,21 +244,28 @@ getFocal.default <- function(x, xvals = NULL, n = 3)
 
     if (is.character(xvals)) {
         xvals <- match.arg(tolower(xvals),
-                           c("quantile", "std.dev.","table"))
+                           c("quantile", "std.dev.","table", "seq"))
         xfocal <- switch(xvals,
                          table = rockchalk:::cutByTable(x, n),
                          quantile = rockchalk:::cutByQuantile(x, n),
                          "std.dev." = rockchalk:::cutBySD(x, n),
+                         seq = rockchalk:::plotSeq(x, n),
                          stop("unknown 'xvals' algorithm in getFocal"))
         return(xfocal)
     }
+
+    if (is.function(xvals)) {
+        return(xvals(x, n, ...))
+    }
+
     stop("getFocal received unexpected input for xvals")
 }
-
 NULL
 
 
 ##' @return A named vector of values.
+##' @param xvals Either a vector of valid levels for the factor or an algorithm to choose levels.
+##' @param n Number of levels to be selected by the algorithm.
 ##' @rdname getFocal
 ##' @export
 ##' @author <pauljohn@@ku.edu>
@@ -255,7 +274,7 @@ NULL
 ##' @examples
 ##' x <- factor(c("A","B","A","B","C"))
 ##' getFocal(x)
-getFocal.factor <- function(x, xvals = NULL, n = 3)
+getFocal.factor <- function(x, xvals = NULL, n = 3, ...)
 {
     if (is.null(xvals)) {
         xvals <- rockchalk:::cutByTable(x, n)
@@ -278,6 +297,11 @@ getFocal.factor <- function(x, xvals = NULL, n = 3)
                         stop("Sorry, only known algorithm for factors is 'table'"))
         return(xvals)
     }
+
+    if (is.function(xvals)) {
+        return(xvals(x, n, ...))
+    }
+
     stop("getFocal received unexpected input xvals")
 }
 

@@ -23,6 +23,7 @@ dat$x3[sample(N, 5)] <- NA
 dat$xcat2[sample(N, 5)] <- NA
 dat$xcat1[sample(N, 5)] <- NA
 dat$y[sample(N, 5)] <- NA
+summarize(dat)
 
 
 m0 <- lm(y ~ x1 + x2 + xcat1, data = dat)
@@ -32,12 +33,36 @@ summary(m0)
 m0.data <- model.data(m0)
 summarize(m0.data)
 
+## no fl: analyzes each variable separately
 (m0.p1 <- predictOMatic(m0))
-(m0.p2 <- predictOMatic(m0, interval = "confidence"))
 
-(m0.p3 <- predictOMatic(m0, divider = "std.dev.", n=5))
+## requests confidence intervals from the predict function
+(m0.p4 <- predictOMatic(m0, interval = "confidence"))
 
-(m0.p3 <- predictOMatic(m0, fl = list("x1" = c(6,7), "xcat1" = levels(m0.data$xcat1))))
+## fl as vector of variable names: gives "mix and match" predictions
+(m0.p2 <- predictOMatic(m0, fl = c("x1", "x2")))
+
+(m0.p2 <- predictOMatic(m0, fl = c("x1", "x2"), interval = "confidence", n = 5))
+
+
+## fl as vector with named divider algorithms.
+(m0.p3 <- predictOMatic(m0, fl = c(x1 = "seq", x2 = "quantile")))
+## fl as named vector of divider algorithms
+
+## same idea, decided to double-check
+(m0.p3 <- predictOMatic(m0, fl = c(x1 = "quantile", x2 = "std.dev.")))
+getFocal(m0.data$x2, xvals =  "std.dev.")
+
+
+
+## Change from quantile to standard deviation divider
+(m0.p5 <- predictOMatic(m0, divider = "std.dev.", n = 5))
+
+## Still can specify particular values if desired
+(m0.p6 <- predictOMatic(m0, fl = list("x1" = c(6,7), "xcat1" = levels(m0.data$xcat1))))
+
+(m0.p3 <- predictOMatic(m0, fl = c(x1 = "quantile", x2 = "std.dev.")))
+getFocal(m0.data$x2, xvals =  "std.dev.")
 
 (m0.p4 <- predictOMatic(m0, fl = list(
                             x1 = quantile(m0.data$x1, na.rm = TRUE, probs = c(0, 0.1, 0.5, 0.8, 1.0)),
@@ -49,10 +74,10 @@ summarize(m0.data)
 (m0.p6 <- predictOMatic(m0, fl = list(x1 = "quantile", "xcat1" = levels(m0.data$xcat1)), n =  5) )
 
 
-(m0.p7 <- predictOMatic(m0, fl = list(x1 = "AUTO"), divider = "std.dev.", n = 10))
+(m0.p7 <- predictOMatic(m0, fl = list(x1 = "default"), divider = "std.dev.", n = 10))
 
 
-(m0.p8 <- predictOMatic(m0, fl = list(x1 = "AUTO", xcat1 = "AUTO"), n = 10))
+(m0.p8 <- predictOMatic(m0, fl = list(x1 = "default", xcat1 = "default"), n = 10))
 
 
 

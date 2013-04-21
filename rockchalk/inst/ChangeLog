@@ -1,3 +1,41 @@
+2013-04-21  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* Version 1.7.4.1
+	* ../R/genCorrelatedData.R: Added whole family of new
+	funcions
+	- genCorrelatedData2
+	- vech2Corr
+	- vech2Mat
+	- lazyCor
+	- lazyCov
+	- makeVec
+	- makeSymmetric
+	- checkPosDef
+
+	* ../R/mcDiagnose.R (getDeltaRsquare): drop = FALSE should return
+	a matrix with one column
+	- more revision on getPartialCor
+
+2013-04-19  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/mcDiagnose.R (mcDiagnose): getPartialCor function added.
+
+2013-04-18  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/predictOMatic.R (predictOMatic): fiddling interface for fl
+	so it can now be offered as a vector or a list. Trying to get cute
+	with way users can specify divider algorithms.
+
+	* ../R/utils.R: must now export the cutBy functions
+
+2013-04-17  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/mcDiagnose.R (getDeltaRsquare): clean up output. Because
+	I was using na.omit to get rid of the missing first element (some
+	noise from matrix subtraction), the output object was including a
+	lot of extraneous attributes that made printing the result more
+	tedious. Now I don' use na.omit any more.
+
 2013-04-16  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/outreg.R (harvest): Again reworking arguments, rename
