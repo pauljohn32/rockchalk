@@ -21,31 +21,32 @@
 ##' Creates the newdata frame required in predict methods.
 ##'
 ##' This function uses various tricks to create a "newdata" object
-##' suitable for use in predict methods for R objects. It
+##' suitable for use in predict methods for R regression objects. It
 ##' scans the fitted model, discerns the names of the predictors, and
-##' then generates a new data frame.  The argument \code{fl} is
-##' very important. It determines which variables are selected for
-##' more careful inspection. See details.
+##' then generates a new data frame.  The argument \code{predVals}
+##' (predictor values) is very important. It determines which
+##' variables are selected for more careful inspection. This argument
+##' was called "fl" in previous editions of rockchalk, and that name
+##' still works as well. See details.
 ##'
-##' I did not originally intend that users would access this function
-##' directly. It was created as an intermediate function that
-##' is used by rockchalk functions like predictOMatic or
-##' plotSlopes. It may not be necessary for the user to call newdata
-##' explicitly, unless the results from those other functions are not
-##' what the user desires. However, I have found many occassions on which
-##' it is useful to create newdata objects directly.
+##' This is used by several rockchalk functions, including plotSlopes,
+##' plotCurves, and predictOMatic.  However, I have found many
+##' occassions on which it is useful to create newdata objects
+##' directly.
 ##'
-##' If not supplied with a focus list argument, newdata returns a data
+##' If not supplied with a predVals  argument, newdata returns a data
 ##' frame with one row -- the central values (means and modes) of the
 ##' variables in the data frame that was used to fit the model.
 ##'
-##' The focus list argument \code{fl} allows users to make
-##' fine-grained requests. \code{fl} must be a named list, using names
-##' of variables from the regression formula. This can be done
-##' explicitly, for example, \code{fl = list(x1 = c(10, 20, 30), x2 =
+##' The \code{predVals} argument allows users to make fine-grained
+##' requests. \code{predVals} can be a named list that supplies
+##' specific values for particular predictors.  The omitted predictors
+##' will be set at their central values. Any legal vector of values is
+##' allowed. For example, \code{fl = list(x1 = c(10, 20, 30), x2 =
 ##' c(40, 50), xcat = levels(xcat)))}. That will create a newdata
 ##' object that has all of the "mix and match" combinations for those
-##' values, while the other predictors are set at their central values.
+##' values, while the other predictors are set at their central
+##' values.
 ##'
 ##' In rockchalk 1.7.3, a convenience feature was added that gives
 ##' automatic value selection via keywords. If the user declares a
@@ -60,18 +61,16 @@
 ##' x3 = c(10, 20, 30), xcat1 <- levels(xcat1))}
 ##'
 ##' @param model Required. Fitted regression model
-##' @param fl Optional. "focus list" of variables. Named list of
-##' variables and values for which to create a new data object.
-##' Keyword "default" can be used to allow
-##' automatic level selection for particular variable, e.g.,
-##' fl = list(x1 = "default"). Keywords "quantile", "std.dev.", and "table"
-##' can also be specified separately for each variable.
+##' @param predVals  Predictor Values that deserve investigation.
+##' Previously, the argument was called "fl", for focus list (but
+##' nobody understood that).  This can be supplied in many different formats. Please see details and examples.
+##' @param fl = predVals
 ##' @param n Optional. Default = 3. How many focal values are desired?
 ##' This value is used when various divider algorithms are put to use
 ##' if the user has specified keywords "default", "quantile", "std.dev."
 ##' "seq", and "table".
-##' @param divider Optional. Determines the method of
-##' selection. Should be one of c("quantile","std.dev", "seq", "table").
+##' @param divider Default is "quantile". Determines the method of
+##' selection. Should be one of c("quantile", "std.dev", "seq", "table").
 ##' @param emf Optional. data frame used to fit model (not a model
 ##' frame, which may include transformed variables like
 ##' log(x1). Instead, use output from function \code{model.data}). It
@@ -84,7 +83,7 @@
 ##' @export
 ##' @seealso \code{predictOMatic}
 ##' @example inst/examples/predictOMatic-ex.R
-newdata <- function (model = NULL, fl = NULL, emf = NULL, n = 3, divider = "quantile"){
+newdata <- function (model = NULL, predVals = NULL, fl = predVals, emf = NULL, n = 3, divider = "quantile"){
     if (is.null(emf)) emf <- model.data(model = model)
     divider <- match.arg(tolower(divider),
                          c("quantile", "std.dev.","table","seq"))
@@ -113,7 +112,7 @@ newdata <- function (model = NULL, fl = NULL, emf = NULL, n = 3, divider = "quan
     colnames(newdf) <- c(colnames(mixAndMatch), unames)
     newdf
 }
-
+NULL
 
 ##' Creates a "raw" (UNTRANSFORMED) data frame equivalent
 ##' to the input data that would be required to fit the given model.
@@ -167,7 +166,7 @@ model.data <- function(model){
     attr(data, "varNamesRHS") <- setdiff(colnames(data), varNamesLHS)
     invisible(data)
 }
-
+NULL
 
 
 ##' Create a focal value vector.
@@ -179,8 +178,18 @@ model.data <- function(model){
 ##' to other functions. The functions that do the work to select the
 ##' focal values for types ("table", "quantile", "std.dev.", "seq") are
 ##' (cutByTable(), cutByQuantile(), cutBySD(), and plotSeq())
+##'
+##' The built-in R function \code{pretty()}
+##' works as of rockchalk 1.7.2. Any function that accepts an argument
+##' n will work, as long as it creates a vector of values.
+##'
 ##' @param x The input variable may be numeric or a factor.
-##' @param divider Default = "quantile" for numeric variables, "table" for factors. Other valid values: "seq" for an evenly spaced sequence from minimum to maximum, "std.dev." for a sequence that has the mean at the center and values on either side that are proportional to the standard deviation.
+##' @param divider Either a quoted string name of an algorithm or a
+##' function. Default = "quantile" for numeric variables, "table" for
+##' factors. Other valid values: "seq" for an evenly spaced sequence
+##' from minimum to maximum, "std.dev." for a sequence that has the
+##' mean at the center and values on either side that are proportional
+##' to the standard deviation.
 ##' @param n Desired number of focal values.
 ##' @export
 ##' @return A named vector of focal values selected from a variable. The
@@ -192,6 +201,11 @@ model.data <- function(model){
 focalVals <-
     function(x, divider = "quantile", n = 3)
 {
+    if (is.function(divider)) {
+        res <-  divider(x, n)
+        return(res)
+    }
+
     if (is.numeric(x)) {
         divider <- match.arg(tolower(divider),
                              c("quantile", "std.dev.","table", "seq"))
@@ -201,12 +215,12 @@ focalVals <-
                       "std.dev." = rockchalk:::cutBySD(x, n),
                       "seq" = rockchalk:::plotSeq(x, n),
                       stop("unknown 'divider' algorithm"))
-    } else {
+    }  else {
         res <- rockchalk:::cutByTable(x, n)
     }
     res
 }
-
+NULL
 
 
 
@@ -214,70 +228,114 @@ focalVals <-
 ##' model. This demonstrates marginal effects of the predictor
 ##' variables.
 ##'
-##' The focus list must name only predictors that are fitted in the
-##' model. Here are some example usages to demonstrate the
-##' possibilities.  If a "focus list" is supplied, predictOMatic scans
-##' it and tries to make sense out of the user's request. Generally,
-##' it will choose the mean or mode for variables that are not
-##' explicitly listed, and selected values of the named variables are
-##' "mixed and matched" to make a data set.
+##' The behavior of this function depends on the argument predVals
+##' (predictor values).  If no predVals argument is supplied,
+##' predictOMatic creates a list of new data frames, one for each
+##' predictor variable. It uses the default divider algorithm (see the
+##' divider argument) and it estimates predicted values for \code{n}
+##' different values of the predictor. A model with formula \code{y ~
+##' x1 + x2 + x3} will cause 3 separate output data frames, one for
+##' each predictor. They will be named objects in the list.
+##'
+##' If predVals is suppiled, it must name only predictors that are
+##' fitted in the model. \code{predictOMatic} will choose the mean or mode for
+##' variables that are not explicitly listed, and selected values of
+##' the named variables are "mixed and matched" to make a data set.
 ##
-##' If no "focus list" is supplied, predictOMatic creates a list of
-##' new data frames, one for each predictor variable. It uses the
-##' default divider algorithm (see the divider argument) and it
-##' estimates predicted values for \code{n} different values of the
-##' predicto. That is, in a model with formula y ~ x1 + x2 + x3, then
-##' separate tables of predicted values will be supplied, one for each
-##' of x1, x2, and x3.
+##' There are many formats in which it can be supplied.  Suppose a
+##' regression formula is \code{y1 ~ sex + income + health +
+##' height}. The simplest format for predVals will be a vector of
+##' variable names, leaving the selection of detailed values to the
+##' default algorithms. For example, \code{predVals = c("income",
+##' "height")} will cause sex and health to be set at central values
+##' and income and height will have target values selected according
+##' to the divider algorithm (see the argument \code{divider}).
 ##'
+##' If the user wants various divider algorithms to be used, change
+##' the argument to predvals = c(income = "quantile", height =
+##' "std.dev."). The dividers provided by the rockchalk package are
+##' "quantile", "std.dev.", "seq" and "table".  Those are discussed
+##' more completely in the help for \code{focalVals}.  The appropriate
+##' algorithms will select focal values of the predictors and they
+##' will supply \code{n} values for each in a "mix and match" data
+##' frame. After rockchalk 1.7.2, the divider argument can also be the
+##' name of a function, such as R's pretty.
 ##'
+##' Finally, users who want very fine grained control over
+##' predictOMatic can supply a named list of predictor
+##' values. For example, predVals = list(height = c(5.5, 6.0, 6.5),
+##' income = c(10, 20, 30, 40, 50), sex = levels(dat$sex)). One can
+##' also use algorithm names here.  Some predVals = list(height =
+##' c(5.5, 6.0, 6.5), income = "quantile") and so forth. Examples are
+##' offered below.
 ##'
-##' It may be important to make sure that diagnostic plots and
-##' summaries of predictions are calculated with the exact same data
-##' that was used to fit the model. The function \code{model.data} is
-##' intended to facilitate that comparison. One can fit a model, use
-##' model.data to get the data that was used, and then use that
-##' extracted data to decide on values to be set in the focus list.
+##' The variables named in the predVals argument should be the names
+##' of the variables in the raw data frame, not the names that R
+##' creates when it interprets a formula. We want "x", not the
+##' transformation in the functions (not \code{log(x)}, or
+##' \code{as.factor(x)} or \code{as.numeric(x)}). If a formula has a
+##' predictor \code{poly(height, 3)}, then the predVals argument
+##' should refer to height, not \code{poly(height, 3)}.  I've invested
+##' quite a bit of effort to make sure this "just works" (many
+##' alternative packages that calculate predicted values do not).
 ##'
-##' For example, create a copy of the data from a model m1 with
+##' It it important to make sure that diagnostic plots and summaries
+##' of predictions are calculated with the exact same data that was
+##' used to fit the model. This is surprisingly difficult because
+##' formulas can include things like log(income + d) and so forth. The
+##' function \code{model.data} is the magic bullet for that part of
+##' the problem.
+##'
+##' Here is one strategy for doing this.
+##'
+##' Fit a regression model
+##'
+##' d <- 3
+##' alpha <- 13
+##' m1 <- lm(yout ~ xin + xout + poly(xother,2) + log(xercise + alpha), data = dat)
+##'
+##' Then grab the data that was used from the model
 ##'
 ##' m1dat <- model.data(m1)
 ##'
-##' and then use m1dat to select values that might be predicted in
-##' a command like
+##' Now, when you are thinking about which values you might like to
+##' specify in predVals, use m1dat to decide. Try
 ##'
-##' predictOMatic( m1, fl =
-##' list("x1" = median(m1dat$x1), "x2" = c(1,2,3), "x3" = quantile(m1dat$x3))
+##' summarize(m1dat)
 ##'
+##' Then run something like
 ##'
+##' predictOMatic( m1, predVals = list(xin = median(m1dat$xin), xout =
+##' c(1,2,3), xother = quantile(m1dat$xother))
 ##'
+##' Get the idea?
 ##'
-##' @param model Required. A fitted regression model
-##' @param fl (focus list). Optional. Either a vector of variable
-##' names, with optional automatic value selection algorithms, or a
-##' named list of variable names with values or names of selection
-##' algorithms. May include some or all of the predictors in the
-##' model. May specify particular focal values, or select one of the
-##' algorithms for their selection. This has been revised many times
-##' to respond to user requests, so it has many possibilities that are
-##' explained in the details section.  Predictor variables in
-##' \code{model} that are not named in fl will be set to mean or mode
-##' values. See details and examples.
-##' @param divider Choose from c("quantile", "std.dev", "seq",
-##' "table").  This sets the method for selecting values of the
-##' predictor. Documentation for the methods can be found in the
-##' functions \code{cutByQuantile}, \code{cutBySD}, \code{plotSeq},
-##' and \code{cutByTable},.
+##' @param model Required. A fitted regression model. A \code{predict}
+##' method must exist for that model.
+##' @param predVals Predictor values. Optional. Users can supply
+##' detailed information to determine which predictors and which
+##' values for them are selected. The allowed format has been
+##' generalized a great deal in rockchalk 1.7.4, allowing now a vector
+##' of variable names, a vector of named algorithms, or a list
+##' containing detailed value selections. See details and examples.
+##' @param divider An algorithm name from c("quantile", "std.dev",
+##' "seq", "table") or a user-provided function.  This sets the method
+##' for selecting values of the predictor. Documentation for the
+##' rockchalk methods can be found in the functions
+##' \code{cutByQuantile}, \code{cutBySD}, \code{plotSeq}, and
+##' \code{cutByTable},.
 ##' @param n Default = 5. The number of values for which
 ##' predictions are sought.
+##' @param fl. DEPRECATED. Previous name of argument predVals.
 ##' @param ... Optional arguments to be passed to the predict function
 ##' @return A data frame or a list of data frames.
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/predictOMatic-ex.R
-predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, ...) {
+predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n = 5, fl = predVals, ...) {
     dots <- list(...)
     dotnames <- names(dots)
+
     ## 2013-04-18: What magic was I planning with dots here? Can't recall :(
     ##  ## next should give c('digits', 'alphaSort')
     ##  nnames <- names(formals(rockchalk::summarizeNumerics))[-1L]
@@ -291,7 +349,7 @@ predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, 
     ## if(length(n) < length(fl)) n <- rep(n, length.out = length(fl))
     ## if(length(divider) < length(fl)) divider <- rep(divider, length.out = length(fl)
 
-    if(missing(fl) || is.null(fl)){
+    if (is.null(fl)){
         flxxx <- list()
         nd <- lapply (varNamesRHS, function(x) {
             flxxx[[x]]  <- focalVals(emf[ ,x], divider, n)
@@ -318,26 +376,28 @@ predictOMatic <- function(model = NULL, fl = NULL, divider = "quantile", n = 3, 
         }
         flnames <- names(fl)
         if (any(! flnames %in% varNamesRHS))
-            stop(paste("Sorry, predictOMatic won't work. \nYou cannot put variables in the fl unless you fit them in the model first. \nFor this model, the only legal values would be, ", varNamesRHS))
+            stop(paste("Sorry, predictOMatic won't work. \nYou cannot put variables in predVals unless you fit them in the model first. \nFor this model, the only legal values would be, ", varNamesRHS))
 
         for(x in flnames) {
             if (is.character(fl[[x]]) && length(fl[[x]]) == 1)
                 if (fl[[x]] == "default") {
                     fl[[x]] <- focalVals(emf[ ,x], divider, n)
-                } else if (fl[[x]] %in% c("quantile", "std.dev.","table", "seq")){
+                } else if (is.function(fl[[x]]) | fl[[x]] %in% c("quantile", "std.dev.","table", "seq")){
                     fl[[x]] <- focalVals(emf[ ,x],  divider = fl[[x]], n)
                 }
         }
 
         nd <- newdata(model, fl, emf = emf)
-        ## fit <- do.call("predict", list(model, newdata = nd, dots))
+        pargs <- list(model, newdata = nd, type = "response")
+        pargs <-  modifyList(pargs, dots)
+        fit <- do.call("predict", pargs)
         fit <- predict(model, newdata = nd, type = "response", ...)
         nd <- cbind(fit, nd)
         attr(nd, "flnames") <- flnames
     }
     nd
 }
-
+NULL
 
 
 ## ## Other approaches I've wrestled with for model.data
