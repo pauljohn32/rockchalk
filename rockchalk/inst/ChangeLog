@@ -1,7 +1,14 @@
+2013-04-22  Paul Johnson  <pauljohn@pols110.pols.ku.edu>
+
+	* ../R/utils.R (getFocal: create separate documentation for
+	the methods, try to clarify usage
+	(cutBySD): allow m+/-3sd
+
 2013-04-21  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/predictOMatic.R (focalVals): allow divider to be a
 	function, such as R's built-in pretty() function.
+	- create new argument "predVals" to replace fl
 
 	* Version 1.7.4.1
 	* ../R/genCorrelatedData.R: Added whole family of new

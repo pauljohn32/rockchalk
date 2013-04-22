@@ -42,7 +42,7 @@
 ##' requests. \code{predVals} can be a named list that supplies
 ##' specific values for particular predictors.  The omitted predictors
 ##' will be set at their central values. Any legal vector of values is
-##' allowed. For example, \code{fl = list(x1 = c(10, 20, 30), x2 =
+##' allowed. For example, \code{predVals = list(x1 = c(10, 20, 30), x2 =
 ##' c(40, 50), xcat = levels(xcat)))}. That will create a newdata
 ##' object that has all of the "mix and match" combinations for those
 ##' values, while the other predictors are set at their central
@@ -57,14 +57,14 @@
 ##' character string, either "quantile", "std.dev.", "seq", or "table".
 ##' The user can mix and match algorithms along with requests
 ##' for specific focal values, as in
-##' \code{fl = list(x1 = "quantile", x2 = "std.dev.",
+##' \code{predVals = list(x1 = "quantile", x2 = "std.dev.",
 ##' x3 = c(10, 20, 30), xcat1 <- levels(xcat1))}
 ##'
 ##' @param model Required. Fitted regression model
 ##' @param predVals  Predictor Values that deserve investigation.
 ##' Previously, the argument was called "fl", for focus list (but
 ##' nobody understood that).  This can be supplied in many different formats. Please see details and examples.
-##' @param fl = predVals
+##' @param fl focus list, now called x predVals
 ##' @param n Optional. Default = 3. How many focal values are desired?
 ##' This value is used when various divider algorithms are put to use
 ##' if the user has specified keywords "default", "quantile", "std.dev."
@@ -326,7 +326,7 @@ NULL
 ##' \code{cutByTable},.
 ##' @param n Default = 5. The number of values for which
 ##' predictions are sought.
-##' @param fl. DEPRECATED. Previous name of argument predVals.
+##' @param fl focus list. DEPRECATED. Previous name of argument predVals.
 ##' @param ... Optional arguments to be passed to the predict function
 ##' @return A data frame or a list of data frames.
 ##' @export
