@@ -61,10 +61,12 @@
 ##' x3 = c(10, 20, 30), xcat1 <- levels(xcat1))}
 ##'
 ##' @param model Required. Fitted regression model
-##' @param predVals  Predictor Values that deserve investigation.
-##' Previously, the argument was called "fl", for focus list (but
-##' nobody understood that).  This can be supplied in many different formats. Please see details and examples.
-##' @param fl focus list, now called x predVals
+##' @param predVals Predictor Values that deserve investigation.
+##' Previously, the argument was called "fl".  This can be a vector of
+##' variable names, a vector that names variables and divider
+##' algorithms, or a full list that supplies variables and possible
+##' values. Please see details and examples.
+##' @param fl focus list, now called x predVals. This is deprecated.
 ##' @param n Optional. Default = 3. How many focal values are desired?
 ##' This value is used when various divider algorithms are put to use
 ##' if the user has specified keywords "default", "quantile", "std.dev."
@@ -92,7 +94,21 @@ newdata <- function (model = NULL, predVals = NULL, fl = predVals, emf = NULL, n
     emf <- emf[ , varNamesRHS, drop = FALSE]
     modelcv <- centralValues(emf)
     if (is.null(fl)) return(modelcv)
-    if (sum(!names(fl) %in% varNamesRHS) > 0) stop(cat(c("Error. The focus list:  fl requests variables that are not included in the original model. The names of the variables in the focus list be drawn from this list: ",  varNamesRHS, "\n")))
+
+    ## if fl is a vector with no names, create fl, a list with fl's values as names
+    ## if fl is a vector with names, create fl, a list
+    if(!is.list(fl)){
+        flnames <- names(fl)
+        if (is.null(flnames)){
+            flnames <- fl
+            fl <- vector("list", length = length(flnames))
+            names(fl) <- flnames
+        } else {
+            fl <- as.list(fl)
+        }
+    }
+
+    if (sum(!names(fl) %in% varNamesRHS) > 0) stop(cat(c("Error. The focus list:  predVals requests variables that are not included in the original model. The names of the variables in the focus list be drawn from this list: ",  varNamesRHS, "\n")))
     ## TODO: Consider "padding" range of fl for numeric variables so that we
     ## get newdata objects including the min and max values.
     flnames <- names(fl)

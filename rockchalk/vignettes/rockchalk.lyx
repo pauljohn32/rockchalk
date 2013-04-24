@@ -681,7 +681,8 @@ Easier newdata objects for predict
 \end_layout
 
 \begin_layout Standard
-These two functions greatly facilitate the creation of 
+Two functions, newdata() and predictOMatic(), will greatly facilitate the
+ creation of 
 \begin_inset Quotes eld
 \end_inset
 
@@ -690,8 +691,23 @@ newdata
 \end_inset
 
  objects for use with R's predict methods.
- This code fits a regression model on the Chile data and then it extracts
- the model frame for further analysis.
+ 
+\end_layout
+
+\begin_layout Standard
+In order to understand the benefits of the approach proposed here, it is
+ necessary to understand the 
+\begin_inset Quotes eld
+\end_inset
+
+old way
+\begin_inset Quotes erd
+\end_inset
+
+ we were supposed to do this in R.
+ There are 3 steps in the usual procedure.
+ First, fit a regression, like so.
+ This uses the Chile data set from the car package.
 \end_layout
 
 \begin_layout Standard
@@ -706,6 +722,32 @@ status open
 \begin_layout Plain Layout
 
 m1 <- lm(statusquo ~ age + income + population + region + sex, data=Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Second, we need to build a newdata obect.
+ It must be a new data frame that includes values for all of the predictors.
+ I usually do this by extracting the data frame that was used to fit the
+ model 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -725,7 +767,16 @@ m1mf <- model.frame(m1)
 
 \begin_layout Standard
 \noindent
-If we were to run
+and it will help us to make a new data object to be used along with the
+ predict function.
+ 
+\end_layout
+
+\begin_layout Standard
+\noindent
+Third, we need to use that new data object with the regression model's predict
+ method.
+ If we were to run
 \end_layout
 
 \begin_layout Standard
@@ -746,17 +797,14 @@ predict(m1)
 \begin_layout Standard
 \noindent
 we would receive a predicted value for each observation.
- We want a smaller set of calculations, just predictions for a few cases
- we find interesting.
- In R, one should create a 
-\begin_inset Quotes eld
-\end_inset
-
-newdata
-\begin_inset Quotes erd
-\end_inset
-
- data frame, which can then be used in a command like 
+ That doesn't simplify anything.
+ Instead, we want predicted values for a focal set of values, values that
+ are substantively interesting (say, quantiles or other variations above
+ and below the mean).
+ I'll explain details on how to create this new data object below, lets
+ just suppose it exists.
+ R's predict function has a newdata argument that will offer predictions
+ for those focal cases, if only we could construct myNewDF.
 \end_layout
 
 \begin_layout Standard
@@ -776,16 +824,15 @@ predict(m1, newdata = myNewDF)
 
 \begin_layout Standard
 \noindent
-The newdata must include one column for each variable in the model, and
+The new data must include one column for each variable in the model, and
  those variables must have exactly the same names as were used in the regression
  formula.
- This makes it difficult for students to get the predictions they want without
- learning a lot about variable management in R.
+ I've taught R for almost a decade and this is often a source of frustration.
  
 \end_layout
 
 \begin_layout Standard
-My first approach to this was to teach a streamlined sequence of 
+I still teach the Three Step sequence of 
 \begin_inset Quotes eld
 \end_inset
 
@@ -794,43 +841,17 @@ can't miss
 \end_inset
 
  steps.
- After that, I wrote functions newdata() and predictOMatic() that will do
- most of this automatically.
+ But I expect I won't be doing that for long because the functions newdata()
+ and predictOMatic() will do most of this automatically.
  In order to understand what's going on, I need the reader to understand
  the steps in principle.
  
 \end_layout
 
 \begin_layout Standard
-First, create a new data frame that sets the predictors at their central
- values (mean or mode).
- Second, specify some alternate levels for particular predictors in a new
- data frame.
- Third, combine those special interest variables with the central values
- data set.
- 
-\end_layout
-
-\begin_layout Standard
-In the context of model m1, suppose we want to formulate predictions for
- each of the 3 middle quantiles of the age variable and for the levels of
- region called 
-\begin_inset Quotes eld
-\end_inset
-
-C
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-N
-\begin_inset Quotes erd
-\end_inset
-
-.
+Now, what kind of a process is required to create a workable newdata frame?
+ First, calculate values for the predictors at their central values (say,
+ mean or mode or median).
  The summarize function and the centralValues functions are run first to
  collect up the needed information.
 \end_layout
@@ -865,9 +886,38 @@ m1cv <- centralValues(m1mf)
 \end_layout
 
 \begin_layout Standard
-Use R's expand.grid function to create, mixAndMatch, a mix-and-match data
- frame of all combinations of the values for which we want to calculate
- predictions.
+Second, specify some alternate levels for particular predictors in a new
+ data frame.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+focalVals <- list(age = m1mfsumm$numerics[2:4, "age"], region = c("C","N"))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+R's expand.grid() function offers a very convenient way to get all combinations
+ of those predictors.
 \end_layout
 
 \begin_layout Standard
@@ -881,8 +931,7 @@ status open
 
 \begin_layout Plain Layout
 
-mixAndMatch <- expand.grid(age = summChile$numerics[2:4, "age"], region =
- c("C","N"))
+mixAndMatch <- expand.grid(focalVals)
 \end_layout
 
 \begin_layout Plain Layout
@@ -901,8 +950,9 @@ mixAndMatch
 \end_layout
 
 \begin_layout Standard
-There are many ways to put together the interesting combinations in the
- mixAndMatch data frame with the central values in m1cv.
+Third, combine those focal values with the central values for the other
+ variables in the data set.
+ Recall that we must specify values for all of the predictors in the model.
  There is a danger that we may end up with columns that have duplicate names
  (there is a variable 
 \begin_inset Quotes eld
@@ -985,6 +1035,8 @@ mynewdf
 \begin_layout Standard
 If one desires confidence intervals, the procedure is similar, although
  the data management is slightly more tedious.
+ I usually prefer to rename the fit and lower and upper confidence interval
+ regions so that they have unique names.
 \end_layout
 
 \begin_layout Standard
@@ -1009,6 +1061,11 @@ preds <- predict(m1, newdata = mynewdf, interval="confidence")
 
 \begin_layout Plain Layout
 
+colnames(preds) <- paste("m1", colnames(preds), sep = "")
+\end_layout
+
+\begin_layout Plain Layout
+
 mynewdf <- cbind(mynewdf, preds)
 \end_layout
 
@@ -1028,42 +1085,108 @@ mynewdf
 \end_layout
 
 \begin_layout Standard
-How to automate all of that, and make sure it works for most of the regression
- formulae that are likely to come along? It's not good enough to manage
- y ~ x1 + x2, we also need to handle y ~ x1 + log(x2 + alpha) + ploy(x3,
- d) and so forth.
- That was a hard problem for me, but I believed it is solved now (the secret
- recipe is a new function called model.data()).
- User's won't need to worry about those details.
- Instead, I suggest the use either newdata() with their own predict() code,
- or a new 
+That seems like a lot of work to me, and I've done it many times.
+ 
+\end_layout
+
+\begin_layout Standard
+Can this be made easier? And can it be robust and flexible? I believe the
+ answer is yes.
+ The newdata() and predictOMatic() functions handle the details and allow
+ the user to adjust their requests to allow for very fine grained control.
+ Here are the key arguments for these functions.
+\end_layout
+
+\begin_layout Enumerate
+divider.
+ The name of an algorithm to select among observed values for which predictions
+ are to be calculated.
+ These are the possibilities.
+\end_layout
+
+\begin_deeper
+\begin_layout Description
 \begin_inset Quotes eld
 \end_inset
 
-all in one
+seq
 \begin_inset Quotes erd
 \end_inset
 
- function I'm offering called predictOMatic().
+ an evenly spaced sequence of values from low to high across the variable.
+\end_layout
+
+\begin_layout Description
+\begin_inset Quotes eld
+\end_inset
+
+quantile
+\begin_inset Quotes erd
+\end_inset
+
+ quantile values that eminate from the center of the variable 
+\begin_inset Quotes eld
+\end_inset
+
+outward
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Description
+\begin_inset Quotes eld
+\end_inset
+
+std.dev.
+\begin_inset Quotes erd
+\end_inset
+
+ the mean plus or minus the standard deviation, or 2 standard deviations,
+ and so forth.
+\end_layout
+
+\begin_layout Description
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+ when a variable has only a small set of possible values, this selects the
+ most frequently observed values.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+n.
+ The number of values to be selected.
+\end_layout
+
+\begin_layout Enumerate
+predVals.
+ Where the divider argument sets the default algorithm to be used, the predVals
+ argument can choose variables for focus and select divider algorithms.
+ It is also allowed to declare particular values.
 \end_layout
 
 \begin_layout Standard
 The function newdata() is a way of asking for a new data frame that demonstrates
  certain focal values of one or more variables.
- First, fit a regression, such as m1 above, which used the Chile data frame.
- The newdata() function accepts an argument fl, which is short for 
+ We start with a fitted regression, m1, which was fitted above.
+ This asks for a 
 \begin_inset Quotes eld
 \end_inset
 
-focus list.
+mix and match
 \begin_inset Quotes erd
 \end_inset
 
- That list is a set of values on which we want to focus in the new data
- object.
- It is easier to understand with some examples.
- The specification of the possible values can either be specific values,
- as we see here:
+ of values from age and region.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1077,8 +1200,103 @@ status open
 
 \begin_layout Plain Layout
 
-mynewdf <- newdata(m1, fl = list(age = c(20, 30, 40), region = c("SA", "C","N"))
-)
+mynewdf <- newdata(m1, predVals = c("age","region"), n = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf2 <- newdata(m1, predVals = list(age = "std.dev.", region = c("SA",
+ "C","N")))
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf2
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf3 <- newdata(m1, predVals = list(age = c(20, 30, 40), region = c("SA",
+ "C","N")))
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf3
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+Of course, functions from rockchalk or any other R package can be placed
+ into the process for choosing focal values.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mynewdf <- newdata(m1, predVals = list(age = getFocal(Chile$age, n = 3),
+ region = getFocal(Chile$region, n = 3)))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1097,43 +1315,8 @@ mynewdf
 \begin_inset Newline newline
 \end_inset
 
-or it may incorporate calculated values that select focal points for us:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf <- newdata(m1, fl = list(age = summChile$numerics[2:4, "age"], region
- = getFocal(Chile$region, n = 3)))
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-The getFocal() function is new in rockchalk.
- It is a generic function, which means that it can receive variables of
- different types and it is supposed to notice and 
+The function getFocal() is a generic function, which means that it can receive
+ variables of different types and it is supposed to notice and 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1141,8 +1324,9 @@ do the right thing.
 \begin_inset Quotes erd
 \end_inset
 
- In this case, it notices that region is a factor, and it selects the 3
- most frequently observed scores.
+ It allows the section of algorithms as explained in the documentation,
+ but the default for numeric variables is the quantile and for factors the
+ most frequenly observed outcomes are selected.
  The newdata() output can be used in a predict() function call as demonstrated
  above.
  
@@ -1150,7 +1334,7 @@ do the right thing.
 
 \begin_layout Standard
 Note that I've tried to help users to catch typographical errors in the
- focus list.
+ predVals.
  
 \end_layout
 
@@ -1167,15 +1351,15 @@ begin{Sinput}
 
 \begin_layout Plain Layout
 
-> mynewdf <- newdata(m1, fl = list(age = summChile$numerics[2:4, "age"],
+> mynewdf <- newdata(m1, predVals = list(age = summChile$numerics[2:4, "age"],
  place = c("SA", "C","N")))
 \end_layout
 
 \begin_layout Plain Layout
 
 Error.
- The focus list: fl requests variables that are not included in the original
- model.
+ The focus list: predVals requests variables that are not included in the
+ original model.
  
 \end_layout
 
@@ -1199,18 +1383,13 @@ end{Sinput}
 
 \begin_layout Standard
 I've tried to go one step further, offering a function called predictOMatic().
- The user can optionally supply a 
-\begin_inset Quotes eld
-\end_inset
-
-focus list
-\begin_inset Quotes erd
-\end_inset
-
-, the focal values for which predictions are desired.
- However, if no fl argument is supplied, then predictOMatic() will cycle
- through the variables in a fitted model, calculating marginal predicted
- values for each of the variables.
+ predictOMatic() receives a regression model and if no other details are
+ supplied, it takes each variable, one at a time, and collects some focal
+ values and estimates predictions for each one.
+ The user can request that particular values of the predictors are used,
+ or can declare one of several algorithms for selection of focal values.
+ All of these details are managed by the argument called predVals, which
+ is described in the help pages (with plenty of examples).
  
 \end_layout
 
@@ -1225,8 +1404,7 @@ status open
 
 \begin_layout Plain Layout
 
-mypred1 <- predictOMatic(m1, fl = list(age = summChile$numerics[2:4, "age"],
- region = c("SA", "C","N")))
+mypred1 <- predictOMatic(m1)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1236,12 +1414,34 @@ mypred1
 
 \begin_layout Plain Layout
 
-mypred2 <- predictOMatic(m1)
+mypred2 <- predictOMatic(m1, predVals = c("age", "region"), n = 3)
 \end_layout
 
 \begin_layout Plain Layout
 
 mypred2
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred3 <- predictOMatic(m1, predVals = c(age = "std.dev.", region = "table"),
+ n = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred3
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred4 <- predictOMatic(m1, predVals = list(age = summChile$numerics[2:4,
+ "age"], region = c("SA", "C","N")), n = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred4
 \end_layout
 
 \begin_layout Plain Layout
@@ -1255,7 +1455,22 @@ mypred2
 \end_layout
 
 \begin_layout Standard
-Under the hood, this required some hard work, a frustrating chain of trial
+It's not good enough to manage y ~ x1 + x2, we also need to handle y ~ x1
+ + log(x2 + alpha) + ploy(x3, d) and so forth.
+ That was a hard problem for me, but I believed it is solved now (the secret
+ recipe is a new function called model.data()).
+ User's won't need to worry about those details.
+ Instead, I suggest the use either newdata() with their own predict() code,
+ or a new 
+\begin_inset Quotes eld
+\end_inset
+
+all in one
+\begin_inset Quotes erd
+\end_inset
+
+ function I'm offering called predictOMatic().
+ Under the hood, this required some hard work, a frustrating chain of trial
  and error that is discussed in the vignette 
 \emph on
 Rchaeology
@@ -1531,7 +1746,7 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(m1, tight=FALSE, modelLabels=c("Fingers"))
+outreg(m1, tight=FALSE, modelLabels=c("Fingers"), alpha = c(0.05, 0.01))
 \end_layout
 
 \begin_layout Plain Layout

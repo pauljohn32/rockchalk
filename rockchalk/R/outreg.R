@@ -93,7 +93,7 @@
 ##' the user wants printed in the table. See details.
 ##' @param runFuns A list of functions
 ##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
-##' @param alpha Default = 0.05.
+##' @param alpha Default = 0.05. I think stars are dumb, but enough people have asked me for more stars that I'm caving in. Enter c(0.05, 0.01, 0.001) to see what happens.
 ##' @export outreg
 ##' @return None
 ##' @keywords regression
@@ -118,7 +118,7 @@
 ##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
 ##' outreg(m1, tight = FALSE, modelLabels=c("Fingers"),
-##' title = "My Only Spread Out Regressions", float = TRUE)
+##' title = "My Only Spread Out Regressions", float = TRUE, alpha = c(0.05, 0.01, 0.001))
 ##'
 ##' outreg(list(ModelA = m1, "Model B label with Spaces" = m2),
 ##'        varLabels = list(x1 = "Billie"), title = "My Two Linear Regressions", request = c(fstatistic = "F"))
@@ -141,11 +141,13 @@
 ##'
 ##' outreg(list(gm1), modelLabels = c("GLM"), float = TRUE)
 ##'
-##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE)
+##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE, alpha = c(0.05, 0.01))
 ##'
 ##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
 ##'
 ##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"), digits = 5, alpha = 0.01)
+##'
+##'  outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC", logLik = "ll"), digits = 5, alpha = c(0.05, 0.01, 0.001))
 ##'
 ##' outreg(list(ModelA = gm1, "Model B label with Spaces" = m2), request = c(fstatistic = "F"), runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "nobs" = "N Again?"))
 ##'
@@ -174,7 +176,9 @@ outreg <-
                 staty <- paste(format(c(y["value"]), digits = digits),
                                " df(", format(y["numdf"], digits = digits),
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
-                y <- staty
+
+                nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"] , lower.tail = FALSE) < alpha)
+                y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
             } else if (is.numeric(y)) {
                 y <- round(y, digits)
             }
@@ -327,7 +331,8 @@ outreg <-
             se <- SE[regname, model]
             if (!is.na(est)) {
                 cat(paste("   &   ", est))
-                if (abs(PT[regname, model]) < (alpha/2)) cat("*")
+                nstars <- sum(abs(PT[regname, model]) < alpha)
+                cat(rep("*", nstars), sep = "")
                 if (tight == FALSE) {
                     cat(paste("   &   ", se,sep=""))
                 }
@@ -409,8 +414,9 @@ outreg <-
                 n2llr <- model$null.deviance - model$deviance
                 cat(paste("      &", round(n2llr, digits)))
                 gmdf <- model$df.null - model$df.residual + 1
-
-                if (pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha) {cat("*")}
+                nstars <- sum(pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha)
+                cat(rep("*", nstars), sep = "")
+                ##if (pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha) {cat("*")}
             } else {
                 cat("    &")
             }
@@ -461,321 +467,313 @@ outreg <-
     }
 
     cat("\\hline\\hline\n")
-    cat(paste("* $p \\le", alpha, "$\n"))
+    for ( i in seq_along(alpha)){
+        cat(paste(rep("*", i), collapse = ""), "$p \\le", alpha[i], "$  ", sep = "")
+    }
+    cat("\n")
     cat("\\end{tabular}\n")
     cat("\\end{center}\n")
     if (float == TRUE || !missing(title) || !missing(label)){
         cat("\\end{table}\n")
     }
-
 }
 
 
-outregText <-
-    function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
-             tight = TRUE, showAIC = FALSE, float = FALSE, request,
-             runFuns, digits = 3, alpha = 0.05)
-{
-    ##Boiler plate names for GOF items
-    gofNames <- c(N = "N", sigma = "RMSE", r.squared = "$R^2$",
-                  deviance = "Deviance", adj.r.squared = "adj $R^2$",
-                  fstatistic = "F")
+## outregText <-
+##     function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
+##              tight = TRUE, showAIC = FALSE, float = FALSE, request,
+##              runFuns, digits = 3, alpha = 0.05)
+## {
+##     ##Boiler plate names for GOF items
+##     gofNames <- c(N = "N", sigma = "RMSE", r.squared = "$R^2$",
+##                   deviance = "Deviance", adj.r.squared = "adj $R^2$",
+##                   fstatistic = "F")
 
-    if (!missing(request)) gofNames <- c(gofNames, request)
+##     if (!missing(request)) gofNames <- c(gofNames, request)
 
-    getBSE <- function(B, SE, PT, regname, modelname){
-        est <- B[regname, modelname]
-        se <- SE[regname, modelname]
-        if (!is.na(est)) {
-            sig <- if (PT[regname, modelname] < alpha) "*" else ""
-        } else {
-            est <- ""; se <- ""; sig <- "";
-        }
-        c(paste0(est,sig), se)
-    }
-
-    ## TESTME: grabs param from object by name, rounds, simplifies
-    ## returns text. For getting r.square, adj.r.square, fstatistic.
-    harvest <- function(sl, name) {
-        res <- vector("character")
-        namz <- names(sl)
-        for(i in seq_along(sl)) {
-            sli <- sl[[i]]
-            y <- sli[[name]]
-            if (!is.null(y) && name == "fstatistic"){
-                staty <- paste(format(c(y["value"]), digits = digits),
-                               " df(", format(y["numdf"], digits = digits),
-                               ",", format(y["dendf"], digits = digits), ")", sep = "")
-                y <- staty
-            } else if (is.numeric(y)) {
-                y <- round(y, digits)
-            }
-            if (!is.null(y)) res[namz[i]] <- y
-        }
-       attr(res, "nonNull") <- if (any(!is.na(res))) TRUE else FALSE
-       res
-    }
-
-    gofPrint <- function(sl, name){
-        y <- harvest(sl, name)
-        newrow <- character(nColumns)
-        names(newrow) <- colnamz
-        newrow[1] <- ifelse(is.na(gofNames[name]), name, gofNames[name])
-        newrow[names(y)] <- y
-        newrow
-    }
-
-
-    ## was input just one model, or a list of models?  ###
-    if (inherits(modelList, "lm")) { ##just one model input
-        nmodels <- 1
-        modelList <- list(modl1 = modelList)
-    } else {
-        modelList <- modelList
-    }
-
-    nmodels <- length(modelList)
-    nColumns <- ifelse(tight, 1 + nmodels, 1 + 2 * nmodels)
-
-
-
-
-    if (is.null(modelLabels)){
-        ##Make temporary names
-        modelLabels <- paste("M", 1:nmodels, sep ="")
-        mln <- names(modelList)
-        for (i in seq_along(mln)){
-            modelLabels[i] <- mln[i]
-        }
-    }
-    names(modelList) <- modelLabels
-
-    colnamz <- vector("character", length = nColumns)
-
-    colnamz[1] <- ""
-    if (!tight){
-        for (j in seq_along(modelLabels))
-            colnamz[j * 2] <- modelLabels[j]
-    } else {
-        colnamz[2:nColumns] <- modelLabels
-
-    }
-
-
-    ## Get a regression summary object for each fitted model
-    summaryList <- list()
-    parmnames <- vector()
-    myModelClass <- vector()
-
-    for (i in seq_along(modelList)){
-        model <- modelList[[i]]
-        summaryList[[i]] <- ssm <- summary(model)
-        parmnames <- unique(c(parmnames, names(coef(model))))
-        myModelClass[i] <- class(model)[1]
-        i <- i+1
-    }
-
-    summaryList <- lapply(modelList, function(x) tryCatch(summary(x), error = NULL))
-
-    displayNames <-  as.character(parmnames)
-    names(displayNames) <- as.character(parmnames)
-    displayNames[names(varLabels)] <- varLabels
-
-    B <- matrix(NA, nrow = length(parmnames), ncol =
-                length(modelList), dimnames = list(parmnames))
-    dimnames(B)[[2]] <- modelLabels
-
-    SE <- matrix(NA, nrow = length(parmnames), ncol =
-                 length(modelList), dimnames = list(parmnames))
-    dimnames(SE)[[2]] <- modelLabels
-
-    DF <- vector("numeric", length = nmodels)
-
-    for(j in seq_along(modelList)){
-        modl <- modelList[[j]]
-        best <- coef(modl)
-        B[parmnames, modelLabels[j]] <- best[parmnames]
-        DF[j] <- modl$df.residual
-        SE[parmnames, modelLabels[j]] <- sqrt(diag(vcov(modl)))[parmnames]
-    }
-
-    sigtest <- function(B, SE, DF) {
-        PT <- matrix(NA, nrow = NROW(B), ncol =
-                     NCOL(B), dimnames = dimnames(B))
-        for (j in seq_along(DF)){
-            PT[ ,j] <-  pt(abs((B/SE)[ ,j]), lower.tail = FALSE, df = DF[j]) *2
-        }
-        PT <- round(PT, digits)
-        PT
-    }
-    PT <- sigtest(B, SE, DF)
-
-    ##TODO. Look back later to consider generalizing so that we
-    ## accept B, SE and PT from coef(summary) if it exists.
-
-    B <- round(B, digits)
-    SE <- round(SE, digits)
-    SE <- apply(SE, c(1,2), function(x){ paste0("(",x,")") })
-
-
-
-    ##pj ## If you want a LaTeX table float...
-    ##pj if (float == TRUE || !missing(title) || !missing(label)){
-    ##pj     cat("\\begin{table}\n")
-    ##pj     if (missing(title)) title <- "A Regression"
-    ##pj     if (missing(label)) label <- "regrlabl"
-    ##pj     cat("\\caption{",title,"}\\label{",label,"}\n")
-    ##pj }
-    ##pj cat("\\begin{center}\n")
-    ##pj cat(paste("\\begin{tabular}{*{",nColumns,"}{l}}\n", sep=""))
-    ##pj cat("\\hline\n")
-
-    ##pj ## Put model labels on top of each model column, if modelLabels were given
-    ##pj if (!is.null(modelLabels)){
-    ##pj     cat("     ")
-    ##pj     for (modelLabel in modelLabels){
-    ##pj         if (tight == TRUE) {
-    ##pj             cat(paste("&", modelLabel))
-    ##pj         }else{
-    ##pj             cat(paste("&\\multicolumn{2}{c}{",modelLabel,"}",sep=""))
-    ##pj         }
-    ##pj     }
-    ##pj     cat(" \\\\\n")
-    ##pj }
-
-    ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
-    ##pj if (tight == TRUE){
-    ##pj     cat("               ", rep (" &Estimate ", nmodels), "\\\\\n")
-    ##pj     cat("               ", rep (" &(S.E.) ", nmodels), "\\\\\n")
-    ##pj } else {
-    ##pj     cat("               ", rep (" &Estimate &(S.E.) ", nmodels), "\\\\\n", fill= FALSE)
-    ##pj }
-    ##pj cat("\\hline \n\\hline\n")
-
-    if (tight){
-        res1 <- c("           ", rep (c("Estimate"), nmodels))
-        names(res1) <- colnamz
-        res1 <- rbind(res1, c("           ", rep (c("(S.E.)"), nmodels)))
-    } else {
-        res1 <- c("           ", rep (c("Estimate", "(S.E.)"), nmodels))
-        names(res1) <- "  "
-        names(res1)[seq(2, nColumns, by = 2)] <- modelLabels
-    }
-
-    ## Here come the regression coefficients
-
-    parmstruct <- list()
-    for (regname in parmnames){
-        XXX <- lapply(modelLabels, function(modnam) getBSE(B, SE, PT, regname, modnam))
-        parmstruct[[regname]] <- if (tight) do.call("cbind", XXX)
-        else do.call("cbind", lapply(XXX, t))
-    }
-
-    if (tight) {
-        rownamz <- vector("character", length = length(parmnames) * 2)
-        for (j in seq_along(parmnames)){
-            rownamz[1 + (j-1)*2] <- parmnames[j]
-            res2 <- do.call("rbind", parmstruct)
-            res2 <- cbind(rownamz, res2)
-        }
-        colnames(res2) <- c("      ", modelLabels)
-        rownames(res2) <- rownamz
-    } else {
-        res2 <- do.call("rbind", parmstruct)
-        res2 <- cbind(parmnames, res2)
-        colnames(res2) <- colnamz
-        rownames(res2) <- parmnames
-    }
-
-
-    ### now list the gof we will try to print
-    gof <- c("sigma", "r.squared", if (length(parmnames) > 1) "adj.r.squared", "deviance", if (!missing(request)) names(request))
-
-    gof <- unique(gof)
-
-    goflist <- lapply(gof, function(gname) gofPrint(summaryList, gname))
-    names(goflist) <- gof
-
-    sampSize <- character(length = nColumns)
-    names(sampSize) <- colnamz
-    sampSize[modelLabels] <- sapply(modelList, nobs)
-    sampSize[1] <- "N"
-
-    gofMat <- do.call("rbind", goflist)
-
-    rbind(sampSize, gofMat)
-
-    XX <-  list(header = res1, parms = res2, gof = gofMat)
-    if (!missing(runFuns)) {
-        runFunsFn <- names(runFuns)
-
-        myresultlist <- list()
-        for (i in 1:length(runFuns)) {
-
-            myfn <- runFunsFn[i]
-
-            if (myfn == "logLik") {
-                myresultlist[[myfn]] <- lapply(modelList, function(x) {
-                    y <- do.call(myfn, list(x))
-                    fstaty <- paste(format(c(y), digits = digits), collapse = ", ",
-                                    " (df=", format(attr(y, "df")), ")", sep = "")
-                    invisible(fstaty)
-                })
-            } else {
-                myresultlist[[myfn]] <- lapply(modelList, function(x){
-                    y <- do.call(myfn, list(x))
-                    fstaty <- format(c(y), digits = digits, nsmall = 2 )
-                })
-                names(myresultlist[[myfn]]) <- modelLabels
-            }
-        }
-
-        ## assemble those into matrix using stupidest possible way
-        res4 <- matrix("", nrow = length(runFuns), ncol = length(colnamz),
-                       dimnames = list(runFunsFn, colnamz))
-
-        myresultlistnamz <- names(myresultlist)
-        for (i in seq_along(myresultlist)){
-            onerow <- myresultlist[[i]]
-            onerownamz <- names(onerow)
-            for (j in seq_along(onerow)) {
-                res4[myresultlistnamz[i] ,onerownamz[j]] <- onerow[[onerownamz[j]]]
-            }
-        }
-        res4[ , 1] <- runFuns
-        XX[["res4"]] <- res4
-    }
-    XXX <- do.call("rbind", XX)
-    row.names(XXX) <- NULL
-    noquote(XXX)
-}
-
-
-##     ## Print a row for the model's fit, as -2LLR
-##     if ("glm" %in% myModelClass) {
-##         cat(paste("$-2LLR (Model \\chi^2)$"),sep="")
-##         for (model in modelList) {
-##             if (is.numeric(model$deviance)){
-##                 n2llr <- model$null.deviance - model$deviance
-##                 cat(paste("      &", round(n2llr, digits)))
-##                 gmdf <- model$df.null - model$df.residual + 1
-
-##                 if (pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha) {cat("*")}
-##             } else {
-##                 cat("    &")
-##             }
-##             if (tight == FALSE) cat("     &")
+##     getBSE <- function(B, SE, PT, regname, modelname){
+##         est <- B[regname, modelname]
+##         se <- SE[regname, modelname]
+##         if (!is.na(est)) {
+##             sig <- if (PT[regname, modelname] < alpha) "*" else ""
+##         } else {
+##             est <- ""; se <- ""; sig <- "";
 ##         }
-##         cat("  \\\\\n")
+##         c(paste0(est,sig), se)
 ##     }
 
-##     cat("\\hline\\hline\n")
-##     cat(paste("* $p \\le", alpha, "$\n"))
-##     cat("\\end{tabular}\n")
-##     cat("\\end{center}\n")
-##     if (float == TRUE || !missing(title) || !missing(label)){
-##         cat("\\end{table}\n")
+##     ## TESTME: grabs param from object by name, rounds, simplifies
+##     ## returns text. For getting r.square, adj.r.square, fstatistic.
+##     harvest <- function(sl, name) {
+##         res <- vector("character")
+##         namz <- names(sl)
+##         for(i in seq_along(sl)) {
+##             sli <- sl[[i]]
+##             y <- sli[[name]]
+##             if (!is.null(y) && name == "fstatistic"){
+##                 staty <- paste(format(c(y["value"]), digits = digits),
+##                                " df(", format(y["numdf"], digits = digits),
+##                                ",", format(y["dendf"], digits = digits), ")", sep = "")
+##                 y <- staty
+##             } else if (is.numeric(y)) {
+##                 y <- round(y, digits)
+##             }
+##             if (!is.null(y)) res[namz[i]] <- y
+##         }
+##        attr(res, "nonNull") <- if (any(!is.na(res))) TRUE else FALSE
+##        res
 ##     }
 
+##     gofPrint <- function(sl, name){
+##         y <- harvest(sl, name)
+##         newrow <- character(nColumns)
+##         names(newrow) <- colnamz
+##         newrow[1] <- ifelse(is.na(gofNames[name]), name, gofNames[name])
+##         newrow[names(y)] <- y
+##         newrow
+##     }
+
+
+##     ## was input just one model, or a list of models?  ###
+##     if (inherits(modelList, "lm")) { ##just one model input
+##         nmodels <- 1
+##         modelList <- list(modl1 = modelList)
+##     } else {
+##         modelList <- modelList
+##     }
+
+##     nmodels <- length(modelList)
+##     nColumns <- ifelse(tight, 1 + nmodels, 1 + 2 * nmodels)
+
+
+
+
+##     if (is.null(modelLabels)){
+##         ##Make temporary names
+##         modelLabels <- paste("M", 1:nmodels, sep ="")
+##         mln <- names(modelList)
+##         for (i in seq_along(mln)){
+##             modelLabels[i] <- mln[i]
+##         }
+##     }
+##     names(modelList) <- modelLabels
+
+##     colnamz <- vector("character", length = nColumns)
+
+##     colnamz[1] <- ""
+##     if (!tight){
+##         for (j in seq_along(modelLabels))
+##             colnamz[j * 2] <- modelLabels[j]
+##     } else {
+##         colnamz[2:nColumns] <- modelLabels
+
+##     }
+
+
+##     ## Get a regression summary object for each fitted model
+##     summaryList <- list()
+##     parmnames <- vector()
+##     myModelClass <- vector()
+
+##     for (i in seq_along(modelList)){
+##         model <- modelList[[i]]
+##         summaryList[[i]] <- ssm <- summary(model)
+##         parmnames <- unique(c(parmnames, names(coef(model))))
+##         myModelClass[i] <- class(model)[1]
+##         i <- i+1
+##     }
+
+##     summaryList <- lapply(modelList, function(x) tryCatch(summary(x), error = NULL))
+
+##     displayNames <-  as.character(parmnames)
+##     names(displayNames) <- as.character(parmnames)
+##     displayNames[names(varLabels)] <- varLabels
+
+##     B <- matrix(NA, nrow = length(parmnames), ncol =
+##                 length(modelList), dimnames = list(parmnames))
+##     dimnames(B)[[2]] <- modelLabels
+
+##     SE <- matrix(NA, nrow = length(parmnames), ncol =
+##                  length(modelList), dimnames = list(parmnames))
+##     dimnames(SE)[[2]] <- modelLabels
+
+##     DF <- vector("numeric", length = nmodels)
+
+##     for(j in seq_along(modelList)){
+##         modl <- modelList[[j]]
+##         best <- coef(modl)
+##         B[parmnames, modelLabels[j]] <- best[parmnames]
+##         DF[j] <- modl$df.residual
+##         SE[parmnames, modelLabels[j]] <- sqrt(diag(vcov(modl)))[parmnames]
+##     }
+
+##     sigtest <- function(B, SE, DF) {
+##         PT <- matrix(NA, nrow = NROW(B), ncol =
+##                      NCOL(B), dimnames = dimnames(B))
+##         for (j in seq_along(DF)){
+##             PT[ ,j] <-  pt(abs((B/SE)[ ,j]), lower.tail = FALSE, df = DF[j]) *2
+##         }
+##         PT <- round(PT, digits)
+##         PT
+##     }
+##     PT <- sigtest(B, SE, DF)
+
+##     ##TODO. Look back later to consider generalizing so that we
+##     ## accept B, SE and PT from coef(summary) if it exists.
+
+##     B <- round(B, digits)
+##     SE <- round(SE, digits)
+##     SE <- apply(SE, c(1,2), function(x){ paste0("(",x,")") })
+
+
+
+##     ##pj ## If you want a LaTeX table float...
+##     ##pj if (float == TRUE || !missing(title) || !missing(label)){
+##     ##pj     cat("\\begin{table}\n")
+##     ##pj     if (missing(title)) title <- "A Regression"
+##     ##pj     if (missing(label)) label <- "regrlabl"
+##     ##pj     cat("\\caption{",title,"}\\label{",label,"}\n")
+##     ##pj }
+##     ##pj cat("\\begin{center}\n")
+##     ##pj cat(paste("\\begin{tabular}{*{",nColumns,"}{l}}\n", sep=""))
+##     ##pj cat("\\hline\n")
+
+##     ##pj ## Put model labels on top of each model column, if modelLabels were given
+##     ##pj if (!is.null(modelLabels)){
+##     ##pj     cat("     ")
+##     ##pj     for (modelLabel in modelLabels){
+##     ##pj         if (tight == TRUE) {
+##     ##pj             cat(paste("&", modelLabel))
+##     ##pj         }else{
+##     ##pj             cat(paste("&\\multicolumn{2}{c}{",modelLabel,"}",sep=""))
+##     ##pj         }
+##     ##pj     }
+##     ##pj     cat(" \\\\\n")
+##     ##pj }
+
+##     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
+##     ##pj if (tight == TRUE){
+##     ##pj     cat("               ", rep (" &Estimate ", nmodels), "\\\\\n")
+##     ##pj     cat("               ", rep (" &(S.E.) ", nmodels), "\\\\\n")
+##     ##pj } else {
+##     ##pj     cat("               ", rep (" &Estimate &(S.E.) ", nmodels), "\\\\\n", fill= FALSE)
+##     ##pj }
+##     ##pj cat("\\hline \n\\hline\n")
+
+##     if (tight){
+##         res1 <- c("           ", rep (c("Estimate"), nmodels))
+##         names(res1) <- colnamz
+##         res1 <- rbind(res1, c("           ", rep (c("(S.E.)"), nmodels)))
+##     } else {
+##         res1 <- c("           ", rep (c("Estimate", "(S.E.)"), nmodels))
+##         names(res1) <- "  "
+##         names(res1)[seq(2, nColumns, by = 2)] <- modelLabels
+##     }
+
+##     ## Here come the regression coefficients
+
+##     parmstruct <- list()
+##     for (regname in parmnames){
+##         XXX <- lapply(modelLabels, function(modnam) getBSE(B, SE, PT, regname, modnam))
+##         parmstruct[[regname]] <- if (tight) do.call("cbind", XXX)
+##         else do.call("cbind", lapply(XXX, t))
+##     }
+
+##     if (tight) {
+##         rownamz <- vector("character", length = length(parmnames) * 2)
+##         for (j in seq_along(parmnames)){
+##             rownamz[1 + (j-1)*2] <- parmnames[j]
+##             res2 <- do.call("rbind", parmstruct)
+##             res2 <- cbind(rownamz, res2)
+##         }
+##         colnames(res2) <- c("      ", modelLabels)
+##         rownames(res2) <- rownamz
+##     } else {
+##         res2 <- do.call("rbind", parmstruct)
+##         res2 <- cbind(parmnames, res2)
+##         colnames(res2) <- colnamz
+##         rownames(res2) <- parmnames
+##     }
+
+
+##     ### now list the gof we will try to print
+##     gof <- c("sigma", "r.squared", if (length(parmnames) > 1) "adj.r.squared", "deviance", if (!missing(request)) names(request))
+
+##     gof <- unique(gof)
+
+##     goflist <- lapply(gof, function(gname) gofPrint(summaryList, gname))
+##     names(goflist) <- gof
+
+##     sampSize <- character(length = nColumns)
+##     names(sampSize) <- colnamz
+##     sampSize[modelLabels] <- sapply(modelList, nobs)
+##     sampSize[1] <- "N"
+
+##     gofMat <- do.call("rbind", goflist)
+
+##     rbind(sampSize, gofMat)
+
+##     XX <-  list(header = res1, parms = res2, gof = gofMat)
+##     if (!missing(runFuns)) {
+##         runFunsFn <- names(runFuns)
+
+##         myresultlist <- list()
+##         for (i in 1:length(runFuns)) {
+
+##             myfn <- runFunsFn[i]
+
+##             if (myfn == "logLik") {
+##                 myresultlist[[myfn]] <- lapply(modelList, function(x) {
+##                     y <- do.call(myfn, list(x))
+##                     fstaty <- paste(format(c(y), digits = digits), collapse = ", ",
+##                                     " (df=", format(attr(y, "df")), ")", sep = "")
+##                     invisible(fstaty)
+##                 })
+##             } else {
+##                 myresultlist[[myfn]] <- lapply(modelList, function(x){
+##                     y <- do.call(myfn, list(x))
+##                     fstaty <- format(c(y), digits = digits, nsmall = 2 )
+##                 })
+##                 names(myresultlist[[myfn]]) <- modelLabels
+##             }
+##         }
+
+##         ## assemble those into matrix using stupidest possible way
+##         res4 <- matrix("", nrow = length(runFuns), ncol = length(colnamz),
+##                        dimnames = list(runFunsFn, colnamz))
+
+##         myresultlistnamz <- names(myresultlist)
+##         for (i in seq_along(myresultlist)){
+##             onerow <- myresultlist[[i]]
+##             onerownamz <- names(onerow)
+##             for (j in seq_along(onerow)) {
+##                 res4[myresultlistnamz[i] ,onerownamz[j]] <- onerow[[onerownamz[j]]]
+##             }
+##         }
+##         res4[ , 1] <- runFuns
+##         XX[["res4"]] <- res4
+##     }
+##     XXX <- do.call("rbind", XX)
+##     row.names(XXX) <- NULL
+##     noquote(XXX)
 ## }
+
+
+## ##     ## Print a row for the model's fit, as -2LLR
+## ##     if ("glm" %in% myModelClass) {
+## ##         cat(paste("$-2LLR (Model \\chi^2)$"),sep="")
+## ##         for (model in modelList) {
+## ##             if (is.numeric(model$deviance)){
+## ##                 n2llr <- model$null.deviance - model$deviance
+## ##                 cat(paste("      &", round(n2llr, digits)))
+## ##                 gmdf <- model$df.null - model$df.residual + 1
+
+## ##                 if (pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha) {cat("*")}
+## ##             } else {
+## ##                 cat("    &")
+## ##             }
+## ##             if (tight == FALSE) cat("     &")
+## ##         }
+## ##         cat("  \\\\\n")
+## ##     }
 
