@@ -112,13 +112,16 @@ newdata <- function (model = NULL, predVals = NULL, fl = predVals, emf = NULL, n
     ## TODO: Consider "padding" range of fl for numeric variables so that we
     ## get newdata objects including the min and max values.
     flnames <- names(fl)
+
     for(x in flnames) {
-        if (is.character(fl[[x]]) && length(fl[[x]]) == 1)
-            if (fl[[x]] == "default") {
+        if (is.null(fl[[x]])){
+            fl[[x]] <- focalVals(emf[ ,x], divider, n)
+        } else if (length(fl[[x]]) == 1)
+            if (is.character(fl[[x]]) & (fl[[x]] == "default")) {
                 fl[[x]] <- focalVals(emf[ ,x], divider, n)
-            } else if (fl[[x]] %in% c("quantile", "std.dev.", "table", "seq")){
-                fl[[x]] <- focalVals( emf[ ,x],  divider = fl[[x]], n)
-            }
+            } else if (is.character(fl[[x]]) & (fl[[x]] %in% c("quantile", "std.dev.", "table", "seq"))){
+            fl[[x]] <- focalVals( emf[ ,x],  divider = fl[[x]], n)
+        }
     }
 
     mixAndMatch <- expand.grid(fl)

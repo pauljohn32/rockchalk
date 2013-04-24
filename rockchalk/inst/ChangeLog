@@ -1,3 +1,8 @@
+2013-04-24  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/predictOMatic.R (newdata): fixing predVals declaration
+	* outreg: multiple alpha values
+
 2013-04-23  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/outreg.R: found bug where df.residual was not

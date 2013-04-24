@@ -1455,21 +1455,13 @@ mypred4
 \end_layout
 
 \begin_layout Standard
-It's not good enough to manage y ~ x1 + x2, we also need to handle y ~ x1
- + log(x2 + alpha) + ploy(x3, d) and so forth.
+I've invested quite a bit of effort to make sure this works dependably with
+ complicated regression formulae.
+ It is fairly easy to write a prediction scheme for a simple linear equation
+ like y ~ x1 + x2, we also need to handle y ~ x1 + log(x2 + alpha) + ploy(x3,
+ d) and so forth.
  That was a hard problem for me, but I believed it is solved now (the secret
  recipe is a new function called model.data()).
- User's won't need to worry about those details.
- Instead, I suggest the use either newdata() with their own predict() code,
- or a new 
-\begin_inset Quotes eld
-\end_inset
-
-all in one
-\begin_inset Quotes erd
-\end_inset
-
- function I'm offering called predictOMatic().
  Under the hood, this required some hard work, a frustrating chain of trial
  and error that is discussed in the vignette 
 \emph on
@@ -1862,7 +1854,7 @@ status open
 \begin_layout Plain Layout
 
 outreg(list(m1,m2), modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie")
-)
+, alpha = c(0.05, 0.01, 0.001))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1891,7 +1883,7 @@ status open
 \begin_layout Plain Layout
 
 outreg(list(m1,m2), tight=FALSE,  modelLabels=c("Mine","Yours"), varLabels
- = list(x1="Billie"))
+ = list(x1="Billie"), alpha = c(0.05, 0.01, 0.001))
 \end_layout
 
 \begin_layout Plain Layout

@@ -274,7 +274,7 @@ outreg <-
         PT <- matrix(NA, nrow = NROW(B), ncol =
                      NCOL(B), dimnames = dimnames(B))
         for (j in seq_along(DF)){
-            PT[ ,j] <-  pt((B/SE)[ ,j], lower.tail = FALSE, df = DF[j]) *2
+            PT[ ,j] <-  pt(abs((B/SE)[ ,j]), lower.tail = FALSE, df = DF[j]) *2
         }
         PT
     }
