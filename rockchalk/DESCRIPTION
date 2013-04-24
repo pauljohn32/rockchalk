@@ -41,3 +41,4 @@ Collate:
     'predictOMatic.R'
     'recodeFactors.R'
     'utils.R'
+    'flop.R'
