@@ -289,12 +289,12 @@ outreg <-
 
     ## If you want a LaTeX table float...
     if (float == TRUE || !missing(title) || !missing(label)){
-        cat("\\begin{table}\n")
+        float <- TRUE
+	cat("\\begin{table}\n")
         if (missing(title)) title <- "A Regression"
         if (missing(label)) label <- "regrlabl"
         cat("\\caption{",title,"}\\label{",label,"}\n")
     }
-    cat("\\begin{center}\n")
     nColumns <- ifelse(tight, 1+nmodels, 1 + 2*nmodels)
     cat(paste("\\begin{tabular}{*{",nColumns,"}{l}}\n", sep=""))
     cat("\\hline\n")
@@ -422,7 +422,7 @@ outreg <-
             }
             if (tight == FALSE) cat("     &")
         }
-        cat("  \\\\\n")
+        cat(" \\\\\n")
     }
 
     ## Print a row for the model's fit, as -2 LLR
@@ -467,13 +467,15 @@ outreg <-
     }
 
     cat("\\hline\\hline\n")
+    cat("\\\\\n")
+    cat("\\multicolumn{2}{l}{")
     for ( i in seq_along(alpha)){
-        cat(paste(rep("*", i), collapse = ""), "$p \\le", alpha[i], "$  ", sep = "")
+        cat("${", paste(rep("*", i), collapse = ""), "}",  "\  p\ \\le ", alpha[i], "$  ", sep = "\ ")
     }
-    cat("\n")
+    cat("}\\\\\n")
     cat("\\end{tabular}\n")
-    cat("\\end{center}\n")
-    if (float == TRUE || !missing(title) || !missing(label)){
+    cat("\\\\\n")
+    if (float == TRUE){
         cat("\\end{table}\n")
     }
 }
