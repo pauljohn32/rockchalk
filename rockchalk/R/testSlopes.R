@@ -270,7 +270,7 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
     V <- vcov(model)
 
     bsslope <-  bs[plotx] + bs[interactionsIn]*modxSeq
-    bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + Tcrit * modxSeq * V[plotx, interactionsIn])
+    bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + 2 * modxSeq * V[plotx, interactionsIn])
 
     ## MM marginal matrix, similar to return of the predict() function
     ## This makes reasonable looking confidence intervals
@@ -295,14 +295,12 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
     lines(upr ~ modxSeq, data = MM, lty = 2, col = gray(.50))
     lines(lwr ~ modxSeq, data = MM, lty = 2, col = gray(.50))
 
-    ## TODO FIX ME HIGH PRIORITY: ping regions do not exclude middle
-    ## MMexcluded <- which(MM[ , "p"] > 0.05)
 
     for (i in intervals){
         modxSeq <- seq(idxStart[i], idxEnd[i],
                    length.out = as.integer(40*(idxEnd[i] - idxStart[i])/diff(modxRange)))
         bsslope <-  bs[plotx] + bs[interactionsIn]*modxSeq
-        bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + Tcrit * modxSeq * V[plotx, interactionsIn])
+        bsse <- sqrt(V[plotx,plotx] + modxSeq^2 * V[interactionsIn,interactionsIn] + 2 * modxSeq * V[plotx, interactionsIn])
 
         ## MM marginal matrix, similar to return of the predict() function
         ## This makes reasonable looking confidence intervals
@@ -392,6 +390,8 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
         }
         abline(h=0, col="gray80")
     }
+
+    invisible(MM)
 }
 
 

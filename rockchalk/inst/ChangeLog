@@ -1,5 +1,8 @@
 2013-04-24  pauljohn  <pauljohn@debian.sunflower.com>
 
+	* ../R/testSlopes.R (plot.testSlopes): fix typo in which numeral 2
+	was replated by Tcrit in bsse calculation
+
 	* ../R/predictOMatic.R (newdata): fixing predVals declaration
 	* outreg: multiple alpha values
 

@@ -1839,7 +1839,10 @@ name "tab:Tab3"
 \end_layout
 
 \begin_layout Plain Layout
-(a) Tightly Formatted Columns
+\begin_inset VSpace bigskip
+\end_inset
+
+a) Tightly Formatted Columns
 \end_layout
 
 \begin_layout Plain Layout
@@ -1868,7 +1871,28 @@ outreg(list(m1,m2), modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie")
 \end_layout
 
 \begin_layout Plain Layout
-(b) Two Columns Per Regression Model
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace bigskip
+\end_inset
+
+b) Two Columns Per Regression Model
 \end_layout
 
 \begin_layout Plain Layout
@@ -2143,7 +2167,7 @@ status open
 \begin_layout Plain Layout
 
 outreg(list(m1,m2,m3), tight=F, modelLabels=c("I Love love love really long
- titles","Hate Long","Medium"))
+ titles","Hate Long","Medium"), alpha = c(0.05, 0.01))
 \end_layout
 
 \begin_layout Plain Layout

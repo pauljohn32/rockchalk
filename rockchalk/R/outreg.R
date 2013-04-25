@@ -156,7 +156,7 @@ outreg <-
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = 0.05)
 {
-
+    ##beautified names for gof variables
     gofNames <- c(sigma = "RMSE", r.squared = "$R^2$", deviance = "Deviance",
                   adj.r.squared = "adj $R^2$", fstatistic = "F")
 
@@ -231,6 +231,9 @@ outreg <-
             modelLabels[i] <- mln[i]
         }
     }
+##Ugh. nonunique labels. brute force fix
+
+    modelLabels <- make.unique(names)
     names(modelList) <- modelLabels
 
     ## Get a regression summary object for each fitted model
@@ -296,6 +299,7 @@ outreg <-
         cat("\\caption{",title,"}\\label{",label,"}\n")
     }
     nColumns <- ifelse(tight, 1+nmodels, 1 + 2*nmodels)
+
     cat(paste("\\begin{tabular}{*{",nColumns,"}{l}}\n", sep=""))
     cat("\\hline\n")
 
@@ -467,16 +471,15 @@ outreg <-
     }
 
     cat("\\hline\\hline\n")
-    cat("\\\\\n")
+    cat("\n")
     cat("\\multicolumn{2}{l}{")
     for ( i in seq_along(alpha)){
-        cat("${", paste(rep("*", i), collapse = ""), "}",  "\  p\ \\le ", alpha[i], "$  ", sep = "\ ")
+        cat("${", paste(rep("*", i), collapse = "\\!"), "}",  "\  p\ \\le ", alpha[i], "$  ", sep = "")
     }
     cat("}\\\\\n")
     cat("\\end{tabular}\n")
-    cat("\\\\\n")
     if (float == TRUE){
-        cat("\\end{table}\n")
+        cat("\\end{table}\n ")
     }
 }
 

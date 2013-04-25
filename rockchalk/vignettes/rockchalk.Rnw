@@ -528,7 +528,7 @@ any special options. The command is
 
 
 <<outreg20, results=tex, echo=F>>=
-outreg(m1, tight=FALSE, modelLabels=c("Fingers"), alpha = c(0.05, 0.01))
+outreg(m1, tight=FALSE, modelLabels=c("Fingers"), alpha = c(0.05, 0.01, 0.001))
 @
 \end{table}
 
@@ -550,13 +550,17 @@ that produces the table is
 \caption{My Two Linear Regressions Tightly Printed\label{tab:Tab3}}
 
 
-(a) Tightly Formatted Columns
+\bigskip{}
+a) Tightly Formatted Columns
 
 <<outreg30, results=tex, echo=FALSE>>=
 outreg(list(m1,m2), modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie"), alpha = c(0.05, 0.01, 0.001))
 @
 
-(b) Two Columns Per Regression Model
+\\
+
+\bigskip{}
+b) Two Columns Per Regression Model
 
 <<outreg33, results=tex, echo=FALSE>>=
 outreg(list(m1,m2), tight=FALSE,  modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie"), alpha = c(0.05, 0.01, 0.001))
@@ -610,7 +614,7 @@ are inserted or removed from a fitted model.
 
 
 <<results=tex, echo=F>>=
-outreg(list(m1,m2,m3), tight=F, modelLabels=c("I Love love love really long titles","Hate Long","Medium"))
+outreg(list(m1,m2,m3), tight=F, modelLabels=c("I Love love love really long titles","Hate Long","Medium"), alpha = c(0.05, 0.01))
 @
 \end{table}
 

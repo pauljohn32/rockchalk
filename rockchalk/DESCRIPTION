@@ -42,4 +42,3 @@ Collate:
     'recodeFactors.R'
     'utils.R'
     'flop.R'
-    'outreg-testing.R'
