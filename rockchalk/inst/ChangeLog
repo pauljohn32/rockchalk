@@ -1,6 +1,7 @@
 2013-04-29  pauljohn  <pauljohn@debian.sunflower.com>
 
-	* ../R/outreg.R (outreg0) old outreg, now renamed
+	* ../R/outreg.R (outreg2HTML) had to be exported.
+
 	* (outreg) new outreg, that creates a character vector
 	and cats it to screen, and returns it as well.
 	* (outreg2HTML): new function that can write an html
