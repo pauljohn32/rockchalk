@@ -11,6 +11,7 @@
 ##' The y (output) variable is created according to the
 ##' equation
 ##' y = b1 + b2 * x1 + b3 * x2 + b4 * x1 * x2 + e
+##'
 ##' @param N Number of cases desired
 ##' @param means 2-vector of means for x1 and x2
 ##' @param sds 2-vector of standard deviations for x1 and x2
@@ -118,7 +119,6 @@ NULL
 ##' m2.2 <- lm(y ~ x1 * x2 + x3, data = dat)
 ##' summary(m2.2)
 ##'
-##'
 ##' dat <- genCorrelatedData2(N=1000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 200)
 ##' summarize(dat)
 ##' m2.3w <- lm(y ~ x1 + x2 + x3, data = dat)
@@ -213,7 +213,6 @@ NULL
 ##' vech2Corr(v)
 ##' v <- c(0.1, 0.4, -0.4, 0.4, 0.5, 0.1)
 ##' vech2Corr(v)
-##'
 vech2Corr <- function(vech){
     ##compute number of rows from vech. diag not in the vech!
     n <- (sqrt(1 + 8 * length(vech)) + 1)/2
@@ -237,6 +236,7 @@ NULL
 ##' it includes values for the diagonal. If diag is either a number or
 ##' a vector, this will treat vech as strictly lower triangular and
 ##' fill the diagonal with the value provided by diag.
+##'
 ##' @param vech A vector
 ##' @param diag Optional. If supplied, We assume vech is a strictly
 ##' lower triangluar vech, it does not include diagonal values. diag
@@ -251,7 +251,6 @@ NULL
 ##' vech2mat(x)
 ##' vech2mat(x, diag = 7)
 ##' vech2mat(x, diag = c(99, 98, 97, 96))
-##'
 vech2mat <- function(vech, diag = NULL){
     ## Must calculate correct number of rows from vech, if
     ## vech implies a non-square, stop.
@@ -333,7 +332,7 @@ lazyCov <- function(Rho, Sd, d){
     covMat
 }
 
-
+NULL
 
 ##' Create correlation matrices.
 ##'
@@ -341,9 +340,10 @@ lazyCov <- function(Rho, Sd, d){
 ##' all variables), a column of the lower triangular values for a
 ##' correlation matrix, or a candidate matrix. The function will check
 ##' X and do the right thing. If X is a matrix, check that it
-## is a valid correlation matrix. If its a single value, use that
-## to fill up a matrix. If itis a vector, try to use it as a vech
-## to fill the lower triangle..
+##' is a valid correlation matrix. If its a single value, use that
+##' to fill up a matrix. If itis a vector, try to use it as a vech
+##' to fill the lower triangle..
+##'
 ##' @param X Required. May be one value, a vech, or a matrix
 ##' @param d Optional. The number of rows in the correlation matrix to
 ##' be created. lazyCor will deduce the desired size from X if
@@ -403,6 +403,7 @@ NULL
 ##' covariance).  If X a single value, use that to fill up a
 ##' matrix. If it is a vector, try to use it as a vech to fill the
 ##' lower triangle. If d is supplied as an integer, use that as desired size.
+##'
 ##' @param X A single value, a vector (a vech), or a matrix
 ##' @param d Optional. An integer, the desired number of rows (or columns). Don't specify this argument if X is already a matrix.  Only required if X is an integer and diag is not supplied. Otherwise, the function tries to deduce desired size of output from X (as a vech) and diag.
 ##' @param diag Values for the diagonal. This is important because it alters the way X is interpreted.  If diag is not provided, then X is understood to include diagonal elements.
@@ -448,7 +449,7 @@ makeSymmetric <- function(X, d = NULL, diag = NULL, corr = FALSE, cov = FALSE) {
     }
     X
 }
-
+NULL
 
 ##' Check a matrix for positive definitness
 ##'
@@ -464,3 +465,4 @@ checkPosDef <- function(X, tol = 1e-6){
     res <- if(!all(evalues >= -tol*abs(evalues[1L]))) FALSE else TRUE
     res
 }
+NULL

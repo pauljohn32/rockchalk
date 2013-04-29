@@ -1,3 +1,18 @@
+2013-04-29  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/outreg.R (outreg0) old outreg, now renamed
+	* (outreg) new outreg, that creates a character vector
+	and cats it to screen, and returns it as well.
+	* (outreg2HTML): new function that can write an html
+	file.
+
+2013-04-27  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/outreg.R (checkReg): check if model has methods summary,
+	coef, vcov, and nobs
+	* outreg: be more careful receiving modelList, checking if it
+	is a regression model.
+
 2013-04-24  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/testSlopes.R (plot.testSlopes): fix typo in which numeral 2

@@ -1,8 +1,14 @@
 ### Paul Johnson ### Adapted from ideas in post in r-help by Dave Armstrong May 8, 2006
 
 
-##' Creates a publication quality result table for
-##' regression models.
+##' Creates a publication quality result table for regression models.
+##' outreg0 is the last version in the last development stream.
+##'
+##' outreg0 writes its output directly to the terminal, but
+##' does not create an output object. The new version of this
+##' function--which I wish you would try instead--does the
+##' same work, but it also creates an output object that can  be
+##' transformed for other purposes.
 ##'
 ##' This provides "markup" that the user is will copy into a LaTeX
 ##' document. The table is a LaTeX tabular environment, which can be
@@ -18,7 +24,7 @@
 ##' markup around it if requested (float = TRUE).
 ##'
 ##' The table include a minimally sufficient (in my opinion) model
-##' summary.  For any fitted model, \code{outreg()} will present the parameter
+##' summary.  For any fitted model, \code{outreg0()} will present the parameter
 ##' estimates and standard errors, and it will also scan the summary
 ##' of the object for some summary values and goodness of fit
 ##' indicators.  Some users may want more information. lm fits will not
@@ -27,7 +33,7 @@
 ##' \code{request}. Similarly, the argument \code{runFuns} can ask for
 ##' additional diagnostic functions to be reported.
 ##'
-##' While \code{outreg()} originally designed for models fitted by
+##' While \code{outreg0()} originally designed for models fitted by
 ##' \code{lm()} and \code{glm()}, it will now work for any kind of
 ##' regression model that has methods \code{summary()}, \code{coef()},
 ##' \code{vcov()} and \code{nobs()}.  This will not succeed, however,
@@ -94,7 +100,8 @@
 ##' @param runFuns A list of functions
 ##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
 ##' @param alpha Default = 0.05. I think stars are dumb, but enough people have asked me for more stars that I'm caving in. Enter c(0.05, 0.01, 0.001) to see what happens.
-##' @export outreg
+##' @export outreg0
+##' @rdname outreg
 ##' @return None
 ##' @keywords regression
 ##' @note There are many R packages that can be used to create LaTeX
@@ -113,45 +120,45 @@
 ##' m2 <- lm(y1 ~ x2, data = dat)
 ##' m3 <- lm(y1 ~ x1 + x2, data = dat)
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
-##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
+##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
-##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
+##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
-##' outreg(m1, tight = FALSE, modelLabels=c("Fingers"),
+##' outreg0(m1, tight = FALSE, modelLabels=c("Fingers"),
 ##' title = "My Only Spread Out Regressions", float = TRUE, alpha = c(0.05, 0.01, 0.001))
 ##'
-##' outreg(list(ModelA = m1, "Model B label with Spaces" = m2),
+##' outreg0(list(ModelA = m1, "Model B label with Spaces" = m2),
 ##'        varLabels = list(x1 = "Billie"), title = "My Two Linear Regressions", request = c(fstatistic = "F"))
 ##'
-##' outreg(list(ModelA = m1, ModelB = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+##' outreg0(list(ModelA = m1, ModelB = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"),
 ##' varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names")
 ##'
-##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' outreg0(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
 ##' title = "Still have showAIC argument, as in previous versions",
 ##' showAIC = TRUE, float = TRUE)
 ##'
-##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' outreg0(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
 ##' title = "Another way to get AIC output", runFuns = c("AIC" = "Akaike IC"))
 ##'
-##' outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three Linear Regressions", float = FALSE)
+##' outreg0(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three Linear Regressions", float = FALSE)
 ##'
-##' outreg(list(m1, m2, m3), tight = FALSE,
+##' outreg0(list(m1, m2, m3), tight = FALSE,
 ##' modelLabels = c("I Love really long titles", "Hate Long", "Medium"),
 ##' float = FALSE)
 ##'
-##' outreg(list(gm1), modelLabels = c("GLM"), float = TRUE)
+##' outreg0(list(gm1), modelLabels = c("GLM"), float = TRUE)
 ##'
-##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE, alpha = c(0.05, 0.01))
+##' outreg0(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE, alpha = c(0.05, 0.01))
 ##'
-##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
+##' outreg0(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
 ##'
-##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"), digits = 5, alpha = 0.01)
+##' outreg0(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"), digits = 5, alpha = 0.01)
 ##'
-##'  outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC", logLik = "ll"), digits = 5, alpha = c(0.05, 0.01, 0.001))
+##'  outreg0(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC", logLik = "ll"), digits = 5, alpha = c(0.05, 0.01, 0.001))
 ##'
-##' outreg(list(ModelA = gm1, "Model B label with Spaces" = m2), request = c(fstatistic = "F"), runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "nobs" = "N Again?"))
+##' outreg0(list(ModelA = gm1, "Model B label with Spaces" = m2), request = c(fstatistic = "F"), runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "nobs" = "N Again?"))
 ##'
-outreg <-
+outreg0 <-
     function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = 0.05)
@@ -161,6 +168,29 @@ outreg <-
                   adj.r.squared = "adj $R^2$", fstatistic = "F")
 
     if (!missing(request)) gofNames <- c(gofNames, request)
+
+    ## Required methods
+    req <- (c("coef", "nobs", "vcov", "summary"))
+
+    checkReg <- function(modl){
+        ## required methods for model
+
+        ## Ask modl for a list of all methods that apply to it
+        methodList <- unlist(sapply(class(modl), function(x) if (x != "list") methods(class = x)))
+        ## find out if methodList members have req
+        reqCheck <- sapply(req, function(x) sum(grepl(x, methodList)))
+        ## stop if any are 0
+        if (length(grep("0", reqCheck)) > 0){
+            if (y <- grep("0", reqCheck)) {
+                messg <- paste("The regression model must have these methods: ",
+                               paste(req, collapse = " "), "\n",
+                               " and the model provided is missing",
+                               req[y])
+                stop(messg)
+            }
+        }
+    }
+
 
     ## TESTME: grabs param from object by name, rounds, simplifies
     ## returns text. For getting r.square, adj.r.square, fstatistic.
@@ -212,13 +242,18 @@ outreg <-
         }
     }
 
+    ##Problem: some models have class output like maxLik:
+    ## > class(res)
+    ## [1] "maxLik" "maxim"  "list"
+    ## So we can't just ask modelList if it is a list or an object.
 
-    ## was input just one model, or a list of models?  ###
-    if (inherits(modelList, "lm")) { ##just one model input
-        nmodels <- 1
-        modelList <- list(modl1 = modelList)
+    ## So as if the thing is ONLY a list with setequal
+    if ( !setequal(class(modelList), "list") ){
+        checkReg(modelList)
+        ## modelList is not a list only, so put it in a list
+        modelList <- list(modelList)
     } else {
-        modelList <- modelList
+        lapply(modelList, checkReg)
     }
 
     nmodels <- length(modelList)
@@ -231,9 +266,9 @@ outreg <-
             modelLabels[i] <- mln[i]
         }
     }
-##Ugh. nonunique labels. brute force fix
 
-    modelLabels <- make.unique(names)
+    ##Ugh. nonunique labels. brute force fix
+    modelLabels <- make.unique(modelLabels)
     names(modelList) <- modelLabels
 
     ## Get a regression summary object for each fitted model
@@ -389,26 +424,10 @@ outreg <-
         }
     }
 
-    ## cat(paste("adj $R^2$"), sep="")
-    ## for (model in summaryList) {
-    ##     cat( paste("       &", if(is.numeric(model$adj.r.square))round(model$adj.r.square, digits)))
-    ##     if (tight == FALSE) cat("    &")
-    ## }
-    ## cat("  \\\\\n")
-
     ## Print a row for the model residual deviance
     if ("glm" %in% myModelClass) {
         gofPrint(summaryList, "deviance")
     }
-    ## Not the old way
-    ## if ("glm" %in% myModelClass) {
-    ##     cat(paste("$Deviance$"),sep="")
-    ##     for (model in summaryList) {
-    ##         cat(paste("      &", if(is.numeric(model$deviance))round(model$deviance, digits)))
-    ##         if (tight == FALSE) cat("      &")
-    ##     }
-    ##     cat("  \\\\\n")
-    ## }
 
     ## Print a row for the model's fit, as -2LLR
     if ("glm" %in% myModelClass) {
@@ -484,301 +503,574 @@ outreg <-
 }
 
 
-## outregText <-
-##     function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
-##              tight = TRUE, showAIC = FALSE, float = FALSE, request,
-##              runFuns, digits = 3, alpha = 0.05)
-## {
-##     ##Boiler plate names for GOF items
-##     gofNames <- c(N = "N", sigma = "RMSE", r.squared = "$R^2$",
-##                   deviance = "Deviance", adj.r.squared = "adj $R^2$",
-##                   fstatistic = "F")
 
-##     if (!missing(request)) gofNames <- c(gofNames, request)
+##' Creates a publication quality result table for
+##' regression models.
+##'
+##' This provides "markup" that the user is will copy into a LaTeX
+##' document. The table is a LaTeX tabular environment, which can be
+##' enclosed in a table to obtain a "floating," automatically numbered
+##' LaTeX document environment.  The default will create the
+##' tabular-inside-a-table, but if only the tabular is needed, use the
+##' argument float = FALSE. This can be called within Sweave
+##' documents. The markup generated by the basic usage will generally
+##' be presentable as is, while user requests for additional details
+##' may cause output that needs some hand-editing.
+##'
+##' A LaTeX tabular object is created, with the floating table
+##' markup around it if requested (float = TRUE).
+##'
+##' The table include a minimally sufficient (in my opinion) model
+##' summary.  For any fitted model, \code{outreg()} will present the parameter
+##' estimates and standard errors, and it will also scan the summary
+##' of the object for some summary values and goodness of fit
+##' indicators.  Some users may want more information. lm fits will not
+##' include output for the "fstatistic" that is reported in the lm's
+##' summary object, but users can ask for it with the argument
+##' \code{request}. Similarly, the argument \code{runFuns} can ask for
+##' additional diagnostic functions to be reported.
+##'
+##' While \code{outreg()} originally designed for models fitted by
+##' \code{lm()} and \code{glm()}, it will now work for any kind of
+##' regression model that has methods \code{summary()}, \code{coef()},
+##' \code{vcov()} and \code{nobs()}.  This will not succeed, however,
+##' if the regression model's summary function does not create an
+##' object that holds values in a workable structure (in the same way
+##' that \code{lm()} and \code{glm()} do). Please pressure people who
+##' write R packages that claim to "do regression" to supply methods
+##' to do the basic work that we need to compile tables.
+##'
+##' Two types of customization arguments were introduced with
+##' rockchalk version 1.7.3.  The new arguments are \code{request} and
+##' \code{runFuns}. Beta test reports are welcome!
+##'
+##' The \code{request} argument supplies a list of names of summary
+##' output elements that are desired. The format is a pair, a value to
+##' be retrieved and a name to be printed for it. With the \code{lm()}
+##' regression, for example, one might want the output of the F test
+##' and the adjusted R-square.  An example usage might be
+##' \code{request = c(adj.r.squared = "adj. $R^2", fstatistic = "F")}.
+##' The names may be included in quotation marks if the user desires
+##' to do so: \code{request = c("adj.r.squared" = "adj. $R^2",
+##' "fstatistic" = "F")}.  The value on the left is the name of the
+##' desired information in the summary object, while the value on the
+##' right is \emph{any} valid LaTeX markup that the user desires to
+##' display in the first column of the table.  \code{request} terms
+##' that generate a single numerical value will generally work fine,
+##' while requests that ask for more structured information, such as
+##' the F test (including the 2 degrees of freedom values) are still a
+##' work in progress.
+##'
+##' The \code{runFuns} argument is inspired by a user request: could
+##' this include the BIC or other summaries that some models report?
+##' We have to run the BIC function, and divert the result into the
+##' correct column of the result table. Any R function, whether supplied with and R package or in the user's own code, may be used. This is a two-part specification, one representing the function to be run, the other representing the name that is desired in the output. For example, it might be \code{runFuns = c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
+##'
+##' @param modelList A regression model or an R list of regression
+##' models.  If this is a named list, the names will be used as column
+##' labels, unless the argument modelLabels is supplied separately,
+##' which will override the names of modelList.
+##' @param title A title to be displayed on the top of the LaTeX regression
+##' table.
+##' @param label A string to be used as a LaTeX label in the table to be
+##' created.
+##' @param modelLabels A vector of charater string variables, one for
+##' each element in modelList. Will override the names in modelList.
+##' @param varLabels To beautify the parameter names printed.  Must be
+##' a named vector in the format c(parmname = "displayName", parmname =
+##' "displayName"). Include as many parameters as desired, it is not
+##' necessary to supply new labels for all of the
+##' parameters. "displayName" must be valid laTeX. This feature is
+##' useful if your variable names have any illegal LaTeX characters,
+##' such as "$" or "_".
+##' @param tight If TRUE, parameter estimates and standard errors are
+##' printed in a single column.  If FALSE, parameter estimates and
+##' standard errors are printed side by side.
+##' @param showAIC If TRUE, the AIC estimate is included with the diagnostic values
+##' @param float Include boilerplate for a table float, with the tabular
+##' markup inside it.
+##' @param request Extra information to be retrieved from the summary(model)
+##' and displayed. This must be a vector of named arguments, such as
+##' c(adj.r.squared = "adj $R^2$", fstatistic = "F"). The name must be
+##' a valid name of the output object, the value should be the label
+##' the user wants printed in the table. See details.
+##' @param runFuns A list of functions
+##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
+##' @param alpha Default = 0.05. I think stars are dumb, but enough people have asked me for more stars that I'm caving in. Enter c(0.05, 0.01, 0.001) to see what happens.
+##' @export outreg
+##' @rdname outreg
+##' @return None
+##' @keywords regression
+##' @note There are many R packages that can be used to create LaTeX
+##' regression tables. memisc, texreg, apsrtable, xtables, and rms are
+##' some. This "outreg" version was in use in our labs before we were
+##' aware that those packages were in development. It is not intended
+##' as a competitor, it is just a slightly different version of the
+##' same that is more suited to our needs.
+##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
+##' @examples
+##' set.seed(2134234)
+##' dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
+##' dat$y1 <- 30 + 5 * rnorm(100) + 3 * dat$x1 + 4 * dat$x2
+##' dat$y2 <- rnorm(100) + 5 * dat$x2
+##' m1 <- lm(y1 ~ x1, data = dat)
+##' m2 <- lm(y1 ~ x2, data = dat)
+##' m3 <- lm(y1 ~ x1 + x2, data = dat)
+##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
+##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
-##     getBSE <- function(B, SE, PT, regname, modelname){
-##         est <- B[regname, modelname]
-##         se <- SE[regname, modelname]
-##         if (!is.na(est)) {
-##             sig <- if (PT[regname, modelname] < alpha) "*" else ""
-##         } else {
-##             est <- ""; se <- ""; sig <- "";
-##         }
-##         c(paste0(est,sig), se)
-##     }
+##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
-##     ## TESTME: grabs param from object by name, rounds, simplifies
-##     ## returns text. For getting r.square, adj.r.square, fstatistic.
-##     harvest <- function(sl, name) {
-##         res <- vector("character")
-##         namz <- names(sl)
-##         for(i in seq_along(sl)) {
-##             sli <- sl[[i]]
-##             y <- sli[[name]]
-##             if (!is.null(y) && name == "fstatistic"){
-##                 staty <- paste(format(c(y["value"]), digits = digits),
-##                                " df(", format(y["numdf"], digits = digits),
-##                                ",", format(y["dendf"], digits = digits), ")", sep = "")
-##                 y <- staty
-##             } else if (is.numeric(y)) {
-##                 y <- round(y, digits)
-##             }
-##             if (!is.null(y)) res[namz[i]] <- y
-##         }
-##        attr(res, "nonNull") <- if (any(!is.na(res))) TRUE else FALSE
-##        res
-##     }
+##' outreg(m1, tight = FALSE, modelLabels=c("Fingers"),
+##' title = "My Only Spread Out Regressions", float = TRUE, alpha = c(0.05, 0.01, 0.001))
+##'
+##' outreg(list(ModelA = m1, "Model B label with Spaces" = m2),
+##'        varLabels = list(x1 = "Billie"), title = "My Two Linear Regressions", request = c(fstatistic = "F"))
+##'
+##' outreg(list(ModelA = m1, ModelB = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+##' varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names")
+##'
+##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' title = "Still have showAIC argument, as in previous versions",
+##' showAIC = TRUE, float = TRUE)
+##'
+##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' title = "Another way to get AIC output", runFuns = c("AIC" = "Akaike IC"))
+##'
+##' outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three Linear Regressions", float = FALSE)
+##'
+##' outreg(list(m1, m2, m3), tight = FALSE,
+##' modelLabels = c("I Love really long titles", "Hate Long", "Medium"),
+##' float = FALSE)
+##'
+##' outreg(list(gm1), modelLabels = c("GLM"), float = TRUE)
+##'
+##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE, alpha = c(0.05, 0.01))
+##'
+##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
+##'
+##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"), digits = 5, alpha = 0.01)
+##'
+##'  outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC", logLik = "ll"), digits = 5, alpha = c(0.05, 0.01, 0.001))
+##'
+##' outreg(list(ModelA = gm1, "Model B label with Spaces" = m2), request = c(fstatistic = "F"), runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "nobs" = "N Again?"))
+##'
+outreg <-
+    function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
+             tight = TRUE, showAIC = FALSE, float = FALSE, request,
+             runFuns, digits = 3, alpha = 0.05)
+{
+    ##beautified names for gof variables
+    gofNames <- c(sigma = "RMSE", r.squared = "$R^2$", deviance = "Deviance",
+                  adj.r.squared = "adj $R^2$", fstatistic = "F")
 
-##     gofPrint <- function(sl, name){
-##         y <- harvest(sl, name)
-##         newrow <- character(nColumns)
-##         names(newrow) <- colnamz
-##         newrow[1] <- ifelse(is.na(gofNames[name]), name, gofNames[name])
-##         newrow[names(y)] <- y
-##         newrow
-##     }
+    if (!missing(request)) gofNames <- c(gofNames, request)
 
+    ## Required methods
+    req <- (c("coef", "nobs", "vcov", "summary"))
 
-##     ## was input just one model, or a list of models?  ###
-##     if (inherits(modelList, "lm")) { ##just one model input
-##         nmodels <- 1
-##         modelList <- list(modl1 = modelList)
-##     } else {
-##         modelList <- modelList
-##     }
+    checkReg <- function(modl){
+        ## required methods for model
 
-##     nmodels <- length(modelList)
-##     nColumns <- ifelse(tight, 1 + nmodels, 1 + 2 * nmodels)
-
-
-
-
-##     if (is.null(modelLabels)){
-##         ##Make temporary names
-##         modelLabels <- paste("M", 1:nmodels, sep ="")
-##         mln <- names(modelList)
-##         for (i in seq_along(mln)){
-##             modelLabels[i] <- mln[i]
-##         }
-##     }
-##     names(modelList) <- modelLabels
-
-##     colnamz <- vector("character", length = nColumns)
-
-##     colnamz[1] <- ""
-##     if (!tight){
-##         for (j in seq_along(modelLabels))
-##             colnamz[j * 2] <- modelLabels[j]
-##     } else {
-##         colnamz[2:nColumns] <- modelLabels
-
-##     }
-
-
-##     ## Get a regression summary object for each fitted model
-##     summaryList <- list()
-##     parmnames <- vector()
-##     myModelClass <- vector()
-
-##     for (i in seq_along(modelList)){
-##         model <- modelList[[i]]
-##         summaryList[[i]] <- ssm <- summary(model)
-##         parmnames <- unique(c(parmnames, names(coef(model))))
-##         myModelClass[i] <- class(model)[1]
-##         i <- i+1
-##     }
-
-##     summaryList <- lapply(modelList, function(x) tryCatch(summary(x), error = NULL))
-
-##     displayNames <-  as.character(parmnames)
-##     names(displayNames) <- as.character(parmnames)
-##     displayNames[names(varLabels)] <- varLabels
-
-##     B <- matrix(NA, nrow = length(parmnames), ncol =
-##                 length(modelList), dimnames = list(parmnames))
-##     dimnames(B)[[2]] <- modelLabels
-
-##     SE <- matrix(NA, nrow = length(parmnames), ncol =
-##                  length(modelList), dimnames = list(parmnames))
-##     dimnames(SE)[[2]] <- modelLabels
-
-##     DF <- vector("numeric", length = nmodels)
-
-##     for(j in seq_along(modelList)){
-##         modl <- modelList[[j]]
-##         best <- coef(modl)
-##         B[parmnames, modelLabels[j]] <- best[parmnames]
-##         DF[j] <- modl$df.residual
-##         SE[parmnames, modelLabels[j]] <- sqrt(diag(vcov(modl)))[parmnames]
-##     }
-
-##     sigtest <- function(B, SE, DF) {
-##         PT <- matrix(NA, nrow = NROW(B), ncol =
-##                      NCOL(B), dimnames = dimnames(B))
-##         for (j in seq_along(DF)){
-##             PT[ ,j] <-  pt(abs((B/SE)[ ,j]), lower.tail = FALSE, df = DF[j]) *2
-##         }
-##         PT <- round(PT, digits)
-##         PT
-##     }
-##     PT <- sigtest(B, SE, DF)
-
-##     ##TODO. Look back later to consider generalizing so that we
-##     ## accept B, SE and PT from coef(summary) if it exists.
-
-##     B <- round(B, digits)
-##     SE <- round(SE, digits)
-##     SE <- apply(SE, c(1,2), function(x){ paste0("(",x,")") })
-
-
-
-##     ##pj ## If you want a LaTeX table float...
-##     ##pj if (float == TRUE || !missing(title) || !missing(label)){
-##     ##pj     cat("\\begin{table}\n")
-##     ##pj     if (missing(title)) title <- "A Regression"
-##     ##pj     if (missing(label)) label <- "regrlabl"
-##     ##pj     cat("\\caption{",title,"}\\label{",label,"}\n")
-##     ##pj }
-##     ##pj cat("\\begin{center}\n")
-##     ##pj cat(paste("\\begin{tabular}{*{",nColumns,"}{l}}\n", sep=""))
-##     ##pj cat("\\hline\n")
-
-##     ##pj ## Put model labels on top of each model column, if modelLabels were given
-##     ##pj if (!is.null(modelLabels)){
-##     ##pj     cat("     ")
-##     ##pj     for (modelLabel in modelLabels){
-##     ##pj         if (tight == TRUE) {
-##     ##pj             cat(paste("&", modelLabel))
-##     ##pj         }else{
-##     ##pj             cat(paste("&\\multicolumn{2}{c}{",modelLabel,"}",sep=""))
-##     ##pj         }
-##     ##pj     }
-##     ##pj     cat(" \\\\\n")
-##     ##pj }
-
-##     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
-##     ##pj if (tight == TRUE){
-##     ##pj     cat("               ", rep (" &Estimate ", nmodels), "\\\\\n")
-##     ##pj     cat("               ", rep (" &(S.E.) ", nmodels), "\\\\\n")
-##     ##pj } else {
-##     ##pj     cat("               ", rep (" &Estimate &(S.E.) ", nmodels), "\\\\\n", fill= FALSE)
-##     ##pj }
-##     ##pj cat("\\hline \n\\hline\n")
-
-##     if (tight){
-##         res1 <- c("           ", rep (c("Estimate"), nmodels))
-##         names(res1) <- colnamz
-##         res1 <- rbind(res1, c("           ", rep (c("(S.E.)"), nmodels)))
-##     } else {
-##         res1 <- c("           ", rep (c("Estimate", "(S.E.)"), nmodels))
-##         names(res1) <- "  "
-##         names(res1)[seq(2, nColumns, by = 2)] <- modelLabels
-##     }
-
-##     ## Here come the regression coefficients
-
-##     parmstruct <- list()
-##     for (regname in parmnames){
-##         XXX <- lapply(modelLabels, function(modnam) getBSE(B, SE, PT, regname, modnam))
-##         parmstruct[[regname]] <- if (tight) do.call("cbind", XXX)
-##         else do.call("cbind", lapply(XXX, t))
-##     }
-
-##     if (tight) {
-##         rownamz <- vector("character", length = length(parmnames) * 2)
-##         for (j in seq_along(parmnames)){
-##             rownamz[1 + (j-1)*2] <- parmnames[j]
-##             res2 <- do.call("rbind", parmstruct)
-##             res2 <- cbind(rownamz, res2)
-##         }
-##         colnames(res2) <- c("      ", modelLabels)
-##         rownames(res2) <- rownamz
-##     } else {
-##         res2 <- do.call("rbind", parmstruct)
-##         res2 <- cbind(parmnames, res2)
-##         colnames(res2) <- colnamz
-##         rownames(res2) <- parmnames
-##     }
+        ## Ask modl for a list of all methods that apply to it
+        methodList <- unlist(sapply(class(modl), function(x) if (x != "list") methods(class = x)))
+        ## find out if methodList members have req
+        reqCheck <- sapply(req, function(x) sum(grepl(x, methodList)))
+        ## stop if any are 0
+        if (length(grep("0", reqCheck)) > 0){
+            if (y <- grep("0", reqCheck)) {
+                messg <- paste("The regression model must have these methods: ",
+                               paste(req, collapse = " "), "\n",
+                               " and the model provided is missing",
+                               req[y])
+                stop(messg)
+            }
+        }
+    }
 
 
-##     ### now list the gof we will try to print
-##     gof <- c("sigma", "r.squared", if (length(parmnames) > 1) "adj.r.squared", "deviance", if (!missing(request)) names(request))
+    ## TESTME: grabs param from object by name, rounds, simplifies
+    ## returns text. For getting r.square, adj.r.square, fstatistic.
+    harvest <- function(sl, name) {
+        res <- vector("character", length = length(sl))
+        namz <- names(sl)
+        names(res) <- namz
 
-##     gof <- unique(gof)
+        for(i in seq_along(sl)) {
+            sli <- sl[[i]]
+            y <- sli[[name]]
+            if (!is.null(y) && name == "fstatistic"){
+                staty <- paste(format(c(y["value"]), digits = digits),
+                               " df(", format(y["numdf"], digits = digits),
+                               ",", format(y["dendf"], digits = digits), ")", sep = "")
 
-##     goflist <- lapply(gof, function(gname) gofPrint(summaryList, gname))
-##     names(goflist) <- gof
+                nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"] , lower.tail = FALSE) < alpha)
+                y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
+            } else if (is.numeric(y)) {
+                y <- round(y, digits)
+            }
+            if (!is.null(y)) res[i] <- y else res[i] <- ""
+        }
 
-##     sampSize <- character(length = nColumns)
-##     names(sampSize) <- colnamz
-##     sampSize[modelLabels] <- sapply(modelList, nobs)
-##     sampSize[1] <- "N"
+        if (any(!is.na(res))) nonNull <- TRUE else nonNull <- FALSE
+        names(res) <- names(sl)
+        attr(res, "nonNull") <- nonNull
+        res
+    }
 
-##     gofMat <- do.call("rbind", goflist)
-
-##     rbind(sampSize, gofMat)
-
-##     XX <-  list(header = res1, parms = res2, gof = gofMat)
-##     if (!missing(runFuns)) {
-##         runFunsFn <- names(runFuns)
-
-##         myresultlist <- list()
-##         for (i in 1:length(runFuns)) {
-
-##             myfn <- runFunsFn[i]
-
-##             if (myfn == "logLik") {
-##                 myresultlist[[myfn]] <- lapply(modelList, function(x) {
-##                     y <- do.call(myfn, list(x))
-##                     fstaty <- paste(format(c(y), digits = digits), collapse = ", ",
-##                                     " (df=", format(attr(y, "df")), ")", sep = "")
-##                     invisible(fstaty)
-##                 })
-##             } else {
-##                 myresultlist[[myfn]] <- lapply(modelList, function(x){
-##                     y <- do.call(myfn, list(x))
-##                     fstaty <- format(c(y), digits = digits, nsmall = 2 )
-##                 })
-##                 names(myresultlist[[myfn]]) <- modelLabels
-##             }
-##         }
-
-##         ## assemble those into matrix using stupidest possible way
-##         res4 <- matrix("", nrow = length(runFuns), ncol = length(colnamz),
-##                        dimnames = list(runFunsFn, colnamz))
-
-##         myresultlistnamz <- names(myresultlist)
-##         for (i in seq_along(myresultlist)){
-##             onerow <- myresultlist[[i]]
-##             onerownamz <- names(onerow)
-##             for (j in seq_along(onerow)) {
-##                 res4[myresultlistnamz[i] ,onerownamz[j]] <- onerow[[onerownamz[j]]]
-##             }
-##         }
-##         res4[ , 1] <- runFuns
-##         XX[["res4"]] <- res4
-##     }
-##     XXX <- do.call("rbind", XX)
-##     row.names(XXX) <- NULL
-##     noquote(XXX)
-## }
+    gofRow <- function(x, xname = "fixme") {
+        aline <- c(xname, rep(" ",  max(2, (16 - nchar(xname)))))
+        for (mname in names(x)) {
+            aline <- c(aline, "&", x[mname], rep(" ", max(2, 6-nchar(x[mname]))))
+            if (tight == FALSE) aline <- c(aline, rep(" ", 6), "&")
+        }
+        aline <- paste(paste(aline, collapse = ""), "\\\\\n")
+    }
 
 
-## ##     ## Print a row for the model's fit, as -2LLR
-## ##     if ("glm" %in% myModelClass) {
-## ##         cat(paste("$-2LLR (Model \\chi^2)$"),sep="")
-## ##         for (model in modelList) {
-## ##             if (is.numeric(model$deviance)){
-## ##                 n2llr <- model$null.deviance - model$deviance
-## ##                 cat(paste("      &", round(n2llr, digits)))
-## ##                 gmdf <- model$df.null - model$df.residual + 1
+    gofPrint <- function(sl, name){
+        y <- harvest(sl, name)
+        xname <- ifelse(is.na(gofNames[name]), name, gofNames[name])
+        if (attr(y, "nonNull")) {
+            res <- gofRow(y, xname)
+        }
+        res
+    }
 
-## ##                 if (pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha) {cat("*")}
-## ##             } else {
-## ##                 cat("    &")
-## ##             }
-## ##             if (tight == FALSE) cat("     &")
-## ##         }
-## ##         cat("  \\\\\n")
-## ##     }
+    ##Problem: some models have class output like maxLik:
+    ## > class(res)
+    ## [1] "maxLik" "maxim"  "list"
+    ## So we can't just ask modelList if it is a list or an object.
+
+    ## So as if the thing is ONLY a list with setequal
+    if ( !setequal(class(modelList), "list") ){
+        checkReg(modelList)
+        ## modelList is not a list only, so put it in a list
+        modelList <- list(modelList)
+    } else {
+        lapply(modelList, checkReg)
+    }
+
+    nmodels <- length(modelList)
+
+    if (is.null(modelLabels)){
+        ##Make temporary names
+        modelLabels <- paste("M", 1:nmodels, sep ="")
+        mln <- names(modelList)
+        for (i in seq_along(mln)){
+            modelLabels[i] <- mln[i]
+        }
+    }
+
+    ##Ugh. nonunique labels. brute force fix
+    modelLabels <- make.unique(modelLabels)
+    names(modelList) <- modelLabels
+
+    ## Get a regression summary object for each fitted model
+    summaryList <- list()
+    parmnames <- vector()
+    myModelClass <- vector()
+
+    for (i in seq_along(modelList)){
+        model <- modelList[[i]]
+        summaryList[[i]] <- ssm <- summary(model)
+        parmnames <- unique(c(parmnames, names(coef(model))))
+        myModelClass[i] <- class(model)[1]
+        i <- i+1
+    }
+
+    summaryList <- lapply(modelList, function(x) tryCatch(summary(x), error = NULL))
+
+    displayNames <-  as.character(parmnames)
+    names(displayNames) <- as.character(parmnames)
+    displayNames[names(varLabels)] <- varLabels
+
+    B <- matrix(NA, nrow = length(parmnames), ncol =
+                length(modelList), dimnames = list(parmnames))
+
+    dimnames(B)[[2]] <- modelLabels
+
+    SE <- matrix(NA, nrow = length(parmnames), ncol =
+                 length(modelList), dimnames = list(parmnames))
+    dimnames(SE)[[2]] <- modelLabels
+    DF <- vector("numeric", length = nmodels)
+
+    for(j in seq_along(modelList)){
+        modl <- modelList[[j]]
+        best <- coef(modl)
+        B[parmnames, modelLabels[j]] <- best[parmnames]
+        DF[j] <- modl$df.residual
+        SE[parmnames, modelLabels[j]] <- sqrt(diag(vcov(modl)))[parmnames]
+    }
+
+    sigtest <- function(B, SE, DF) {
+        PT <- matrix(NA, nrow = NROW(B), ncol =
+                     NCOL(B), dimnames = dimnames(B))
+        for (j in seq_along(DF)){
+            PT[ ,j] <-  pt(abs((B/SE)[ ,j]), lower.tail = FALSE, df = DF[j]) *2
+        }
+        PT
+    }
+
+    PT <- sigtest(B, SE, DF)
+    ##TODO. Look back later to consider generalizing so that we
+    ## accept B, SE and PT from coef(summary) if it exists.
+    B <- round(B, digits)
+    SE <- round(SE, digits)
+    SE <- apply(SE, c(1,2), function(x){ paste0("(",x,")") })
+
+    z <- c()
+    ## If you want a LaTeX table float...
+    if (float == TRUE || !missing(title) || !missing(label)){
+        float <- TRUE
+	aline <- "\\begin{table}\n"
+        z <- c(z, aline)
+        if (missing(title)) title <- "A Regression"
+        if (missing(label)) label <- "regrlabl"
+        aline <- cat("\\caption{", title, "}\\label{", label,"}\n")
+        z <- c(z, aline)
+    }
+    nColumns <- ifelse(tight, 1+nmodels, 1 + 2*nmodels)
+
+    aline <- paste("\\begin{tabular}{*{",nColumns,"}{l}}\n", sep="")
+    z <- c(z, aline)
+    aline <- "\\hline\n"
+    z <- c(z, aline)
+
+    ## Put model labels on top of each model column, if modelLabels were given
+    if (!is.null(modelLabels)){
+        aline <- sprintf("%14s", " ")
+        for (modelLabel in modelLabels){
+            if (tight == TRUE) {
+                aline <- c(aline, paste("&", modelLabel))
+            }else{
+                aline <- c(aline, paste("&\\multicolumn{2}{c}{",modelLabel,"}",sep=""))
+            }
+        }
+        aline <- c(aline, "  \\\\\n")
+        z <- c(z, paste(aline, collapse = " "))
+    }
+
+    ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
+    if (tight == TRUE) {
+        aline <- c(sprintf("%14s", " "), paste(rep (" &Estimate", nmodels, collapse = " ")), "\\\\\n")
+        z <- c(z, paste(aline, collapse = ""))
+
+        aline <- c(sprintf("%14s", " "), paste(rep (" &(S.E.) ", nmodels, collapse = " ")), "\\\\\n")
+        z <- c(z, paste(aline, collapse = ""))
+    } else {
+        aline <- c(sprintf("%14s", " "), paste(rep (" &Estimate &(S.E.) ", nmodels, collapse = " ")), "\\\\\n")
+        z <- c(z, paste(aline, collapse = ""))
+    }
+    aline <- "\\hline\n"
+    z <- c(z, aline)
+    z <- c(z, aline)
+
+    ## Here come the regression coefficients
+    for (regname in parmnames){
+        aline <- c(" ", displayNames[regname], rep(" ", max(2, (14 - nchar(displayNames[regname])))))
+        aline <- paste(aline, collapse = "")
+        for (model in modelLabels) {
+            est <- B[regname, model]
+            se <- SE[regname, model]
+            if (!is.na(est)) {
+                aline <- c(aline, " & ", if(est > 0) " ", est)
+                nstars <- sum(abs(PT[regname, model]) < alpha)
+                aline <- c(aline, paste(rep("*", nstars), collapse = ""), "")
+                if (tight == FALSE) {
+                    aline <- c(aline, paste("  &  ", se, collapse = " "))
+                }
+            } else {
+                aline <- c(aline, "  & .     ")
+                if (tight == FALSE) aline  <- c(aline, "  &        ")
+            }
+        }
+        aline <- c(aline, " \\\\\n")
+        z <- c(z, paste(aline, collapse = ""))
+
+        if (tight == TRUE){
+            aline <- paste(rep(" ", 14), sep = "")
+            for (model in modelLabels) {
+                est <- B[regname, model]
+                se <- SE[regname, model]
+                aline2 <- if (!is.na(est)) c("&", se, rep(" ", max(2, 6 - nchar(se)), collapse=""))  else c("&  ", sprintf("%6s", " "))
+                aline <- c(aline, paste(aline2, collapse = ""))
+            }
+            aline <- c(aline, "\\\\\n")
+            z <- c(z, paste(aline, collapse = ""))
+        }
+    }
+    aline <- "\\hline \n"
+    z <- c(z, aline)
+
+
+    ## Print a row for the number of cases
+    aline <- c("N", rep(" ", 16))
+    for (model in modelList) {
+        myN <- nobs(model)
+        aline <- c(aline, "&", myN, rep(" ", 6,  collapse = ""))
+        if (tight == FALSE) aline <- c(aline, "&", rep(" ",6))
+    }
+    aline <- c(aline, " \\\\\n")
+    z <- c(z, paste(aline, collapse = ""))
+
+    ## The new way
+    z <- c(z, gofPrint(summaryList, "sigma"))
+
+    ## The new way
+    z <- c(z, gofPrint(summaryList, "r.squared"))
+
+    ##"adj.r.squared" if there is more than 1 predictor
+
+    ## Print a row for the adj-R-square
+    if (length(parmnames) > 2) {
+        z <- c(z, gofPrint(summaryList, "adj.r.squared"))
+    }
+
+
+    if (!missing(request)){
+        for (extra in names(request)){
+            z <- c(z, gofPrint(summaryList, extra))
+        }
+    }
+
+    ## Print a row for the model residual deviance
+    if ("glm" %in% myModelClass) {
+        z <- c(z, gofPrint(summaryList, "deviance"))
+    }
+
+    ## Print a row for the model's fit, as -2LLR
+    if ("glm" %in% myModelClass) {
+        aline <- "$-2LLR (Model \\chi^2)$"
+        for (model in modelList) {
+            if (is.numeric(model$deviance)){
+                n2llr <- model$null.deviance - model$deviance
+                aline <- c(aline, paste("      &", round(n2llr, digits)))
+                gmdf <- model$df.null - model$df.residual + 1
+                nstars <- sum(pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha)
+                aline <  paste(aline, rep("*", nstars), sep = "")
+            } else {
+                aline <- c(aline, "       &")
+            }
+            if (tight == FALSE) aline <- c(aline, "       &")
+        }
+        aline <- paste(paste(aline, collapse = ""), "\\\\\n")
+        z <- c(z, paste(aline))
+    }
+
+    ## Print a row for the model's fit, as -2 LLR
+    ## Can't remember why I was multiplying by -2
+
+    if (showAIC == TRUE) {
+        aline <- "$AIC$"
+        for (model in modelList) {
+            aline <- c(aline, paste("      &", if(is.numeric(AIC(model)))round(AIC(model), digits)))
+            if (tight == FALSE) aline <- c(aline, "      &")
+        }
+        aline <- c(aline, "\\\\\n")
+        z <- c(z, paste(aline))
+    }
+
+    ## TODO: round the following output
+    if (!missing(runFuns)){
+        elist <- vector("list", length = length(runFuns))
+        runFunsFn <- names(runFuns)
+        for (i in 1:length(runFuns)){
+            myfn <- runFunsFn[i]
+            if (myfn == "logLik") {
+                myresult <- lapply(modelList, function(x) {
+                    y <- do.call(myfn, list(x))
+                    fstaty <- paste(format(c(y), digits = digits), collapse = ", ",
+                                    " (df=", format(attr(y, "df")), ")", sep = "")
+                    invisible(fstaty)
+                })
+                elist[[i]] <- myresult
+            } else {
+                myresult <- lapply(modelList, function(x){
+                    y <- do.call(myfn, list(x))
+                    fstaty <- format(c(y), digits = digits, nsmall = 2 )
+                })
+                elist[[i]] <- myresult
+            }
+        }
+        names(elist) <- runFunsFn
+
+        for(i in 1:length(runFuns)){
+            z <- c(z, gofRow(elist[[i]], runFuns[i]))
+        }
+    }
+
+    aline <- "\\hline\n"
+    z <- c(z, aline, aline)
+    z <- c(z, "\n")
+
+    aline <- "\\multicolumn{2}{l}{"
+    for ( i in seq_along(alpha)){
+        aline <- paste(aline, "${", paste(rep("*", i), collapse = ""), "}",  "\  p\ \\le ", alpha[i], "$  ", sep = "")
+    }
+    aline <- paste(aline, "}\\\\\n")
+    z <- c(z, aline)
+
+    aline <- "\\end{tabular}\n"
+    z <- c(z, aline)
+    if (float == TRUE){
+        aline <- "\\end{table}\n"
+        z <- c(z, aline)
+    }
+    cat(z)
+    invisible(z)
+}
+
+
+
+##' Convert an outreg result to HTML markup
+##'
+##' Can open or insert the file into Libre Office or other popular
+##' "word processor" programs.
+##' @param myz
+##' @param filename A file name into which the regression markup is to be saved. Should end in .html.
+##' @return A vector of strings
+##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
+##'
+##' dat <- genCorrelatedData2(means = c(50,50,50,50,50,50), sds = c(10,10,10,10,10,10), rho = 0.2, beta = rnorm(7), stde = 50)
+##' m1 <- lm(y ~ x1 + x2 + x3 + x4 + x5 + x6 + x1*x2, data = dat)
+##' summary(m1)
+##'
+##' m1out <- outreg(list("Great Regression" = m1), alpha = c(0.05, 0.01, 0.01),
+##'             request = c("fstatistic" = "F"), runFuns = c(AIC = "AIC"), float = TRUE)
+##'
+##' outreg2HTML(m1out, filename = "funky.html")
+##'
+##' m2 <- lm(y ~ x1 + x2, data = dat)
+##'
+##' m2out <- outreg(list("Great Regression" = m1, "Small Regression" = m2), alpha = c(0.05, 0.01, 0.01),
+##'             request = c("fstatistic" = "F"), runFuns = c(BIC = "BIC"))
+##' outreg2HTML(m2out, filename = "funky2.html")
+outreg2HTML <- function(myz, filename){
+    myz2 <- gsub("^\\n$", "</tr></td>\n", myz)
+    myz2 <- gsub("^", "<tr><td>", myz2)
+    myz2 <- gsub(".*\\\\begin\\{tabular\\}.*$", "<table>\n", myz2)
+    myz2 <- gsub("\\\\\\\\","</td></tr>", myz2)
+    myz2 <- gsub("^.*\\\\hline.*", "", myz2)
+    myz2 <- gsub("&", "</td><td>", myz2)
+    myz2 <- gsub(".*end\\{tabular\\}", "</table>", myz2)
+    myz2 <- gsub("\\\\le", "&#8804;", myz2)
+
+        myz2 <- gsub("\\$R\\^2\\$", "R<sup>2</sup>", myz2)
+
+    myz2 <- sub("<td>\\\\mul(.*?)\\$\\{", "<td colspan = '3'>",  myz2)
+    myz2 <- gsub("\\$\\{", "", myz2)
+    myz2 <- gsub("(\\**)}", "\\1", myz2)
+    myz2 <- gsub("\\$\ *", " ", myz2)
+
+    if (!missing(filename)){
+        if (!grDevices:::checkIntFormat(filename))
+            stop("invalid 'file'")
+        cat(myz2, file = filename)
+        cat(paste("Saved to ", filename, "\n"))
+        } else {
+            cat(myz2)
+        }
+    invisible(myz2)
+}
 
