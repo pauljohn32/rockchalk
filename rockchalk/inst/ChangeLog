@@ -1,3 +1,8 @@
+2013-04-30  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/outreg.R (sigtest): nobs -> stats::nobs because gdata had
+	its own nobs
+
 2013-04-29  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/outreg.R (outreg2HTML) had to be exported.

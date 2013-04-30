@@ -396,7 +396,7 @@ outreg0 <-
     ## Print a row for the number of cases
     cat(paste("N"), sep="")
     for (model in modelList) {
-        myN <- nobs(model)
+        myN <- stats::nobs(model)
         cat(paste("   &   ", myN))
         if (tight == FALSE) cat("    &")
     }
@@ -905,7 +905,7 @@ outreg <-
     ## Print a row for the number of cases
     aline <- c("N", rep(" ", 16))
     for (model in modelList) {
-        myN <- nobs(model)
+        myN <- stats::nobs(model)
         aline <- c(aline, "&", myN, rep(" ", 6,  collapse = ""))
         if (tight == FALSE) aline <- c(aline, "&", rep(" ",6))
     }
@@ -1051,7 +1051,8 @@ outreg <-
 ##'
 ##' m2out <- outreg(list("Great Regression" = m1, "Small Regression" = m2), alpha = c(0.05, 0.01, 0.01),
 ##'             request = c("fstatistic" = "F"), runFuns = c(BIC = "BIC"))
-##' ## Run this for yourself, it will create the output file funky.html
+##' outreg2HTML(m2out)
+##' ## Run this for yourself, it will create the output file funky2.html
 ##' ## outreg2HTML(m2out, filename = "funky2.html")
 ##' ## Please inspect the file "funky2.html
 ##'
