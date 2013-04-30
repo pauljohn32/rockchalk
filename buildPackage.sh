@@ -2,27 +2,31 @@ PACKAGE="rockchalk"
 
 VERSION=$(awk -F": +" '/^Version/ { print $2 }' ${PACKAGE}/DESCRIPTION)
 
-rm -rf ${PACKAGE}.gitex
+rm -rf ${PACKAGE}.gitex;
 
 mkdir ${PACKAGE}.gitex
 cd ${PACKAGE}
+
+cd vignettes
+echo "$pwd"
+
+lyx -f -e sweave Rstyle.lyx;
+lyx -f -e sweave rockchalk.lyx;
+lyx -f -e sweave Rchaeology.lyx;
+
+cd ..
+
 ##git archive master | tar -x -C "../${PACKAGE}.gitex"
 ## copies UNCOMMITTED but TRACKED files.
 git ls-files . | tar cT - | tar -x -C "../${PACKAGE}.gitex"
 cd ..
-##cd ${PACKAGE}.gitex/vignettes
 
-##lyx -e pdf2 Rstyle.lyx
-##lyx -e sweave Rstyle.lyx
+## cd ${PACKAGE}.gitex/vignettes
 
-##lyx -e pdf2 rockchalk.lyx
-##lyx -e sweave rockchalk.lyx
+
 ## perl -pi.bak  -e 's/bibliography\{0.*rockchalk\}/bibliography{rockchalk}/' rockchalk.Rnw
 ## cp -f rockchalk.pdf ../inst/doc
 ## cp -f Rstyle.pdf ../inst/doc
-
-##lyx -e pdf2 Rchaeology.lyx
-##lyx -e sweave Rchaeology.lyx
 
 ## cp -f Rchaeology.pdf ../inst/doc
 ## cd ../..

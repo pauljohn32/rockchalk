@@ -1023,30 +1023,40 @@ outreg <-
 
 ##' Convert an outreg result to HTML markup
 ##'
-##' Can open or insert the file into Libre Office or other popular
+##' Will generate output on screen, but if a filename argument is
+##' supplied, it will write a text file containing the result. One can
+##' then open or insert the file into Libre Office or other popular
 ##' "word processor" programs.
-##' @param myz output from outreg
+##' 
+##' @param outreg output from outreg
 ##' @param filename A file name into which the regression markup is to be saved. Should end in .html.
 ##' @return A vector of strings
 ##' @export
 ##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
-##'
+##' @examples
 ##' dat <- genCorrelatedData2(means = c(50,50,50,50,50,50), sds = c(10,10,10,10,10,10), rho = 0.2, beta = rnorm(7), stde = 50)
 ##' m1 <- lm(y ~ x1 + x2 + x3 + x4 + x5 + x6 + x1*x2, data = dat)
 ##' summary(m1)
 ##'
 ##' m1out <- outreg(list("Great Regression" = m1), alpha = c(0.05, 0.01, 0.01),
 ##'             request = c("fstatistic" = "F"), runFuns = c(AIC = "AIC"), float = TRUE)
-##'
-##' outreg2HTML(m1out, filename = "funky.html")
+##' ##html markup will appear on screen
+##' outreg2HTML(m1out)
+##  ## Run this for yourself to create an output file
+##' ## outreg2HTML(m1out, filename = "funky.html")
+##' ## I'm not running that for you because you 
+##' ## need to be in the intended working directory
 ##'
 ##' m2 <- lm(y ~ x1 + x2, data = dat)
 ##'
 ##' m2out <- outreg(list("Great Regression" = m1, "Small Regression" = m2), alpha = c(0.05, 0.01, 0.01),
 ##'             request = c("fstatistic" = "F"), runFuns = c(BIC = "BIC"))
-##' outreg2HTML(m2out, filename = "funky2.html")
-outreg2HTML <- function(myz, filename){
-    myz2 <- gsub("^\\n$", "</tr></td>\n", myz)
+##' ## Run this for yourself, it will create the output file funky.html
+##' ## outreg2HTML(m2out, filename = "funky2.html")
+##' ## Please inspect the file "funky2.html
+##'
+outreg2HTML <- function(outreg, filename){
+    myz2 <- gsub("^\\n$", "</tr></td>\n", outreg)
     myz2 <- gsub("^", "<tr><td>", myz2)
     myz2 <- gsub(".*\\\\begin\\{tabular\\}.*$", "<table>\n", myz2)
     myz2 <- gsub("\\\\\\\\","</td></tr>", myz2)
@@ -1054,13 +1064,14 @@ outreg2HTML <- function(myz, filename){
     myz2 <- gsub("&", "</td><td>", myz2)
     myz2 <- gsub(".*end\\{tabular\\}", "</table>", myz2)
     myz2 <- gsub("\\\\le", "&#8804;", myz2)
-
+        ## Emacs indentation fooled by previous
         myz2 <- gsub("\\$R\\^2\\$", "R<sup>2</sup>", myz2)
 
     myz2 <- sub("<td>\\\\mul(.*?)\\$\\{", "<td colspan = '3'>",  myz2)
     myz2 <- gsub("\\$\\{", "", myz2)
     myz2 <- gsub("(\\**)}", "\\1", myz2)
     myz2 <- gsub("\\$\ *", " ", myz2)
+    myz2 <- gsub("\\\\chi\\^2", "&chi;<sup>2</sup>", myz2)
 
     if (!missing(filename)){
         if (!grDevices:::checkIntFormat(filename))
