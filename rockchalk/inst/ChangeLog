@@ -1,3 +1,9 @@
+2013-05-02  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/meanCenter.R (predict.mcreg):  The drop gotcha again.
+	tmeans <- sapply(newdata[ , nc], mean, na.rm=T) must be:
+	tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm=T)
+
 2013-04-30  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/outreg.R (sigtest): nobs -> stats::nobs because gdata had

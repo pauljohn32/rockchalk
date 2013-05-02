@@ -336,8 +336,8 @@ predict.mcreg <- function (object, newdata, ...){
     nc <- setdiff(nc, dvname) #remove dv name if present
     if(missing(newdata)) {
         newdata <- model.frame(object)##should be centered already
-        tmeans <- sapply(newdata[ , nc], mean, na.rm=T)
-        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes=F))) stop("dead newdata walking")
+        tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm=T)
+        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes=F))) stop(paste("In predict.mcreg, the newdata object claims to have centered variables,", paste(nc, collapse=" "), "but not all of those centered values have observed means very close to 0. Something's wrong"))
         ## } else {
         ##     if (isTRUE(attr(newdata, "isCentered"))){
         ##         ##verify the claim
