@@ -171,8 +171,20 @@ plotSlopes.lm <-
         lmx <- length(modxVals)
     }
 
-    if (missing(col)) col <- 1:lmx
-    if (length(col) < lmx) col <- rep(col, length.out = lmx)
+    if (missing(col)){
+        if (is.factor(modxVar)) {
+            col <- 1:(length(levels(modxVar)))
+            names(col) <- levels(modxVar)
+        } else {
+            col <- 1:lmx
+        }
+    } else if (length(col) < lmx) {
+        col <- rep(col, length.out = lmx)
+    } else {
+        stop("plotSlopes: color selector failed")
+    }
+    ## if (missing(col)) col <- 1:lmx
+
     if (missing(llwd)) llwd <- 2
     if (length(llwd) < lmx) llwd <- rep(llwd, length.out = lmx)
 
@@ -182,51 +194,60 @@ plotSlopes.lm <-
 
     do.call("plot", parms)
 
-
     ## iCol: rgb color matrix. Why does rgb insist the columns be
     iCol <- col2rgb(col)
     ### bCol: border color
     bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 50, maxColorValue = 255)
     ### sCol: shade color
     sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 15, maxColorValue = 255)
+
+
+    lty <- seq_along(levels(modxVar))
+    names(lty) <- levels(modxVar)
+
+
     if (interval != "none") {
-        for (i in 1:lmx) {
+        for (i in modxVals) {
+            j <- match(i, modxVals)
             if(missing(modx) || is.null(modx)) {
                 pdat <- newdf
             } else {
-                pdat <- newdf[newdf[ , modx] %in% modxVals[i], ]
+                pdat <- newdf[newdf[ , modx] %in% i, ]
             }
-            parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = i)
+            parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[j])
             parms <- modifyList(parms, dotargs)
-            parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[i]))
+            parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[j]))
             do.call("polygon", parms)
         }
     }
 
-    for (i in 1:lmx) {
+
+
+    for (i in modxVals) {
         if(missing(modx) || is.null(modx)) {
             pdat <- newdf
         } else {
-            pdat <- newdf[newdf[ , modx] %in% modxVals[i], ]
+            pdat <- newdf[newdf[ , modx] %in% i, ]
         }
-        parms <- list(x = pdat[, plotx], y = pdat$fit, lty = i)
+        parms <- list(x = pdat[, plotx], y = pdat$fit, lty = lty[i])
         parms <- modifyList(parms, dotargs)
-        parms <- modifyList(parms, list(col = col[i], lwd = llwd[i]))
+        parms <- modifyList(parms, list(col = col[i], lwd = llwd[match(i, modxVals)]))
         do.call("lines", parms)
     }
 
     if (plotPoints){
-        parms <- list(x = mm[, plotx], y = depVar, xlab = plotx, ylab = ylab,
-                      cex = 0.5, lwd = 0.2)
+        parms <- list(x = mm[modxVar %in% modxVals, plotx], y = depVar[modxVar %in% modxVals], xlab = plotx, ylab = ylab,
+                      cex = 0.6, lwd = 0.75)
         if (exists("modxVar") && is.factor(modxVar)) {
-            parms[["col"]] <- col[as.numeric(modxVar)]
+            parms[["col"]] <- col[as.numeric(modxVar[modxVar %in% modxVals])]
         }
         parms <- modifyList(parms, dotargs)
         do.call("points", parms)
     }
 
     if (plotLegend){
-        lty <- 1:lmx
+        col <- col[modxVals]
+        lty <- lty[modxVals]
         if (missing(modx) || is.null(modx)){
             titl <- "Regression analysis"
             legnd <- c("Predicted values")
@@ -243,7 +264,7 @@ plotSlopes.lm <-
             titl <- paste("Moderator:", modx)
             legnd <- paste(names(modxVals), sep = "")
         }
-        legend("topleft", legend = legnd, lty = 1:lmx, col = col,
+        legend("topleft", legend = legnd, lty = lty, col = col,
                lwd = llwd, bg = "white", title = titl)
     }
     z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = col)

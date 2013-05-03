@@ -1,5 +1,9 @@
 2013-05-02  pauljohn  <pauljohn@debian.sunflower.com>
 
+	* ../R/plotSlopes.R (plotSlopes.lm): frustrating problem with
+	colors assigned to points, lines, intervals, and legend items
+	when user selects just a few values for plotting.
+
 	* ../R/meanCenter.R (predict.mcreg):  The drop gotcha again.
 	tmeans <- sapply(newdata[ , nc], mean, na.rm=T) must be:
 	tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm=T)
