@@ -105,7 +105,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 plotSlopes.lm <-
   function (model, plotx, modx, n = 3, modxVals = NULL ,
             interval = c("none", "confidence", "prediction"),
-            plotPoints = TRUE, plotLegend = TRUE, col, llwd, ...)
+            plotPoints = TRUE, plotLegend = TRUE, col = 1, llwd = 2, ...)
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
@@ -126,13 +126,15 @@ plotSlopes.lm <-
     plotxVals <- plotSeq(plotxRange, length.out = 40)
 
     ## Create focalVals object, needed by newdata
-    if (missing(modx) || is.null(modx)){
+    if (missing(modx) || is.null(modx)) {
+        modxVar <- rep(1, length(depVar))
         if (interval == "none") {
             focalVals <- list(plotxRange)
         } else {
             focalVals <- list(plotxVals)
         }
         names(focalVals) <- c(plotx)
+        modxVals <- 1
     } else {
         modxVar <- model$model[, modx]
         if (is.factor(modxVar)) { ## modxVar is a factor
@@ -171,22 +173,51 @@ plotSlopes.lm <-
         lmx <- length(modxVals)
     }
 
-    if (missing(col)){
-        if (is.factor(modxVar)) {
-            col <- 1:(length(levels(modxVar)))
-            names(col) <- levels(modxVar)
-        } else {
-            col <- 1:lmx
-        }
-    } else if (length(col) < lmx) {
-        col <- rep(col, length.out = lmx)
+    ## if modx is a factor's name, we want to use all the levels
+    ## to set the color scheme, even if some are not used in this
+    ## particular plot.
+    if (is.factor(modxVar)) {
+        modxLevels <- levels(modxVar)
     } else {
-        stop("plotSlopes: color selector failed")
+        modxLevels <- modxVals
+        if (is.null(names(modxVals))) names(modxVals) <- modxVals
     }
-    ## if (missing(col)) col <- 1:lmx
 
-    if (missing(llwd)) llwd <- 2
-    if (length(llwd) < lmx) llwd <- rep(llwd, length.out = lmx)
+    if (missing(col)) {
+        if (is.factor(modxVar)) {
+            col <- seq_along(modxLevels)
+            names(col) <- modxLevels
+        }  else {
+            col <- 1:lmx
+            names(col) <- names(modxVals)
+        }
+    } else {
+        if (length(col) == lmx & is.null(names(col))) {
+            names(col) <- modxVals
+        } else if (length(col) < lmx) {
+            stop("plotSlopes: wrong number of colors")
+        } else if (length(col) < length(modxLevels)) {
+            if (is.null(names(col))){
+                names(col) <- modxLevels[1:length(col)]
+            }
+            col <- rep(col, length.out = length(modxLevels))
+        }
+    }
+
+    if (length(llwd) < lmx) {
+        llwd <- rep(llwd, length.out = length(col))
+    }
+    names(llwd) <- names(col)
+
+    if (is.factor(modxVar)) {
+        lty <- seq_along(modxLevels)
+        names(lty) <- names(col)
+    } else {
+        lty <- seq_along(modxVals)
+        names(lty) <- names(col)
+    }
+
+
 
     parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
                   ylim = plotyRange, type = "n")
@@ -202,32 +233,32 @@ plotSlopes.lm <-
     sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 15, maxColorValue = 255)
 
 
-    lty <- seq_along(levels(modxVar))
-    names(lty) <- levels(modxVar)
-
-
     if (interval != "none") {
-        for (i in modxVals) {
-            j <- match(i, modxVals)
-            if(missing(modx) || is.null(modx)) {
+        for (j in modxVals) {
+            k <- match(j, modxVals)   ##integer index
+            if (is.factor(modxVar)) i <- j  ## level names
+            else i <- k  ## i integer
+
+            if (missing(modx) || is.null(modx)) {
                 pdat <- newdf
             } else {
-                pdat <- newdf[newdf[ , modx] %in% i, ]
+                pdat <- newdf[newdf[ , modx] %in% j, ]
             }
-            parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[j])
+            parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[i])
             parms <- modifyList(parms, dotargs)
-            parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[j]))
+            parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[k]))
             do.call("polygon", parms)
         }
     }
 
 
-
-    for (i in modxVals) {
+    for (j in modxVals) {
+        if (is.factor(modxVar)) i <- j  ## level names
+        else i <- match(j, modxVals)   ##integer index
         if(missing(modx) || is.null(modx)) {
             pdat <- newdf
         } else {
-            pdat <- newdf[newdf[ , modx] %in% i, ]
+            pdat <- newdf[newdf[ , modx] %in% j, ]
         }
         parms <- list(x = pdat[, plotx], y = pdat$fit, lty = lty[i])
         parms <- modifyList(parms, dotargs)
@@ -235,20 +266,36 @@ plotSlopes.lm <-
         do.call("lines", parms)
     }
 
-    if (plotPoints){
-        parms <- list(x = mm[modxVar %in% modxVals, plotx], y = depVar[modxVar %in% modxVals], xlab = plotx, ylab = ylab,
+
+    if (plotPoints) {
+        browser()
+        parms <- list(xlab = plotx, ylab = ylab,
                       cex = 0.6, lwd = 0.75)
-        if (exists("modxVar") && is.factor(modxVar)) {
-            parms[["col"]] <- col[as.numeric(modxVar[modxVar %in% modxVals])]
+        if (is.factor(modxVar)) {
+            parms[["col"]] <- col[as.vector(modxVar[modxVar %in% modxVals])]
+            parms[["x"]] <- mm[modxVar %in% modxVals, plotx]
+            parms[["y"]] <- depVar[modxVar %in% modxVals]
+        } else {
+            parms[["col"]] <- 1
+            parms[["x"]] <- mm[ , plotx]
+            parms[["y"]] <- depVar
         }
         parms <- modifyList(parms, dotargs)
         do.call("points", parms)
     }
+    browser()
+    if (plotLegend) {
+        if (is.factor(modxVar)){ ## level names
+            col <- col[as.vector(modxVals)]
+            lty <- lty[as.vector(modxVals)]
+            llwd <- llwd[as.vector(modxVals)]
+        } else {
+            col <- col[names(modxVals)]
+            lty <- lty[names(modxVals)]
+            llwd <- llwd[names(modxVals)]
 
-    if (plotLegend){
-        col <- col[modxVals]
-        lty <- lty[modxVals]
-        if (missing(modx) || is.null(modx)){
+        }
+        if (missing(modx) || is.null(modx)) {
             titl <- "Regression analysis"
             legnd <- c("Predicted values")
             if (interval != "none") {

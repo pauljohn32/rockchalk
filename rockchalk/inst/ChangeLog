@@ -1,3 +1,18 @@
+2013-05-04  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): color fix for user=specified
+	color matrices
+
+2013-05-03  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* examples/plotSlopes-ex.R: add prestige interaction at end.
+	Used dev.new(). hope that's not a violation.
+
+	* ../R/plotSlopes.R (plotSlopes.lm): Yet more battle to match
+	factor and numeric modx colors and line types.
+	TODO: llwd still problematic
+		fix plotCurves.R similarly
+
 2013-05-02  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/plotSlopes.R (plotSlopes.lm): frustrating problem with
