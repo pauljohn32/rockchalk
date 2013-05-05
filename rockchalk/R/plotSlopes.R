@@ -204,7 +204,7 @@ plotSlopes.lm <-
         }
     }
 
-    if (length(llwd) < lmx) {
+    if (length(llwd) < length(col)) {
         llwd <- rep(llwd, length.out = length(col))
     }
     names(llwd) <- names(col)
@@ -268,7 +268,6 @@ plotSlopes.lm <-
 
 
     if (plotPoints) {
-        browser()
         parms <- list(xlab = plotx, ylab = ylab,
                       cex = 0.6, lwd = 0.75)
         if (is.factor(modxVar)) {
@@ -283,7 +282,7 @@ plotSlopes.lm <-
         parms <- modifyList(parms, dotargs)
         do.call("points", parms)
     }
-    browser()
+
     if (plotLegend) {
         if (is.factor(modxVar)){ ## level names
             col <- col[as.vector(modxVals)]
