@@ -1,3 +1,8 @@
+2013-05-05  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): yet still more futzing about
+	with color matching of factor levels, points, lines, and regions.
+
 2013-05-04  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/plotSlopes.R (plotSlopes.lm): color fix for user=specified
