@@ -86,8 +86,10 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' either explicitly c("pink","black", "gray70") or implicitly,
 ##' rainbow(10) or gray.colors(5). Color names will be recycled if there
 ##' are more focal values of \code{modx} than colors provided.
-##' @param llwd Optional. Line widths for predicted values. Can be
+##' @param llwd Optional, default = 2. Line widths for predicted values. Can be
 ##' single value or a vector, which will be recycled as necessary.
+##' @param opacity Optional, default = 100. A number between 1 and 255. 1 means "transparent" or invisible, 255 means very dark.
+##' the darkness of confidence interval regions
 ##' @export
 ##' @method plotSlopes lm
 ##' @S3method plotSlopes lm
@@ -105,7 +107,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 plotSlopes.lm <-
   function (model, plotx, modx, n = 3, modxVals = NULL ,
             interval = c("none", "confidence", "prediction"),
-            plotPoints = TRUE, plotLegend = TRUE, col = 1, llwd = 2, ...)
+            plotPoints = TRUE, plotLegend = TRUE, col = 1, llwd = 2, opacity = 100, ...)
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
@@ -228,9 +230,9 @@ plotSlopes.lm <-
     ## iCol: rgb color matrix. Why does rgb insist the columns be
     iCol <- col2rgb(col)
     ### bCol: border color
-    bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 50, maxColorValue = 255)
+    bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity, maxColorValue = 255)
     ### sCol: shade color
-    sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = 15, maxColorValue = 255)
+    sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
 
 
     if (interval != "none") {
@@ -250,7 +252,6 @@ plotSlopes.lm <-
             do.call("polygon", parms)
         }
     }
-
 
     for (j in modxVals) {
         if (is.factor(modxVar)) i <- j  ## level names

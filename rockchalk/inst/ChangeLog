@@ -1,3 +1,7 @@
+2013-05-07  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): opacity new argument. 
+
 2013-05-06  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/meanCenter.R (std): noticed that meanCenter did not work
