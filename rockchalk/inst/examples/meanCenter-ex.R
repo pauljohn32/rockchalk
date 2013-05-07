@@ -58,8 +58,8 @@ dat$y2 <- drop(dat$y2)
 m4literal <- lm(y2 ~ x1 + I(x1*x1) + x2 + x3, data = dat)
 summary(m4literal)
 plotCurves(m4literal, plotx="x1")
-## Superficially, there is multicollinearity
-cor(model.matrix(m4literal))
+## Superficially, there is multicollinearity (omit the intercept)
+cor(model.matrix(m4literal)[ -1 , -1 ])
 
 m4literalmc <- meanCenter(m4literal, terms = "x1")
 summary(m4literalmc)

@@ -410,7 +410,7 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
         pargs <- list(model, newdata = nd, type = "response")
         pargs <-  modifyList(pargs, dots)
         fit <- do.call("predict", pargs)
-        fit <- predict(model, newdata = nd, type = "response", ...)
+        ##fit <- predict(model, newdata = nd, type = "response", ...)
         nd <- cbind(fit, nd)
         attr(nd, "flnames") <- flnames
     }

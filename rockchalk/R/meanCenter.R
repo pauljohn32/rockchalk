@@ -104,13 +104,17 @@ NULL
 
 ##' meanCenter selectively centers or standarizes variables in a regression model.
 ##'
-##' Mean-centering has often been recommended as a way to ameliorate
-##' multi-collinearity in regression models that include interaction
-##' terms (Aiken and West, 1991; Cohen, et al 2002). While this claim
-##' may have been mistaken (Echambadi and Hess, 2007), mean-centering
-##' is still widely practiced.  This function facilitates comparison
-##' of mean-centered models with others by automatically
-##' re-calculating centered variables.  The defaults will cause a
+##' Works with "lm" class objects, objects estimated by \code{glm()}. This
+##' centers some or all of the the predictors and then re-fits the
+##' original model with the new variables. This is a convenience to
+##' researchers who are often urged to center their predictors.  This
+##' is sometimes suggested as a way to ameliorate multi-collinearity
+##' in models that include interaction terms (Aiken and West, 1991;
+##' Cohen, et al 2002). Mean-centering may enhance interpretation of
+##' the regression intercept, but it actually does not help with
+##' multicollinearity.  (Echambadi and Hess, 2007). This function
+##' facilitates comparison of mean-centered models with others by
+##' calculating centered variables.  The defaults will cause a
 ##' regression's numeric interactive variables to be mean
 ##' centered. Variations on the arguments are discussed in details.
 ##'
@@ -157,7 +161,7 @@ NULL
 ##' @param centerOnlyInteractors Default TRUE. If FALSE, all numeric
 ##' predictors in the regression data frame are centered before the
 ##' regression is conducted.
-##' @param centerDV Default FALSE. Should the dependent variable be centered?
+##' @param centerDV Default FALSE. Should the dependent variable be centered? Do not set this option to TRUE unless the dependent variable is a numeric variable. Otherwise, it is an error.
 ##' @param standardize Default FALSE. Instead of simply mean-centering the variables, should they also be "standardized" by first mean-centering and then dividing by the estimated standard deviation.
 ##' @param terms Optional. A vector of variable names to be
 ##' centered. Supplying this argument will stop meanCenter from
@@ -199,7 +203,7 @@ meanCenter.default <-
         list(x = x, xmean = xmean, xsd = xsd)
     }
 
-   ## rdf <- get_all_vars(formula(model), model$model) #raw data frame
+    ## rdf <- get_all_vars(formula(model), model$model) #raw data frame
     rdf <- model.data(model)
     t <- terms(model)
     tl <- attr(t, "term.labels")
@@ -207,7 +211,9 @@ meanCenter.default <-
 
     isNumeric <- names(tmdc)[ which(tmdc %in% c("numeric"))]
     isFac <-  names(tmdc)[ which(tmdc %in% c("factor"))]
-    if (tmdc[1] != "numeric") stop("Sorry, DV not a single numeric column")
+
+    if (centerDV & tmdc[1] != "numeric")
+        stop("Sorry, the DV is not a numeric column, it does not make sense to center it.")
 
     ##Build "nc", a vector of variable names that "need centering"
     ##

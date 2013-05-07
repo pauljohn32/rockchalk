@@ -1,12 +1,14 @@
 
 ##' recode a factor by "combining" levels
 ##'
-##' If a factor variable is currently coded with levels
+##' This makes it easy to put levels together and create a new factor
+##' variable. If a
+##' factor variable is currently coded with levels
 ##' c("Male","Female","Man", "M"), and the user needs to combine the
-##' redundant levels for males, this is the function to use!
+##' redundant levels for males, this is the function to use!  This is a surprisingly difficult problem in R.
 ##'
 ##' If the factor is an ordinal factor, then levels may be combined
-##' only if they are adjacent. That is to say, a factor with levels
+##' only if they are adjacent. A factor with levels
 ##' c("Lo","Med","Hi","Extreme") allows us to combine responses "Lo"
 ##' and "Med", while it will NOT allow us to combine "Lo" with "Hi".
 ##'
@@ -46,17 +48,15 @@
 ##' addmargins(table(z2a, z, exclude = NULL))
 ##' z2b <- combineLevels(z, levs = c("A","B"), "AorB")
 ##' addmargins(table(z2b, z, exclude = NULL))
-##' ## Should fail:
-##' ## z2 <- combineLevels(z, levs=c("A","C"), "Whoops!")
+## Should fail:
+## z2 <- combineLevels(z, levs=c("A","C"), "Whoops!")
 ##'
-combineLevels <- function(fac, levs, newLabel){
+combineLevels <- function(fac, levs, newLabel = "combinedLevels"){
     ##internal fn to discern connected sequence
     adjacent <- function(x){
         xfull <- seq(min(x),max(x))
         identical(xfull, as.integer(x))
     }
-
-    if(missing(newLabel)) stop("newLabel is required for the newly combined observations")
 
     facl <- levels(fac)
     if (is.character(levs)){
@@ -68,9 +68,9 @@ combineLevels <- function(fac, levs, newLabel){
   }
 
     ##convert levs to numeric indices
-    if(is.character(levs)) {
+    if (is.character(levs)) {
         levsNum <- which( facl %in% levs )
-    }else{
+    } else {
         levsNum <- levs     ##levsNum: Numerical Positions
         levs <- facl[levs]  ##levs: NAMES
     }
@@ -78,21 +78,22 @@ combineLevels <- function(fac, levs, newLabel){
     ##for NOT ORDINAL factors, easy. Put new level on end
 
     if (! "ordered" %in% class(fac)){
-        faclnew  <- c(facl, newLabel)
-        facnew <- factor(fac, levels=faclnew)
-        facnew[ facnew %in% levs ] <- newLabel
-    }else{
+        faclnew  <- c(facl, "pjtempfacname")
+        facnew <- factor(fac, levels = faclnew)
+        facnew[ facnew %in% levs ] <- "pjtempfacname"
+    } else {
         if ("ordered" %in% class(fac)){  ## levels must be adjacent
             if (!adjacent(levsNum)) {
                 stop("fac is ordered. The levels to be combined must be adjacent")
             }
-            faclnew <- c(facl[1:min(levsNum)], newLabel, facl[(1+min(levsNum)):length(facl)])
+            faclnew <- c(facl[1:min(levsNum)], "pjtempfacname", facl[(1+min(levsNum)):length(facl)])
             facnew <- factor(fac, levels=faclnew)
-            facnew[ facnew %in% levs ] <- newLabel
+            facnew[ facnew %in% levs ] <- "pjtempfacname"
         }
     }
 
-    facnew <- facnew[ , drop=TRUE]
+    facnew <- facnew[ , drop = TRUE]
+    levels(facnew)[ levels(facnew) == "pjtempfacname" ] <- newLabel
     cat("The original levels", facl, "\nhave been replaced by", levels(facnew),"\n")
     facnew
 }
