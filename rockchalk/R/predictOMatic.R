@@ -468,6 +468,7 @@ NULL
 ##' @param level 0.95 or whatever confidence level one desires.
 ##' @param ...
 ##' @return c(fit, lwr, upr), and possibly more.
+##'
 predictCI <-
   function(object, newdata = NULL, type = c("response", "link"),
            interval = c("none", "confidence", "prediction"),
@@ -493,7 +494,7 @@ predictCI <-
             for glm in general. Try confidence intervals instead.")
         }
         ## scale = residual.scale in predict.glm
-        if (scale == null || scale == 0){
+        if (is.null(scale) || scale == 0){
             scale <- as.vector(sqrt(dispersion))
         }
     } else if (inherits(object, "lm")) {
