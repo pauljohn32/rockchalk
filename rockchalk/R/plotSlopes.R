@@ -122,9 +122,8 @@ plotSlopes.lm <-
     if (!is.numeric(plotxVar))
         stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
     ylab <- colnames(model$model)[1]
-    plotyRange <- magRange(depVar, mult = c(1, 1.2))
-    plotxRange <- range(mm[, plotx], na.rm = TRUE)
 
+    plotxRange <- range(mm[, plotx], na.rm = TRUE)
     plotxVals <- plotSeq(plotxRange, length.out = 40)
 
     ## Create focalVals object, needed by newdata
@@ -159,14 +158,22 @@ plotSlopes.lm <-
 
     newdf <- newdata(model, fl = focalVals)
 
-    if (interval != "none") {
-        np <- predict(model, newdata = newdf, interval = interval)
-        newdf <- cbind(newdf, np)
-    } else {
-        newdf$fit <- predict(model, newdata = newdf)
-    }
 
     dotargs <- list(...)
+    dotnames <- names(dotargs)
+    ## scan dotargs for predict keywords. Remove from dotargs
+    ## the ones we only want going to predict. Leave
+    ## others.
+
+    parms <- list(model, newdata = newdf, type = "response" , interval = interval)
+    predArgs <- list()
+    validForPredict <- c("type", "se.fit", "dispersion", "terms", "na.action")
+    dotsForPredict <- dotnames[dotnames %in% validForPredict]
+
+    if (any(dotsForPredict)) parms <- modifyList(parms, dotargs[[dotsForPredict]])
+
+    np <- do.call("predictCI", parms)
+    newdf <- cbind(newdf, np$fit)
 
     ## Now begin the plotting work.
     if (missing(modx) || is.null(modx)) {
@@ -220,6 +227,11 @@ plotSlopes.lm <-
     }
 
 
+    plotyRange <- if(is.numeric(depVar)){
+        magRange(depVar, mult = c(1, 1.2))
+    } else {
+        stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
+    }
 
     parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
                   ylim = plotyRange, type = "n")
@@ -319,3 +331,6 @@ plotSlopes.lm <-
 
     invisible(z)
 }
+
+
+

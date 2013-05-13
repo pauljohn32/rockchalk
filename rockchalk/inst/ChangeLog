@@ -1,3 +1,18 @@
+2013-05-12  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): try to grab the
+	predict-intended arguments out of the dotargs.
+	* Use predictCI to calculate predictions.
+
+	* ../R/predictOMatic.R (predictOMatic): predictCI new function
+	tries to give c(fit, lwr, upr) for lm and glm. Maybe others.
+	* tie that into predictOMatic, so interval can be returned.
+	* tie that into plotSlopes, so glm interval can be plotted.
+
+2013-05-09  pauljohn  <pauljohn@debian.sunflower.com>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): predict and dotargs.
+
 2013-05-07  pauljohn  <pauljohn@debian.sunflower.com>
 
 	* ../R/plotSlopes.R (plotSlopes.lm): opacity new argument. 

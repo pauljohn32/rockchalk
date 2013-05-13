@@ -355,6 +355,16 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
     dots <- list(...)
     dotnames <- names(dots)
 
+    interval <- "none"
+    if (!is.null(dots[["interval"]])){
+        interval <- dots[["interval"]]
+        dots[["interval"]] <- NULL
+    }
+    ## 2013-05-12 TODO, or FIXME 1) no smarter way than previous? 2) Why not trust
+    ## modifyList below to do the work for us. 3) Why did I only
+    ## attend to "interval" 4) will any of the other predict arguments
+    ## cause trouble??
+
     ## 2013-04-18: What magic was I planning with dots here? Can't recall :(
     ##  ## next should give c('digits', 'alphaSort')
     ##  nnames <- names(formals(rockchalk::summarizeNumerics))[-1L]
@@ -365,58 +375,170 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
     varNamesRHS <- attr(emf, "varNamesRHS")
 
     ##2013-04-18. Considering changing user interface
-    ## if(length(n) < length(fl)) n <- rep(n, length.out = length(fl))
-    ## if(length(divider) < length(fl)) divider <- rep(divider, length.out = length(fl)
+    ## if(length(n) < length(predVals)) n <- rep(n, length.out = length(predVals))
+    ## if(length(divider) < length(predVals)) divider <- rep(divider, length.out = length(predVals)
 
-    if (is.null(fl)){
+    if (is.null(predVals)){
         flxxx <- list()
         nd <- lapply (varNamesRHS, function(x) {
             flxxx[[x]]  <- focalVals(emf[ ,x], divider, n)
-            ndnew <- newdata(model, fl = flxxx[x], emf = emf)
+            ndnew <- newdata(model, predVals = flxxx[x], emf = emf)
             row.names(ndnew) <- names(flxxx[[x]])
-            pargs <- list(model, newdata = ndnew, type = "response")
+            pargs <- list(model, newdata = ndnew, type = "response", interval = interval)
             pargs <-  modifyList(pargs, dots)
-            fit <- do.call("predict", pargs)
+            ## fit <- do.call("predict", pargs)
             ## fit <- predict(model, newdata = ndnew, type = "response", ...)
+            fit <-  do.call("predictCI", pargs)
             ndnew <- cbind(fit, ndnew)
             ndnew
         })
         attr(nd, "flnames") <- varNamesRHS
         names(nd) <- varNamesRHS
     } else {
-        if (!is.list(fl) & is.vector(fl)) {
-            if (is.null(names(fl))){ ##no names
-                flnames <- fl
-                fl <- lapply(flnames, function(x) "default")
-                names(fl) <- flnames
+        if (!is.list(predVals) & is.vector(predVals)) {
+            if (is.null(names(predVals))){ ##no names
+                flnames <- predVals
+                predVals <- lapply(flnames, function(x) "default")
+                names(predVals) <- flnames
             } else {  ## names and options
-                fl <- as.list(fl)
+                predVals <- as.list(predVals)
             }
         }
-        flnames <- names(fl)
+        flnames <- names(predVals)
         if (any(! flnames %in% varNamesRHS))
-            stop(paste("Sorry, predictOMatic won't work. \nYou cannot put variables in predVals unless you fit them in the model first. \nFor this model, the only legal values would be, ", varNamesRHS))
+            stop(paste("Sorry, predictOMatic won't work. \nYou cannot put variables in predVals unless you fit them in the model. \nFor this model, the only legal values would be, ", paste(varNamesRHS, collapse = " "), "\n"))
 
         for(x in flnames) {
-            if (is.character(fl[[x]]) && length(fl[[x]]) == 1)
-                if (fl[[x]] == "default") {
-                    fl[[x]] <- focalVals(emf[ ,x], divider, n)
-                } else if (is.function(fl[[x]]) | fl[[x]] %in% c("quantile", "std.dev.","table", "seq")){
-                    fl[[x]] <- focalVals(emf[ ,x],  divider = fl[[x]], n)
+            if (is.character(predVals[[x]]) && length(predVals[[x]]) == 1)
+                if (predVals[[x]] == "default") {
+                    predVals[[x]] <- focalVals(emf[ ,x], divider, n)
+                } else if (is.function(predVals[[x]]) | predVals[[x]] %in% c("quantile", "std.dev.","table", "seq")){
+                    predVals[[x]] <- focalVals(emf[ ,x],  divider = predVals[[x]], n)
                 }
         }
 
-        nd <- newdata(model, fl, emf = emf)
-        pargs <- list(model, newdata = nd, type = "response")
+        nd <- newdata(model, predVals, emf = emf)
+        pargs <- list(model, newdata = nd, type = "response", interval = interval)
         pargs <-  modifyList(pargs, dots)
-        fit <- do.call("predict", pargs)
-        ##fit <- predict(model, newdata = nd, type = "response", ...)
+
+        fit <-  do.call("predictCI", pargs)
         nd <- cbind(fit, nd)
         attr(nd, "flnames") <- flnames
     }
     nd
 }
 NULL
+
+
+
+##' Calculate a matrix (fit, lwr, upr) for a regression, either lm or glm,
+##' on either link or response scale.
+##'
+##' This adapts code from predict.glm and predict.lm. I eliminated
+##' type = "terms" from consideration.
+##'
+##' This is necessary because predict.glm does not have an interval
+##' argument. There are about 50 methods to calculate CIs for
+##' predicted values of GLMs, that's a major worry. I don't want to
+##' simulate them, that seems brutish.  This function takes the
+##' simplest route, calculating the (fit, lwr, upr) in the linear
+##' predictor scale, and then if type= "response", those 3 columns are
+##' put through linkinv().  This is the same method that SAS manuals
+##' suggest they use, same as Ben Bolker suggests in r-help (2010).
+##' I'd rather use one of the fancty tools like Edgeworth expansion,
+##' but that R code is not forthcoming (but is promised).
+##'
+##' Use predict.lm with se.fit = TRUE to calculate fit and se.fit.
+##' Then calculate lwr and upr as fit +/- tval * se.fit. If model is
+##' lm, the model df.residual will be used to get tval. If glm, this
+##' is a normal approximation, so we thugishly assert tval = 1.98.
+##'
+##' There's some term translation that's confusing.
+##' For lm, residual.scale = sigma. For glm, residual.scale = sqrt(dispersion)
+##'
+##' @param object Regression object, class must include glm or lm.
+##' @param newdata Data frame including focal values for predictors
+##' @param type One of c("response", "link"), defaults to former.
+##' @param interval One of c("none", "confidence",
+##' "prediction"). "prediction" is defined only for lm objects, not
+##' for glm.
+##' @param dispersion Will be estimated if not provided. The variance coefficient of the glm, same as scale squared. Dispersion is allowed as an argument in predict.glm.
+##' @param scale  The square root of dispersion. In an lm, this is the RMSE, called sigma in summary.lm.
+##' @param na.action
+##' @param level 0.95 or whatever confidence level one desires.
+##' @param ...
+##' @return c(fit, lwr, upr), and possibly more.
+predictCI <-
+  function(object, newdata = NULL, type = c("response", "link"),
+           interval = c("none", "confidence", "prediction"),
+           dispersion = NULL, scale = NULL,
+           na.action = na.pass, level = .95, ...)
+{
+    interval <- match.arg(interval)
+    type <- match.arg(type)
+    na.act <- object$na.action
+    object$na.action <- NULL
+
+    ## summary.survreg has no ... argument.
+    if(inherits(object, "survreg")) dispersion <- 1.
+
+
+    if (inherits(object, "glm")) {
+        if (is.null(dispersion) || dispersion == 0){
+            dispersion <- summary(object, dispersion=dispersion)$dispersion
+        }
+
+        if (interval == "prediction"){
+            stop("rockchalk::predictCI, prediction intervals not defined
+            for glm in general. Try confidence intervals instead.")
+        }
+        ## scale = residual.scale in predict.glm
+        if (scale == null || scale == 0){
+            scale <- as.vector(sqrt(dispersion))
+        }
+    } else if (inherits(object, "lm")) {
+        if (is.null(scale) || scale == 0){
+            scale <- summary(object)$sigma
+        }
+    } else {
+        stop("rockchalk:::predictCI. Your model is neither glm nor lm. \n.
+           We can't handle a regression object that is neither lm nor glm.\n")
+    }
+    ## set se.fit = TRUE always, even if user doesn't want it.
+    ## make them have it!
+    pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
+                       type = "response", na.action = na.action)
+
+    ## pred insides, at least:
+    ## pred$fit      on linear predictor (==link) scale
+    ## pred$se.fit   on linear predictor (==link) scale
+
+    ## glm: use normal approximation. Calculate fit +/- on link scale first
+    ## lm: use Wald-type CI with correct t value
+    if (inherits(object, "glm")) {
+        fit <- cbind(fit = pred$fit,
+                     lwr = pred$fit - 1.96 * pred$se.fit,
+                     upr = pred$fit + 1.96 * pred$se.fit)
+    } else if (inherits(object, "lm")) {
+        tval <- qt((1 - level)/2, lower.tail = FALSE, object$df.residual)
+        fit <- cbind(fit = pred$fit,
+                     lwr = pred$fit - tval * pred$se.fit,
+                     upr = pred$fit + tval * pred$se.fit)
+    } else {
+        stop("rockchalk:::predictCI. Your model is neither glm nor lm. \n
+           I can't figure how this function got this far. \n
+           It should have aborted before this point.\n")
+    }
+    ## following does nothing to lm output, but does invert glm
+    if (type == "response") fit <- family(object)$linkinv(fit)
+
+    if(missing(newdata) && !is.null(na.act)) {
+        fit <- napredict(na.act, fit)
+        se.fit <- napredict(na.act, pred$se.fit)
+    }
+    pred <- list(fit = fit, se.fit = pred$se.fit, residual.scale = scale)
+}
+
 
 
 ## ## Other approaches I've wrestled with for model.data
