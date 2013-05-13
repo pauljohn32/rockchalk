@@ -389,7 +389,7 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
             ## fit <- do.call("predict", pargs)
             ## fit <- predict(model, newdata = ndnew, type = "response", ...)
             fit <-  do.call("predictCI", pargs)
-            ndnew <- cbind(fit, ndnew)
+            ndnew <- cbind(fit$fit, fit$se.fit, fit$residual.scale, ndnew)
             ndnew
         })
         attr(nd, "flnames") <- varNamesRHS
@@ -422,7 +422,7 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
         pargs <-  modifyList(pargs, dots)
 
         fit <-  do.call("predictCI", pargs)
-        nd <- cbind(fit, nd)
+        nd <- cbind(fit$fit, fit$se.fit, fit$residual.scale, nd)
         attr(nd, "flnames") <- flnames
     }
     nd
