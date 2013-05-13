@@ -161,11 +161,12 @@ model.data <- function(model){
     env <- environment(fmla)
     if (is.null(env))
         env <- parent.frame()
+    if (is.null(model$call$data)) stop("rockchalk:::model.data. \nPlease refit your regression model using the \ndata argument. Otherwise, I don't know how to re-construct the data structure.\n")
 
     dataOrig <-  eval(model$call$data, environment(formula(model)))
     dataOrigRN <- row.names(dataOrig)
     n <- sapply(varNames, lenVar, data = dataOrig)
-    targetLength <- length(eval(as.name(varNamesLHS[1]), dataOrig, env))
+    targetLength <- length(eval(as.name(varNamesRHS[1]), dataOrig, env))
     varNames <- varNames[n == targetLength]
     ldata <- lapply(varNames, function(x) {
         myv <- eval(as.name(x), dataOrig, env)

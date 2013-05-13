@@ -1,5 +1,24 @@
 library(rockchalk)
 
+## Replicate some R classics.  The budworm.lg data from predict.glm
+## will work properly after re-formatting the information as a data.frame:
+
+## example from Venables and Ripley (2002, pp. 190-2.)
+df <- data.frame(ldose = rep(0:5, 2),
+     numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16),
+     sex = factor(rep(c("M", "F"), c(6, 6))),
+     SF = cbind(numdead, numalive = 20-numdead))
+
+budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family = binomial)
+
+predictOMatic(budworm.lg)
+
+predictOMatic(budworm.lg, n = 7)
+
+predictOMatic(budworm.lg, predVals = list(ldose = "quantile", sex = "M"), divider = "std.dev.")
+
+## Now make up a data frame with several numeric and categorical predictors.
+
 set.seed(12345)
 N <- 100
 x1 <- rpois(N, l=6)
@@ -9,14 +28,11 @@ xcat1 <- gl(2,50, labels=c("M","F"))
 xcat2 <- cut(rnorm(N), breaks=c(-Inf, 0, 0.4, 0.9, 1, Inf), labels=c("R", "M", "D", "P", "G"))
 dat <- data.frame(x1, x2, x3, xcat1, xcat2)
 rm(x1, x2, x3, xcat1, xcat2)
-xcat1n <- with(dat, contrasts(xcat1)[xcat1, ,drop=FALSE])
-xcat2n <- with(dat, contrasts(xcat2)[xcat2, ])
+dat$xcat1n <- with(dat, contrasts(xcat1)[xcat1, ,drop=FALSE])
+dat$xcat2n <- with(dat, contrasts(xcat2)[xcat2, ])
 STDE <- 15
-dat$y <- 0.03 + 0.8*dat$x1 + 0.1*dat$x2 + 0.7*dat$x3 + xcat1n %*% c(2) + xcat2n %*% c(0.1,-2,0.3, 0.1) + STDE*rnorm(N)
-rownames(dat$y) <- NULL
-## rownames of dat$y don't match rownames of dat. Humphf.
-## I've not seen that problem before
-
+dat$y <- with(dat, 0.03 + 0.8*x1 + 0.1*x2 + 0.7*x3 + xcat1n %*% c(2) + xcat2n %*% c(0.1,-2,0.3, 0.1) + STDE*rnorm(N))
+## Impose some random missings
 dat$x1[sample(N, 5)] <- NA
 dat$x2[sample(N, 5)] <- NA
 dat$x3[sample(N, 5)] <- NA
