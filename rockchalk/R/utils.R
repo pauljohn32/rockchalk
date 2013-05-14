@@ -96,9 +96,9 @@ NULL
 ##' this will send the data to \code{cutByTable}.  The default return
 ##' will find dividing points at three quantiles: c(0.25, 0.50, 0.75)
 ##' If n=4, the dividing points will be c(0.20, 0.40, 0.60, 0.80) If
-##' n=5, c(0.10, 0.30, 0.50, 0.70, 0.90) Larger n that are odd will
-##' include 0.5 and evenly spaced points out to percentiles 0 and
-##' 100. Larger n that is even will return evenly spaced points
+##' n=5, c(0.0, 0.25, 0.50, 0.75, 1.0) Larger n that are odd will
+##' include 0.5 and evenly spaced points out to proportions 0 and
+##' 1.0. Larger n that is even will return evenly spaced points
 ##' calculated by R's \code{pretty} function.
 ##' @param x A numeric vector.
 ##' @param n The number of quantile points. See details.
@@ -123,7 +123,7 @@ cutByQuantile <-
         } else if(n == 4) {
             c(0.20, 0.40, 0.60, 0.80)
         } else if(n == 5) {
-            c(0.10, 0.30, 0.50, 0.70, 0.90)
+            c(0.00, 0.25, 0.50, 0.75, 1.0)
         } else if (n > 5) {
             if (n %% 2 == 0) {
                 g <- 0.5 / n %/% 2
@@ -212,7 +212,7 @@ NULL
 ##' Select focal values from a numeric variable
 ##'
 ##' getFocal.default
-##' 
+##'
 ##' @param x Required. A variable
 ##' @param xvals If \code{xvals} is not provided, a default divider
 ##' algorithm will be selected ("quantile"). The divider algorithms

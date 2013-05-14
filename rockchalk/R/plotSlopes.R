@@ -159,7 +159,7 @@ plotSlopes.lm <-
         names(focalVals) <- c(modx, plotx)
     }
 
-    newdf <- newdata(model, fl = focalVals)
+    newdf <- newdata(model, predVals = focalVals)
 
     dotargs <- list(...)
     dotnames <- names(dotargs)

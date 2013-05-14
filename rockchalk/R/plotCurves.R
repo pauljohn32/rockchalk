@@ -114,7 +114,7 @@ plotCurves <-
         names(focalVals) <- c(modx, plotx)
     }
 
-    newdf <- newdata(model, fl = focalVals, emf = emf)
+    newdf <- newdata(model, predVals = focalVals, emf = emf)
 
     if (interval != "none") {
         np <- predict(model, newdata = newdf, interval = interval)

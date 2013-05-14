@@ -53,16 +53,16 @@ summary(m0)
 m0.data <- model.data(m0)
 summarize(m0.data)
 
-## no fl: analyzes each variable separately
+## no predVals: analyzes each variable separately
 (m0.p1 <- predictOMatic(m0))
 
 ## requests confidence intervals from the predict function
 (m0.p2 <- predictOMatic(m0, interval = "confidence"))
 
-## fl as vector of variable names: gives "mix and match" predictions
+## predVals as vector of variable names: gives "mix and match" predictions
 (m0.p3 <- predictOMatic(m0, predVals = c("x1", "x2")))
 
-## fl as vector of variable names: gives "mix and match" predictions
+## predVals as vector of variable names: gives "mix and match" predictions
 (m0.p3s <- predictOMatic(m0, predVals = c("x1", "x2"), divider = "std.dev."))
 
 ## "seq" is an evenly spaced sequence across the predictor.

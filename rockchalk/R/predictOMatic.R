@@ -26,8 +26,7 @@
 ##' then generates a new data frame.  The argument \code{predVals}
 ##' (predictor values) is very important. It determines which
 ##' variables are selected for more careful inspection. This argument
-##' was called "fl" in previous editions of rockchalk, and that name
-##' still works as well. See details.
+##' was called \code{"fl"} in previous editions of rockchalks.
 ##'
 ##' This is used by several rockchalk functions, including plotSlopes,
 ##' plotCurves, and predictOMatic.  However, I have found many
@@ -66,7 +65,6 @@
 ##' variable names, a vector that names variables and divider
 ##' algorithms, or a full list that supplies variables and possible
 ##' values. Please see details and examples.
-##' @param fl focus list, now called x predVals. This is deprecated.
 ##' @param n Optional. Default = 3. How many focal values are desired?
 ##' This value is used when various divider algorithms are put to use
 ##' if the user has specified keywords "default", "quantile", "std.dev."
@@ -85,7 +83,7 @@
 ##' @export
 ##' @seealso \code{predictOMatic}
 ##' @example inst/examples/predictOMatic-ex.R
-newdata <- function (model = NULL, predVals = NULL, fl = predVals, emf = NULL, n = 3, divider = "quantile"){
+newdata <- function (model = NULL, predVals = NULL, emf = NULL, n = 3, divider = "quantile"){
     if (is.null(emf)) emf <- model.data(model = model)
     divider <- match.arg(tolower(divider),
                          c("quantile", "std.dev.","table","seq"))
@@ -150,7 +148,7 @@ NULL
 ##' @example inst/examples/model.data-ex.R
 model.data <- function(model){
     ## from nls, returns -1 for missing variables
-    lenVar <- function(var, data) tryCatch(length(eval(as.name(var),
+    lenVar <- function(var, data) tryCatch(NROW(eval(as.name(var),
                          data, env)), error = function(e) -1)
     fmla <- formula(model)
     varNames <- all.vars(fmla) ## all variable names
@@ -161,28 +159,45 @@ model.data <- function(model){
     env <- environment(fmla)
     if (is.null(env))
         env <- parent.frame()
-    if (is.null(model$call$data)) stop("rockchalk:::model.data. \nPlease refit your regression model using the \ndata argument. Otherwise, I don't know how to re-construct the data structure.\n")
 
-    dataOrig <-  eval(model$call$data, environment(formula(model)))
+    dataOrig <-  eval(model$call$data, env)
+    if (is.null(dataOrig)) dataOrig <- model.frame(model, na.action = na.pass)
+
     dataOrigRN <- row.names(dataOrig)
     n <- sapply(varNames, lenVar, data = dataOrig)
-    targetLength <- length(eval(as.name(varNamesRHS[1]), dataOrig, env))
+
+    targetLength <- max(n) ## suppose the longest-length is the number
+    ## of rows in input data, before missings removed.
+
     varNames <- varNames[n == targetLength]
-    ldata <- lapply(varNames, function(x) {
-        myv <- eval(as.name(x), dataOrig, env)
-        row.names(myv) <- NULL
-        myv
-    }
-                    )
-    names(ldata) <- varNames
-    data <- data.frame(ldata[varNames])
-    if (!is.null(dataOrigRN)) row.names(data) <- dataOrigRN
+
+    varNamesRHS <- varNamesRHS[varNamesRHS %in% varNames]
+    varNamesLHS <- varNamesLHS[varNamesLHS %in% varNames]
+
+
+#    ldata <- lapply(varNames, function(x) {
+#        myv <- eval(as.name(x), dataOrig, env)
+#        row.names(myv) <- NULL
+#        myv
+#    }
+#                    )
+#    names(ldata) <- varNames
+#    data <- data.frame(ldata[varNames])
+#    if (!is.null(dataOrigRN)) row.names(data) <- dataOrigRN
+
+    mylhs <- eval(varNamesLHS)
+    myrhs <- eval(paste(varNamesRHS, collapse = " + "))
+    myfmla <- as.formula(paste(mylhs, " ~", myrhs), env = environment(formula(model)))
+    data <- model.frame(myfmla, dataOrig)
+
+
     ## remove rows listed in model's na.action
-    ## TODO: question: what else besides OMIT might be called for?
-    if ( !is.null(model$na.action)){
-        data <- data[ -as.vector(model$na.action), , drop = FALSE]
-    }
-    ## keep varNamesRHS that exist in datOrig
+    ## TODO: double check. Following not needed because model.frame does it
+    ##if (!is.null(model$na.action)){
+    ##     data <- data[ -as.vector(model$na.action), , drop = FALSE]
+    ##}
+
+    ## keep varNamesRHS
     attr(data, "varNamesRHS") <- setdiff(colnames(data), varNamesLHS)
     invisible(data)
 }
@@ -352,7 +367,9 @@ NULL
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/predictOMatic-ex.R
-predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n = 5, fl = predVals, ...) {
+predictOMatic <-
+    function(model = NULL, predVals = NULL, divider = "quantile", n = 5, ...)
+{
     dots <- list(...)
     dotnames <- names(dots)
 
@@ -361,10 +378,10 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
         interval <- dots[["interval"]]
         dots[["interval"]] <- NULL
     }
-    ## 2013-05-12 TODO, or FIXME 1) no smarter way than previous? 2) Why not trust
-    ## modifyList below to do the work for us. 3) Why did I only
-    ## attend to "interval" 4) will any of the other predict arguments
-    ## cause trouble??
+    ## 2013-05-12 TODO, or FIXME 1) no smarter way than previous?  2)
+    ## Why not trust modifyList below to do the work for us. 3) Why
+    ## did I only attend to "interval" 4) will any of the other
+    ## predict arguments cause trouble??
 
     ## 2013-04-18: What magic was I planning with dots here? Can't recall :(
     ##  ## next should give c('digits', 'alphaSort')
@@ -390,26 +407,28 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
             ## fit <- do.call("predict", pargs)
             ## fit <- predict(model, newdata = ndnew, type = "response", ...)
             fit <-  do.call("predictCI", pargs)
-            ndnew <- cbind(fit$fit, fit$se.fit, fit$residual.scale, ndnew)
+            ndnew <- cbind(fit$fit, fit$se.fit, ndnew)
+            attr(ndnew, "residual.scale") <- fit$residual.scale
             ndnew
         })
-        attr(nd, "flnames") <- varNamesRHS
+        attr(nd, "pnames") <- varNamesRHS
+
         names(nd) <- varNamesRHS
     } else {
         if (!is.list(predVals) & is.vector(predVals)) {
             if (is.null(names(predVals))){ ##no names
-                flnames <- predVals
-                predVals <- lapply(flnames, function(x) "default")
-                names(predVals) <- flnames
+                pnames <- predVals
+                predVals <- lapply(pnames, function(x) "default")
+                names(predVals) <- pnames
             } else {  ## names and options
                 predVals <- as.list(predVals)
             }
         }
-        flnames <- names(predVals)
-        if (any(! flnames %in% varNamesRHS))
+        pnames <- names(predVals)
+        if (any(! pnames %in% varNamesRHS))
             stop(paste("Sorry, predictOMatic won't work. \nYou cannot put variables in predVals unless you fit them in the model. \nFor this model, the only legal values would be, ", paste(varNamesRHS, collapse = " "), "\n"))
 
-        for(x in flnames) {
+        for(x in pnames) {
             if (is.character(predVals[[x]]) && length(predVals[[x]]) == 1)
                 if (predVals[[x]] == "default") {
                     predVals[[x]] <- focalVals(emf[ ,x], divider, n)
@@ -423,8 +442,9 @@ predictOMatic <- function(model = NULL, predVals = NULL, divider = "quantile", n
         pargs <-  modifyList(pargs, dots)
 
         fit <-  do.call("predictCI", pargs)
-        nd <- cbind(fit$fit, fit$se.fit, fit$residual.scale, nd)
-        attr(nd, "flnames") <- flnames
+        nd <- cbind(fit$fit, nd, se.fit = fit$se.fit)
+        attr(nd, "residual.scale") <- fit$residual.scale
+        attr(nd, "pnames") <- pnames
     }
     nd
 }
@@ -432,30 +452,31 @@ NULL
 
 
 
-##' Calculate a matrix (fit, lwr, upr) for a regression, either lm or glm,
-##' on either link or response scale.
+##' Calculate a predicted value matrix (fit, lwr, upr) for a
+##' regression, either lm or glm, on either link or response scale.
 ##'
 ##' This adapts code from predict.glm and predict.lm. I eliminated
 ##' type = "terms" from consideration.
 ##'
-##' This is necessary because predict.glm does not have an interval
-##' argument. There are about 50 methods to calculate CIs for
-##' predicted values of GLMs, that's a major worry. I don't want to
-##' simulate them, that seems brutish.  This function takes the
-##' simplest route, calculating the (fit, lwr, upr) in the linear
-##' predictor scale, and then if type= "response", those 3 columns are
-##' put through linkinv().  This is the same method that SAS manuals
-##' suggest they use, same as Ben Bolker suggests in r-help (2010).
-##' I'd rather use one of the fancty tools like Edgeworth expansion,
-##' but that R code is not forthcoming (but is promised).
+##' R's predict.glm does not have an interval argument. There are
+##' about 50 methods to calculate CIs for predicted values of GLMs,
+##' that's a major worry. I don't want to simulate them, that seems
+##' brutish.  This function takes the simplest route, calculating the
+##' (fit, lwr, upr) in the linear predictor scale, and then if type=
+##' "response", those 3 columns are put through linkinv().  This is
+##' the same method that SAS manuals suggest they use, same as Ben
+##' Bolker suggests in r-help (2010).  I'd rather use one of the
+##' fancy tools like Edgeworth expansion, but that R code is not
+##' available (but is promised).
 ##'
 ##' Use predict.lm with se.fit = TRUE to calculate fit and se.fit.
 ##' Then calculate lwr and upr as fit +/- tval * se.fit. If model is
 ##' lm, the model df.residual will be used to get tval. If glm, this
 ##' is a normal approximation, so we thugishly assert tval = 1.98.
 ##'
-##' There's some term translation that's confusing.
-##' For lm, residual.scale = sigma. For glm, residual.scale = sqrt(dispersion)
+##' There's some confusing term translation. I wish R lm and glm would
+##' be brought into line. For lm, residual.scale = sigma. For glm,
+##' residual.scale = sqrt(dispersion)
 ##'
 ##' @param object Regression object, class must include glm or lm.
 ##' @param newdata Data frame including focal values for predictors
@@ -596,3 +617,44 @@ predictCI <-
 ## }
 
 
+## This is what I was using until rockchalk-1.7.6.0
+
+## model.data <- function(model){
+##     ## from nls, returns -1 for missing variables
+##     lenVar <- function(var, data) tryCatch(length(eval(as.name(var),
+##                          data, env)), error = function(e) -1)
+##     fmla <- formula(model)
+##     varNames <- all.vars(fmla) ## all variable names
+##     fmla2 <- fmla
+##     fmla2[[2L]] <- 0
+##     varNamesRHS <- all.vars(fmla2)
+##     varNamesLHS <- setdiff(varNames, varNamesRHS)
+##     env <- environment(fmla)
+##     if (is.null(env))
+##         env <- parent.frame()
+##     if (is.null(model$call$data)) stop("rockchalk:::model.data. \nPlease refit your regression model using the \ndata argument. Otherwise, I don't know how to re-construct the data structure.\n")
+##     dataOrig <-  eval(model$call$data, environment(formula(model)))
+##     dataOrigRN <- row.names(dataOrig)
+##     n <- sapply(varNames, lenVar, data = dataOrig)
+##     targetLength <- length(eval(as.name(varNamesRHS[1]), dataOrig, env))
+##     varNames <- varNames[n == targetLength]
+##     ldata <- lapply(varNames, function(x) {
+##         myv <- eval(as.name(x), dataOrig, env)
+##         row.names(myv) <- NULL
+##         myv
+##     }
+##                     )
+
+##         names(ldata) <- varNames
+##     data <- data.frame(ldata[varNames])
+##     if (!is.null(dataOrigRN)) row.names(data) <- dataOrigRN
+##     ## remove rows listed in model's na.action
+##     ## TODO: question: what else besides OMIT might be called for?
+##     if ( !is.null(model$na.action)){
+##         data <- data[ -as.vector(model$na.action), , drop = FALSE]
+##     }
+##     ## keep varNamesRHS that exist in datOrig
+##     attr(data, "varNamesRHS") <- setdiff(colnames(data), varNamesLHS)
+##     invisible(data)
+## }
+## NULL
