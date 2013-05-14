@@ -93,38 +93,38 @@ newdata <- function (model = NULL, predVals = NULL, fl = predVals, emf = NULL, n
     varNamesRHS <- attr(emf, "varNamesRHS")
     emf <- emf[ , varNamesRHS, drop = FALSE]
     modelcv <- centralValues(emf)
-    if (is.null(fl)) return(modelcv)
+    if (is.null(predVals)) return(modelcv)
 
-    ## if fl is a vector with no names, create fl, a list with fl's values as names
-    ## if fl is a vector with names, create fl, a list
-    if(!is.list(fl)){
-        flnames <- names(fl)
+    ## if predVals is a vector with no names, create predVals, a list with predVals's values as names
+    ## if predVals is a vector with names, create predVals, a list
+    if(!is.list(predVals)){
+        flnames <- names(predVals)
         if (is.null(flnames)){
-            flnames <- fl
-            fl <- vector("list", length = length(flnames))
-            names(fl) <- flnames
+            flnames <- predVals
+            predVals <- vector("list", length = length(flnames))
+            names(predVals) <- flnames
         } else {
-            fl <- as.list(fl)
+            predVals <- as.list(predVals)
         }
     }
 
-    if (sum(!names(fl) %in% varNamesRHS) > 0) stop(cat(c("Error. The focus list:  predVals requests variables that are not included in the original model. The names of the variables in the focus list be drawn from this list: ",  varNamesRHS, "\n")))
-    ## TODO: Consider "padding" range of fl for numeric variables so that we
+    if (sum(!names(predVals) %in% varNamesRHS) > 0) stop(cat(c("Error. The focus list:  predVals requests variables that are not included in the original model. The names of the variables in the focus list be drawn from this list: ",  varNamesRHS, "\n")))
+    ## TODO: Consider "padding" range of predVals for numeric variables so that we
     ## get newdata objects including the min and max values.
-    flnames <- names(fl)
+    flnames <- names(predVals)
 
     for(x in flnames) {
-        if (is.null(fl[[x]])){
-            fl[[x]] <- focalVals(emf[ ,x], divider, n)
-        } else if (length(fl[[x]]) == 1)
-            if (is.character(fl[[x]]) & (fl[[x]] == "default")) {
-                fl[[x]] <- focalVals(emf[ ,x], divider, n)
-            } else if (is.character(fl[[x]]) & (fl[[x]] %in% c("quantile", "std.dev.", "table", "seq"))){
-            fl[[x]] <- focalVals( emf[ ,x],  divider = fl[[x]], n)
+        if (is.null(predVals[[x]])){
+            predVals[[x]] <- focalVals(emf[ ,x], divider, n)
+        } else if (length(predVals[[x]]) == 1)
+            if (is.character(predVals[[x]]) & (predVals[[x]] == "default")) {
+                predVals[[x]] <- focalVals(emf[ ,x], divider, n)
+            } else if (is.character(predVals[[x]]) & (predVals[[x]] %in% c("quantile", "std.dev.", "table", "seq"))){
+            predVals[[x]] <- focalVals( emf[ ,x],  divider = predVals[[x]], n)
         }
     }
 
-    mixAndMatch <- expand.grid(fl)
+    mixAndMatch <- expand.grid(predVals)
     ## TODO: Its OK to select columns this way, but no better way add names?
     unames <- colnames(modelcv)[!colnames(modelcv) %in% colnames(mixAndMatch)]
     newdf <- cbind(mixAndMatch, modelcv[  , unames])
@@ -257,7 +257,7 @@ NULL
 ##' x1 + x2 + x3} will cause 3 separate output data frames, one for
 ##' each predictor. They will be named objects in the list.
 ##'
-##' If predVals is suppiled, it must name only predictors that are
+##' If predVals is supplied, it must name only predictors that are
 ##' fitted in the model. \code{predictOMatic} will choose the mean or mode for
 ##' variables that are not explicitly listed, and selected values of
 ##' the named variables are "mixed and matched" to make a data set.

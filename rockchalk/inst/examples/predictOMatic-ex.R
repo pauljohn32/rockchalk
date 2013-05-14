@@ -5,9 +5,9 @@ library(rockchalk)
 
 ## example from Venables and Ripley (2002, pp. 190-2.)
 df <- data.frame(ldose = rep(0:5, 2),
-     numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16),
-     sex = factor(rep(c("M", "F"), c(6, 6))),
-     SF = cbind(numdead, numalive = 20-numdead))
+                 sex = factor(rep(c("M", "F"), c(6, 6))),
+                 SF.numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16))
+df$SF.numalive = 20 - df$SF.numdead
 
 budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family = binomial)
 
@@ -15,7 +15,11 @@ predictOMatic(budworm.lg)
 
 predictOMatic(budworm.lg, n = 7)
 
-predictOMatic(budworm.lg, predVals = list(ldose = "quantile", sex = "M"), divider = "std.dev.")
+predictOMatic(budworm.lg, predVals = c("ldose"), n = 7)
+
+predictOMatic(budworm.lg, predVals = c(ldose = "std.dev.", sex = "table"))
+
+
 
 ## Now make up a data frame with several numeric and categorical predictors.
 

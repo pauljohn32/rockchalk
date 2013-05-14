@@ -117,7 +117,10 @@ plotSlopes.lm <-
     cl <- match.call()
     mm <- model.matrix(model)
     interval <- match.arg(interval)
-    depVar <- model$model[, 1]
+
+    depVar <- model.response(model.frame(model))
+
+    ##  depVar <- model$model[, 1]
     plotxVar <- model$model[, plotx]
     if (!is.numeric(plotxVar))
         stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
@@ -128,7 +131,7 @@ plotSlopes.lm <-
 
     ## Create focalVals object, needed by newdata
     if (missing(modx) || is.null(modx)) {
-        modxVar <- rep(1, length(depVar))
+        modxVar <- rep(1, nobs(model))
         if (interval == "none") {
             focalVals <- list(plotxRange)
         } else {
@@ -157,7 +160,6 @@ plotSlopes.lm <-
     }
 
     newdf <- newdata(model, fl = focalVals)
-
 
     dotargs <- list(...)
     dotnames <- names(dotargs)
@@ -233,7 +235,7 @@ plotSlopes.lm <-
         stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
     }
 
-    parms <- list(mm[, plotx], depVar, xlab = plotx, ylab = ylab,
+    parms <- list(mm[, plotx], seq(1, length(mm[ ,plotx])), xlab = plotx, ylab = ylab,
                   ylim = plotyRange, type = "n")
     parms <- modifyList(parms, dotargs)
 
