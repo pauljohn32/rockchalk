@@ -361,7 +361,6 @@ NULL
 ##' \code{cutByTable},.
 ##' @param n Default = 5. The number of values for which
 ##' predictions are sought.
-##' @param fl focus list. DEPRECATED. Previous name of argument predVals.
 ##' @param ... Optional arguments to be passed to the predict function
 ##' @return A data frame or a list of data frames.
 ##' @export
