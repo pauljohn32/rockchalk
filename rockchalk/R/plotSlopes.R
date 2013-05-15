@@ -141,6 +141,7 @@ plotSlopes.lm <-
         }
         names(focalVals) <- c(plotx)
         modxVals <- 1
+        modx <- NULL
     } else {
         modxVar <- model$model[, modx]
         if (is.factor(modxVar)) { ## modxVar is a factor
@@ -165,16 +166,19 @@ plotSlopes.lm <-
 
     dotargs <- list(...)
     dotnames <- names(dotargs)
+
     ## scan dotargs for predict keywords. Remove from dotargs
     ## the ones we only want going to predict. Leave
     ## others.
-
     parms <- list(model, newdata = newdf, type = "response" , interval = interval)
     predArgs <- list()
     validForPredict <- c("type", "se.fit", "dispersion", "terms", "na.action")
     dotsForPredict <- dotnames[dotnames %in% validForPredict]
 
-    if (any(dotsForPredict)) parms <- modifyList(parms, dotargs[[dotsForPredict]])
+    if (any(dotsForPredict)) {
+        parms <- modifyList(parms, dotargs[[dotsForPredict]])
+        dotargs[[dotsForPredict]] <- NULL
+    }
 
     np <- do.call("predictCI", parms)
     newdf <- cbind(newdf, np$fit)
@@ -185,176 +189,48 @@ plotSlopes.lm <-
         stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
     }
 
+    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, opacity = opacity, xlim = plotxRange, ylim = plotyRange, ylab = ylab)
+    parms <- modifyList(parms, dotargs)
+    plotArgs <- do.call("plotFancy", parms)
 
-    drawMe(newdf = newdf, plotx = plotx, modx = modx, modxVar = modxVar, modxVals = modxVals, plotxVar = plotxVar, depVar, plotxRange = plotxRange, plotyRange = plotyRange, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, xlab = xlab, ylab = ylab, opacity = opacity, dotargs = dotargs)
-
-
-    ## ## Now begin the plotting work.
-    ## if (missing(modx) || is.null(modx)) {
-    ##     lmx <- 1
-    ## } else {
-    ##     lmx <- length(modxVals)
-    ## }
-
-    ## ## if modx is a factor's name, we want to use all the levels
-    ## ## to set the color scheme, even if some are not used in this
-    ## ## particular plot.
-    ## if (is.factor(modxVar)) {
-    ##     modxLevels <- levels(modxVar)
-    ## } else {
-    ##     modxLevels <- modxVals
-    ##     if (is.null(names(modxVals))) names(modxVals) <- modxVals
-    ## }
-
-    ## ## Deal w colors
-    ## if (missing(col) || is.null(col)) {
-    ##     if (is.factor(modxVar)) {
-    ##         col <- seq_along(modxLevels)
-    ##         names(col) <- modxLevels
-    ##     }  else {
-    ##         col <- 1:lmx
-    ##         names(col) <- names(modxVals)
-    ##     }
-    ## } else {
-    ##     if (length(col) == lmx & is.null(names(col))) {
-    ##         names(col) <- modxVals
-    ##     } else if (length(col) < lmx) {
-    ##         stop("plotSlopes: wrong number of colors")
-    ##     } else if (length(col) < length(modxLevels)) {
-    ##         if (is.null(names(col))){
-    ##             names(col) <- modxLevels[1:length(col)]
-    ##         }
-    ##         col <- rep(col, length.out = length(modxLevels))
-    ##     }
-    ## }
-
-    ## ## Deal w line widths
-    ## if (length(llwd) < length(col)) {
-    ##     llwd <- rep(llwd, length.out = length(col))
-    ## }
-    ## names(llwd) <- names(col)
-
-    ## ## Deal w lty
-    ## lty <- if(is.factor(modxVar)) {
-    ##     seq_along(modxLevels)
-    ## } else {
-    ##     seq_along(modxVals)
-    ## }
-    ## names(lty) <- names(col)
-
-    ## ## if (is.factor(modxVar)) {
-    ## ##     lty <- seq_along(modxLevels)
-    ## ##     names(lty) <- names(col)
-    ## ## } else {
-    ## ##     lty <- seq_along(modxVals)
-    ## ##     names(lty) <- names(col)
-    ## ## }
-
-
-
-    ## parms <- list(mm[, plotx], seq(1, length(mm[ ,plotx])), xlab = plotx, ylab = ylab,
-    ##               ylim = plotyRange, type = "n")
-    ## parms <- modifyList(parms, dotargs)
-
-    ## do.call("plot", parms)
-
-    ## ## iCol: rgb color matrix. Why does rgb insist the columns be
-    ## iCol <- col2rgb(col)
-    ## ### bCol: border color
-    ## bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity, maxColorValue = 255)
-    ## ### sCol: shade color
-    ## sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
-
-
-    ## if (interval != "none") {
-    ##     for (j in modxVals) {
-    ##         k <- match(j, modxVals)   ##integer index
-    ##         if (is.factor(modxVar)) i <- j  ## level names
-    ##         else i <- k  ## i integer
-
-    ##         if (missing(modx) || is.null(modx)) {
-    ##             pdat <- newdf
-    ##         } else {
-    ##             pdat <- newdf[newdf[ , modx] %in% j, ]
-    ##         }
-    ##         parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[i])
-    ##         parms <- modifyList(parms, dotargs)
-    ##         parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[k]))
-    ##         do.call("polygon", parms)
-    ##     }
-    ## }
-
-    ## for (j in modxVals) {
-    ##     if (is.factor(modxVar)) i <- j  ## level names
-    ##     else i <- match(j, modxVals)   ##integer index
-    ##     if(missing(modx) || is.null(modx)) {
-    ##         pdat <- newdf
-    ##     } else {
-    ##         pdat <- newdf[newdf[ , modx] %in% j, ]
-    ##     }
-    ##     parms <- list(x = pdat[, plotx], y = pdat$fit, lty = lty[i])
-    ##     parms <- modifyList(parms, dotargs)
-    ##     parms <- modifyList(parms, list(col = col[i], lwd = llwd[match(i, modxVals)]))
-    ##     do.call("lines", parms)
-    ## }
-
-
-    ## if (plotPoints) {
-    ##     parms <- list(xlab = plotx, ylab = ylab,
-    ##                   cex = 0.6, lwd = 0.75)
-    ##     if (is.factor(modxVar)) {
-    ##         parms[["col"]] <- col[as.vector(modxVar[modxVar %in% modxVals])]
-    ##         parms[["x"]] <- mm[modxVar %in% modxVals, plotx]
-    ##         parms[["y"]] <- depVar[modxVar %in% modxVals]
-    ##     } else {
-    ##         parms[["col"]] <- 1
-    ##         parms[["x"]] <- mm[ , plotx]
-    ##         parms[["y"]] <- depVar
-    ##     }
-    ##     parms <- modifyList(parms, dotargs)
-    ##     do.call("points", parms)
-    ## }
-
-    ## if (plotLegend) {
-    ##     if (is.factor(modxVar)){ ## level names
-    ##         col <- col[as.vector(modxVals)]
-    ##         lty <- lty[as.vector(modxVals)]
-    ##         llwd <- llwd[as.vector(modxVals)]
-    ##     } else {
-    ##         col <- col[names(modxVals)]
-    ##         lty <- lty[names(modxVals)]
-    ##         llwd <- llwd[names(modxVals)]
-
-    ##     }
-    ##     if (missing(modx) || is.null(modx)) {
-    ##         titl <- "Regression analysis"
-    ##         legnd <- c("Predicted values")
-    ##         if (interval != "none") {
-    ##             legnd[2] <- paste("95%", interval, "interval")
-    ##             col <- c(col, 0)
-    ##             lty <- c(lty, 0)
-    ##             llwd <- c(llwd, 0)
-    ##         }
-    ##     } else if (is.null(names(modxVals))) {
-    ##         titl <- paste("Moderator:", modx)
-    ##         legnd <- paste(modxVals, sep = "")
-    ##     } else {
-    ##         titl <- paste("Moderator:", modx)
-    ##         legnd <- paste(names(modxVals), sep = "")
-    ##     }
-    ##     legend("topleft", legend = legnd, lty = lty, col = col,
-    ##            lwd = llwd, bg = "white", title = titl)
-    ## }
-    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = col)
+    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = plotArgs$col, lty = plotArgs$lty)
     class(z) <- c("plotSlopes", "rockchalk")
 
     invisible(z)
 }
 
 
-
-drawMe <- function(newdf, plotx, modx, modxVar, modxVals, plotxVar, depVar, plotxRange, plotyRange,  interval, plotPoints, plotLegend, xlab, ylab, col = 1, llwd = 2, opacity, dotargs)
+##' Regression plots with predicted value lines, confidence intervals, color coded interactions
+##'
+##' This is the back-end for the functions plotSlopes and plotCurves
+##'
+##' @param newdf The new data frame with predictors and fit, lwr, upr variables
+##' @param olddf A data frame with variables(modxVar, plotxVar, depVar)
+##' @param plotx Character string for name of variable on horizontal axis
+##' @param modx  Character string for name of moderator variable.
+##' @param modxVals Values of moderator for which lines are desired
+##' @param interval TRUE or FALSE: want confidence intervals?
+##' @param plotPoints TRUE or FALSE: want to see observed values in plot?
+##' @param plotLegend TRUE or FALSE: draw defaut legend
+##' @param col requested color scheme for lines and points. One per value of modxVals.
+##' @param llwd requested line width, will re-cycle.
+##' @param opacity Value in 0, 255 for darkness of interval shading
+##' @param ... Other arguments passed to plot function.
+##' @return col, lty, and lwd information
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##'
+plotFancy <-
+    function(newdf, olddf, plotx, modx, modxVals, interval, plotPoints, plotLegend, col = 1, llwd = 2, opacity, ...)
 {
+    dotargs <- list(...)
+
+    ## Damn. Need ylab from dotargs explicitly
+    ylab <- "Dependent Variable"
+    if (!is.null(dotargs[["ylab"]])) ylab <- dotargs[["ylab"]]
+
+    modxVar <- olddf$modxVar
+    plotxVar <- olddf$plotxVar
+    depVar <- olddf$depVar
 
     ## Now begin the plotting work.
     if (missing(modx) || is.null(modx)) {
@@ -372,7 +248,6 @@ drawMe <- function(newdf, plotx, modx, modxVar, modxVals, plotxVar, depVar, plot
         modxLevels <- modxVals
         if (is.null(names(modxVals))) names(modxVals) <- modxVals
     }
-    browser()
     ## Deal w colors
     if (missing(col)) {
         if (is.factor(modxVar)) {
@@ -411,8 +286,8 @@ drawMe <- function(newdf, plotx, modx, modxVar, modxVals, plotxVar, depVar, plot
 
 
 
-    parms <- list(plotxVar, seq(1, length(plotxVar)), xlab = plotx, ylab = ylab,
-                  ylim = plotyRange, type = "n")
+    parms <- list(x = plotxVar, y = depVar, xlab = plotx, ylab = ylab,
+                  type = "n")
     parms <- modifyList(parms, dotargs)
 
     do.call("plot", parms)
@@ -504,4 +379,5 @@ drawMe <- function(newdf, plotx, modx, modxVar, modxVals, plotxVar, depVar, plot
         legend("topleft", legend = legnd, lty = lty, col = col,
                lwd = llwd, bg = "white", title = titl)
     }
+    invisible(list(col = col, lty = lty, lwd = llwd))
 }

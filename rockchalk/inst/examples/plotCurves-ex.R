@@ -40,15 +40,15 @@ plotCurves(m1, plotx="x1", modx="xcat1")
 
 ## Verify that plot by comparing against a manually contructed alternative
 par(mfrow=c(1,2))
-plotCurves(m1, plotx="x1", modx="xcat1")
-newdat <- with(dat, expand.grid(x1 = plotSeq(x1, 30), xcat1=levels(xcat1)))
-newdat$x2 <-  with(dat, mean(x2, na.rm=TRUE))
-newdat$m1p <- predict(m1, newdata=newdat)
-plot( y ~ x1, data=dat, type="n", ylim = magRange(dat$y,c(1,1.3)))
-points( y ~ x1, data=dat, col=dat$xcat1, cex = 0.4, lwd = 0.5)
+plotCurves(m1, plotx = "x1", modx = "xcat1")
+newdat <- with(dat, expand.grid(x1 = plotSeq(x1, 30), xcat1 = levels(xcat1)))
+newdat$x2 <-  with(dat, mean(x2, na.rm = TRUE))
+newdat$m1p <- predict(m1, newdata = newdat)
+plot( y ~ x1, data = dat, type = "n", ylim = magRange(dat$y, c(1, 1.2)))
+points( y ~ x1, data = dat, col = dat$xcat1, cex = 0.4, lwd = 0.5)
 by(newdat, newdat$xcat1, function(dd) {lines(dd$x1, dd$m1p)})
-legend("topleft", legend=levels(dat$xcat1), col=as.numeric(dat$xcat1), lty=1)
-par(mfrow=c(1,1))
+legend("topleft", legend=levels(dat$xcat1), col = as.numeric(dat$xcat1), lty = 1)
+par(mfrow = c(1,1))
 ##Close enough!
 
 
@@ -62,32 +62,32 @@ plotCurves(m1, plotx = "x2", modx = "xcat1", interval = "conf")
 ##OK
 
 
-m2 <- lm(y ~ log(x1)*xcat1 + xcat1*(x2 + I(x2^2)), data=dat)
+m2 <- lm(y ~ log(x1)*xcat1 + xcat1*(x2 + I(x2^2)), data = dat)
 summary(m2)
-plotCurves(m2, plotx="x2", modx="xcat1")
+plotCurves(m2, plotx = "x2", modx = "xcat1")
 ##OK
 
-plotCurves(m2, plotx="x2", modx="x1")
+plotCurves(m2, plotx  ="x2", modx = "x1")
 ##OK
 
 
-m3a <- lm(y ~ poly(x2,2) + xcat1, data=dat)
+m3a <- lm(y ~ poly(x2,2) + xcat1, data = dat)
 
 plotCurves(m3a, plotx = "x2")
-plotCurves(m3a, plotx="x2", modx="xcat1")
+plotCurves(m3a, plotx = "x2", modx = "xcat1")
 #OK
 
-m4 <- lm(log(y+10) ~ poly(x2, 2)*xcat1 + x1, data=dat)
+m4 <- lm(log(y+10) ~ poly(x2, 2)*xcat1 + x1, data = dat)
 summary(m4)
 plotCurves(m4, plotx = "x2")
 
-plotCurves(m4, plotx="x2", modx="xcat1")
+plotCurves(m4, plotx  ="x2", modx = "xcat1")
 
-plotCurves(m4, plotx="x2", modx="x1")
+plotCurves(m4, plotx = "x2", modx = "x1")
 
-plotCurves(m4, plotx="x2", modx="xcat1")
+plotCurves(m4, plotx = "x2", modx = "xcat1")
 
-plotCurves(m4, plotx="x2", modx="xcat1", modxVals=c("Monster"))
+plotCurves(m4, plotx = "x2", modx = "xcat1", modxVals = c("Monster"))
 
 
 ##ordinary interaction
@@ -108,32 +108,32 @@ plotCurves(mc1, plotx = "income")
 plotCurves(mc1, modx = "sex", plotx = "income")
 plotCurves(mc1, modx = "sex", plotx = "income", modxVals = "M")
 
-mc2 <- lm(statusquo ~ region * income, data= Chile)
+mc2 <- lm(statusquo ~ region * income, data =  Chile)
 summary(mc2)
 plotCurves(mc2, modx = "region", plotx = "income")
 plotCurves(mc2, modx = "region", plotx = "income", modxVals = levels(Chile$region)[c(1,4)])
 plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"))
 plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"), interval = "conf")
 
-plotCurves(mc2, modx = "region", plotx = "income", plotPoints=FALSE)
+plotCurves(mc2, modx = "region", plotx = "income", plotPoints = FALSE)
 
 
-mc3 <- lm(statusquo ~ region * income + sex + age, data= Chile)
+mc3 <- lm(statusquo ~ region * income + sex + age, data =  Chile)
 summary(mc3)
 plotCurves(mc3, modx = "region", plotx = "income")
 
 
-mc4 <- lm(statusquo ~ income * (age + I(age^2)) + education + sex + age, data=Chile)
+mc4 <- lm(statusquo ~ income * (age + I(age^2)) + education + sex + age, data = Chile)
 summary(mc4)
 plotCurves(mc4, plotx = "age")
 plotCurves(mc4, plotx = "age", interval = "conf")
 
 
 plotCurves(mc4, plotx = "age", modx = "income")
-plotCurves(mc4, plotx = "age", modx = "income", plotPoints=FALSE)
+plotCurves(mc4, plotx = "age", modx = "income", plotPoints = FALSE)
 
 plotCurves(mc4,  plotx = "income", modx = "age")
 plotCurves(mc4,  plotx = "income", modx = "age", n = 8)
 
 plotCurves(mc4,  plotx = "income", modx = "age", modxVals = "std.dev.")
-plotCurves(mc4, modx = "income", plotx = "age", plotPoints=FALSE)
+plotCurves(mc4, modx = "income", plotx = "age", plotPoints = FALSE)
