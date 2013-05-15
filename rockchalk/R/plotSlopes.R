@@ -105,9 +105,10 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences (Third.). Routledge Academic.
 ##' @example inst/examples/plotSlopes-ex.R
 plotSlopes.lm <-
-  function (model, plotx, modx, n = 3, modxVals = NULL ,
-            interval = c("none", "confidence", "prediction"),
-            plotPoints = TRUE, plotLegend = TRUE, col = 1, llwd = 2, opacity = 100, ...)
+    function (model, plotx, modx, n = 3, modxVals = NULL ,
+              interval = c("none", "confidence", "prediction"),
+              plotPoints = TRUE, plotLegend = TRUE, col = 1,
+              llwd = 2, opacity = 100, ...)
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
@@ -122,6 +123,7 @@ plotSlopes.lm <-
 
     ##  depVar <- model$model[, 1]
     plotxVar <- model$model[, plotx]
+
     if (!is.numeric(plotxVar))
         stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
     ylab <- colnames(model$model)[1]
@@ -177,6 +179,183 @@ plotSlopes.lm <-
     np <- do.call("predictCI", parms)
     newdf <- cbind(newdf, np$fit)
 
+    plotyRange <- if(is.numeric(depVar)){
+        magRange(depVar, mult = c(1, 1.2))
+    } else {
+        stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
+    }
+
+
+    drawMe(newdf = newdf, plotx = plotx, modx = modx, modxVar = modxVar, modxVals = modxVals, plotxVar = plotxVar, depVar, plotxRange = plotxRange, plotyRange = plotyRange, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, xlab = xlab, ylab = ylab, opacity = opacity, dotargs = dotargs)
+
+
+    ## ## Now begin the plotting work.
+    ## if (missing(modx) || is.null(modx)) {
+    ##     lmx <- 1
+    ## } else {
+    ##     lmx <- length(modxVals)
+    ## }
+
+    ## ## if modx is a factor's name, we want to use all the levels
+    ## ## to set the color scheme, even if some are not used in this
+    ## ## particular plot.
+    ## if (is.factor(modxVar)) {
+    ##     modxLevels <- levels(modxVar)
+    ## } else {
+    ##     modxLevels <- modxVals
+    ##     if (is.null(names(modxVals))) names(modxVals) <- modxVals
+    ## }
+
+    ## ## Deal w colors
+    ## if (missing(col) || is.null(col)) {
+    ##     if (is.factor(modxVar)) {
+    ##         col <- seq_along(modxLevels)
+    ##         names(col) <- modxLevels
+    ##     }  else {
+    ##         col <- 1:lmx
+    ##         names(col) <- names(modxVals)
+    ##     }
+    ## } else {
+    ##     if (length(col) == lmx & is.null(names(col))) {
+    ##         names(col) <- modxVals
+    ##     } else if (length(col) < lmx) {
+    ##         stop("plotSlopes: wrong number of colors")
+    ##     } else if (length(col) < length(modxLevels)) {
+    ##         if (is.null(names(col))){
+    ##             names(col) <- modxLevels[1:length(col)]
+    ##         }
+    ##         col <- rep(col, length.out = length(modxLevels))
+    ##     }
+    ## }
+
+    ## ## Deal w line widths
+    ## if (length(llwd) < length(col)) {
+    ##     llwd <- rep(llwd, length.out = length(col))
+    ## }
+    ## names(llwd) <- names(col)
+
+    ## ## Deal w lty
+    ## lty <- if(is.factor(modxVar)) {
+    ##     seq_along(modxLevels)
+    ## } else {
+    ##     seq_along(modxVals)
+    ## }
+    ## names(lty) <- names(col)
+
+    ## ## if (is.factor(modxVar)) {
+    ## ##     lty <- seq_along(modxLevels)
+    ## ##     names(lty) <- names(col)
+    ## ## } else {
+    ## ##     lty <- seq_along(modxVals)
+    ## ##     names(lty) <- names(col)
+    ## ## }
+
+
+
+    ## parms <- list(mm[, plotx], seq(1, length(mm[ ,plotx])), xlab = plotx, ylab = ylab,
+    ##               ylim = plotyRange, type = "n")
+    ## parms <- modifyList(parms, dotargs)
+
+    ## do.call("plot", parms)
+
+    ## ## iCol: rgb color matrix. Why does rgb insist the columns be
+    ## iCol <- col2rgb(col)
+    ## ### bCol: border color
+    ## bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity, maxColorValue = 255)
+    ## ### sCol: shade color
+    ## sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
+
+
+    ## if (interval != "none") {
+    ##     for (j in modxVals) {
+    ##         k <- match(j, modxVals)   ##integer index
+    ##         if (is.factor(modxVar)) i <- j  ## level names
+    ##         else i <- k  ## i integer
+
+    ##         if (missing(modx) || is.null(modx)) {
+    ##             pdat <- newdf
+    ##         } else {
+    ##             pdat <- newdf[newdf[ , modx] %in% j, ]
+    ##         }
+    ##         parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[i])
+    ##         parms <- modifyList(parms, dotargs)
+    ##         parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[k]))
+    ##         do.call("polygon", parms)
+    ##     }
+    ## }
+
+    ## for (j in modxVals) {
+    ##     if (is.factor(modxVar)) i <- j  ## level names
+    ##     else i <- match(j, modxVals)   ##integer index
+    ##     if(missing(modx) || is.null(modx)) {
+    ##         pdat <- newdf
+    ##     } else {
+    ##         pdat <- newdf[newdf[ , modx] %in% j, ]
+    ##     }
+    ##     parms <- list(x = pdat[, plotx], y = pdat$fit, lty = lty[i])
+    ##     parms <- modifyList(parms, dotargs)
+    ##     parms <- modifyList(parms, list(col = col[i], lwd = llwd[match(i, modxVals)]))
+    ##     do.call("lines", parms)
+    ## }
+
+
+    ## if (plotPoints) {
+    ##     parms <- list(xlab = plotx, ylab = ylab,
+    ##                   cex = 0.6, lwd = 0.75)
+    ##     if (is.factor(modxVar)) {
+    ##         parms[["col"]] <- col[as.vector(modxVar[modxVar %in% modxVals])]
+    ##         parms[["x"]] <- mm[modxVar %in% modxVals, plotx]
+    ##         parms[["y"]] <- depVar[modxVar %in% modxVals]
+    ##     } else {
+    ##         parms[["col"]] <- 1
+    ##         parms[["x"]] <- mm[ , plotx]
+    ##         parms[["y"]] <- depVar
+    ##     }
+    ##     parms <- modifyList(parms, dotargs)
+    ##     do.call("points", parms)
+    ## }
+
+    ## if (plotLegend) {
+    ##     if (is.factor(modxVar)){ ## level names
+    ##         col <- col[as.vector(modxVals)]
+    ##         lty <- lty[as.vector(modxVals)]
+    ##         llwd <- llwd[as.vector(modxVals)]
+    ##     } else {
+    ##         col <- col[names(modxVals)]
+    ##         lty <- lty[names(modxVals)]
+    ##         llwd <- llwd[names(modxVals)]
+
+    ##     }
+    ##     if (missing(modx) || is.null(modx)) {
+    ##         titl <- "Regression analysis"
+    ##         legnd <- c("Predicted values")
+    ##         if (interval != "none") {
+    ##             legnd[2] <- paste("95%", interval, "interval")
+    ##             col <- c(col, 0)
+    ##             lty <- c(lty, 0)
+    ##             llwd <- c(llwd, 0)
+    ##         }
+    ##     } else if (is.null(names(modxVals))) {
+    ##         titl <- paste("Moderator:", modx)
+    ##         legnd <- paste(modxVals, sep = "")
+    ##     } else {
+    ##         titl <- paste("Moderator:", modx)
+    ##         legnd <- paste(names(modxVals), sep = "")
+    ##     }
+    ##     legend("topleft", legend = legnd, lty = lty, col = col,
+    ##            lwd = llwd, bg = "white", title = titl)
+    ## }
+    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = col)
+    class(z) <- c("plotSlopes", "rockchalk")
+
+    invisible(z)
+}
+
+
+
+drawMe <- function(newdf, plotx, modx, modxVar, modxVals, plotxVar, depVar, plotxRange, plotyRange,  interval, plotPoints, plotLegend, xlab, ylab, col = 1, llwd = 2, opacity, dotargs)
+{
+
     ## Now begin the plotting work.
     if (missing(modx) || is.null(modx)) {
         lmx <- 1
@@ -193,7 +372,8 @@ plotSlopes.lm <-
         modxLevels <- modxVals
         if (is.null(names(modxVals))) names(modxVals) <- modxVals
     }
-
+    browser()
+    ## Deal w colors
     if (missing(col)) {
         if (is.factor(modxVar)) {
             col <- seq_along(modxLevels)
@@ -215,27 +395,23 @@ plotSlopes.lm <-
         }
     }
 
+    ## Deal w line widths
     if (length(llwd) < length(col)) {
         llwd <- rep(llwd, length.out = length(col))
     }
     names(llwd) <- names(col)
 
-    if (is.factor(modxVar)) {
-        lty <- seq_along(modxLevels)
-        names(lty) <- names(col)
+    ## Deal w lty
+    lty <- if(is.factor(modxVar)) {
+        seq_along(modxLevels)
     } else {
-        lty <- seq_along(modxVals)
-        names(lty) <- names(col)
+        seq_along(modxVals)
     }
+    names(lty) <- names(col)
 
 
-    plotyRange <- if(is.numeric(depVar)){
-        magRange(depVar, mult = c(1, 1.2))
-    } else {
-        stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
-    }
 
-    parms <- list(mm[, plotx], seq(1, length(mm[ ,plotx])), xlab = plotx, ylab = ylab,
+    parms <- list(plotxVar, seq(1, length(plotxVar)), xlab = plotx, ylab = ylab,
                   ylim = plotyRange, type = "n")
     parms <- modifyList(parms, dotargs)
 
@@ -287,11 +463,11 @@ plotSlopes.lm <-
                       cex = 0.6, lwd = 0.75)
         if (is.factor(modxVar)) {
             parms[["col"]] <- col[as.vector(modxVar[modxVar %in% modxVals])]
-            parms[["x"]] <- mm[modxVar %in% modxVals, plotx]
+            parms[["x"]] <- plotxVar[modxVar %in% modxVals]
             parms[["y"]] <- depVar[modxVar %in% modxVals]
         } else {
             parms[["col"]] <- 1
-            parms[["x"]] <- mm[ , plotx]
+            parms[["x"]] <- plotxVar
             parms[["y"]] <- depVar
         }
         parms <- modifyList(parms, dotargs)
@@ -328,11 +504,4 @@ plotSlopes.lm <-
         legend("topleft", legend = legnd, lty = lty, col = col,
                lwd = llwd, bg = "white", title = titl)
     }
-    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = col)
-    class(z) <- c("plotSlopes", "rockchalk")
-
-    invisible(z)
 }
-
-
-

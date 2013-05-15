@@ -121,7 +121,7 @@ summarize(m1.data)
 (newdata(m1))
 (newdata(m1, predVals = list(x1 = c(6, 8, 10))))
 (newdata(m1, predVals = list(x1 = c(6, 8, 10), x3 = c(-1,0,1))))
-(newdata(m1, predVals = list(x1 = c(6, 8, 10), x2 = quantile(m1.data$x2), x3 = c(-1,0,1))))
+(newdata(m1, predVals = list(x1 = c(6, 8, 10), x2 = quantile(m1.data$x2, na.rm = TRUE), x3 = c(-1,0,1))))
 
 (m1.p1 <- predictOMatic(m1, divider = "std.dev", n = 5))
 (m1.p2 <- predictOMatic(m1, divider = "quantile", n = 5))

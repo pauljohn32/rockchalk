@@ -142,11 +142,12 @@ NULL
 ##' @param model A fitted regression model in which the data argument
 ##' is specified. This function will fail if the model was not fit
 ##' with the data option.
+##' @param na.action Defaults to na.pass, so model as it would appear in user workspace is re-created.
 ##' @return A data frame
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/model.data-ex.R
-model.data <- function(model){
+model.data <- function(model, na.action = na.pass){
     ## from nls, returns -1 for missing variables
     lenVar <- function(var, data) tryCatch(NROW(eval(as.name(var),
                          data, env)), error = function(e) -1)
@@ -161,7 +162,7 @@ model.data <- function(model){
         env <- parent.frame()
 
     dataOrig <-  eval(model$call$data, env)
-    if (is.null(dataOrig)) dataOrig <- model.frame(model, na.action = na.pass)
+    if (is.null(dataOrig)) dataOrig <- model.frame(model)
 
     dataOrigRN <- row.names(dataOrig)
     n <- sapply(varNames, lenVar, data = dataOrig)
@@ -188,7 +189,7 @@ model.data <- function(model){
     mylhs <- eval(varNamesLHS)
     myrhs <- eval(paste(varNamesRHS, collapse = " + "))
     myfmla <- as.formula(paste(mylhs, " ~", myrhs), env = environment(formula(model)))
-    data <- model.frame(myfmla, dataOrig)
+    data <- model.frame(myfmla, dataOrig, na.action = na.action)
 
 
     ## remove rows listed in model's na.action
@@ -485,9 +486,9 @@ NULL
 ##' for glm.
 ##' @param dispersion Will be estimated if not provided. The variance coefficient of the glm, same as scale squared. Dispersion is allowed as an argument in predict.glm.
 ##' @param scale  The square root of dispersion. In an lm, this is the RMSE, called sigma in summary.lm.
-##' @param na.action
+##' @param na.action What to do with missing values
 ##' @param level 0.95 or whatever confidence level one desires.
-##' @param ...
+##' @param ... Other arguments to be passed to predict
 ##' @return c(fit, lwr, upr), and possibly more.
 ##'
 predictCI <-
@@ -503,7 +504,6 @@ predictCI <-
 
     ## summary.survreg has no ... argument.
     if(inherits(object, "survreg")) dispersion <- 1.
-
 
     if (inherits(object, "glm")) {
         if (is.null(dispersion) || dispersion == 0){
