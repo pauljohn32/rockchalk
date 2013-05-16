@@ -18,7 +18,6 @@
 ##' @param rho Correlation coefficient for x1 and x2
 ##' @param stde standard deviation of the error term in the data generating equation
 ##' @param beta beta vector of at most 4 coefficients for intercept, slopes, and interaction
-##' @import MASS
 ##' @export genCorrelatedData
 ##' @examples
 ##' ## 1000 observations of uncorrelated x1 and x2 with no
@@ -28,11 +27,10 @@
 ##' m1 <- lm(y ~ x1 + x2, data = dat)
 ##' plotPlane(m1, plotx1 = "x1", plotx2 = "x2")
 genCorrelatedData <- function(N = 100, means = c(50,50), sds = c(10,10), rho = 0.0, stde = 1, beta = c(0, 0.2, 0.2, 0.0)){
-  require(MASS)
   if (length(beta)> 4) stop("beta vector can have at most 4 values")
   corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
   sigma <- diag(sds) %*% corr.mat %*% diag(sds)
-  x.mat <-  mvrnorm(n = N, mu = means, Sigma = sigma)
+  x.mat <-  rockchalk::mvrnorm(n = N, mu = means, Sigma = sigma)
   y = beta[1] + beta[2] * x.mat[,1] + beta[3] * x.mat[,2] + beta[4] * x.mat[,1] * x.mat[ ,2] +  stde*rnorm (N, mean = 0, sd = 1)
   dat <- data.frame(x.mat, y)
   names(dat) <- c("x1", "x2", "y")
@@ -64,17 +62,30 @@ NULL
 ##' y = b1 + b2 * x1 + ...+ bk * xk + b[k+1] * x1 * ...interactions.. + e
 ##'
 ##' It appears the tricky part will be the user specification of the vector
-##' beta. That vector has to provide one coefficient for the intercept
-##' and one for each column of the X matrix. Additional values in the
-##' beta vector are interpreted as interaction effects, beginning
-##' with variable one. Suppose there are 4 columns in X. Then a beta vector
-##' like beta = c(0, 1, 2, 3, 4, 5, 6, 7, 8) would amount to asking for
+##' beta. Clearly, that vector has to provide one coefficient for the intercept
+##' and one for each column of the X matrix.
 ##'
-##' y = 0 + 1 x1 + 2 x2 +3 x3 + 4 x4 + 5 *x1^1 + 6 x1 x2 + 8 x1 x3 + 8 x1 x4 + error
+##' Additional values in the beta vector are interpreted as
+##' interaction effects, beginning with variable one. Suppose there
+##' are 4 columns in X. Then a beta vector like beta = c(0, 1, 2, 3,
+##' 4, 5, 6, 7, 8) would amount to asking for
+##'
+##' y = 0 + 1 x1 + 2 x2 +3 x3 + 4 x4 + 5 *x1^2 + 6 x1 x2 + 8 x1 x3 + 8 x1 x4 + error
 ##'
 ##' If beta supplies more coefficients, they are interpeted as additional
-##' interactions. It is still necessary to work out the details on how a very
-##' long string of betas is sorted without "double-counting" some interactions.
+##' interactions.
+##'
+##' I've decided to treat those additional elements of beta as a vech for the
+##' lower triangle of a coefficient matrix. Example with 4 predictors. beta[1:5] are
+##' used for the intercepts and slopes. The rest lay in like so:
+##'
+##'    X1   X2  X3  X4
+##' X1 b6   .    .
+##' X2 b7   b10  .
+##' X3 b8   b11  b13
+##' X4 b9   b12  b14 b15
+##'
+##' If the user only supplies b6 and b7, the rest default to 0.
 ##'
 ##' @param N Number of cases desired
 ##' @param means P-vector of means for X
@@ -84,15 +95,22 @@ NULL
 ##' correlation among all variables), a full matrix of correlations
 ##' among all variables, or a vector that is interpreted as the
 ##' strictly lower triangle (commonly called a vech).
-##' @param stde standard deviation of the error term in the data generating equation
-##' @param beta beta vector of coefficients for intercept, slopes, and interaction.
-##' It needs to have at least (P+1) values, for an intercept and each column of X. Beyond that, I'm still deciding what to do (2013-04-18)
-##' @import MASS
+##' @param stde standard deviation of the error term in the data
+##' generating equation
+##' @param beta beta vector of coefficients for intercept, slopes, and
+##' nonlinear-interaction terma.  The first P+1 values are the
+##' intercept and slope coefficients for the predictors. Additional
+##' elements in beta are interpreted as coefficients for nonlinear and
+##' interaction coefficients.  I have decided to treat these as a
+##' column (vech) that fills into a lower triangular matrix. See Details.
+##' @param verbose TRUE or FALSE. Should information about the data
+##' generation be reported to the terminal?
+##' @return A data matrix that has columns c(y, x1, x2, ..., xP)
 ##' @export
 ##' @examples
 ##' ## 1000 observations of uncorrelated X with no interactions
 ##' set.seed(234234)
-##'  dat <- genCorrelatedData2(N=10, rho=c(0.0), beta=c(1, 2, 1, 1), means = c(0,0,0), sds = c(1,1,1), stde = 0)
+##' dat <- genCorrelatedData2(N=10, rho=c(0.0), beta=c(1, 2, 1, 1), means = c(0,0,0), sds = c(1,1,1), stde = 0)
 ##' summarize(dat)
 ##' ## The perfect regression!
 ##' m1 <- lm(y ~ x1 + x2 + x3, data = dat)
@@ -131,33 +149,37 @@ NULL
 ##' plotCurves(m2.3, plotx = "x1", modx = "x2", modxVals = "std.dev.", n = 5)
 ##'
 ##' simReg <- lapply(1:100, function(x){
-##'     dat <- genCorrelatedData2(N=10000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.46))
+##'     dat <- genCorrelatedData2(N=1000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.46), verbose = FALSE)
 ##'     mymod <- lm (y ~ x1 * x2 + x3, data = dat)
 ##'     summary(mymod)
 ##' })
 ##'
-##' b5est <- sapply(simReg, function(reg) {coef(reg)[4 ,1] })
-##' summarize(b5est)
-##' hist(b5est,  breaks = 40)
+##' x3est <- sapply(simReg, function(reg) {coef(reg)[4 ,1] })
+##' summarize(x3est)
+##' hist(x3est,  breaks = 40, prob = TRUE, xlab = "Estimated Coefficients for column x3")
+##'
+##' r2est <- sapply(simReg, function(reg) {reg$r.square})
+##' summarize(r2est)
+##' hist(r2est,  breaks = 40, prob = TRUE, xlab = "Estimates of R-square")
 ##'
 ##' ## No interaction, collinearity
-##' dat <- genCorrelatedData2(N=10000, rho=c(0.1, 0.2, 0.7), beta=c(1, 1.0, -1.1, 0.1), stde = 1)
+##' dat <- genCorrelatedData2(N=1000, rho=c(0.1, 0.2, 0.7), beta=c(1, 1.0, -1.1, 0.1), stde = 1)
 ##' m3 <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m3)
 ##'
-##' dat <- genCorrelatedData2(N=10000, rho=c(0.1, 0.2, 0.7), beta=c(1, 1.0, -1.1, 0.1), stde = 200)
+##' dat <- genCorrelatedData2(N=1000, rho=c(0.1, 0.2, 0.7), beta=c(1, 1.0, -1.1, 0.1), stde = 200)
 ##' m3 <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m3)
 ##' mcDiagnose(m3)
 ##'
-##' dat <- genCorrelatedData2(N=10000, rho=c(0.9, 0.5, 0.4), beta=c(1, 1.0, -1.1, 0.1), stde = 200)
+##' dat <- genCorrelatedData2(N=1000, rho=c(0.9, 0.5, 0.4), beta=c(1, 1.0, -1.1, 0.1), stde = 200)
 ##' m3b <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m3b)
 ##' mcDiagnose(m3b)
+##'
 genCorrelatedData2 <-
-    function(N = 100, means = c(50,50,50), sds = c(10,10,10), rho = c(0.0, 0.0, 0.0), stde = 200, beta = c(0, 0.15, 0.1, -0.1))
+    function(N = 100, means = c(50,50,50), sds = c(10,10,10), rho = c(0.0, 0.0, 0.0), stde = 100, beta = c(0, 0.15, 0.1, -0.1), verbose = TRUE)
 {
-    require(MASS)
     ## if (length(beta)> 4) stop("beta vector can have at most 4 values")
     ## corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
     ## sigma <- diag(sds) %*% corr.mat %*% diag(sds)
@@ -165,25 +187,48 @@ genCorrelatedData2 <-
     R <- lazyCor(rho, d)
     Sigma <- lazyCov(Rho = R, Sd = sds)
     ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
-    x.mat <- mvrnorm(N, means, Sigma)
+    x.mat <- rockchalk::mvrnorm(N, means, Sigma)
+    x.names <-  paste("x", 1:d, sep = "")
     beta1 <- beta[1:(d+1)]
     beta2 <- beta[-(1:(d+1))]
 
-    ## need this? maybe for visualization
-    ## beta2mat <- matrix(c(beta2, rep(0, d*d - length(beta2))), nrow = d, ncol = d)
-    ## interaction effect
-    intEffect <- 0
-    for (i in seq_along(beta2)) {
-        ## beta2 is in sections of length d
-        j <- 1 + floor(i / (d+1))
-        ## j is which column is first interactor
-        k <- (i - (j -1) *d) %% (d+1)
-        intEffect <- intEffect + beta2[i] * x.mat[ , j] * x.mat[ , k]
-    }
-    y = cbind(1, x.mat) %*% beta1 + intEffect +  stde*rnorm (N, mean = 0, sd = 1)
+    ## pad beta2 with 0's on back end so it is right size to go into
+    ## triangular matrix
+    beta2 <- c(beta2, rep(0, times =(d*(d+1)/2) - length(beta2)))
+
+    Bmat2 <- matrix(0, nrow = d, ncol = d)
+    Bmat2[lower.tri(Bmat2, diag = TRUE)] <- beta2
+
+    ##Would have been easier if I studies sparse matrix entry and usage.
+    ## TODO 2013-05-16: This does a lot of calculations on zeroes.
+    ## May enhance effiency to select columns before multiplying.
+    intEffects <-  sapply(1:d, function(j) {
+        if(!any( Bmat2[ ,j] != 0)) {
+            return()
+        }
+        intEff <-  (x.mat * x.mat[ , j]) %*% Bmat2[ , j]
+    })
+
+    intEffects <- do.call("cbind", intEffects)
+
+    y = cbind(1, x.mat) %*% beta1 +  stde*rnorm (N, mean = 0, sd = 1)
+
+    if (!is.null(intEffects)) y = y + rowSums(intEffects)
 
     dat <- data.frame(y, x.mat)
     names(dat) <- c("y", paste("x", 1:dim(x.mat)[2] , sep = ""))
+
+    if (verbose == TRUE){
+        print("The equation that was calculated was")
+        cat("y =",  beta1[1], "+", paste(beta1[2:d] , c(x.names), collapse = " + ", sep = "*"), "\n" ,
+            "+ ")
+        for(i in seq(d)){
+            cat(paste(Bmat2[, i], x.names, x.names[i], collapse = " + ", sep = "*"), "\n",
+                "+ ")
+        }
+        cat(paste("N(0,", stde, ") random error \n", sep = ""))
+    }
+
     dat
 }
 NULL
@@ -464,5 +509,126 @@ checkPosDef <- function(X, tol = 1e-6){
     evalues <- eigen(X, only.values = TRUE)$values
     res <- if(!all(evalues >= -tol*abs(evalues[1L]))) FALSE else TRUE
     res
+}
+NULL
+
+
+##' Minor revision of mvrnorm (from \code{MASS}) to facilitate replication
+##'
+##' This is the \code{\link[MASS]{mvrnorm}} function from the MASS
+##' package (Venables and Ripley, 2002), with one small modification
+##' to facilitate replication of random samples. The aim is to make
+##' sure that, after the seed is reset, the first rows of generated
+##' data are identical no matter what value is chosen for n.  The one
+##' can draw 100 observations, reset the seed, and then draw 110
+##' observations, and the first 100 will match exactly. This is done
+##' to prevent unexpected and peculiar patterns that are observed
+##' when n is altered with MASS package's mvrnorm.
+##'
+##' To assure replication, only a very small change is made. The code
+##' in \code{MASS::mvrnorm} draws a random sample and fills a matrix
+##' by column, and that matrix is then decomposed.  The change
+##' implemented here fills that matrix by row and the problem is
+##' eliminated.
+##'
+##' Some peculiarities are noticed when the covariance matrix changes
+##' from a diagonal matrix to a more general symmetric matrix
+##' (non-zero elements off-diagonal).  When the covariance is strictly
+##' diagonal, then just one column of the simulated multivariate
+##' normal data will be replicated, but the others are not. This has
+##' very troublesome implications for simulations that draw samples of
+##' various sizes and then base calculations on the separate simulated
+##' columns (i.e., some columns are identical, others are completely
+##' uncorrelated).
+##'
+##' @seealso For an alternative multivariate normal generator
+##' function, one which has had this fix applied to it,
+##' consider using the new versions of \code{\link[mvtnorm]{rmvnorm}} in the
+##' package \code{mvtnorm}.
+##' @param n the number of samples ("rows" of data) required.
+##' @param mu a vector giving the means of the variables.
+##' @param Sigma positive-definite symmetric matrix specifying the
+##'    covariance matrix of the variables.
+##' @param tol tolerance (relative to largest variance) for numerical lack
+##'    of positive-definiteness in \code{Sigma}
+##' @param empirical logical. If true, mu and Sigma specify the empirical
+##'    not population mean and covariance matrix.
+##' @param EISPACK logical. Set to true to reproduce results from MASS
+##'    versions prior to 3.1-21.
+##' @export
+##' @return If \code{n = 1} a vector of the same length as \code{mu}, otherwise an
+##'  \code{n} by \code{length(mu)} matrix with one sample in each row.
+##' @author Ripley, B.D. with revision by Paul E. Johnson
+##' @references
+##' Venables, W. N. & Ripley, B. D. (2002) Modern Applied Statistics with
+##' S. Fourth Edition. Springer, New York. ISBN 0-387-95457-0
+##' @examples
+##' library(MASS)
+##' library(rockchalk)
+##'
+##' set.seed(12345)
+##' X0 <- MASS::mvrnorm(n=10, mu = c(0,0,0), Sigma = diag(3))
+##' ## create a smaller data set, starting at same position
+##' set.seed(12345)
+##' X1 <- MASS::mvrnorm(n=5, mu = c(0,0,0), Sigma = diag(3))
+##' ## Create a larger data set
+##' set.seed(12345)
+##' X2 <- MASS::mvrnorm(n=15, mu = c(0,0,0), Sigma = diag(3))
+##' ## The first 5 rows in X0, X1, and X2 are not the same
+##' X0
+##' X1
+##' X2
+##' set.seed(12345)
+##' Y0 <- mvrnorm(n=10, mu = c(0,0,0), Sigma = diag(3))
+##' set.seed(12345)
+##' Y1 <- mvrnorm(n=5, mu = c(0,0,0), Sigma = diag(3))
+##' set.seed(12345)
+##' Y2 <- mvrnorm(n=15, mu = c(0,0,0), Sigma = diag(3))
+##' # note results are the same in the first 5 rows:
+##' Y0
+##' Y1
+##' Y2
+##' identical(Y0[1:5, ], Y1[1:5, ])
+##' identical(Y1[1:5, ], Y2[1:5, ])
+##'
+##' myR <- lazyCor(X = 0.3, d = 5)
+##' mySD <- c(0.5, 0.5, 0.5, 1.5, 1.5)
+##' myCov <- lazyCov(Rho = myR, Sd = mySD)
+##'
+##' set.seed(12345)
+##' X0 <- MASS::mvrnorm(n=10, mu = rep(0, 5), Sigma = myCov)
+##' ## create a smaller data set, starting at same position
+##' set.seed(12345)
+##' X1 <- MASS::mvrnorm(n=5, mu = rep(0, 5), Sigma = myCov)
+##' X0
+##' X1
+##' ##' set.seed(12345)
+##' Y0 <- rockchalk::mvrnorm(n=10, mu = rep(0, 5), Sigma = myCov)
+##' ## create a smaller data set, starting at same position
+##' set.seed(12345)
+##' Y1 <- rockchalk::mvrnorm(n=5, mu = rep(0, 5), Sigma = myCov)
+##' Y0
+##' Y1
+##'
+mvrnorm <-
+    function(n = 1, mu, Sigma, tol=1e-6, empirical = FALSE, EISPACK = FALSE)
+{
+    p <- length(mu)
+    if(!all(dim(Sigma) == c(p,p))) stop("incompatible arguments")
+    if (missing(EISPACK)) EISPACK <- getOption("mvnorm_use_EISPACK", FALSE)
+    eS <- eigen(Sigma, symmetric = TRUE, EISPACK = EISPACK)
+    ev <- eS$values
+    if(!all(ev >= -tol*abs(ev[1L]))) stop("'Sigma' is not positive definite")
+    X <- matrix(rnorm(p * n), n, byrow = TRUE)
+    if(empirical) {
+        X <- scale(X, TRUE, FALSE) # remove means
+        X <- X %*% svd(X, nu = 0)$v # rotate to PCs
+        X <- scale(X, FALSE, TRUE) # rescale PCs to unit variance
+    }
+    X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
+    nm <- names(mu)
+    if(is.null(nm) && !is.null(dn <- dimnames(Sigma))) nm <- dn[[1L]]
+    dimnames(X) <- list(nm, NULL)
+    if(n == 1) drop(X) else t(X)
 }
 NULL

@@ -1,3 +1,10 @@
+2013-05-16  Paul Johnson  <pauljohn@pols110.pols.ku.edu>
+
+	* ../R/genCorrelatedData.R (mvrnorm): insert repaired code for
+	mvrnorm and use that in genCorrelatedData functions.
+	(genCorrelatedData2): Using lower triangular metaphor for beta2.
+	(genCorrelatedData2): inserted some verbose printing for the equation
+
 2013-05-15  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
 
 	* ../R/outreg.R (outreg2HTML): fixing error with multicolumn
