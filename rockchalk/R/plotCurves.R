@@ -83,7 +83,7 @@ plotCurves <-
     cl <- match.call()
     interval <- match.arg(interval)
     mf <- model.frame(model)
-    emf <- model.data(model)
+    emf <- model.data(model, na.action = na.omit)
 
     plotxVar <- emf[ , plotx]
     if (!is.numeric(plotxVar))

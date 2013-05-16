@@ -86,17 +86,23 @@ testSlopes <- function(object)
         ## 2013-02-19 Sunthud Pornprasertmanit spots bug here:
         ## Problem: diag doesn't work when argument is a single real number.
         ## Fix by inserting drop=FALSE (wrote a blog post about the "drop gotcha"
-        seslope <- sqrt(V[plotx,plotx, drop = FALSE] +  diag(V[modxContrastNames, modxContrastNames, drop = FALSE]) + 2* V[modxContrastNames, plotx, drop = FALSE])
+        seslope <- sqrt(V[plotx, plotx, drop = FALSE] +  diag(V[modxContrastNames, modxContrastNames, drop = FALSE]) + 2* V[modxContrastNames, plotx, drop = FALSE])
 
         modxContrastNames <- c(plotx, modxContrastNames)
         slope <- c(mcoef[plotx], slope)
         seslope <- c(sqrt(V[plotx, plotx]) , seslope)
         tbsimple <- slope/seslope
-        testSlopes <- data.frame(modx = modxContrastNames, b = slope, se = seslope,
-                                 t = tbsimple, p = 2 * pt(abs(tbsimple), df = model$df.residual,
-                                               lower.tail = FALSE))
+
+        testSlopes <- data.frame(modx = modxContrastNames, b = slope,
+                                 se = seslope, t = tbsimple, p = 2 *
+                                 pt(abs(tbsimple), df =
+                                 model$df.residual, lower.tail =
+                                 FALSE))
+
         row.names(testSlopes) <-  levels(model.frame(model)[ , modx])
-        colnames(testSlopes) <- c(deparse(modx), "slope", "Std. Error", "t value", "Pr(>|t|)")
+
+        colnames(testSlopes) <- c(deparse(modx), "slope",
+                                  "Std. Error", "t value", "Pr(>|t|)")
 
         cat(paste("These are the straight-line \"simple slopes\" of the variable", plotx, " \n for the selected moderator values. \n"))
         print(testSlopes)
@@ -242,10 +248,12 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
         intervals <- if(x$jn$a > 0) c(2) else c(1)
         idxType <- 3
     } else {
-        stop("Your observed moderator data does not overlap with the region on which the slope would be significant. So we are stopping now.")
+        stop("Your observed moderator data does not overlap with
+              the region on which the slope would be significant.
+              So we are stopping now.")
     }
 
-    ## Previous oops. Don't use model.matrix(), that gives nothing if modx is a factor
+
     if (!is.numeric(modxVar)){
         print("Sorry, but I can't see how it makes sense to use a non-numeric moderator in these plots")
         warning("testSlopes: non-numeric moderator")

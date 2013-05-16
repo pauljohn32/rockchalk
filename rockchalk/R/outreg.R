@@ -1027,7 +1027,7 @@ outreg <-
 ##' supplied, it will write a text file containing the result. One can
 ##' then open or insert the file into Libre Office or other popular
 ##' "word processor" programs.
-##' 
+##'
 ##' @param outreg output from outreg
 ##' @param filename A file name into which the regression markup is to be saved. Should end in .html.
 ##' @return A vector of strings
@@ -1044,7 +1044,7 @@ outreg <-
 ##' outreg2HTML(m1out)
 ##  ## Run this for yourself to create an output file
 ##' ## outreg2HTML(m1out, filename = "funky.html")
-##' ## I'm not running that for you because you 
+##' ## I'm not running that for you because you
 ##' ## need to be in the intended working directory
 ##'
 ##' m2 <- lm(y ~ x1 + x2, data = dat)
@@ -1069,6 +1069,9 @@ outreg2HTML <- function(outreg, filename){
         myz2 <- gsub("\\$R\\^2\\$", "R<sup>2</sup>", myz2)
 
     myz2 <- sub("<td>\\\\mul(.*?)\\$\\{", "<td colspan = '3'>",  myz2)
+    myz2 <- gsub("<td>\\\\multicolumn\\{(\\d+)\\}\\{.*?\\}\\{(.*?)\\}", "<td colspan = '\\1'> \\2", myz2)
+
+
     myz2 <- gsub("\\$\\{", "", myz2)
     myz2 <- gsub("(\\**)}", "\\1", myz2)
     myz2 <- gsub("\\$\ *", " ", myz2)
