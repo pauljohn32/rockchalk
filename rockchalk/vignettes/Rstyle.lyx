@@ -1034,21 +1034,8 @@ Do not insert spaces between function names and their opening parentheses.
 \end_layout
 
 \begin_layout Enumerate
-Do not insert 
-\begin_inset Quotes eld
-\end_inset
-
-extra spaces
-\begin_inset Quotes erd
-\end_inset
-
- inside parentheses.
- 
-\end_layout
-
-\begin_layout Enumerate
-After reviewing the R source code, I am uncertain about whether one ought
- to insert one space after the function names 
+After reviewing the R source code, I was uncertain about whether one ought
+ to insert one space after 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1065,7 +1052,52 @@ for
 \end_inset
 
 .
- In a language like C, 
+ From an Rchaeological perspective, this is a little bit perplexing.
+ In the help page for those terms (see help(
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+)), there is no space after 
+\begin_inset Quotes eld
+\end_inset
+
+if
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+.
+ In the R-3.0.0 source code folder src/library/base/R, I count 1741 instances
+ of 
+\begin_inset Quotes eld
+\end_inset
+
+if(
+\begin_inset Quotes eld
+\end_inset
+
+ and 683 instances of 
+\begin_inset Quotes eld
+\end_inset
+
+if (
+\begin_inset Quotes eld
+\end_inset
+
+.
+ The former style seemed right to me, at least at first, because people
+ often say that R's 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1081,7 +1113,47 @@ for
 \begin_inset Quotes erd
 \end_inset
 
- are keywords, and there would be a space, as in 
+ are functions.
+ I asked for clarification in the R-devel email list, and Peter Dalgaard
+ explained that the space should be used because those terms are
+\end_layout
+
+\begin_deeper
+\begin_layout Quote
+language constructs (and they 
+\emph on
+are
+\emph default
+ keywords, not names, that's why ?for won't work).
+ The function calls are `if`(fee, {foo}, {fie}) and something rebarbative
+ for `for`(....).
+\end_layout
+
+\begin_layout Quote
+Besides, both constructs are harder to read without the spaces.
+ (r-devel, April 18, 2013)
+\end_layout
+
+\begin_layout Standard
+For me, that settles the question.
+ For R code, as in C, 
+\begin_inset Quotes eld
+\end_inset
+
+if
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+for
+\begin_inset Quotes erd
+\end_inset
+
+ should be treated as keywords, and there would be a space after them, as
+ in 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1102,52 +1174,23 @@ if (x < 7)
 \end_inset
 
 .
- However, in R, 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
-if()
 \end_layout
 
-\end_inset
-
- and 
-\begin_inset listings
-inline true
-status open
-
-\begin_layout Plain Layout
-
-for()
-\end_layout
-
-\end_inset
-
- are functions, and we do not insert spaces between function names and their
- parentheses.
- About 90% of the time, the R source does not include a space after 
+\end_deeper
+\begin_layout Enumerate
+Do not insert 
 \begin_inset Quotes eld
 \end_inset
 
-if
+extra spaces
 \begin_inset Quotes erd
 \end_inset
 
- or 
-\begin_inset Quotes eld
-\end_inset
-
-for
-\begin_inset Quotes erd
-\end_inset
-
-.
+ inside parentheses.
  
 \end_layout
 
+\begin_deeper
 \begin_layout Standard
 Programmers who have written in the BASH scripting language may recall that
  a space inside brackets is required.
@@ -1169,7 +1212,7 @@ status open
 
 \begin_layout Plain Layout
 
-if ( (x==1) & (y == 2) ) {
+if ( (x == 1) & (y == 2) ) {
 \end_layout
 
 \end_inset
@@ -1201,6 +1244,7 @@ The insertion of the interior parentheses for the smaller conditions inside
  the if statement is consistent with the GNU standard for C.
 \end_layout
 
+\end_deeper
 \begin_layout Subsubsection*
 Is there an 
 \begin_inset Quotes eld
