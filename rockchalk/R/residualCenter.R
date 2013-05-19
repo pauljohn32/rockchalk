@@ -17,7 +17,9 @@
 ##' Powered and Product Terms: Implications for Modeling
 ##' Interactions Among Latent Variables.
 ##' Structural Equation Modeling, 13(4), 497-519.
-residualCenter <- function(model){
+residualCenter <-
+    function(model)
+{
     UseMethod("residualCenter")
 }
 
@@ -42,7 +44,7 @@ residualCenter.default <- function (model)
         if (nterms == 1) return(NULL)
         dv <- paste("I(", gsub(":", "*", x), ")", sep = "")
         iv <- paste("(", gsub(":"," + ",x),")")
-        if(nterms >= 3) iv <- paste(iv, "^", nterms-1, sep="")
+        if(nterms >= 3) iv <- paste(iv, "^", nterms-1, sep = "")
         myformula <- paste(dv, "~", iv)
         myformula <- as.formula(myformula)
         rcterms <-  attr(terms(myformula), "term.labels")
@@ -60,9 +62,9 @@ residualCenter.default <- function (model)
     frmla <- paste(datn, collapse = " + ")
 
     rcRegressions <- list()
-    for(i in seq_along(datn)){
+    for (i in seq_along(datn)) {
         newname <- gsub(":", ".X.", datn[i])
-        res <- createRCinteraction( datn[i] , data=dat)
+        res <- createRCinteraction( datn[i] , data = dat)
         if (!is.null(res)){
             dat[ , datn[i]] <- res[["residuals"]]
             rcRegressions[[newname]] <- res[["reg"]]
@@ -100,7 +102,9 @@ NULL
 ##' @param object Fitted residual-centered regression from residualCenter
 ##' @param newdata A dataframe of values of the predictors for which predicted values are sought. Needs to include values for all predictors individually; need not include the interactions, since those are re-calculated inside this function.
 ##' @param ... Other parameters that will be passed to the predict method of the model.
-predict.rcreg <- function (object, newdata, ...){
+predict.rcreg <-
+    function (object, newdata, ...)
+{
     if ( ! c("rcreg") %in% class(object) ) stop("predict.rcreg is intended for rcreg objects, which are created by residualCenter in the rockchalk package")
     objectTerms <- terms(object)
     dvname <- names(attr(objectTerms, "dataClasses"))[1]
@@ -116,5 +120,5 @@ predict.rcreg <- function (object, newdata, ...){
         myresids <-  actualProduct - predvals
         newdata[[nams[i]]] <- myresids
     }
-    NextMethod(object, newdata=newdata, ...)
+    NextMethod(object, newdata = newdata, ...)
 }

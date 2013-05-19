@@ -362,7 +362,9 @@ NULL
 ##' \code{cutByTable},.
 ##' @param n Default = 5. The number of values for which
 ##' predictions are sought.
-##' @param ... Optional arguments to be passed to the predict function
+##' @param ... Optional arguments to be passed to the predict
+##' function. In particular, the arguments se.fit and interval are
+##' extracted from ... and used to control the output.
 ##' @return A data frame or a list of data frames.
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -415,7 +417,8 @@ predictOMatic <-
             ## fit <- do.call("predict", pargs)
             ## fit <- predict(model, newdata = ndnew, type = "response", ...)
             fit <-  do.call("predictCI", pargs)
-            ndnew <- cbind(ndnew, fit$fit)
+            if (interval != "none")  ndnew <- cbind(ndnew, fit$fit)
+            else ndnew <- cbind(ndnew, fit = fit$fit[ ,"fit"])
             if (se.fit) ndnew <- cbind(ndnew, fit$se.fit)
             attr(ndnew, "residual.scale") <- fit$residual.scale
             ndnew
@@ -451,8 +454,8 @@ predictOMatic <-
         pargs <-  modifyList(pargs, dots)
 
         fit <-  do.call("predictCI", pargs)
-
-        nd <- cbind(nd, fit$fit)
+        if (interval != "none")  nd <- cbind(nd, fit$fit)
+        else nd <- cbind(nd, fit = fit$fit[ ,"fit"])
         if (se.fit) nd <- cbind(nd, fit$se.fit)
         attr(nd, "residual.scale") <- fit$residual.scale
         attr(nd, "pnames") <- pnames

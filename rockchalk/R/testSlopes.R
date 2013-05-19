@@ -52,7 +52,8 @@
 ##' hypotheses and their applications to some educational problems.
 ##' Statistical Research Memoirs, 1, 57-93.
 ##' @example inst/examples/testSlopes-ex.R
-testSlopes <- function(object)
+testSlopes <-
+    function(object)
 {
     if (!inherits(object, "plotSlopes"))
         stop("use only with \"plotSlopes\" objects")
@@ -209,7 +210,9 @@ NULL
 ##' @param shade Optional. Create colored polygon for significant regions.
 ##' @param col Optional. Color of the shaded area. Default transparent pink.
 ##' @rdname testSlopes
-plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
+plot.testSlopes <-
+    function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10))
+{
     ## Following should be unnecessary.
     if (!inherits(x, "testSlopes"))
          stop("use only with \"testSlopes\" objects")
@@ -386,17 +389,17 @@ plot.testSlopes <- function(x, ..., shade = TRUE, col = rgb(1, 0, 0, 0.10) ){
         plot(xps, y, type="l", xlab=paste("The Moderator:", modx), ylab="slope/se - Tcrit")
         if( !is.null(tso$jn$roots) ){
             if(tso$jn$a < 0 ){
-                arrows( tso$jn$roots[1], 0, tso$jn$roots[2], 0, col="red", angle=90, lwd=3, code=3, length=0.1)
-                text( mean(range(xps)), range(y)[1], pos=3, label=expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx, " is significant in the red zone")))
+                arrows( tso$jn$roots[1], 0, tso$jn$roots[2], 0, col = "red", angle = 90, lwd = 3, code = 3, length = 0.1)
+                text( mean(range(xps)), range(y)[1], pos = 3, label = expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx, " is significant in the red zone")))
             } else {
-                arrows(min(xps), 0, tso$jn$roots[1], 0, col="red", angle=90, lwd=3, code=2, length=0.1)
-                arrows(tso$jn$roots[2], 0, max(xps), 0, col="red", angle=90, lwd=3, code=1, length=0.1)
-                text( mean(range(xps)), range(y)[2], pos=1,
+                arrows(min(xps), 0, tso$jn$roots[1], 0, col = "red", angle = 90, lwd = 3, code = 2, length = 0.1)
+                arrows(tso$jn$roots[2], 0, max(xps), 0, col = "red", angle = 90, lwd = 3, code = 1, length = 0.1)
+                text( mean(range(xps)), range(y)[2], pos = 1,
                      label = expression(paste((b[plotx] + b[modx:plotx]*modx)*plotx,
                          " is significant in the red zone")))
             }
         }
-        abline(h=0, col="gray80")
+        abline(h = 0, col = "gray80")
     }
 
     invisible(MM)

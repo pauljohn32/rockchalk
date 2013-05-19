@@ -32,11 +32,11 @@ mcGraph1 <- function (x1, x2, y, x1lab, x2lab, ylab, ...){
   if (missing(x2lab)) x2lab <- gsub(".*\\$", "", deparse(substitute(x2)))
   if (missing(ylab)) ylab  <- gsub(".*\\$", "", deparse(substitute(y)))
 
-  res <- perspEmpty(x1=plotSeq(x1range, 5), x2=plotSeq(x2range,5), y=yrange, x1lab = x1lab, x2lab = x2lab, ylab = ylab, ...)
+  res <- perspEmpty(x1 = plotSeq(x1range, 5), x2 = plotSeq(x2range,5), y = yrange, x1lab = x1lab, x2lab = x2lab, ylab = ylab, ...)
 
   yMinimum <- rep(yrange[1] , length(x1))
-  mypoints1 <- trans3d ( x1, x2, yMinimum, pmat = res )
-  points( mypoints1, pch = 16, col= "blue")
+  mypoints1 <- trans3d(x1, x2, yMinimum, pmat = res)
+  points( mypoints1, pch = 16, col = "blue")
   invisible(res)
 }
 
@@ -89,7 +89,7 @@ mcGraph1 <- function (x1, x2, y, x1lab, x2lab, ylab, ...){
 ##'   mcGraph2(dat$x1, dat$x2, dat$y, rescaley = runif(length(dat$x1), .9,1.1), theta = 0)
 ##' }
 ##'
-mcGraph2 <- function(x1, x2, y, rescaley=1, drawArrows=TRUE, x1lab, x2lab, ylab, ...){
+mcGraph2 <- function(x1, x2, y, rescaley = 1, drawArrows = TRUE, x1lab, x2lab, ylab, ...){
     x1range <- magRange(x1, 1.25)
     x2range <- magRange(x2, 1.25)
     yrange <- magRange(y, 1.5)
@@ -106,8 +106,8 @@ mcGraph2 <- function(x1, x2, y, rescaley=1, drawArrows=TRUE, x1lab, x2lab, ylab,
 
     points( mypoints1, pch = 16, col=gray(0.8))
     points( mypoints2, pch = 1, col= "blue")
-    mypoints2s <- trans3d ( x1, x2, (0.8)*newy, pmat =res )
-    if (drawArrows) arrows ( mypoints1$x , mypoints1$y , mypoints2s$x , mypoints2s$y , col="red" , lty = 2, lwd=0.3, length=0.1)
+    mypoints2s <- trans3d(x1, x2, (0.8)*newy, pmat = res)
+    if (drawArrows) arrows(mypoints1$x , mypoints1$y , mypoints2s$x , mypoints2s$y , col="red" , lty = 2, lwd = 0.3, length = 0.1)
     invisible(res)
 }
 
@@ -175,10 +175,10 @@ mcGraph3 <- function(x1, x2, y, interaction = FALSE, drawArrows = TRUE, x1lab, x
     res <- perspEmpty(x1 = plotSeq(x1range, 5), x2 = plotSeq(x2range, 5),  y = yrange, x1lab = x1lab, x2lab = x2lab, ylab = ylab, ...)
 
     mypoints1 <- trans3d( x1, x2, yrange[1], pmat = res )
-    points( mypoints1, pch = 16, col = gray(0.8))
+    points(mypoints1, pch = 16, col = gray(0.8))
 
     mypoints2 <- trans3d( x1, x2, y, pmat = res )
-    points( mypoints2, pch = 1, col = "blue")
+    points(mypoints2, pch = 1, col = "blue")
 
     if (interaction) m1 <- lm(y ~ x1 * x2)
     else m1 <- lm(y ~ x1 + x2)
@@ -186,8 +186,8 @@ mcGraph3 <- function(x1, x2, y, interaction = FALSE, drawArrows = TRUE, x1lab, x
     x1seq <- plotSeq (x1range, length.out = 20)
     x2seq <- plotSeq (x2range, length.out = 20)
 
-    zplane <- outer ( x1seq, x2seq, function(a, b) { predict(m1,
-                                                             newdata = data.frame( x1 = a, x2 = b ))} )
+    zplane <- outer (x1seq, x2seq, function(a, b) { predict(m1,
+                      newdata = data.frame(x1 = a, x2 = b))})
 
     for( i in 1:length(x1seq) ){
         lines(trans3d(x1seq[i], x2seq, zplane[i,], pmat = res), lwd = 0.3)
@@ -196,13 +196,13 @@ mcGraph3 <- function(x1, x2, y, interaction = FALSE, drawArrows = TRUE, x1lab, x
         lines(trans3d(x1seq, x2seq[j], zplane[,j], pmat = res), lwd = 0.3)
     }
 
-    mypoints4 <- trans3d (x1 , x2 , fitted(m1) , pmat =res )
+    mypoints4 <- trans3d (x1 , x2 , fitted(m1) , pmat = res)
     ##  points(mypoints4)
     newy <- ifelse(fitted(m1) < y, fitted(m1)+ 0.8*(y-fitted(m1)),
                    fitted(m1) + 0.8 * (y-fitted(m1)))
-    mypoints2s <- trans3d ( x1, x2, newy, pmat =res )
+    mypoints2s <- trans3d(x1, x2, newy, pmat = res)
 
-    if (drawArrows) arrows ( mypoints4$x , mypoints4$y , mypoints2s$x , mypoints2s$y , col = "red" , lty = 4, lwd = 0.3, length = 0.1)
+    if (drawArrows) arrows(mypoints4$x , mypoints4$y , mypoints2s$x , mypoints2s$y , col = "red" , lty = 4, lwd = 0.3, length = 0.1)
     invisible(list(lm = m1, res = res))
 }
 

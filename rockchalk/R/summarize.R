@@ -53,7 +53,9 @@ NULL
 ##' @return a vector of named elements including the summary
 ##' table as well as entropy and normed entropy.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-summary.factor <- function(y, maxLevels = 5, sumstat = TRUE) {
+summary.factor <-
+    function(y, maxLevels = 5, sumstat = TRUE)
+{
     ## 5 nested functions to be used later
 
     divr <- function(p = 0) {
@@ -150,8 +152,8 @@ NULL
 ##' summarizeFactors(dat)
 ##' ##see help for summarize for more examples
 summarizeFactors <-
-    function (dat = NULL, maxLevels = 5, alphaSort = TRUE, sumstat= TRUE, digits = max(3,
-              getOption("digits") - 3))
+    function (dat = NULL, maxLevels = 5, alphaSort = TRUE,
+              sumstat= TRUE, digits = max(3, getOption("digits") - 3))
 {
     if (!is.data.frame(dat)) dat <- as.data.frame(dat)
     factors <- sapply(dat, function(x) {!is.numeric(x)})
@@ -159,7 +161,8 @@ summarizeFactors <-
     datf <- dat[, factors, drop = FALSE]
     if (alphaSort)
         datf <- datf[, sort(colnames(datf)), drop = FALSE]
-    z <- lapply(datf, rockchalk:::summary.factor, maxLevels = maxLevels, sumstat = sumstat)
+    z <- lapply(datf, rockchalk:::summary.factor,
+                maxLevels = maxLevels, sumstat = sumstat)
     attr(z, "class") <- c("factorSummaries")
     z
 }
@@ -241,7 +244,9 @@ NULL
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/summarize-ex.R
-summarize <- function(dat, ...) {
+summarize <-
+    function(dat, ...)
+{
     dots <- list(...)
     dotnames <- names(dots)
     ## next should give c('digits', 'alphaSort')

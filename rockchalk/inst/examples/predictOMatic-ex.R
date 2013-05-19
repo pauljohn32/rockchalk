@@ -180,7 +180,7 @@ predict(m2, newdata = m2.newdata)
 
 (m2.p7 <- predictOMatic(m2, predVals = list(x2 = c(48, 50, 52), xcat2 = c("M","D"))))
 
-(m2.p8 <- predictOMatic(m2, predVals = list(x2 = range(m2.data$x2), xcat2 = c("M","D"))))
+(m2.p8 <- predictOMatic(m2, predVals = list(x2 = range(m2.data$x2, na.rm = TRUE), xcat2 = c("M","D"))))
 
 (m2.p9 <- predictOMatic(m2, predVals = list(x2 = plotSeq(m2.data$x2), x1 = quantile(m2.data$x1, pr =c(0.33, 0.66), na.rm = TRUE), xcat2 = c("M","D"))))
 plot(y ~ x2 , data = m2.data)

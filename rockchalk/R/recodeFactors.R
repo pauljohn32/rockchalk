@@ -51,7 +51,9 @@
 ## Should fail:
 ## z2 <- combineLevels(z, levs=c("A","C"), "Whoops!")
 ##'
-combineLevels <- function(fac, levs, newLabel = "combinedLevels"){
+combineLevels <-
+    function(fac, levs, newLabel = "combinedLevels")
+{
     ##internal fn to discern connected sequence
     adjacent <- function(x){
         xfull <- seq(min(x),max(x))
@@ -77,12 +79,12 @@ combineLevels <- function(fac, levs, newLabel = "combinedLevels"){
 
     ##for NOT ORDINAL factors, easy. Put new level on end
 
-    if (! "ordered" %in% class(fac)){
+    if (! "ordered" %in% class(fac)) {
         faclnew  <- c(facl, "pjtempfacname")
         facnew <- factor(fac, levels = faclnew)
         facnew[ facnew %in% levs ] <- "pjtempfacname"
     } else {
-        if ("ordered" %in% class(fac)){  ## levels must be adjacent
+        if ("ordered" %in% class(fac)) {  ## levels must be adjacent
             if (!adjacent(levsNum)) {
                 stop("fac is ordered. The levels to be combined must be adjacent")
             }

@@ -20,7 +20,7 @@ centralValues <- function(x){
   represents <- list()
   for (i in 1: nc) {
     represents[[nams[i]]] <- if (is.numeric(x[ ,i])){
-      mean(x[ ,i], na.rm=T)
+      mean(x[ ,i], na.rm = TRUE)
     } else  levels(x[,i]) [which.max(table(x[ ,i]))]
   }
   as.data.frame(represents)

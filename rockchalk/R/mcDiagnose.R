@@ -18,9 +18,9 @@ lmAuxiliary <- function(model){
   results <- list()
   colnames(dat) <- gsub("`","",  colnames(dat)) #rm ticks on varnames
   for (i in ivnames) {
-    fmla <- paste( "`",i,"`", " ~ ." , sep="") #add ticks in fmla
+    fmla <- paste( "`",i,"`", " ~ ." , sep = "") #add ticks in fmla
     fmla <- gsub("``","`",  fmla) # remove double ticks
-    lmcall <- call("lm", formula(fmla, data=dat), quote(dat))
+    lmcall <- call("lm", formula(fmla, data = dat), quote(dat))
     results[[ i ]] <- maux <- eval(lmcall)
     print(formula(maux))
   }
@@ -90,7 +90,7 @@ getDeltaRsquare <- function(model){
   modeldrop1 <- drop1(model)
   RSS <- modeldrop1[1, "RSS"] ##Residual Sum of Squares
   deltaSS <- modeldrop1[ , "Sum of Sq"]
-  SST = sum((model$model[, 1] - mean(model$model[, 1]))^2)
+  SST = sum((model$model[ , 1] - mean(model$model[, 1]))^2)
   deltaRsquare <- deltaSS/SST
   names(deltaRsquare) <- row.names(modeldrop1)
   omit <- is.na(deltaRsquare)
@@ -194,7 +194,7 @@ getPartialCor <- function(model, dvonly = TRUE){
     if (dvonly) p[ ,1, drop = FALSE] else p
 }
 
-## There's go to be a better way.
+## There's got to be a better way.
 
 ## Center X, then proceed via QR decomposition?
 ## S-1 * R'R * S-1

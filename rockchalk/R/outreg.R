@@ -232,7 +232,7 @@ outreg0 <-
     }
 
 
-    gofPrint <- function(sl, name){
+    gofPrint <- function(sl, name) {
         y <- harvest(sl, name)
         xname <- ifelse(is.na(gofNames[name]), name, gofNames[name])
         if (attr(y, "nonNull")) {
@@ -298,7 +298,7 @@ outreg0 <-
     dimnames(SE)[[2]] <- modelLabels
     DF <- vector("numeric", length = nmodels)
 
-    for(j in seq_along(modelList)){
+    for(j in seq_along(modelList)) {
         modl <- modelList[[j]]
         best <- coef(modl)
         B[parmnames, modelLabels[j]] <- best[parmnames]
@@ -324,7 +324,7 @@ outreg0 <-
 
 
     ## If you want a LaTeX table float...
-    if (float == TRUE || !missing(title) || !missing(label)){
+    if (float == TRUE || !missing(title) || !missing(label)) {
         float <- TRUE
 	cat("\\begin{table}\n")
         if (missing(title)) title <- "A Regression"
@@ -337,7 +337,7 @@ outreg0 <-
     cat("\\hline\n")
 
     ## Put model labels on top of each model column, if modelLabels were given
-    if (!is.null(modelLabels)){
+    if (!is.null(modelLabels)) {
         cat("     ")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
@@ -350,7 +350,7 @@ outreg0 <-
     }
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
-    if (tight == TRUE){
+    if (tight == TRUE) {
         cat("               ", rep (" &Estimate ", nmodels), "\\\\\n")
         cat("               ", rep (" &(S.E.) ", nmodels), "\\\\\n")
     } else {
@@ -360,7 +360,7 @@ outreg0 <-
 
 
     ## Here come the regression coefficients
-    for (regname in parmnames){
+    for (regname in parmnames) {
         cat(paste("", displayNames[regname]), sep="")
 
         for (model in modelLabels) {
@@ -1056,7 +1056,9 @@ outreg <-
 ##' ## outreg2HTML(m2out, filename = "funky2.html")
 ##' ## Please inspect the file "funky2.html
 ##'
-outreg2HTML <- function(outreg, filename){
+outreg2HTML <-
+    function(outreg, filename)
+{
     myz2 <- gsub("^\\n$", "</tr></td>\n", outreg)
     myz2 <- gsub("^", "<tr><td>", myz2)
     myz2 <- gsub(".*\\\\begin\\{tabular\\}.*$", "<table>\n", myz2)

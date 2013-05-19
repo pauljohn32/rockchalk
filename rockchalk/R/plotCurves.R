@@ -73,7 +73,8 @@ plotCurves <-
     function (model, plotx, modx, n, modxVals = NULL,
               interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE,
-              col = 1, llwd = 2, opacity = 100,  envir = environment(formula(model)), ...)
+              col = 1, llwd = 2, opacity = 100,
+              envir = environment(formula(model)), ...)
 {
     if (missing(model))
         stop("plotCurves requires a fitted regression model.")

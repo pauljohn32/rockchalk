@@ -34,7 +34,9 @@
 ##' res <- perspEmpty(x1, x2, y, ticktype="detailed", nticks=10)
 ##' mypoints1 <- trans3d ( x1, x2, y, pmat = res )
 ##' points( mypoints1, pch = 16, col= "blue")
-perspEmpty <- function(x1, x2, y, x1lab = "x1", x2lab = "x2", ylab = "y", x1lim, x2lim, ... ){
+perspEmpty <-
+    function(x1, x2, y, x1lab = "x1", x2lab = "x2", ylab = "y", x1lim, x2lim, ... )
+{
     x1range <- range(x1, na.rm = TRUE)
     x2range <- range(x2, na.rm = TRUE)
     yrange <- range(y, na.rm = TRUE)

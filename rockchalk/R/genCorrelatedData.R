@@ -26,7 +26,10 @@
 ##' mcGraph1(dat$x1, dat$x2, dat$y, theta=20, phi=8, ticktype="detailed", nticks=10)
 ##' m1 <- lm(y ~ x1 + x2, data = dat)
 ##' plotPlane(m1, plotx1 = "x1", plotx2 = "x2")
-genCorrelatedData <- function(N = 100, means = c(50,50), sds = c(10,10), rho = 0.0, stde = 1, beta = c(0, 0.2, 0.2, 0.0)){
+##'
+genCorrelatedData <-
+    function(N = 100, means = c(50,50), sds = c(10,10), rho = 0.0, stde = 1, beta = c(0, 0.2, 0.2, 0.0))
+{
   if (length(beta)> 4) stop("beta vector can have at most 4 values")
   corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
   sigma <- diag(sds) %*% corr.mat %*% diag(sds)
@@ -199,7 +202,7 @@ genCorrelatedData2 <-
     Bmat2 <- matrix(0, nrow = d, ncol = d)
     Bmat2[lower.tri(Bmat2, diag = TRUE)] <- beta2
 
-    ##Would have been easier if I studies sparse matrix entry and usage.
+    ##Would have been easier if I studied sparse matrix entry and usage.
     ## TODO 2013-05-16: This does a lot of calculations on zeroes.
     ## May enhance effiency to select columns before multiplying.
     intEffects <-  sapply(1:d, function(j) {
@@ -258,7 +261,9 @@ NULL
 ##' vech2Corr(v)
 ##' v <- c(0.1, 0.4, -0.4, 0.4, 0.5, 0.1)
 ##' vech2Corr(v)
-vech2Corr <- function(vech){
+vech2Corr <-
+    function(vech)
+{
     ##compute number of rows from vech. diag not in the vech!
     n <- (sqrt(1 + 8 * length(vech)) + 1)/2
     if (!as.integer(n) == n) stop(deparse(substitute(vech)), " must have the correct number of elelemnts to fill in a strictly lower triangle in a square matrix.")
@@ -296,7 +301,9 @@ NULL
 ##' vech2mat(x)
 ##' vech2mat(x, diag = 7)
 ##' vech2mat(x, diag = c(99, 98, 97, 96))
-vech2mat <- function(vech, diag = NULL){
+vech2mat <-
+    function(vech, diag = NULL)
+{
     ## Must calculate correct number of rows from vech, if
     ## vech implies a non-square, stop.
     ## If no diag, then vech provides the diagonal values
@@ -353,7 +360,9 @@ NULL
 ##' newRho <- lazyCor(c(0.5, 0.6, 0.7, -0.1, 0.1, 0.2))
 ##' lazyCov(Rho = newRho, Sd = 1.0)
 ##' lazyCov(Rho = newRho, Sd = c(3, 4, 5, 6))
-lazyCov <- function(Rho, Sd, d){
+lazyCov <-
+    function(Rho, Sd, d)
+{
     if (missing(Sd)) stop("lazyCov requires user to specify either a vector or a single common value for all standard deviations")
     if (missing(Rho)) stop("lazyCov requires a symmstric correlation matrix or enough information to create one, either a vech of lower triangular values or a single common correlation value")
     if (!missing(d) && (length(Sd) > 1) && (length(Sd) != d)) stop("lazyCov doesn't require a d argument, but if you provide one, it must be consistent with the length of a supplied Sd vector")
@@ -400,7 +409,9 @@ NULL
 ##' lazyCor(0.5, 8)
 ##' lazyCor(c(0.1, 0.2, 0.3))
 ##' lazyCor(c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6))
-lazyCor <- function(X, d) {
+lazyCor <-
+    function(X, d)
+{
     if (is.matrix(X)){
         stopifnot (isSymmetric(X))
         if (!dim(X)[1] == d) stop("lazyCor: the dimension of the matrix supplied is inconsistent with the dimension argument d")
@@ -430,7 +441,9 @@ NULL
 ##' @param d An integer, the desired size of the vector
 ##' @return A vector of length d
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-makeVec <- function(x = NULL, d = NULL){
+makeVec <-
+    function(x = NULL, d = NULL)
+{
     if (length(x) == 1) {
         x <- rep(x, d) #assign same for all
     } else if (length(x) != d){
@@ -464,7 +477,10 @@ NULL
 ##' makeSymmetric(c(1,2,3), d = 5)
 ##' makeSymmetric(c(0.8,0.4, 0.2), cov = TRUE)
 ##' makeSymmetric(c(0.8,0.4, 0.2), cov = TRUE, diag = c(44, 55, 66))
-makeSymmetric <- function(X, d = NULL, diag = NULL, corr = FALSE, cov = FALSE) {
+##'
+makeSymmetric <-
+    function(X, d = NULL, diag = NULL, corr = FALSE, cov = FALSE)
+{
     if (is.matrix(X)) {
         dims <- dim(X)
         if (dims[1] != dims[2]) stop("X not square")
@@ -505,7 +521,9 @@ NULL
 ##' @param tol Tolerance (closeness to 0 required to declare failure)
 ##' @return TRUE or FALSE
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-checkPosDef <- function(X, tol = 1e-6){
+checkPosDef <-
+    function(X, tol = 1e-6)
+{
     evalues <- eigen(X, only.values = TRUE)$values
     res <- if(!all(evalues >= -tol*abs(evalues[1L]))) FALSE else TRUE
     res
