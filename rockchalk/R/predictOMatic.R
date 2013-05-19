@@ -378,6 +378,14 @@ predictOMatic <-
         interval <- dots[["interval"]]
         dots[["interval"]] <- NULL
     }
+
+    se.fit <- FALSE
+    if (!is.null(dots[["se.fit"]])){
+        se.fit <- dots[["se.fit"]]
+        dots[["se.fit"]] <- NULL
+    }
+
+
     ## 2013-05-12 TODO, or FIXME 1) no smarter way than previous?  2)
     ## Why not trust modifyList below to do the work for us. 3) Why
     ## did I only attend to "interval" 4) will any of the other
@@ -402,12 +410,13 @@ predictOMatic <-
             flxxx[[x]]  <- focalVals(emf[ ,x], divider, n)
             ndnew <- newdata(model, predVals = flxxx[x], emf = emf)
             row.names(ndnew) <- names(flxxx[[x]])
-            pargs <- list(model, newdata = ndnew, type = "response", interval = interval)
+            pargs <- list(model, newdata = ndnew, type = "response", interval = interval, se.fit = se.fit)
             pargs <-  modifyList(pargs, dots)
             ## fit <- do.call("predict", pargs)
             ## fit <- predict(model, newdata = ndnew, type = "response", ...)
             fit <-  do.call("predictCI", pargs)
-            ndnew <- cbind(fit$fit, fit$se.fit, ndnew)
+            ndnew <- cbind(ndnew, fit$fit)
+            if (se.fit) ndnew <- cbind(ndnew, fit$se.fit)
             attr(ndnew, "residual.scale") <- fit$residual.scale
             ndnew
         })
@@ -442,7 +451,9 @@ predictOMatic <-
         pargs <-  modifyList(pargs, dots)
 
         fit <-  do.call("predictCI", pargs)
-        nd <- cbind(fit$fit, nd, se.fit = fit$se.fit)
+
+        nd <- cbind(nd, fit$fit)
+        if (se.fit) nd <- cbind(nd, fit$se.fit)
         attr(nd, "residual.scale") <- fit$residual.scale
         attr(nd, "pnames") <- pnames
     }

@@ -365,37 +365,58 @@ affect the ``rightness'' of code.
 Other observations about spaces,
 \begin{enumerate}
 \item Do not insert spaces between function names and their opening parentheses.
+\item After reviewing the R source code, I was uncertain about whether one
+ought to insert one space after ``if'' and ``for''. From an Rchaeological
+perspective, this is a little bit perplexing. In the help page for
+those terms (see help(``for'')), there is no space after ``if''
+or ``for''. In the R-3.0.0 source code folder src/library/base/R,
+I count 1741 instances of ``if(`` and 683 instances of ``if (``.
+The former style seemed right to me, at least at first, because people
+often say that R's ``if'' and ``for'' are functions. I asked for
+clarification in the R-devel email list, and Peter Dalgaard explained
+that the space should be used because those terms are
+
+\begin{quote}
+language constructs (and they \emph{are} keywords, not names, that's
+why ?for won't work). The function calls are `if`(fee, \{foo\}, \{fie\})
+and something rebarbative for `for`(....).
+
+Besides, both constructs are harder to read without the spaces. (r-devel,
+April 18, 2013)
+\end{quote}
+
+For me, that settles the question. For R code, as in C, ``if'' and
+``for'' should be treated as keywords, and there would be a space
+after them, as in ``\inputencoding{latin9}\lstinline!if (x < 7)!\inputencoding{utf8}''.
+
 \item Do not insert ``extra spaces'' inside parentheses. 
-\item After reviewing the R source code, I am uncertain about whether one
-ought to insert one space after the function names ``if'' and ``for''.
-In a language like C, ``if'' and ``for'' are keywords, and there
-would be a space, as in ``\inputencoding{latin9}\lstinline!if (x < 7)!\inputencoding{utf8}''.
-However, in R, \inputencoding{latin9}\lstinline!if()!\inputencoding{utf8}
-and \inputencoding{latin9}\lstinline!for()!\inputencoding{utf8} are
-functions, and we do not insert spaces between function names and
-their parentheses. About 90\% of the time, the R source does not include
-a space after ``if'' or ``for''. 
-\end{enumerate}
+
+
 Programmers who have written in the BASH scripting language may recall
 that a space inside brackets is required. That training causes me
 to think that R code is a little bit ``jammed together.'' This is
 pleasant to my eye:
 
+
 \inputencoding{latin9}\begin{lstlisting}
-if ( (x==1) & (y == 2) ) {
+if ( (x == 1) & (y == 2) ) {
 \end{lstlisting}
 \inputencoding{utf8}
 
+
 but, from an Rchaeological point of view, more the correct style is:
+
 
 \inputencoding{latin9}\begin{lstlisting}
 if((x == 1) & (y == 2)) {
 \end{lstlisting}
 \inputencoding{utf8}
 
+
 The insertion of the interior parentheses for the smaller conditions
 inside the if statement is consistent with the GNU standard for C.
 
+\end{enumerate}
 
 \subsubsection*{Is there an ``argument exception'' to the space rule for equal
 signs?}
