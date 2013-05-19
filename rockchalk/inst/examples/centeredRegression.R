@@ -67,10 +67,10 @@ plotPlane(m1, plotx1="x1", plotx2="x2")
 ## Add an interaction. Watch, it ruins everything!
 ##
 
-m2 <- lm(y ~ x1 * x2, data= dat3)
+m2 <- lm(y ~ x1 * x2, data = dat3)
 summary(m2)
 dev.new()
-plotPlane(m2, plotx1="x1", plotx2="x2", theta=-10)
+plotPlane(m2, plotx1 = "x1", plotx2 = "x2", theta = -10)
 
 
 ## Coefficients:
@@ -99,8 +99,8 @@ summary(m2mc)
 ## function. Results are the same, of course. First, mean center the
 ## variables with R's scale function:
 
-dat3$x1c <- as.numeric(scale(dat3$x1, center=TRUE, scale=FALSE))
-dat3$x2c <-  as.numeric(scale(dat3$x2, center=TRUE, scale=FALSE))
+dat3$x1c <- as.numeric(scale(dat3$x1, center = TRUE, scale = FALSE))
+dat3$x2c <-  as.numeric(scale(dat3$x2, center = TRUE, scale = FALSE))
 ## The as.numeric is required because scale returns a matrix
 ## with one column, not a vector. How annoying!
 
@@ -137,18 +137,18 @@ m2mcmanualpred <- fitted(m2manualmc)
 ## EXACTLY THE SAME predicted values! I don't mean "similar"
 ## I mean exactly the same. Look like this:
 
-par(mfcol=c(1,2))
+par(mfcol = c(1,2))
 
-plotPlane(m2, "x1", "x2", plotPoints=F, theta=-25, main="Not Mean Centered", ticktype="detailed")
-plotPlane(m2mc, "x1", "x2", plotPoints=F, theta=-25, main="Mean Centered", ticktype="detailed")
+plotPlane(m2, "x1", "x2", plotPoints = FALSE, theta = -25, main = "Not Mean Centered", ticktype = "detailed")
+plotPlane(m2mc, "x1", "x2", plotPoints = FALSE, theta = -25, main = "Mean Centered", ticktype = "detailed")
 
-par(mfcol=c(1,1))
+par(mfcol = c(1,1))
 
 ## Maybe you are not into 3d illustrations.  Too bad. I can show the
 ## same in two dimensions.  Let's create a scatterplot displaying the
 ## predicted values from the ordinary and the mean-centered models
 
-plot(fitted(m2), fitted(m2mc), xlab="predicted from uncentered x", ylab="predicted from centered x", main="(Not)Centered Predictions Identical")
+plot(fitted(m2), fitted(m2mc), xlab = "predicted from uncentered x", ylab = "predicted from centered x", main = "(Not)Centered Predictions Identical")
 
 ##
 ##
@@ -170,9 +170,9 @@ plot(fitted(m2), fitted(m2mc), xlab="predicted from uncentered x", ylab="predict
 
 ## In response, I say this. Just as the slope varies from point to
 ## point, the standard error also changes from point to point.  If you
-## choose a point in the data, say where x1=48 and x2=47.2, and then
-## find the equivalent mean-centered point, which is x1c=-1.24 and
-## x2c=-1.305, you will find the slopes and the standard errors are
+## choose a point in the data, say where x1 = 48 and x2 = 47.2, and then
+## find the equivalent mean-centered point, which is x1c = -1.24 and
+## x2c = -1.305, you will find the slopes and the standard errors are
 ## exactly the same.  The slope at x1,x2 in the not centered model is
 ## exactly the same as the slope in the centered model at x1c,x2c.
 ## More importantly, from either model, we can calculate the same
@@ -251,17 +251,17 @@ m2rc <- residualCenter(m2)
 summary(m2rc)
 
 op <- par(no.readonly = TRUE)
-par(mar=c(2,2,2,1), mfcol=c(2,2))
+par(mar = c(2,2,2,1), mfcol = c(2,2))
 
-plotPlane(m1, "x1", "x2", plotPoints=T, theta=-25, main="No Interaction", ticktype="detailed")
+plotPlane(m1, "x1", "x2", plotPoints = TRUE, theta = -25, main = "No Interaction", ticktype = "detailed")
 
-plotPlane(m2, "x1", "x2", plotPoints=T, theta=-25, main="Not Centered", ticktype="detailed")
+plotPlane(m2, "x1", "x2", plotPoints = TRUE, theta = -25, main = "Not Centered", ticktype = "detailed")
 
-plotPlane(m2rc, "x1", "x2", plotPoints=T, theta=-25, main="Residual Centered", ticktype="detailed")
+plotPlane(m2rc, "x1", "x2", plotPoints = TRUE, theta = -25, main = "Residual Centered", ticktype = "detailed")
 
-plotPlane(m2mc, "x1", "x2", plotPoints=T, theta=-25, main="Mean Centered", ticktype="detailed")
+plotPlane(m2mc, "x1", "x2", plotPoints = TRUE, theta = -25, main = "Mean Centered", ticktype = "detailed")
 
-par(mfcol=c(1,1))
+par(mfcol = c(1,1))
 
 
 ## I had trouble believing those plots. Is it possible that the
@@ -271,25 +271,25 @@ par(mfcol=c(1,1))
 ## double-check by manually calculating a residual-centered regression
 ## and extracting predicted values.
 
-rcreg <-  lm ( I(x1*x2)  ~ x1 + x2, data=dat3)
+rcreg <-  lm ( I(x1*x2)  ~ x1 + x2, data = dat3)
 rcx1x2 <- resid(rcreg)
-m2manualrc <- lm(y ~ x1 + x2 + rcx1x2, data=dat3)
-predm2manualrc <- predict(m2manualrc, newdata=dat3)
+m2manualrc <- lm(y ~ x1 + x2 + rcx1x2, data = dat3)
+predm2manualrc <- predict(m2manualrc, newdata = dat3)
 
 
 
-m2 <- lm( y ~ x1 * x2, data=dat3)
+m2 <- lm( y ~ x1 * x2, data = dat3)
 m2mc <- meanCenter(m2)
 m2rc <- residualCenter(m2)
 
-m2pred <- predict(m2, newdata=dat3)
+m2pred <- predict(m2, newdata = dat3)
 dat3mc <- dat3
 dat3mc$x1 <- dat3mc$x1c
 dat3mc$x2 <- dat3mc$x2c
-m2mcpred <- predict(m2mc, newdata=dat3mc)
-m2rcpred <- predict(m2rc, newdata=dat3)
+m2mcpred <- predict(m2mc, newdata = dat3mc)
+m2rcpred <- predict(m2rc, newdata = dat3)
 
-dat4 <- data.frame("m2pred"= m2pred, "m2mcpred"=m2mcpred, "m2mcmaunal"= m2mcmanualpred, "m2rcpred"=m2rcpred, "m2rcpred2"=predm2manualrc)
+dat4 <- data.frame("m2pred"= m2pred, "m2mcpred" = m2mcpred, "m2mcmaunal"= m2mcmanualpred, "m2rcpred" = m2rcpred, "m2rcpred2" = predm2manualrc)
 
 head(dat4)
 
