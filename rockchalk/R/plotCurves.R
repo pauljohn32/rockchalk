@@ -61,7 +61,7 @@
 ##' single value or a vector, which will be recycled as necessary.
 ##' ##' @param opacity Optional, default = 100. A number between 1 and 255. 1 means "transparent" or invisible, 255 means very dark.
 ##' the darkness of confidence interval regions
-##' @param ... further arguments that are passed to plot.
+##' @param ... further arguments that are passed to plot or predict. The arguments that are monitored to be sent to predict are c("type", "se.fit", "dispersion", "terms", "na.action").
 ##' @export
 ##' @import car
 ##' @return A plot is created as a side effect, a list is returned including
@@ -132,19 +132,31 @@ plotCurves <-
     ## others.
 
     parms <- list(model, newdata = newdf, type = "response" , interval = interval)
+    ## type requires special handling because it may go to predict or plot
+    if (!is.null(dotargs[["type"]])) {
+        if (dotargs[["type"]] %in% c("response", "link", "none")) {
+            parms[["type"]] <- dotargs[["type"]]
+            dotargs[["type"]] <- NULL
+        }
+    }
     predArgs <- list()
-    validForPredict <- c("type", "se.fit", "dispersion", "terms", "na.action")
+    validForPredict <- c("se.fit", "dispersion", "terms", "na.action")
     dotsForPredict <- dotnames[dotnames %in% validForPredict]
 
-    if (any(dotsForPredict)) parms <- modifyList(parms, dotargs[[dotsForPredict]])
-
+    if (length(dotsForPredict) > 0){
+        parms <- modifyList(parms, dotargs[dotsForPredict])
+        dotargs[[dotsForPredict]] <- NULL
+    }
     np <- do.call("predictCI", parms)
     newdf <- cbind(newdf, np$fit)
+
+    if ((!is.null(parms[["se.fit"]])) && (parms[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
+
 
     plotyRange <- if(is.numeric(depVar)){
         magRange(depVar, mult = c(1, 1.2))
     } else {
-        stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
+        stop("plotCurves: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
     }
 
 

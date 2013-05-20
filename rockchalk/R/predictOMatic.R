@@ -542,8 +542,9 @@ predictCI <-
     }
     ## set se.fit = TRUE always, even if user doesn't want it.
     ## make them have it!
+
     pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
-                       type = "response", na.action = na.action)
+    type = "response", interval = interval, na.action = na.action)
 
     ## pred insides, at least:
     ## pred$fit      on linear predictor (==link) scale

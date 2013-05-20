@@ -7,7 +7,8 @@
 ##' @param ... Additional arguments passed to methods. Often
 ##' includes arguments that are passed to plot. Any
 ##' arguments that customize plot output, such as lwd, cex, and so
-##' forth, may be supplied.
+##' forth, may be supplied. These arguments intended for the predict
+##' method will be used: c("type", "se.fit", "dispersion", "terms", "na.action")
 ##' @export plotSlopes
 ##' @rdname plotSlopes
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -172,16 +173,26 @@ plotSlopes.lm <-
     ## others.
     parms <- list(model, newdata = newdf, type = "response" , interval = interval)
     predArgs <- list()
-    validForPredict <- c("type", "se.fit", "dispersion", "terms", "na.action")
+
+    ## type requires special handling because it may go to predict or plot
+    if (!is.null(dotargs[["type"]])) {
+        if (dotargs[["type"]] %in% c("response", "link", "none")) {
+            parms[["type"]] <- dotargs[["type"]]
+            dotargs[["type"]] <- NULL
+        }
+    }
+
+    validForPredict <- c("se.fit", "dispersion", "terms", "na.action")
     dotsForPredict <- dotnames[dotnames %in% validForPredict]
 
-    if (any(dotsForPredict)) {
-        parms <- modifyList(parms, dotargs[[dotsForPredict]])
+    if (length(dotsForPredict) > 0) {
+        parms <- modifyList(parms, dotargs[dotsForPredict])
         dotargs[[dotsForPredict]] <- NULL
     }
 
     np <- do.call("predictCI", parms)
     newdf <- cbind(newdf, np$fit)
+    if ((!is.null(parms[["se.fit"]])) && (parms[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
 
     plotyRange <- if(is.numeric(depVar)){
         magRange(depVar, mult = c(1, 1.2))

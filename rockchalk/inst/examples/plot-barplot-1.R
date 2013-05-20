@@ -1,240 +1,293 @@
+## Title: plot-barplot-1
+## Author: Paul Johnson <pauljohn at ku.edu>
+## Date posted: 2013-02-05
+## Description. Basic exploration of barplot
 
-### Paul Johnson
-### Twisting the margins of a barplot
+## One big hassle is that R barplot() assumes we
+## provide the table of bar heights.  We get one
+## "set" of bars for each row in the table.
 
-### I never thought too much about customizing barplots, but
-### now I have learned some tricks to share.  Step through these
-### examples to see the possibilities.
+## Start easy:
 
-set.seed(424242)
+## Suppose we know how high we want the bars.
+##
 
-x <- rpois(10, lambda = 10)
+myBars <- c(0.2, 0.4, 0.5)
+barplot(height = myBars)
 
-mynames <- c(rep("Really Long Name",9),"Really Long Name Long Long")
+## fiddle the width of the bars
+barplot(height = myBars, width = c(0.2, 1, 0.3))
+
+## Sometimes we have 2 rows of data to plot. That
+## is a matrix
+
+myBars <- matrix(c(0.2, 0.4, 0.5, 0.33, 0.7, 0.1), nrow = 2, byrow = TRUE)
+
+barplot(height = myBars)
+## I rather have side-by-side plot
+barplot(height = myBars, beside = TRUE)
 
 
-#RSiteSearch("barplot names margins")
+## We will play games with barplot, but first
+## "HOW DO WE GET THE NUMBERS WE WANT TO PLOT?"
 
+## Well, it depends on what you are trying to show.
+
+## Answer: I usually use a 2 step process.
+## Step 1. table() gets the counts
+## Step 2. prop.table() converts that to proportions.
+
+## Let's make up some categorical variables for testing
+
+## Here is 100 scores for x1
+set.seed(234234)
+x1 <- sample(c("Red","Black","Blue"), size = 100, replace = TRUE)
+x2 <- sample(c("male","female"), size = 100, replace = TRUE)
+
+x1 <- as.factor(x1)
+x2 <- as.factor(x2)
+
+plot(x2, x1)
+
+## I want a side-by-side barplot instead.
+
+## So we have to manufacture the data ourselves
+table(x2, x1)
+
+t1 <- table(x2, x1)
+t1.prop <- prop.table(t1, margin = 2)
+
+## See: column proportions.
+t1.prop
+
+barplot(height = t1.prop, beside = TRUE)
+
+## Sometimes you want the average value of a variable
+## to serve as the height of the bars.  R leaves us (too) many
+## different ways to get that. I like "aggregate".
+
+## Lets make up a numeric variable
+
+x3 <- rnorm(100, m = 40, s = 20)
+
+## We need the result to be a table, with one column for male, one
+## for female, and rows for Red Black Blue
+
+## My first instinct was to calculate like this
+aggregate(x3, by = list(x1,x2), mean)
+
+## But the data is not formatted in a way that easily
+## goes into a table.
+
+## The gdata package has a nice function that does it
+## called aggregate.table, but if you run it like so:
+## library(gdata)
+## aggregate.table(x3, by1 = x1, by2 = x2, mean)
+##
+## it says the function is deprecated, and instead it
+## suggests:
+
+tapply(X = x3, INDEX = list(x1, x2), FUN = mean)
+
+## That looks ok
+
+myBars <- tapply(X = x3, INDEX = list(x1, x2), FUN = mean)
+barplot(height = myBars)
+
+barplot(height = myBars, beside = TRUE)
+
+## Lets fiddle with the bar labels
+##
+barplot(height = myBars, beside = TRUE, names.arg = colnames(myBars))
+##
+barplot(height = myBars, beside = TRUE, names.arg = c(row.names(myBars),row.names(myBars)))
+
+
+## I'd like to get both labels.
+## Unfortunately, if we want to add labels for the groups.
+
+## But we don't know where to place the labels. For example
+mtext(colnames(myBars), side = 1, line = 2, at = c(1,2))
+## This is no good as well.
+mtext(colnames(myBars), side = 1, line = 2, at = c(4,8))
+
+## So, we have to ask the barplot for its coordinate system,
+## like this:
+
+bp1 <- barplot(height = myBars, beside = TRUE, names.arg = c(row.names(myBars),row.names(myBars)))
+
+## Inspect bp1, it is just positions on the horizontal scale
+
+bp1
+
+## The positions of the bars are there, but you have to look at the layout
+## for a while to make sense of it.
+
+## The numbers indicate that the "center" for each group of bars is found at
+## positions 2.5 and 6.5.
+
+mtext(colnames(myBars), side = 1, line = 3, at = c(2.5, 6.5))
+
+## The end
+##
+##
+
+
+
+##
+##
+## But wait, there's more.  Apparently I wrote the exact same
+## example before. And forgot. How silly.
+
+## Anyway, in case more examples help.
+
+## Paul Johnson
+## barplot data input. What a Hassle.
+## 2011-06-22
+
+## Here's a case where it is best to understand what R wants,
+## before trying to work your example.  Or end goal is to
+## make a grouped barplot.
+
+## Start easy, give barplot one column
+
+
+x <- c(.14, .23, .66)
+barplot(x)
+
+
+## table or aggregate can produce same kind of thing
+## Get some small integers in a data frame
+rawdata <- rpois(200, lambda = 2)
+
+x <- table(rawdata)
+
+## Convert to proportions
+
+x <- x / sum(x)
 
 barplot(x)
 
 
-### Note long names off edge:
-barplot(x, names = mynames, las = 2)
+## Now work on richer information
 
-### Abbreviate offers one solution
-barplot(x, names = abbreviate(mynames), las = 2)
+## Suppose the input is a matrix with 2 columns
 
-### Other option is to reset margins
-###default mar is c(5.1, 4.1, 4.1, 2.1)
+x <- matrix( c(.14, .23, .66, .44, .53, .55), ncol = 2)
 
-### Lets make the bottom margin larger
-par(mar = c(15,4.1,4.1, 2.1))
-barplot(x, names = mynames, las = 2)
+## look at x
 
+x
 
+barplot(x)
 
-### Now the bottom is finished. But I'd like a legend.
+## I hate stacked charts
 
-legend("topleft", legend = c("A really long label","B","Cee What I can do?","D"), col = 1:2)
+## I think this would be called a grouped bar plot.
+barplot(x, beside = TRUE)
 
-### My bar hits the legend. How to fix?
+## That has no names because my input table had no names.
 
+## Think of the columns as sex
+colnames(x) <- c("Male","Female")
+x
 
-### It is not sufficient to simply "move the legend" up
-### because then it runs off the edge of the graph
-barplot(x, names = mynames, las = 2)
-legend(2,22, legend = c("A really long label","B","Cee What I can do?","D"), col = 1:2)
+## Row represents cities
+rownames(x) <- c("NY","LA","SF")
+x
 
-### By itself, changing the top margin does not help.
-### It is also vital to set the xpd parameter to T so that
-### R will draw outside the main plot region
-par(mar = c(10,4.1,8.1, 2.1))
-par(xpd = T)
-barplot(x, names = mynames, las = 2)
-legend(2,22, legend = c("A really long label","B","Cee What I can do?","D"), col = 1:2)
 
+barplot(x, beside = TRUE)
 
-### Now lets gain some control on the colors and bars
-### The default colors are so dark.  You can't write on top
-### of them.  You can grab shades of gray like "gray30" or such.
+## How to decorate that?
+## Name individual bars? OK:
+barplot(x, beside = TRUE, names.arg = c("A","B","C","D","E","F"))
 
-### I'll just specify 4 colors I know will work. I prefer
-### the light gray colors because they can be written over.
-mycols <- c("lightgray","gray70","gray80","gray90","gray75")
+## Instead, lets go for two-layered output.
+## Grab the output from barplot in order
+## to see where bars are positioned.
+bp1 <- barplot(x, beside = TRUE)
 
-barplot(x, names = mynames, las = 2, col = mycols)
+mtext(text = c("first","second","third"), side = 1, line = 0, at= bp1[,1])
 
-legend(2,20,legend = c("A","B","C","D"),fill = mycols)
+mtext(text = c("fourth","fifth","sixth"), side = 1, line = 0, at = bp1[ ,2])
 
-### Still, I don't like the solid shades so much.
-### fill up the bars with angled lines.
-### density determines number of lines inside the bar.
+## Instead, lets write vertically inside the bars!
+## Let's write at one-half of the column's height (that's why
+## I have 0.5*x in the text commands
 
-myden <- c(60,20,30,40,25)
-### angles determines the direction of lines inside bars
-myangles <- c(20,-30,60,-40,10)
+bp1 <- barplot(x, beside = TRUE)
+text( bp1[ ,1], 0.5*x[ ,1], c("first","second","third"))
 
-barplot(x, names = mynames, las = 2, col = mycols,density = myden,angle = c(20,60,-20))
+## srt will rotate text strings by degree
+bp1 <- barplot(x, beside = TRUE)
+text( bp1[ ,1], 0.5*x[ ,1], c("first","second","third"), srt = 66)
 
-legend(1,20,legend = c("A","B","C","D"),density = myden,angle = myangles)
 
-### for my coupe de grace, lets do some writing in the bars.
+bp1 <- barplot(x, beside = TRUE)
+text( bp1[ ,1], 0.5*x[ ,1], c("first","second","third"), srt = 90)
+text( bp1[ ,2], 0.5*x[ ,2], c("first","second","third"), srt = 90)
 
-### Recall from Verzani you can get the x coordinates from the barplot
-barPositions <- barplot(x, names = mynames, las = 2, col = mycols,density = myden,angle = c(20,60,-20))
 
-barPositions
+### Note problem: Fill colors in legend not correct
+bp1 <- barplot(x, beside = TRUE)
+legend("topleft", legend = c("first","second","third"), fill = c(1,2,3))
 
-### The text option srt = 90 turns the text sideways
+### Need to figure out what colors barplot uses
+### I believe it is drawing colors from the function "gray.colors"
+gray.colors(3)
 
-### I'm just guessing that bars 1 and 8 should be labeled
-### at coordinates 5 and 5
+bp1 <- barplot(x, beside = TRUE)
+legend("topleft", legend = c("first","second","third"), fill= gray.colors(3))
 
-text (barPositions[1], 5, "my first bar is great", srt = 90)
 
-text (barPositions[8], 5, "but 8 is greater", srt = 90)
 
-### Recently I had the problem of drawing a "clustered" bar chart.
-### Lets suppose our x variable really represents responses from
-### 2 groups of respondents, Men and Women.
+### So, what do you get out of this?
 
-## Create the matrix
-xmatr <- matrix(x, nrow = 5)
+### barplot wants you to give it a matrix, one column per group of bars.
 
-### Use beside = T to cause barplot to treat each column
-### of values as a group
-barplot(xmatr, beside = TRUE, names = c("Men","Women"))
+### So if your data is like this
 
-valueNames <- c("Very Strong","Somewhat Strong","Not Strong","Somewhat Weak","Very Weak")
 
-### Use mtext to write in the margin so that labels on plot are nice.
+### data
+### id  sex region iq age
+### 01  M    W     122 12
+### 02  F    W     111 08
+### 03  M    E     89  07
+### 04  F    S     144 19
+### 05  F    N     123 44
 
-par(mar = c(10,4.1,5.1, 2.1))
+### You want a barplot that shows this the
+## mean "iq" subdivided by sex, then region
 
-bp <- barplot(xmatr, beside = TRUE, names = NULL)
+##          | |               |
+##        | | |               |
+##      | | | |               | | | |
+##      E W N S               E W N S
 
-### bp contains the positions of the bars.
-mtext(valueNames, side = 1, las = 3, at = bp)
+##         Male                 Female
 
-mtext(c("Men","Women"), side = 1, at = c(bp[3],bp[8]),line = 8, cex = 2)
+## So we need a matrix with 2 columns, Male and Female,
+## Rows for regions and cells are means.
 
-### Adding numbers to the bars may clarify
-text ( bp, as.vector(xmatr), labels = as.vector(xmatr),pos = 1)
+## First, manufacture the data
 
-### However, the default color is too dark.
+id <- 1:1000
+sex <- sample(x= c("M","F"), size = 1000, replace = T)
+region <- sample(x= c("E","W","N","S"), size = 1000, replace = T)
+iq <- rnorm(1000, m = 100, sd = 15)
+age <- rpois(1000, lambda = 20)
+dat <- data.frame(id, sex, region, iq, age)
 
-### Retrieve the first 5 items from the default grey color scale
+## Use R's "aggregate" go produce that
+aggdat <- aggregate(dat$iq, by = list(sex = sex,region = region), FUN= mean)
+aggdat
+colnames(aggdat)[3] = "meaniq"
 
-gc <- grey.colors(5)
+## aggdat is in the "long" format, but we need the "wide" format
+x <- unstack(aggdat, meaniq ~ sex )
+x <- as.matrix(x)
+barplot(x, beside = TRUE)
 
-### Replace the first one with a lighter gray
 
-gc[1] <- "gray80"
-
-bp <- barplot(xmatr, beside = TRUE, names = NULL, col = gc)
-
-### bp contains the positions of the bars.
-mtext(valueNames, side = 1, las = 3, at = bp)
-
-mtext(c("Men","Women"), side = 1, at = c(bp[3],bp[8]),line = 8, cex = 2)
-
-### Adding numbers to the bars may clarify
-text ( bp, as.vector(xmatr), labels = as.vector(xmatr),pos = 1)
-
-### That's OK for me.  I wonder if I might not just write inside the
-### bars. Hmmm.
-
-
-bp <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-
-text(bp, 0.5*as.vector(xmatr), valueNames, srt = 90)
-
-### Hm. That's OK, but maybe I'd pref uniform vertical
-### placement of text.
-
-bp <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-
-text(bp, 2, valueNames, srt = 90, pos = 4)
-
-### Hell, now the text is aligned vertically, but not centered
-### in the bar. I can't figure out all of the details concerning
-###
-
-### I'm not able to say for sure what the best fix might be.
-### I can either manipulate the x placement like so
-
-bp <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-text(bp-0.25, 2, valueNames, srt = 90, pos = 4)
-
-### Or use the offset option in the text command.
-### I do not understand why this particular value works.
-
-bp <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-text(bp, 2, valueNames, srt = 90, pos = 4, offset = -0.15)
-
-
-### Don't forget: When save this into a file, the graph
-### may be re-sized and text might "overflow" the boxes.
-### That's especially likely if you have a large graph
-### on the screen and then try to save the file with
-### dev.copy(postscript...)
-### That will resize some things, but not all.
-
-### Here is the way to protect yourself.  Resize your "screen" device
-### so that it is the same size--in inches--as the output file.
-
-### On linux, I run
-
-x11( width = 6, height = 6 )
-
-### On windows, I think it is windows( width = 6, height = 6 )
-
-### After you do that, run the par command again. The par command
-### has to be executed again each time a device is created. That applies to
-### the most recently created device.
-
-p <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-text(bp-0.25, 2, valueNames, srt = 90, pos = 4)
-
-### If that looks OK, then do this
-
-
-postscript(file = "mybar-1.eps",height = 6, width = 6, onefile = F, horizontal = F, paper = "special",family = "Times")
-p <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-text(bp-0.25, 2, valueNames, srt = 90, pos = 4)
-dev.off()
-
-
-### note that the par settings have shifted back to the defaults.
-### Each device is separate.
-### As a result, the barplot we created before with large margins would
-### make a horrible plot if you forgot to insert the par() commands here:
-
-
-postscript(file = "mybar-2.eps",height = 6, width = 6, onefile = F, horizontal = F, paper = "special",family = "Times")
-par(mar = c(10,4.1,5.1, 2.1))
-
-
-bp <- barplot(xmatr, beside = TRUE, names = NULL, col = gc)
-
-### bp contains the positions of the bars.
-mtext(valueNames, side = 1, las = 3, at = bp)
-
-mtext(c("Men","Women"), side = 1, at = c(bp[3],bp[8]),line = 8, cex = 2)
-
-### Adding numbers to the bars may clarify
-text ( bp, as.vector(xmatr), labels = as.vector(xmatr),pos = 1)
-dev.off()
-
-
-### Finally, suppose you make a mistake of specifying your
-### output device size too small. The graph I made before
-### with the text in the bars looked good on the screen,
-### but it looks bad in a smaller output device. The text
-### does not match the bars in this example.
-
-postscript(file = "mybar-4.eps",height = 4, width = 4, onefile = F, horizontal = F, paper = "special",family = "Times")
-bp <- barplot(xmatr, beside = TRUE, names = c("Men","Women"), col = gc)
-text(bp-0.25, 2, valueNames, srt = 90, pos = 4)
-dev.off()
+## And I think that's all I need to show

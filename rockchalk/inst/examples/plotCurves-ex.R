@@ -1,3 +1,38 @@
+
+library(rockchalk)
+
+## Replicate some R classics.  The budworm.lg data from predict.glm
+## will work properly after re-formatting the information as a data.frame:
+
+## example from Venables and Ripley (2002, pp. 190-2.)
+df <- data.frame(ldose = rep(0:5, 2),
+                 sex = factor(rep(c("M", "F"), c(6, 6))),
+                 SF.numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16))
+df$SF.numalive = 20 - df$SF.numdead
+
+budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family = binomial)
+
+
+plotCurves(budworm.lg, plotx = "ldose", modx = "sex", interval = "confidence", ylim = c(0, 1))
+
+## See infert
+model2 <- glm(case ~ age + parity + education + spontaneous + induced,  data = infert, family = binomial())
+
+## Curvature so slight we can barely see it
+model2pc1 <- plotCurves(model2, plotx = "age", modx = "education", interval = "confidence", ylim = c(0, 1))
+
+
+model2pc2 <- plotCurves(model2, plotx = "age", modx = "education", modxVals = levels(infert$education)[1], interval = "confidence", ylim = c(0, 1))
+
+
+model2pc2 <- plotCurves(model2, plotx = "age", modx = "education", modxVals = levels(infert$education)[c(2,3)], interval = "confidence", ylim = c(0, 1))
+
+model2pc2 <- plotCurves(model2, plotx = "age", modx = "education", modxVals = levels(infert$education)[c(2,3)], ylim = c(0, 1), type = "response")
+
+
+
+
+
 ## Manufacture some data
 set.seed(12345)
 N <- 500

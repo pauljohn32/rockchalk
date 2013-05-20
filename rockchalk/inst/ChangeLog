@@ -1,5 +1,8 @@
 2013-05-19  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
 
+	* ../R/plotCurves.R (plotCurves): found bug in dotargs sorting for
+	predict, Was causing crash in logit models
+
 	* ../R/testSlopes.R: format spaces
 
 	* ../R/residualCenter.R (predict.rcreg): format spaces
