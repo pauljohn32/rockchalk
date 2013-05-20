@@ -514,8 +514,62 @@ predictCI <-
     interval <- match.arg(interval)
     type <- match.arg(type)
     na.act <- object$na.action
-    object$na.action <- NULL
+    object$na.action <- NULL ## Why did predict.glm do this?
 
+    ## First, try the object's predict method. Need to know if
+    ## a model's predict method answers in an understandable way
+    ## to predict(object, interval = "response").
+    ##
+    ## Frustratingly, R glm objects don't give error or warning
+    ## from that, instead they just ignore it.
+
+    ## Lets try, see what we get. If a model has no predict
+    ## method, this should alert us.
+    intervaltry <- interval
+    if (interval == "none") intervaltry <- "confidence"
+    predtry <- try(predict(object, newdata, se.fit = TRUE,
+                           type = type, interval = intervaltry,
+                           na.action = na.action))
+
+    if (inherits(predtry, "try-error")) {
+        cat("rockchalk:::predCI: error from predict(object).
+            Perhaps predict was not implemented for that model.
+            We will see if we can improvize a predict method.\n")
+    } else {
+        ## Perplexing, Must weed out return from  predict.glm or
+        ## other non-standard predict methods.
+        if (is.list(predtry)) {
+            if (is.vector(predtry$fit)){
+                cat("rockchalk:::predCI: model's predict method does not return an interval. \n We will try to improvize with a Wald type approximation to the confidence interval \n")
+            } else if (is.null(dimnames(predtry[["fit"]]))) {
+                warning("rockchalk:::predCI. The object's predict method
+            did not return a $fit component that has dimnames, so
+            I'll ignore that output and improvize.")
+            } else {
+                if (all(dimnames(predtry[["fit"]])[[2]] == c("fit", "lwr", "upr")))
+                    return(predtry)
+                ## if this test is passed, the work is done, the model's
+                ## predict method returned the expected structure
+            }
+        } else if (is.vector(predtry)) {
+            cat("rockchalk:::predCI: model's predict method does not return an interval. \n We will try to improvize with a Wald type approximation to the confidence interval \n")
+        }
+    }
+    ## If model was from lm, previous should have returned already.
+    ## So far as I know, it should have returned for objects of class
+    ## betareg as well.
+
+    ## Previous will not return for glm, hopefully. glm has no interval
+    ## argument, but using one doesn't cause error. It just returns
+    ## what we don't want.
+
+    ## Now we are wrestling with glm and other models who claim their
+    ## class is glm or lm. It is possible a model with class "lm" could
+    ## end up here because user has not implemented a method we expect
+    ## but still says model is in class "lm".
+
+    ## I'm adapting code from R predict.lm and predict.glm
+    if (inherits(object, c("glm", "lm"))) {
     ## summary.survreg has no ... argument.
     if(inherits(object, "survreg")) dispersion <- 1.
 
@@ -536,44 +590,63 @@ predictCI <-
         if (is.null(scale) || scale == 0){
             scale <- summary(object)$sigma
         }
-    } else {
-        stop("rockchalk:::predictCI. Your model is neither glm nor lm. \n.
-           We can't handle a regression object that is neither lm nor glm.\n")
     }
+
     ## set se.fit = TRUE always, even if user doesn't want it.
-    ## make them have it!
+    ## make them have it! Trying to make return structure more understandable.
 
-    pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
-    type = "response", interval = interval, na.action = na.action)
 
-    ## pred insides, at least:
-    ## pred$fit      on linear predictor (==link) scale
-    ## pred$se.fit   on linear predictor (==link) scale
+        pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
+                           type = "response", interval = "none", na.action = na.action)
 
-    ## glm: use normal approximation. Calculate fit +/- on link scale first
-    ## lm: use Wald-type CI with correct t value
-    if (inherits(object, "glm")) {
-        fit <- cbind(fit = pred$fit,
-                     lwr = pred$fit - 1.96 * pred$se.fit,
-                     upr = pred$fit + 1.96 * pred$se.fit)
-    } else if (inherits(object, "lm")) {
-        tval <- qt((1 - level)/2, lower.tail = FALSE, object$df.residual)
-        fit <- cbind(fit = pred$fit,
-                     lwr = pred$fit - tval * pred$se.fit,
-                     upr = pred$fit + tval * pred$se.fit)
-    } else {
-        stop("rockchalk:::predictCI. Your model is neither glm nor lm. \n
-           I can't figure how this function got this far. \n
-           It should have aborted before this point.\n")
+        ## pred insides, at least:
+        ## pred$fit      on linear predictor (==link) scale
+        ## pred$se.fit   on linear predictor (==link) scale
+
+        ## glm: use normal approximation. Calculate fit +/- on link scale first
+        ## lm: use Wald-type CI with correct t value
+        if (inherits(object, "glm")) {
+            fit <- cbind(fit = pred$fit,
+                         lwr = pred$fit - 1.96 * pred$se.fit,
+                         upr = pred$fit + 1.96 * pred$se.fit)
+        } else if (inherits(object, "lm")) {
+            tval <- qt((1 - level)/2, lower.tail = FALSE, object$df.residual)
+            fit <- cbind(fit = pred$fit,
+                         lwr = pred$fit - tval * pred$se.fit,
+                         upr = pred$fit + tval * pred$se.fit)
+        }
+        ## following does nothing to lm output, but does invert glm
+        if (type == "response") fit <- family(object)$linkinv(fit)
+
+        if(missing(newdata) && !is.null(na.act)) {
+            fit <- napredict(na.act, fit)
+            se.fit <- napredict(na.act, pred$se.fit)
+        }
+        pred <- list(fit = fit, se.fit = pred$se.fit, residual.scale = scale)
+        return(pred)
     }
-    ## following does nothing to lm output, but does invert glm
-    if (type == "response") fit <- family(object)$linkinv(fit)
 
-    if(missing(newdata) && !is.null(na.act)) {
-        fit <- napredict(na.act, fit)
-        se.fit <- napredict(na.act, pred$se.fit)
+    if (inherits(object, "betareg")){
+        pred <- predict(object, newdata = newdata , type = type)
+        se   <- sqrt(predict(object, newdata = newdata, type = "variance"))
+        fit <- cbind(fit = pred,
+                     lwr = pred - 1.96 * se,
+                     upr = pred + 1.96 * se)
+        pred <- list(fit = fit, se.fit = se)
+        return(pred)
     }
-    pred <- list(fit = fit, se.fit = pred$se.fit, residual.scale = scale)
+
+
+    msg <-
+    paste("The regression object was not a lm, glm, or
+anything else that has a working predict method
+his seems futile to continue\n")
+    ## Now the stone age methods.
+    ## object.b <- coef(object)
+    ## object.linkPred <- newdata %*% object.b
+
+    stop(msg)
+    }
 }
 
 
