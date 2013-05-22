@@ -58,7 +58,6 @@
 ##' @param alwd line width, lwd passed to the "arrows" function
 ##' @param alength arrow head length, length passed to "arrows" function
 ##' @param linesFrom object with information about "highlight" lines to be added to the 3d plane (output from plotCurves or plotSlopes)
-##' @param lfcol colors for the linesFrom highlight lines
 ##' @param lflwd line widths for linesFrom highlight lines
 ##' @param envir environment from whence to grab data
 ##' @param ... additional parameters that will go to persp
@@ -73,7 +72,7 @@ function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
          plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5,
          x2floor = 5,  pch = 1, pcol = "blue", plwd = 0.5, pcex = 1,
          llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4,
-         alwd = 0.3, alength = 0.1, linesFrom, lfcol = "red",
+         alwd = 0.3, alength = 0.1, linesFrom,
          lflwd = 3, envir = environment(formula(model)),  ...){
     UseMethod("plotPlane")
 }
@@ -94,7 +93,7 @@ function(model = NULL, plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
          plotPoints = TRUE, npp = 20, x1lab, x2lab, ylab, x1floor = 5,
          x2floor = 5, pch = 1, pcol = "blue", plwd = 0.5, pcex = 1,
          llwd = 0.3, lcol = 1, llty = 1, acol = "red", alty = 4, alwd = 0.3,
-         alength = 0.1, linesFrom, lfcol ="red", lflwd = 3,
+         alength = 0.1, linesFrom, lflwd = 3,
          envir = environment(formula(model)), ...){
 
     if (is.null(model))
@@ -205,17 +204,20 @@ function(model = NULL, plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
               lwd = llwd, col = lcol, lty = llty)
     }
 
-    if (!missing(linesFrom)){
+
+    if (!missing(linesFrom)) {
+        lfcol <-  linesFrom$col
         dataSplits <- split(linesFrom$newdata, f = linesFrom$newdata[[linesFrom$call[["modx"]]]])
-        lapply(dataSplits, function(nd){
-            lines(trans3d( nd[[plotx1]], nd[[plotx2]], nd$fit, pmat=res), col = lfcol, lwd = lflwd)})
+        drawLine <- function(nd, mycol, mylty){
+            lines(trans3d(nd[[plotx1]], nd[[plotx2]], nd$fit, pmat=res), col = mycol, lwd = lflwd, lty = mylty)
+        }
+        mapply(drawLine, dataSplits, linesFrom$col, linesFrom$lty)
     }
 
-    retval <- list(res=res, call=cl, "x1seq"=x1seq, "x2seq"=x2seq, "zplane"=zplane)
+    retval <- list(res = res, call = cl, "x1seq" = x1seq, "x2seq" = x2seq, "zplane" = zplane)
     class(retval) <- "rockchalk3d"
     invisible(retval)
 }
-
 NULL
 
 

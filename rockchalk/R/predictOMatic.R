@@ -556,8 +556,6 @@ predictCI <-
         }
     }
     ## If model was from lm, previous should have returned already.
-    ## So far as I know, it should have returned for objects of class
-    ## betareg as well.
 
     ## Previous will not return for glm, hopefully. glm has no interval
     ## argument, but using one doesn't cause error. It just returns
@@ -570,30 +568,30 @@ predictCI <-
 
     ## I'm adapting code from R predict.lm and predict.glm
     if (inherits(object, c("glm", "lm"))) {
-    ## summary.survreg has no ... argument.
-    if(inherits(object, "survreg")) dispersion <- 1.
+        ## summary.survreg has no ... argument.
+        if(inherits(object, "survreg")) dispersion <- 1.
 
-    if (inherits(object, "glm")) {
-        if (is.null(dispersion) || dispersion == 0){
-            dispersion <- summary(object, dispersion=dispersion)$dispersion
-        }
+        if (inherits(object, "glm")) {
+            if (is.null(dispersion) || dispersion == 0){
+                dispersion <- summary(object, dispersion=dispersion)$dispersion
+            }
 
-        if (interval == "prediction"){
-            stop("rockchalk::predictCI, prediction intervals not defined
+            if (interval == "prediction"){
+                stop("rockchalk::predictCI, prediction intervals not defined
             for glm in general. Try confidence intervals instead.")
+            }
+            ## scale = residual.scale in predict.glm
+            if (is.null(scale) || scale == 0){
+                scale <- as.vector(sqrt(dispersion))
+            }
+        } else if (inherits(object, "lm")) {
+            if (is.null(scale) || scale == 0){
+                scale <- summary(object)$sigma
+            }
         }
-        ## scale = residual.scale in predict.glm
-        if (is.null(scale) || scale == 0){
-            scale <- as.vector(sqrt(dispersion))
-        }
-    } else if (inherits(object, "lm")) {
-        if (is.null(scale) || scale == 0){
-            scale <- summary(object)$sigma
-        }
-    }
 
-    ## set se.fit = TRUE always, even if user doesn't want it.
-    ## make them have it! Trying to make return structure more understandable.
+        ## set se.fit = TRUE always, even if user doesn't want it.
+        ## make them have it! Trying to make return structure more understandable.
 
 
         pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
@@ -638,15 +636,13 @@ predictCI <-
 
 
     msg <-
-    paste("The regression object was not a lm, glm, or
+        paste("rockchalk:::predictCI. The regression object was not a lm, glm, or
 anything else that has a working predict method
-his seems futile to continue\n")
+This seems futile to continue\n")
     ## Now the stone age methods.
     ## object.b <- coef(object)
     ## object.linkPred <- newdata %*% object.b
-
     stop(msg)
-    }
 }
 
 

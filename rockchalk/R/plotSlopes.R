@@ -200,7 +200,7 @@ plotSlopes.lm <-
         stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
     }
 
-    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, opacity = opacity, xlim = plotxRange, ylim = plotyRange, ylab = ylab)
+    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, opacity = opacity, xlim = plotxRange, ylim = plotyRange, ylab = ylab, llwd = llwd)
     parms <- modifyList(parms, dotargs)
     plotArgs <- do.call("plotFancy", parms)
 
@@ -332,14 +332,14 @@ plotFancy <-
     for (j in modxVals) {
         if (is.factor(modxVar)) i <- j  ## level names
         else i <- match(j, modxVals)   ##integer index
-        if(missing(modx) || is.null(modx)) {
+        if (missing(modx) || is.null(modx)) {
             pdat <- newdf
         } else {
             pdat <- newdf[newdf[ , modx] %in% j, ]
         }
         parms <- list(x = pdat[, plotx], y = pdat$fit, lty = lty[i])
         parms <- modifyList(parms, dotargs)
-        parms <- modifyList(parms, list(col = col[i], lwd = llwd[match(i, modxVals)]))
+        parms <- modifyList(parms, list(col = col[i], lwd = llwd[i]))
         do.call("lines", parms)
     }
 
