@@ -206,7 +206,6 @@ function(model = NULL, plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
 
 
     if (!missing(linesFrom)) {
-        lfcol <-  linesFrom$col
         dataSplits <- split(linesFrom$newdata, f = linesFrom$newdata[[linesFrom$call[["modx"]]]])
         drawLine <- function(nd, mycol, mylty){
             lines(trans3d(nd[[plotx1]], nd[[plotx2]], nd$fit, pmat=res), col = mycol, lwd = lflwd, lty = mylty)
