@@ -237,19 +237,19 @@ plot.testSlopes <-
         idxStart <- c(modxRange[1], x$jn$roots)
         idxEnd <- c(x$jn$roots, modxRange[2])
         intervals <- if(x$jn$a > 0) c(1,3) else c(2)
-        idxType <- 2
+        markAt <- x$jn$roots
     } else if (modxRange[1] < x$jn$roots["lo"]){
         ## hi root inside
         idxStart <- c(modxRange[1], x$jn$roots["lo"])
         idxEnd <- c(x$jn$roots["lo"], modxRange[2])
         intervals <- if(x$jn$a > 0) c(1) else c(2)
-        idxType <- 1
+        markAt <- x$jn$roots["lo"]
     } else if (x$jn$roots["hi"] < modxRange[2]){
         ## lo root inside
         idxStart <- c(modxRange[1], x$jn$roots["hi"])
         idxEnd <- c(x$jn$roots["hi"], modxRange[2])
         intervals <- if(x$jn$a > 0) c(2) else c(1)
-        idxType <- 3
+        markAt <- x$jn$roots["hi"]
     } else {
         stop("Your observed moderator data does not overlap with
               the region on which the slope would be significant.
@@ -326,43 +326,21 @@ plot.testSlopes <-
                x1 = MMsm[ ,"modxSeq"], y1 = MMsm[ ,"upr"],
                angle = 90, length = 0.05, code = 3, col = gray(.70))
 
-        ## type 3, put a left side marker on that interval
-        if (idxType %in% c(3)) {
-            lines(x = rep(MMsm[1, "modxSeq"],2),
-                  y = c(MMsm[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
-            mtext(text = round(MMsm[1, "modxSeq"], 2),
-                  at = MMsm[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
-        }
-        ## type 1, put marker on right side
-        if (idxType %in% c(1)) {
-            lines(x = rep(MMsm[nrow(MMsm), "modxSeq"],2),
-                  y = c(MMsm[nrow(MMsm) ,"lwr"], ylim[1]), lty=4, col = gray(.70))
-            mtext(text = round(MMsm[nrow(MMsm), "modxSeq"], 2),
-                  at = MMsm[nrow(MMsm), "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70) )
-        }
-
-        ## type 2: only mark side on middle
-        if (idxType %in% c(2)) {
-            if (i == 1){
-                lines(x = rep(MMsm[nrow(MMsm), "modxSeq"],2),
-                      y = c(MMsm[nrow(MMsm) ,"lwr"], ylim[1]), lty=4, col = gray(.70))
-                mtext(text = round(MMsm[nrow(MMsm), "modxSeq"], 2),
-                      at = MMsm[nrow(MMsm), "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
-            } else {
-                lines(x = rep(MMsm[1, "modxSeq"],2),
-                      y = c(MMsm[1 ,"lwr"], ylim[1]), lty=4, col = gray(.70))
-                mtext(text = round(MMsm[1, "modxSeq"], 2),
-                      at = MMsm[1, "modxSeq"],  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
-            }
-        }
-
-
         if (shade == TRUE){
             polygon(x = c(MMsm[ ,"modxSeq"], rev(MMsm[ ,"modxSeq"])),
                     y = c(MMsm[ ,"upr"], rev(MMsm[ , "lwr"]) ),
                     col = col, border = gray(.80))
         }
     }
+
+    ## draw mtext markers for internal roots
+    for (i in markAt){
+        lines(x = rep(i, 2),
+              y = c(0, ylim[1]), lty=4, col = gray(.70))
+        mtext(text = round(i, 2),
+              at = i,  side = 1, line = 2, col = rgb(1, 0, 0, 0.70))
+    }
+
 
     legend("topleft", legend = c("Marginal Effect", "95% Conf. Int."),
            lty = c(1, 2), col = c(1, gray(.50)), bg = "white")
@@ -372,6 +350,10 @@ plot.testSlopes <-
                legend = substitute(b[AA] + b[BB:AA]*BB[i] == 0 ~~ "rejected", list(AA=plotx, BB=modx)),
                fill = c(rgb(1,0,0, 0.10)), bg = "white")
     }
+
+
+
+
 
 
     if (0){

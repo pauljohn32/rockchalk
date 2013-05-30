@@ -1,3 +1,11 @@
+2013-05-24  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
+
+	* ../R/testSlopes.R (plot.testSlopes): Continued long battle with
+	too confusing system for shading and labeling intervals. This is a
+	big example of how expedient solution lead to bad code, hard
+	to bug-fix, frustrating as hell.  Now see variable markAt, which
+	tries to simplify one part.  Still, rest not great.
+
 2013-05-22  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
 
 	* ../R/plotPlane.R (myPredict): embarrassing: noticed that I had
