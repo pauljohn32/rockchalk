@@ -34,7 +34,7 @@ cd ..
 R --vanilla -f runRoxygen2.R
 
 
-R CMD build rockchalk.gitex
+R CMD build rockchalk.gitex --resave-data
 
 read -p "enter name of tarball: " result
 
