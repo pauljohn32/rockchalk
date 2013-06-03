@@ -414,8 +414,6 @@ predictOMatic <-
             row.names(ndnew) <- names(flxxx[[x]])
             pargs <- list(model, newdata = ndnew, type = "response", interval = interval, se.fit = se.fit)
             pargs <-  modifyList(pargs, dots)
-            ## fit <- do.call("predict", pargs)
-            ## fit <- predict(model, newdata = ndnew, type = "response", ...)
             fit <-  do.call("predictCI", pargs)
             if (interval != "none")  ndnew <- cbind(ndnew, fit$fit)
             else ndnew <- cbind(ndnew, fit = fit$fit[ ,"fit"])
@@ -516,9 +514,55 @@ predictCI <-
     na.act <- object$na.action
     object$na.action <- NULL ## Why did predict.glm do this?
 
+    ## if interval = none, figure if the predict method gives us a vector of numbers,
+    ## or a matrix, or a list with fit as an argument. Oh, this is
+    ## frustrating.
+    if (interval == "none") {
+        dots <- list(...)
+        pargs <- list(object, newdata, type = "response", se.fit = TRUE, na.action = na.action)
+        pargs <-  modifyList(pargs, dots)
+        predtry <-  try(do.call("predict", pargs))
+        if (inherits(predtry, "try-error")) {
+            stop("rockchalk:::predCI: predict(object) gave an error. Maybe this regression model does not have a predict method? \n")
+        }
+        ## vectors or matrices are atomic
+        if (is.atomic(predtry)) {
+            if (is.vector(predtry)) {
+                predtry <- as.matrix(predtry, ncol = 1)
+                dimnames(predtry) = list(NULL, c("fit"))
+            } else if (!is.matrix(predtry)) {
+                stop("atomic, but not a vector or matrix. What are you?")
+            }
+            pred <- list(fit = predtry, se.fit = NULL)
+            return(pred)
+        }
+        if (is.list(predtry)) {
+            fit <- predtry[["fit"]]
+            if (is.null(fit)) {
+                stop(paste("rockchalk:predictCI: return object from predict",
+                           "does not have a fit element.",
+                           "We cannot understand that."))
+            } else if (is.vector(fit)) {
+                fit <- as.matrix(fit, ncol = 1)
+                dimnames(fit) = list(NULL, c("fit"))
+            } else { ##gamble, try to cast it as a matrix
+                fit <- as.matrix(fit)
+                ##TODO: rethink. if there is no fit[["fit"]] inside there, other stuff will break.
+            }
+            predtry[["fit"]] <- fit
+            if (is.null(predtry[["se.fit"]])) predtry[["se.fit"]] <- NULL
+            ## previous silly? if se.fit is undefined, we want to set it NULL.
+            ## or do we care? Won't future accessors get NULL automatically?
+            return(predtry)
+        } else {
+            stop(paste("rockchalk:predictCI: return object from predict is not",
+                       "a vector or a matrix or a list.",
+                       "fit element. We can't understand that."))
+        }
+    }
     ## First, try the object's predict method. Need to know if
     ## a model's predict method answers in an understandable way
-    ## to predict(object, interval = "response").
+    ## to predict(object, type = "response", interval = "confidence").
     ##
     ## Frustratingly, R glm objects don't give error or warning
     ## from that, instead they just ignore it.
@@ -527,24 +571,27 @@ predictCI <-
     ## method, this should alert us.
     intervaltry <- interval
     if (interval == "none") intervaltry <- "confidence"
+    ## TODO previous "none" should be impossible, please verify that
+    ## can never happen.
     predtry <- try(predict(object, newdata, se.fit = TRUE,
                            type = type, interval = intervaltry,
                            na.action = na.action))
 
     if (inherits(predtry, "try-error")) {
-        cat("rockchalk:::predCI: error from predict(object).
-            Perhaps predict was not implemented for that model.
-            We will see if we can improvize a predict method.\n")
+        cat(paste("rockchalk:::predCI: There was an error from predict(object).",
+                  "We will see if we can improvize.\n"))
     } else {
         ## Perplexing, Must weed out return from  predict.glm or
         ## other non-standard predict methods.
         if (is.list(predtry)) {
-            if (is.vector(predtry$fit)){
-                cat("rockchalk:::predCI: model's predict method does not return an interval. \n We will try to improvize with a Wald type approximation to the confidence interval \n")
+            if (is.vector(predtry$fit)) {
+                cat(paste("rockchalk:::predCI: model's predict method does not return an interval.",
+                          "We will improvize with a Wald type approximation",
+                          "to the confidence interval \n"))
             } else if (is.null(dimnames(predtry[["fit"]]))) {
-                warning("rockchalk:::predCI. The object's predict method
-            did not return a $fit component that has dimnames, so
-            I'll ignore that output and improvize.")
+                warning(paste("rockchalk:::predCI. The object's predict method",
+                              "did not return a $fit component that has dimnames,",
+                              "so I'll ignore that output and improvize.\n"))
             } else {
                 if (all(dimnames(predtry[["fit"]])[[2]] == c("fit", "lwr", "upr")))
                     return(predtry)
@@ -552,7 +599,9 @@ predictCI <-
                 ## predict method returned the expected structure
             }
         } else if (is.vector(predtry)) {
-            cat("rockchalk:::predCI: model's predict method does not return an interval. \n We will try to improvize with a Wald type approximation to the confidence interval \n")
+            cat(paste("rockchalk:::predCI: model's predict method does not return an interval.",
+                      "We will try to improvize with a Wald type approximation to the",
+                      "confidence interval \n"))
         }
     }
     ## If model was from lm, previous should have returned already.
@@ -572,27 +621,26 @@ predictCI <-
         if(inherits(object, "survreg")) dispersion <- 1.
 
         if (inherits(object, "glm")) {
-            if (is.null(dispersion) || dispersion == 0){
+            if (is.null(dispersion) || dispersion == 0) {
                 dispersion <- summary(object, dispersion=dispersion)$dispersion
             }
 
-            if (interval == "prediction"){
+            if (interval == "prediction") {
                 stop("rockchalk::predictCI, prediction intervals not defined
             for glm in general. Try confidence intervals instead.")
             }
             ## scale = residual.scale in predict.glm
-            if (is.null(scale) || scale == 0){
+            if (is.null(scale) || scale == 0) {
                 scale <- as.vector(sqrt(dispersion))
             }
         } else if (inherits(object, "lm")) {
-            if (is.null(scale) || scale == 0){
+            if (is.null(scale) || scale == 0) {
                 scale <- summary(object)$sigma
             }
         }
 
         ## set se.fit = TRUE always, even if user doesn't want it.
         ## make them have it! Trying to make return structure more understandable.
-
 
         pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
                            type = "response", interval = "none", na.action = na.action)
@@ -624,22 +672,28 @@ predictCI <-
         return(pred)
     }
 
-    if (inherits(object, "betareg")){
-        pred <- predict(object, newdata = newdata , type = type)
-        se   <- sqrt(predict(object, newdata = newdata, type = "variance"))
-        fit <- cbind(fit = pred,
-                     lwr = pred - 1.96 * se,
-                     upr = pred + 1.96 * se)
-        pred <- list(fit = fit, se.fit = se)
-        return(pred)
-    }
+    ## Could add stanzas for model types here. This is commented out
+    ## now because I don't know if the predict method for betareg works
+    ## the way I expect.
+    ## if (inherits(object, "betareg")){
+    ##     pred <- predict(object, newdata = newdata , type = type)
+    ##     se   <- sqrt(predict(object, newdata = newdata, type = "variance"))
+    ##     fit <- cbind(fit = pred,
+    ##                  lwr = pred - 1.96 * se,
+    ##                  upr = pred + 1.96 * se)
+    ##     pred <- list(fit = fit, se.fit = se)
+    ##     return(pred)
+    ## }
 
 
     msg <-
-        paste("rockchalk:::predictCI. The regression object was not a lm, glm, or
-anything else that has a working predict method
-This seems futile to continue\n")
-    ## Now the stone age methods.
+        paste("rockchalk:::predictCI. The regression object was not a lm, or glm,",
+              "so I can't tell how to calculate a confidence interval.",
+              "May I politely suggest you rewrite your predict function to accept",
+              "the argument \"interval\" in a manner similar to predict.lm, or",
+              "email the rockchalk maintainer with information about this unfamiliar",
+              "regression you are trying to run.\n")
+    ## TODO: Consider the stone age methods.
     ## object.b <- coef(object)
     ## object.linkPred <- newdata %*% object.b
     stop(msg)

@@ -1,0 +1,122 @@
+rockchalk package NEWS -- history of user-visible changes.
+
+Copyright (C) 2013 Paul E. Johnson.
+
+* version 1.8 2013-06-02
+
+This is the end of the Spring semester, so its time for the new rockchalk
+release. 
+
+** New, general, flexible framework for calculating marginal effects
+   in regression models, linear or otherwise. 
+
+*** newdata function works. It can scan a regression, isolate the
+   predictors, and then make a "mix and match" new data object for use
+   with predict function.  This is convenient for users but also very
+   flexible. 
+
+*** The newdata framework is built on top of "divider" methods tha can
+    check whether a variable is numeric or categorical, and select
+    example values according to user-specified criteria.
+
+*** predictOMatic works dependably! Please try
+    example(predictOMatic). The problem with single predictor models
+    that bugged users of rockchalk 1.6.2 has been solved.
+
+*** predictOMatic argument interval = c("none", "confidence",
+    "prediction").  Guess what that is supposed to do? For glm,
+    which does not provide a confidence interval, I've written code
+    for an approximate Wald type CI, and hope to do better in future. 
+
+** Regression diagnostics. 
+
+*** getPartialCor: get partial correlations from a fitted model
+(student convenience).
+
+*** getDeltaRsquare: Returns the change in estimated R-square observed
+    when each predictor is removed.  This is the squared semi-partial
+    correlation coefficients (student convenience).
+
+*** mcDiangose for multicollinearity diagnostics (student convenience)
+
+** MeanCenter: add arguments to make selection of variables for
+centering more convenient when users don't like the automatic 
+options centerOnlyInteractors. 
+
+** plotSlopes, plotCurves: 
+  
+*** Added intervals argument, for confidence and prediction intervals. 
+
+*** Added opacity argument to determine darkness of interval regions
+    (which use the transparency "alpha layer.").
+
+*** A lot of fiddling under the hood to make colors consistent when
+    levels of modx are altered to compare plots of a given model.
+
+*** Can produce a simple regression prediction plot if modx argument
+    is omitted. This is a widely requested feature.
+
+Please run example(plotSlopes) and example(plotCurves)
+
+*** Changes under the hood. The common plotting functions of
+    plotSlopes and plotCurves are abstracted into as function
+    plotFancy, so now this will be eaiser for me to maintain. The
+    plotting ritual is the same, why keep 2 functions, you ask?
+    plotCurves tolerates more complicated regression
+    formula. plotSlopes leads to testSlopes, and hence to
+    plot.testSlopes.
+
+** addLines: communication between 2 dimensional regression plots and 3 dimensional plots from plotPlane. Run example(addLines).
+
+** plot.testSlopes. Run testSlopes on an interactive model. For a
+model with 2 ocontinuous predictors that interact, this will generate
+an ABSOLUTELY EXCELLENT and highly informative plot displaying the
+effect of the interaction. 
+
+** outreg: LaTeX tables from regression models.
+
+*** Reworked with new arguments to make tables for more types
+of regressions. There's quite a bit more room for users to customize
+the type of diagnostics they want to report. 
+
+The wide variety of output types from regression models is very 
+bothersome. I refuse to write a separate outreg method for each
+different regression packages. If you want to use a package
+from an author who is willing to do that, consider the "texreg"
+package.
+
+*** outreg2HTML. converts outreg to HTML markup and into a file. 
+Intended for importation into word processor programs.
+
+** New vignette Rstyle. Most of the source-code files have been reformatted
+to comply with my advice.
+
+** genCorrelatedData2
+
+*** genCorrelatedData2. For regression examples, suppose you want to
+    have 6 columns of an MVN with a certain mean and covariance
+    structure. And you want the regression formula to have
+    interactions and squared-terms. No more hassle. This is a
+    framework that works. Users set the mean, standard deviations, and
+    correlation values in various ways. Run
+    example(genCorrelatedData2).
+
+*** To support that, there are more generally useful
+    functions. lazyCor and lazyCov are flexible ways to create
+    correlation and covariance matrices. As the names suggest, they
+    are for lazy users who just want to specify some information and
+    get the right thing.  This requires a set of transformation
+    functions, to receive vech and create matrices, and so forth.
+    Check genCorrelatedData.R, for vech2Corr, makeVec, makeSymmetric,
+    checkPosDef. The latter, which I am surprised not to find in the
+    base of R itself, imitates code in the MASS package for
+    ascertaining if a matrix is positive definite.
+
+*** Small, almost microscopic, revision of MASS package mvrnorm
+    function to assure replication of MVN draws when the sample size
+    is adjusted. The first rows of the resulting MVN draw will be the
+    same, no matter how the "n" argument is changed. The same change
+    has been made in the mvtnorm package's MVN random generator. While
+    this is a very small code change, it does solve some very
+    mysterious simulation results that have been obtained with MASS
+    mvrnorm in our lab.
