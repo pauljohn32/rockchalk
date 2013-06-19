@@ -1,16 +1,21 @@
-##' Generates a data frame (x1,x2,y) with user-specified correlation between x1 and x2
+##' Generates a data frame for regression analysis
+##'
+##' The output is a data frame (x1, x2, y) with user-specified
+##' correlation between x1 and x2. The y (output) variable is created
+##' according to the equation
+##' y = beta1 + beta2 * x1 + beta3 * x2 + beta4 * x1 *
+##' x2 + e.
+##' The arguments determine the scales of the X matrix, the random
+##' error, and the slope coefficients.
 ##'
 ##' The vector (x1,x2) is drawn from a multivariate normal
-##' distribution in which the expected value (mean) is the
-##' parameter \code{means} and the var/covar matrix is
-##' built from the assumed standard deviations \code{sds}
-##' and the correlation between x1 and x2 (\code{rho}).
+##' distribution in which the expected value (argument \code{means}).
+##' The covariance matrix of X is
+##' built from the standard deviations (\code{sds})
+##' and the specified correlation between x1 and x2 (\code{rho}).
 ##' It is also necessary to specify the standard deviation
 ##' of the error term (\code{stde}) and the coefficients
 ##' of the regression equation (\code{beta}).
-##' The y (output) variable is created according to the
-##' equation
-##' y = b1 + b2 * x1 + b3 * x2 + b4 * x1 * x2 + e
 ##'
 ##' @param N Number of cases desired
 ##' @param means 2-vector of means for x1 and x2
@@ -41,9 +46,16 @@ genCorrelatedData <-
 }
 NULL
 
-##' Generates a data frame (y, x1, x2, ..., xp) with user-specified coefficients and
-##' inter-correlations, allowing for interaction effects.
+##' Generates a data frame for regression analysis.
 ##'
+##' Unlike \code{genCorrelatedData}, this new-and-improved
+##' function can generate a data frame with as many predictors
+##' as the user requests along with an arbitrarily complicated
+##' regression formula.  The result will be a data frame with
+##' columns named (y, x1, x2, ..., xp).
+##'
+##' Arguments supplied must have enought information so that an
+##' N x P matrix of predictors can be constructed.
 ##' The matrix X is drawn from a multivariate normal
 ##' distribution, the expected value vector (mu vector) is given by
 ##' the \code{means} and the var/covar matrix (Sigma) is
@@ -53,10 +65,10 @@ NULL
 ##' of the error term (\code{stde}) and the coefficients
 ##' of the regression equation (\code{beta}).
 ##'
-##' If called with no arguments, this creates a data frame
+##' If called with no arguments, this creates a data frame with
 ##' X ~ MVN(mu = c(50,50,50), Sigma = diag(c(10,10,10))).
 ##' y = X %*% c(0.15, 0.1, -0.1) + error, where error
-##' is N(m =0, sd = 200). All of these details can be
+##' is N(m = 0, sd = 200). All of these details can be
 ##' changed by altering the arguments.
 ##'
 ##' The y (output) variable is created according to the
@@ -64,23 +76,31 @@ NULL
 ##'
 ##' y = b1 + b2 * x1 + ...+ bk * xk + b[k+1] * x1 * ...interactions.. + e
 ##'
-##' It appears the tricky part will be the user specification of the vector
-##' beta. Clearly, that vector has to provide one coefficient for the intercept
-##' and one for each column of the X matrix.
+##' For shorthand, I write b1 for beta[1], b2 for beta[2], and so forth.
 ##'
-##' Additional values in the beta vector are interpreted as
-##' interaction effects, beginning with variable one. Suppose there
-##' are 4 columns in X. Then a beta vector like beta = c(0, 1, 2, 3,
-##' 4, 5, 6, 7, 8) would amount to asking for
+##' The first P+1 arguments in the argument beta are the coefficients
+##' for the intercept and the columns of the X matrix.  Any additional
+##' elements in beta are the coefficients for nonlinear and interaction terms.
 ##'
-##' y = 0 + 1 x1 + 2 x2 +3 x3 + 4 x4 + 5 *x1^2 + 6 x1 x2 + 8 x1 x3 + 8 x1 x4 + error
+##' Those additional values in the beta vector are completely
+##' optional. Without them, the true model is a linear
+##' regression. However, one can incorporate the effect of squared terms
+##' (conceptualize that as x1 * x1, for example) or interactions
+##' (x1 * x2) easily.  This is easier to illustrate than describe.
+##' Suppose there are 4 columns in X. Then a beta
+##' vector like beta = c(0, 1, 2, 3, 4, 5, 6, 7, 8) would amount to
+##' asking for
+##'
+##' y = 0 + 1 x1 + 2 x2 + 3 x3 + 4 x4 + 5 *x1^2 + 6 x1 x2 + 7 x1 x3 + 8 x1 x4 + error
 ##'
 ##' If beta supplies more coefficients, they are interpeted as additional
 ##' interactions.
 ##'
-##' I've decided to treat those additional elements of beta as a vech for the
-##' lower triangle of a coefficient matrix. Example with 4 predictors. beta[1:5] are
-##' used for the intercepts and slopes. The rest lay in like so:
+##' When there are a many predictors and the beta vector is long, this
+##' can become confusing. I think of this as a vech for the lower
+##' triangle of a coefficient matrix. In the example with 4
+##' predictors, beta[1:5] are used for the intercepts and slopes. The
+##' rest of the  beta elements lay in like so:
 ##'
 ##'    X1   X2  X3  X4
 ##' X1 b6   .    .
@@ -88,16 +108,20 @@ NULL
 ##' X3 b8   b11  b13
 ##' X4 b9   b12  b14 b15
 ##'
-##' If the user only supplies b6 and b7, the rest default to 0.
+##' If the user only supplies b6 and b7, the rest are assumed  to  be 0.
+##'
+##' To make this clear, the formula used to calculate y is printed to
+##' the console when genCorrelatedData2 is called.
 ##'
 ##' @param N Number of cases desired
-##' @param means P-vector of means for X
-##' @param sds P-vector of standard deviations for X
+##' @param means P-vector of means for X. Implicitly sets the dimension of the predictor matrix as N x P.
+##' @param sds Values for standard deviations for columns of X. If
+##' less than P values are supplied, they will be recycled.
 ##' @param rho Correlation coefficient for X. Several input formats
-##' are allowed (see \code{lazyCor}). Can be a single number (common
+##' are allowed (see \code{lazyCor}). This can be a single number (common
 ##' correlation among all variables), a full matrix of correlations
 ##' among all variables, or a vector that is interpreted as the
-##' strictly lower triangle (commonly called a vech).
+##' strictly lower triangle (a vech).
 ##' @param stde standard deviation of the error term in the data
 ##' generating equation
 ##' @param beta beta vector of coefficients for intercept, slopes, and
@@ -113,7 +137,7 @@ NULL
 ##' @examples
 ##' ## 1000 observations of uncorrelated X with no interactions
 ##' set.seed(234234)
-##' dat <- genCorrelatedData2(N=10, rho=c(0.0), beta=c(1, 2, 1, 1), means = c(0,0,0), sds = c(1,1,1), stde = 0)
+##' dat <- genCorrelatedData2(N = 10, rho = 0.0, beta = c(1, 2, 1, 1), means = c(0,0,0), sds = c(1,1,1), stde = 0)
 ##' summarize(dat)
 ##' ## The perfect regression!
 ##' m1 <- lm(y ~ x1 + x2 + x3, data = dat)
@@ -126,7 +150,7 @@ NULL
 ##' plotCurves(m1, plotx = "x2")
 ##'
 ##' ## interaction between x1 and x2
-##' dat <- genCorrelatedData2(N=1000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 1)
+##' dat <- genCorrelatedData2(N = 1000, rho = 0.2, beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 1)
 ##' summarize(dat)
 ##' ## Fit wrong model? get "wrong" result
 ##' m2w <- lm(y ~ x1 + x2 + x3, data = dat)
@@ -135,12 +159,12 @@ NULL
 ##' m2 <- lm(y ~ x1 * x2 + x3, data = dat)
 ##' summary(m2)
 ##'
-##' dat <- genCorrelatedData2(N=1000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 100)
+##' dat <- genCorrelatedData2(N = 1000, rho = 0.2, beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 100)
 ##' summarize(dat)
 ##' m2.2 <- lm(y ~ x1 * x2 + x3, data = dat)
 ##' summary(m2.2)
 ##'
-##' dat <- genCorrelatedData2(N=1000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 200)
+##' dat <- genCorrelatedData2(N = 1000, means = c(100, 200, 300, 100),  sds = 20,  rho = c(0.2, 0.3, 0.1, 0, 0, 0), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.16, 0, 0, 0.2, 0, 0, 1.1, 0, 0, 0.1), stde = 200)
 ##' summarize(dat)
 ##' m2.3w <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m2)
@@ -188,6 +212,7 @@ genCorrelatedData2 <-
     ## sigma <- diag(sds) %*% corr.mat %*% diag(sds)
     d <- length(means)
     R <- lazyCor(rho, d)
+    if (length(sds) < d) sds <- rep(sds, length.out = d)
     Sigma <- lazyCov(Rho = R, Sd = sds)
     ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
     x.mat <- rockchalk::mvrnorm(N, means, Sigma)

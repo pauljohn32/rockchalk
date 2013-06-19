@@ -1,3 +1,14 @@
+2013-06-06  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): col needs to be in arguments
+	to plotFancy. Same for plotCurves
+	(plotFancy): color name problem when user supplies col argument. Fixed.
+
+	* ../R/genCorrelatedData.R (genCorrelatedData2): recycle sds
+	argument to length P
+	* examples/plotSlopes-ex.R, plotCurves-ex.R. Incorporate
+	genCorrelatedData2.
+
 2013-06-02  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
 
 	* ../DESCRIPTION (Date): New data set: Nyblade-Read

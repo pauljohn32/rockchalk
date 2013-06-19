@@ -140,7 +140,41 @@ sweave
 \begin_body
 
 \begin_layout Title
-Using rockchalk for Regression Presentations (1.7.x development)
+Using rockchalk for Regression Analysis
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+In case you want to be involved in development, the source code is available
+ on GitHub.
+ Please browse http://github.com/pauljohn32.
+ The read-only git archive address is 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+git://github.com/pauljohn32/rockchalk.git
+\end_layout
+
+\end_inset
+
+.
+ Once you learn how to 
+\begin_inset Quotes eld
+\end_inset
+
+clone
+\begin_inset Quotes erd
+\end_inset
+
+ the repository with a git client, then we can discuss ways for you to contribut
+e.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Author
@@ -213,305 +247,80 @@ options(useFancyQuotes = FALSE)
 
 \end_layout
 
-\begin_layout Section*
-Development on version 1.7.x
-\end_layout
-
-\begin_layout Standard
-The 
-\begin_inset Quotes eld
-\end_inset
-
-stable
-\begin_inset Quotes erd
-\end_inset
-
- version of rockchalk on CRAN is 1.6.3.
- Version 1.7.x is an 
-\begin_inset Quotes eld
-\end_inset
-
-unstable
-\begin_inset Quotes erd
-\end_inset
-
- testing branch to add features.
- The next stable release will be numbered 1.8.0.
- 
-\end_layout
-
-\begin_layout Standard
-Test versions can be downloaded & installed from our local test repository,
- can be retrieved with:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Sinput}
-\end_layout
-
-\begin_layout Plain Layout
-
-install.packages("rockchalk", repos = "http://rweb.quant.ku.edu/kran", type
- = "source")
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Sinput}
-\end_layout
-
-\end_inset
-
-I don't upload versions unless they 
-\begin_inset Quotes eld
-\end_inset
-
-run
-\begin_inset Quotes erd
-\end_inset
-
- and pass the usual tests for uploading packages on CRAN, so I think they
- are mostly safe for you to test.
- CRAN now asks we not upload packages frequently, so the KRAN alternative
- is used for rapid-release development.
-\end_layout
-
-\begin_layout Standard
-As always, the best way to learn what this does is to run the examples.
-\end_layout
-
-\begin_layout Standard
-Installed with the package will be a directory called 
-\begin_inset Quotes eld
-\end_inset
-
-examples
-\begin_inset Quotes erd
-\end_inset
-
-.
- I recently learned that it is possible to include not only the examples
- that you run with the R function example(), but also other demonstration
- files.
- These demonstration files are not linked to particular functions in the
- package, they are 
-\begin_inset Quotes eld
-\end_inset
-
-just there
-\begin_inset Quotes erd
-\end_inset
-
- waiting for you to explore.
- For programming tutorial examples, look for 
-\begin_inset Quotes eld
-\end_inset
-
-noWords-*.R
-\begin_inset Quotes erd
-\end_inset
-
- and other filenames that do not end in 
-\begin_inset Quotes eld
-\end_inset
-
-*-ex.R
-\begin_inset Quotes erd
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-The vignettes distributed with the package are
-\end_layout
-
-\begin_layout Itemize
-rockchalk: a survey of package features, lags behind development slightly
- (because I don't write out explanations until things actually work)
-\end_layout
-
-\begin_layout Itemize
-Rstyle: an essay about how my students should write R code
-\end_layout
-
-\begin_layout Itemize
-Rchaeology: an essay about difficult problems that I've had to solve while
- working on rockchalk.
-\end_layout
-
-\begin_layout Standard
-In case you want to be involved in development, the source code is available
- on GitHub.
- Please browse http://github.com/pauljohn32.
- The read-only git archive address is 
-\begin_inset Flex URL
-status open
-
-\begin_layout Plain Layout
-
-git://github.com/pauljohn32/rockchalk.git
-\end_layout
-
-\end_inset
-
-.
- Once you learn how to 
-\begin_inset Quotes eld
-\end_inset
-
-clone
-\begin_inset Quotes erd
-\end_inset
-
- the repository with a git client, then we can discuss ways for you to contribut
-e.
-\end_layout
-
 \begin_layout Section
 Introduction
 \end_layout
 
 \begin_layout Standard
-The rockchalk package is a collection of functions that I need, or my students
- might need, when I'm teaching about regression.
- The functions here divide into three categories.
+This is the Spring, 2013 update of the rockchalk package.
+ I offer a course in regression analysis for social and behavioral scientists
+ every year.
+ As the course goes on, I keep track of the difficulties that the students
+ experience with R and I craft functions that facilitate their work on particula
+r assignments.
+ In this edition, I offer several enhancements in the calculation of predicted
+ values, regression plots, and regression tables.
  
 \end_layout
 
-\begin_layout Enumerate
-Functions that help me prepare lectures and reports.
- The function to create LaTeX tables from regression output, outreg, falls
- into this category.
- It speeds up the preparation of lectures immensely to include table generating
- code that 
-\begin_inset Quotes eld
-\end_inset
-
-just works
-\begin_inset Quotes erd
-\end_inset
-
- with R output.
- Some functions in R are very hard to use and get right consistently, especially
- where 3 dimensional plotting is concerned.
- That's where functions like mcGraph1(), mcGraph2(), mcGraph3(), and plotPlane()
- come in handy.
- These don't do any work that is particularly original, but they do help
- to easily make the multidimensional plots that turn out 
-\begin_inset Quotes eld
-\end_inset
-
-about right
-\begin_inset Quotes erd
-\end_inset
-
- most of the time.
- 
-\end_layout
-
-\begin_layout Enumerate
-Functions simplify vital chores that are difficult for regression students.
- I keep track of the R idioms that bother the students and try to craft
- functions that simplify them.
- I have often asked students to plot several regression lines, 
-\begin_inset Quotes eld
-\end_inset
-
-one for each sub-group of respondents,
-\begin_inset Quotes erd
-\end_inset
-
- and this sometimes proves frustrating.
- The functions plotSlopes is offered as my suggestion for creating interaction
- plots of 
-\begin_inset Quotes eld
-\end_inset
-
-simple slopes
-\begin_inset Quotes erd
-\end_inset
-
-.
- The plotSlopes() function is intended for 
-\begin_inset Quotes eld
-\end_inset
-
-straight lines,
-\begin_inset Quotes erd
-\end_inset
-
- but as soon a students discover log(x) or poly(x, 2), then they want predicted
- lines plotted as well.
- That is why I created plotCurves().
- These functions handle the work of calculating predicted values and drawing
- them for several possible values of a third variable.
- plotPlane() is along the same line.
- If students find that useful, they can then use the examples to build up
- more complicated drawings.
- Most recently, a function to transfer the lines from plotSlopes() and plotCurve
-s() onto the plotPlane() drawings was added (look for the function addLines().
-\end_layout
-
-\begin_layout Enumerate
-Functions that people often ask for, even if they might be unwise to use
- them.
- A function to estimate a 
-\begin_inset Quotes eld
-\end_inset
-
-standardized regression
-\begin_inset Quotes erd
-\end_inset
-
- is offered.
- Although that is clearly unwise (in the eyes of many), some folks still
- want to calculate 
-\begin_inset Quotes eld
-\end_inset
-
-beta weights.
-\begin_inset Quotes erd
-\end_inset
-
- Hence the function standardize().
- 
-\end_layout
-
-\begin_deeper
 \begin_layout Standard
-A person might want to mean-center some predictors, or standardize variables
- selectively the model.
- The function meanCenter() can optionally center and/or standardize variables
- and re-run a regression.
- Mean centering of variables, or its cousin 
+The core of the effort this time has been development of an internally coherent
+ framework that allows students to create 
 \begin_inset Quotes eld
 \end_inset
 
-residual centering,
+newdata
 \begin_inset Quotes erd
 \end_inset
 
- are sometimes proposed enthusiastically as analytical simplifications or
- statistical fixes for various perceived maladies.
- Because other people propose those methods to the students, I have to provide
- functions to implement them so we can investigate.
- I've concluded that those methods are not truly helpful, and below I have
- an illustration.
+ objects in a flexible and convenient way.
+ Users are welcome to use the newdata() function directly, but I offer a
+ convenience called predictOMatic() that allows one to specify a regression
+ model and then receive predicted values for a range of various input values.
+ The default output will be similar to other regression software tools that
+ provide 
+\begin_inset Quotes eld
+\end_inset
+
+marginal effect
+\begin_inset Quotes erd
+\end_inset
+
+ estimates for regression analysis.
  
 \end_layout
 
-\end_deeper
+\begin_layout Standard
+In this edition of rockchalk, I have exerted a great deal of effort to improve
+ the consistency of predicted value plots for regression analysis.
+ The plotSlopes() function is a plotter for linear models with interaction
+ terms.
+ It draws a plot on the screen, but it also creates an output object that
+ can be subjected to a follow-up hypothesis test (by the testSlopes() function).
+ In version 1.8, there is a new plot method for testSlopes objects that employ
+ interactions of numeric predictors.
+ The plots for testSlopes objects will be the most useful new feature in
+ this version of the package.
+ 
+\end_layout
+
+\begin_layout Standard
+For people who want to plot nonlinear regressions, the function plotCurves()
+ is a replacement for plotSlopes.
+ It can handle any sort of nonlinearity and interaction on the right hand
+ side.
+ Where some regression formula can cause R's termplot() function to fail,
+ plotCurves() will succeed.
+\end_layout
+
+\begin_layout Standard
+The core functionality of many functions has not been altered.
+ Functions to provide standardized regression coefficients, mean-centered,
+ or residual-centered regression coefficients have not changed much, although
+ the plots of them are improved.
+ 
+\end_layout
+
 \begin_layout Section
 Facilitating Collection of Summary Information
 \end_layout
@@ -521,24 +330,14 @@ summarize: A replacement for summary
 \end_layout
 
 \begin_layout Standard
-R's summary function has some limitations.
- For example, no indicators of diversity are included in the presentation.
- I'd like to see the standard deviation and/or the variance.
- For categorical variables, I'd like an indicator like entropy, which, roughly
- speaking, is a way of summarizing the chances that two observations (randomly
- drawn) do not fall into the same category.
- 
-\end_layout
-
-\begin_layout Standard
-As work progressed on a revision of summary(), I realized there are other
- things about R's summary that I wanted to change.
- First, I want to separate the numeric from the categorical (factor) variables.
- Second, I want the option to have alphabetized columns in the output.
- Third, I want more workable objects to be returned.
- I find it almost impossible to use the returned value from summary() for
- further analysis.
- It offers a large block of text in a table format.
+When an R function provides output that is not suitable for a term paper,
+ the student must cobble together some code and assemble a customized table.
+ In my opinion, R's summary() function for data frames is not adequate.
+ It lacks summaries for diversity of observations.
+ In addition, the output is not formatted in a way that is conducive to
+ the creation of plots or tables.
+ As a result, I offer the function summarize(), which separates the numeric
+ from factor variables and provides an alphabetized summary.
  
 \end_layout
 
@@ -564,50 +363,6 @@ library(rockchalk)
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-In order to create more workable output objects, some re-arrangement of
- the work behind the scenes can be done.
- Basically, it is necessary that the summarize() function return the more-workab
-le, less easily printable output object, and then a print method is used
- to 
-\begin_inset Quotes eld
-\end_inset
-
-pretty print
-\begin_inset Quotes erd
-\end_inset
-
- that output for the user.
- 
-\end_layout
-
-\begin_layout Standard
-The summarize() function returns a list with two components, 
-\begin_inset Quotes eld
-\end_inset
-
-numerics
-\begin_inset Quotes erd
-\end_inset
-
- and 
-\begin_inset Quotes eld
-\end_inset
-
-factors
-\begin_inset Quotes erd
-\end_inset
-
-.
- The numeric summary is a data frame, with named rows, that can be used
- for further analysis.
- Users who wish to summarize only the numeric variables can run summarizeNumeric
-s() instead, while others who want to summarize only factors can run summarizeFa
-ctors().
- The output from summarizeFactors() is a list of factor summaries.
- 
 \end_layout
 
 \begin_layout Standard
@@ -645,6 +400,17 @@ data(Chile)
 \end_layout
 
 \begin_layout Standard
+The result object is a list that includes a data frame for the numeric variables
+, with named rows and (optionally) alphabetized columns, as well as a separate
+ report for each factor variable.
+ Users who wish to summarize only the numeric variables can run summarizeNumeric
+s() instead, while others who want to summarize only factors can run summarizeFa
+ctors().
+ The output from summarizeFactors() is a list of factor summaries.
+ 
+\end_layout
+
+\begin_layout Standard
 A companion function is centralValues(), which will provide only one number
  for each variable in a data frame.
  For numerics, it returns the mean, while for factor variables, it returns
@@ -677,37 +443,50 @@ centralValues(Chile)
 \end_layout
 
 \begin_layout Subsection
-Easier newdata objects for predict
+Easier predictions and newdata objects
 \end_layout
 
 \begin_layout Standard
-Two functions, newdata() and predictOMatic(), will greatly facilitate the
- creation of 
+Students struggle with R's predict() methods.
+ The primary challenge is in the creation of a newdata object of interesting
+ values of the predictors.
+ If the newdata argument, here myNewDF in 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+predict(m1, newdata = myNewDF)
+\end_layout
+
+\end_inset
+
+ is not exactly right, the command will fail.
+ If the regression formula uses functions like 
 \begin_inset Quotes eld
 \end_inset
 
-newdata
+as.numeric()
 \begin_inset Quotes erd
 \end_inset
 
- objects for use with R's predict methods.
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+as.factor()
+\begin_inset Quotes erd
+\end_inset
+
+, its almost impossible for first-time R users to get this right.
+ In version 1.8, I believe I have solved the problem entirely with the functions
+ newdata() and predictOMatic().
  
 \end_layout
 
 \begin_layout Standard
-In order to understand the benefits of the approach proposed here, it is
- necessary to understand the 
-\begin_inset Quotes eld
-\end_inset
-
-old way
-\begin_inset Quotes erd
-\end_inset
-
- we were supposed to do this in R.
- There are 3 steps in the usual procedure.
- First, fit a regression, like so.
- This uses the Chile data set from the car package.
+Let's fit an example regression with the Chile data set from the car package.
 \end_layout
 
 \begin_layout Standard
@@ -732,94 +511,6 @@ m1 <- lm(statusquo ~ age + income + population + region + sex, data=Chile)
 \end_inset
 
 
-\begin_inset Newline newline
-\end_inset
-
-Second, we need to build a newdata obect.
- It must be a new data frame that includes values for all of the predictors.
- I usually do this by extracting the data frame that was used to fit the
- model 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-m1mf <- model.frame(m1)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-and it will help us to make a new data object to be used along with the
- predict function.
- 
-\end_layout
-
-\begin_layout Standard
-\noindent
-Third, we need to use that new data object with the regression model's predict
- method.
- If we were to run
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-predict(m1)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-we would receive a predicted value for each observation.
- That doesn't simplify anything.
- Instead, we want predicted values for a focal set of values, values that
- are substantively interesting (say, quantiles or other variations above
- and below the mean).
- I'll explain details on how to create this new data object below, lets
- just suppose it exists.
- R's predict function has a newdata argument that will offer predictions
- for those focal cases, if only we could construct myNewDF.
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-predict(m1, newdata = myNewDF)
-\end_layout
-
-\end_inset
-
-
 \end_layout
 
 \begin_layout Standard
@@ -827,33 +518,8 @@ predict(m1, newdata = myNewDF)
 The new data must include one column for each variable in the model, and
  those variables must have exactly the same names as were used in the regression
  formula.
- I've taught R for almost a decade and this is often a source of frustration.
- 
-\end_layout
-
-\begin_layout Standard
-I still teach the Three Step sequence of 
-\begin_inset Quotes eld
-\end_inset
-
-can't miss
-\begin_inset Quotes erd
-\end_inset
-
- steps.
- But I expect I won't be doing that for long because the functions newdata()
- and predictOMatic() will do most of this automatically.
- In order to understand what's going on, I need the reader to understand
- the steps in principle.
- 
-\end_layout
-
-\begin_layout Standard
-Now, what kind of a process is required to create a workable newdata frame?
- First, calculate values for the predictors at their central values (say,
- mean or mode or median).
- The summarize function and the centralValues functions are run first to
- collect up the needed information.
+ The default output of predictOMatic() will cycle through the predictors,
+ one by one.
 \end_layout
 
 \begin_layout Standard
@@ -867,42 +533,12 @@ status open
 
 \begin_layout Plain Layout
 
-m1mfsumm <- summarize(m1mf)
+m1pred <- predictOMatic(m1)
 \end_layout
 
 \begin_layout Plain Layout
 
-m1cv <- centralValues(m1mf)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Second, specify some alternate levels for particular predictors in a new
- data frame.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-focalVals <- list(age = m1mfsumm$numerics[2:4, "age"], region = c("C","N"))
+m1pred
 \end_layout
 
 \begin_layout Plain Layout
@@ -916,183 +552,7 @@ focalVals <- list(age = m1mfsumm$numerics[2:4, "age"], region = c("C","N"))
 \end_layout
 
 \begin_layout Standard
-R's expand.grid() function offers a very convenient way to get all combinations
- of those predictors.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-mixAndMatch <- expand.grid(focalVals)
-\end_layout
-
-\begin_layout Plain Layout
-
-mixAndMatch
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Third, combine those focal values with the central values for the other
- variables in the data set.
- Recall that we must specify values for all of the predictors in the model.
- There is a danger that we may end up with columns that have duplicate names
- (there is a variable 
-\begin_inset Quotes eld
-\end_inset
-
-age
-\begin_inset Quotes erd
-\end_inset
-
- in both m1cv and mixAndMatch).
- To avoid duplicate column names, I keep only the columns from m1cv that
- are not already in mixAndMatch when I join the two together.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf <- cbind(mixAndMatch, m1cv[  ,!colnames(m1cv) %in% colnames(mixAndMatch)
-])
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-The predicted values are called fit and added to mynewdf.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf$fit <- predict(m1, newdata = mynewdf)
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-If one desires confidence intervals, the procedure is similar, although
- the data management is slightly more tedious.
- I usually prefer to rename the fit and lower and upper confidence interval
- regions so that they have unique names.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf <- cbind(mixAndMatch, m1cv[  ,!colnames(m1cv) %in% colnames(mixAndMatch)
-])
-\end_layout
-
-\begin_layout Plain Layout
-
-preds <- predict(m1, newdata = mynewdf, interval="confidence")
-\end_layout
-
-\begin_layout Plain Layout
-
-colnames(preds) <- paste("m1", colnames(preds), sep = "")
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf <- cbind(mynewdf, preds)
-\end_layout
-
-\begin_layout Plain Layout
-
-mynewdf
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-That seems like a lot of work to me, and I've done it many times.
- 
-\end_layout
-
-\begin_layout Standard
-Can this be made easier? And can it be robust and flexible? I believe the
- answer is yes.
- The newdata() and predictOMatic() functions handle the details and allow
+The newdata() and predictOMatic() functions handle the details and allow
  the user to adjust their requests to allow for very fine grained control.
  Here are the key arguments for these functions.
 \end_layout
@@ -1169,15 +629,96 @@ n.
 \begin_layout Enumerate
 predVals.
  Where the divider argument sets the default algorithm to be used, the predVals
- argument can choose variables for focus and select divider algorithms.
+ argument can choose variables for focus and select divider algorithms separatel
+y for the variables.
  It is also allowed to declare particular values.
 \end_layout
 
 \begin_layout Standard
-The function newdata() is a way of asking for a new data frame that demonstrates
- certain focal values of one or more variables.
- We start with a fitted regression, m1, which was fitted above.
- This asks for a 
+The user can request that particular values of the predictors are used,
+ or can declare one of several algorithms for selection of focal values.
+ All of these details are managed by the argument called predVals, which
+ is described in the help pages (with plenty of examples).
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred2 <- predictOMatic(m1, predVals = c("age", "region"), n = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred2
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred3 <- predictOMatic(m1, predVals = c(age = "std.dev.", region = "table"),
+ n = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred3
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred4 <- predictOMatic(m1, predVals = list(age = summChile$numerics[2:4,
+ "age"], region = c("SA", "C","N")), n = 3)
+\end_layout
+
+\begin_layout Plain Layout
+
+mypred4
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I've invested quite a bit of effort to make sure this works dependably with
+ complicated regression formulae.
+ All formulae, such as y ~ x1 + log(x2 + alpha) + ploy(x3, d) will just
+ work.
+ (In case one is interested to know 
+\emph on
+why
+\emph default
+ this works, the secret recipe is a new function called model.data().
+ Under the hood, this required some hard work, a frustrating chain of trial
+ and error that is discussed in the vignette 
+\emph on
+Rchaeology
+\emph default
+, which is distributed with this package).
+\end_layout
+
+\begin_layout Standard
+The predictOMatic() function will work when the regression model provides
+ a predict function that can handle the newdata argument.
+ If the regression package does not provide such a function, the user should
+ step back and used the newdata function to create the examplar predictor
+ data frames and then calculate predicted values manually.
+ The newdata() function will set all variables to center values and then
+ it will create a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1185,7 +726,16 @@ mix and match
 \begin_inset Quotes erd
 \end_inset
 
- of values from age and region.
+ combination of the ones that the user asks for.
+ This sequence shows ways to ask for various 
+\begin_inset Quotes eld
+\end_inset
+
+mix and match
+\begin_inset Quotes erd
+\end_inset
+
+ combinations of values from age and region.
  
 \end_layout
 
@@ -1315,8 +865,8 @@ mynewdf
 \begin_inset Newline newline
 \end_inset
 
-The function getFocal() is a generic function, which means that it can receive
- variables of different types and it is supposed to notice and 
+The function getFocal() is a generic function; it will receive variables
+ of different types and 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1324,73 +874,30 @@ do the right thing.
 \begin_inset Quotes erd
 \end_inset
 
- It allows the section of algorithms as explained in the documentation,
- but the default for numeric variables is the quantile and for factors the
- most frequenly observed outcomes are selected.
+ By default, focal values of numeric variables are quantile values.
+ For factor values, the most frequently observed values are selected.
+ These are customizable, as explained in the documentation.
  The newdata() output can be used in a predict() function call as demonstrated
  above.
  
 \end_layout
 
 \begin_layout Standard
-Note that I've tried to help users to catch typographical errors in the
- predVals.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Sinput}
-\end_layout
-
-\begin_layout Plain Layout
-
-> mynewdf <- newdata(m1, predVals = list(age = summChile$numerics[2:4, "age"],
- place = c("SA", "C","N")))
-\end_layout
-
-\begin_layout Plain Layout
-
-Error.
- The focus list: predVals requests variables that are not included in the
- original model.
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-The names of the variables in the focus list be drawn from this list: age
- income population region sex
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Sinput}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-I've tried to go one step further, offering a function called predictOMatic().
- predictOMatic() receives a regression model and if no other details are
- supplied, it takes each variable, one at a time, and collects some focal
- values and estimates predictions for each one.
- The user can request that particular values of the predictors are used,
- or can declare one of several algorithms for selection of focal values.
- All of these details are managed by the argument called predVals, which
- is described in the help pages (with plenty of examples).
- 
+It would be nice if every regression model's predicted values were accompanied
+ by 95% confidence intervals.
+ Models fit by lm() can supply confidence intervals, but not glm().
+ At the current time, there are many competing methods that might be used
+ to calculate those intervals; predict.glm() in R's stats package avoids
+ the issue entirely by not calculating intervals.
+ In rockchalk-1.8, I crafted some code to calculate confidence intervals
+ for glm objects using the (admittedly crude) Wald-based approximation.
+ In the scale of the linear predictor, we calculate a 95% confidence interval,
+ and then use the inverse link function to transform that onto the space
+ of the observed response.
+ In this example, I replicate an example that is an R classic, from the
+ help page of predict.glm.
+ The reader will note that the output includes a warning about the construction
+ of the confidence interval.
 \end_layout
 
 \begin_layout Standard
@@ -1404,44 +911,195 @@ status open
 
 \begin_layout Plain Layout
 
-mypred1 <- predictOMatic(m1)
+df <- data.frame(ldose = rep(0:5, 2), sex = factor(rep(c("M", "F"), c(6,
+ 6))), 
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred1
+	SF.numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16))      
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred2 <- predictOMatic(m1, predVals = c("age", "region"), n = 3)
+df$SF.numalive <-  20 - df$SF.numdead
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred2
+budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family
+ = binomial)
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred3 <- predictOMatic(m1, predVals = c(age = "std.dev.", region = "table"),
- n = 3)
+predictOMatic(budworm.lg, predVals = c(ldose = "std.dev.", sex = "table"),
+ interval = "confidence")  
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred3
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Better Regression Tables: Some outreg Examples.
+\end_layout
+
+\begin_layout Standard
+On May 8, 2006, Dave Armstrong, who was a political science PhD student
+ at University of Maryland, posted a code snippet in r-help that demonstrated
+ one way to use the 
+\begin_inset Quotes eld
+\end_inset
+
+cat
+\begin_inset Quotes erd
+\end_inset
+
+ function from R to write LaTeX markup.
+ That gave me the idea to write a LaTeX output scheme that would help create
+ some nice looking term and research papers.
+ I wanted 
+\begin_inset Quotes eld
+\end_inset
+
+just enough
+\begin_inset Quotes erd
+\end_inset
+
+ information, but not too much.
+\end_layout
+
+\begin_layout Standard
+Since 2006, many new R packages have been introduced for the creation of
+ regression tables, but I still prefer to maintain outreg.
+ I fight to keep this simple, but have added some features in response to
+ user requests.
+ In rockchalk-1.8, I have compromised with users who want 
+\begin_inset Quotes eld
+\end_inset
+
+more stars.
+\begin_inset Quotes erd
+\end_inset
+
+ Personally, I think the one-two-three stars for p-values are silly, but
+ they are used so widely that I now have incorporated a user option to request
+ various alphas.
+ I've also made it easier for users to request additional summary statistics
+ in the bottom half of the table.
+\end_layout
+
+\begin_layout Standard
+In the following, I will demonstrate some tables for lm and glm fits on
+ a simulated data set.
+ This new simulation function, genCorrelatedData2(), is a convenient way
+ to create multiple-predictor regression data sets of arbitary size and
+ complexity, allowing for interactions and nonlinearity.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<createdata1, echo=T>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred4 <- predictOMatic(m1, predVals = list(age = summChile$numerics[2:4,
- "age"], region = c("SA", "C","N")), n = 3)
+set.seed(1234)
 \end_layout
 
 \begin_layout Plain Layout
 
-mypred4
+dat <- genCorrelatedData2(N = 100, means = c(0, 10, 0), sds = c(1, 2, 1),
+ rho = c(0, 0, 0), 
+\end_layout
+
+\begin_layout Plain Layout
+
+  	stde = 5, beta = c(0, -3, 4, 0), verbose = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+That creates a new matrix with variables 
+\begin_inset Formula $x1,$
+\end_inset
+
+ 
+\begin_inset Formula $x2$
+\end_inset
+
+, 
+\begin_inset Formula $x3$
+\end_inset
+
+, and y.
+ We run some linear regressions and then create a categorical output variable
+ for a logistic regression.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<createdata1, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y ~ x1 + x2, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(y ~ x2, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm(y ~ x1 + x2 + x3, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+## Create categorical variant
+\end_layout
+
+\begin_layout Plain Layout
+
+myilogit <- function(x) exp(x)/(1 + exp(x))
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y3 <- rbinom(100, size = 1, p = myilogit(scale(dat$y)))
+\end_layout
+
+\begin_layout Plain Layout
+
+gm1 <- glm(y3 ~ x1 + x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1455,51 +1113,7 @@ mypred4
 \end_layout
 
 \begin_layout Standard
-I've invested quite a bit of effort to make sure this works dependably with
- complicated regression formulae.
- It is fairly easy to write a prediction scheme for a simple linear equation
- like y ~ x1 + x2, we also need to handle y ~ x1 + log(x2 + alpha) + ploy(x3,
- d) and so forth.
- That was a hard problem for me, but I believed it is solved now (the secret
- recipe is a new function called model.data()).
- Under the hood, this required some hard work, a frustrating chain of trial
- and error that is discussed in the vignette 
-\emph on
-Rchaeology
-\emph default
-, which is distributed with this package.
- 
-\end_layout
-
-\begin_layout Section
-Better Regression Tables: Some outreg Examples.
-\end_layout
-
-\begin_layout Standard
-On May 8, 2006, Dave Armstrong, a political science PhD student at University
- of Maryland, posted a code snippet in r-help that demonstrated one way
- to use the 
-\begin_inset Quotes eld
-\end_inset
-
-cat
-\begin_inset Quotes erd
-\end_inset
-
- function from R to write LaTeX markup.
- That gave me the idea to write a LaTeX output scheme that would help create
- some nice looking term and research papers.
- I'd been frustrated with the LaTeX output from other R functions.
- I needed a table-maker to include all of the required information in a
- regression table without including a lot of chaff (in my opinion).
- I don't want both the standard error of b and the t value, I never want
- p values, I need stars for the significant variables, and I want a minimally
- sufficient set of summary statistics.
- In 2006, there was no function that met those needs.
-\end_layout
-
-\begin_layout Standard
-Tables 
+The outreg examples are offered in Tables 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Tab1"
@@ -1513,103 +1127,52 @@ reference "tab:Combined-OLSGLM"
 
 \end_inset
 
- present examples of table output that I am able to generate with outreg.
- The regression models are fit with some simulated data.
-\end_layout
+.
+ Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab1"
 
-\begin_layout Standard
-\begin_inset ERT
+\end_inset
+
+ is the default output for three models, obtained from 
+\begin_inset listings
+inline true
 status open
 
 \begin_layout Plain Layout
 
-<<createdata, echo=T>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-set.seed(1234)
-\end_layout
-
-\begin_layout Plain Layout
-
-x1 <- rnorm(100)
-\end_layout
-
-\begin_layout Plain Layout
-
-x2 <- rnorm(100, m=10)
-\end_layout
-
-\begin_layout Plain Layout
-
-x3 <- rnorm(100)
-\end_layout
-
-\begin_layout Plain Layout
-
-y1 <- 5*rnorm(100) - 3*x1 + 4*x2
-\end_layout
-
-\begin_layout Plain Layout
-
-y2 <- rnorm(100)+5*x2
-\end_layout
-
-\begin_layout Plain Layout
-
-dat <- data.frame(x1, x2, x3, y1, y2)
-\end_layout
-
-\begin_layout Plain Layout
-
-rm (x1, x2, y1, y2)
-\end_layout
-
-\begin_layout Plain Layout
-
-m1 <- lm (y1~x1, data=dat)
-\end_layout
-
-\begin_layout Plain Layout
-
-m2 <- lm (y1~x2, data=dat)
-\end_layout
-
-\begin_layout Plain Layout
-
-m3 <- lm (y1 ~ x1 + x2, data=dat)
-\end_layout
-
-\begin_layout Plain Layout
-
-myilogit <- function(x) exp(x)/(1 + exp(x))
-\end_layout
-
-\begin_layout Plain Layout
-
-dat$y3 <- rbinom(100, size=1, p=myilogit(scale(dat$y1)))
-\end_layout
-
-\begin_layout Plain Layout
-
-gm1 <- glm(y3~x1 + x2, data=dat)
-\end_layout
-
-\begin_layout Plain Layout
-
-dat$y4 <- 1 + 0.1 * dat$x1 - 6.9 * dat$x2 + 0.5 * dat$x1*dat$x2 + 0.2 * dat$x3
- + rnorm(100,0, sd=10)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
+outreg(list(m1, m2, m3))
 \end_layout
 
 \end_inset
 
+.
+ On the other hand, users can pack output estimates into a single column
+ and ask for more stars, as illustrated in Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Tab2"
 
+\end_inset
+
+.
+ .
+ In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:Combined-OLSGLM"
+
+\end_inset
+
+, observe that the linear and generalized linear model output peacefully
+ co-exist, side-by-side.
+ This output is, in my opinion, completely acceptable for inclusion in a
+ presentation or conference paper There are some warts in this output.
+ Because the model labels are not equal in length, the columns are not equally
+ sized.
+ Because may LaTeX distributions do not include the dcolumns package, I've
+ not aligned the coefficient estimates vertically as some users might like.
 \end_layout
 
 \begin_layout Standard
@@ -1622,7 +1185,7 @@ status open
 \begin_inset Caption
 
 \begin_layout Plain Layout
-My One Tightly Printed Regression
+Default Outreg Table
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Tab1"
@@ -1643,53 +1206,12 @@ status open
 
 \begin_layout Plain Layout
 
-<<outreg10, results=tex, echo=F>>=
+<<outreg10, echo = F, results=tex>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-outreg(m1)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab1"
-
-\end_inset
-
- displays the default outreg output, without any special options.
- The command is
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=hide>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-<<outreg10>>
+outreg(list(m1, m2, m3))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1699,7 +1221,12 @@ status open
 
 \end_inset
 
-, 
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1738,7 +1265,8 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(m1, tight=FALSE, modelLabels=c("Fingers"), alpha = c(0.05, 0.01, 0.001))
+outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with
+ a Long Title", "Another Model"), alpha = c(0.05, 0.01, 0.001))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1754,456 +1282,6 @@ outreg(m1, tight=FALSE, modelLabels=c("Fingers"), alpha = c(0.05, 0.01, 0.001))
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
-In the literature, regression tables are sometimes presented in a tight
- column format, with the estimates of the coefficients and standard errors
- 
-\begin_inset Quotes eld
-\end_inset
-
-stacked up
-\begin_inset Quotes erd
-\end_inset
-
- to allow multiple models side by side, while sometimes they are printed
- with separate columns for the coefficients and standard errors.
- The outreg option tight=F provides the two column style.
- In Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab2"
-
-\end_inset
-
-, I've also used the argument modelLabels to insert the word 
-\begin_inset Quotes eld
-\end_inset
-
-Fingers
-\begin_inset Quotes erd
-\end_inset
-
- above the regression model.
- The command that produces the table is
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=hide>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-<<outreg20>>
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-My Two Linear Regressions Tightly Printed
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:Tab3"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset VSpace bigskip
-\end_inset
-
-a) Tightly Formatted Columns
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<outreg30, results=tex, echo=FALSE>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-outreg(list(m1,m2), modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie")
-, alpha = c(0.05, 0.01, 0.001))
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-
-\backslash
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset VSpace bigskip
-\end_inset
-
-b) Two Columns Per Regression Model
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<outreg33, results=tex, echo=FALSE>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-outreg(list(m1,m2), tight=FALSE,  modelLabels=c("Mine","Yours"), varLabels
- = list(x1="Billie"), alpha = c(0.05, 0.01, 0.001))
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The outreg function can present different models in a single table, as we
- see in Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab3"
-
-\end_inset
-
-.
- The default output uses the tight format, so there is no need to specify
- that explicitly.
- In part (a) of Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab3"
-
-\end_inset
-
-, we have tightly formatted columns of regression output that result from
- this command:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=hide>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-<<outreg30>>
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-To my eye, there is something pleasant about the less-tightly-packed format,
- as illustrated in part (b) of Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab3"
-
-\end_inset
-
-.
- Note that the only difference in the commands that produce those tables
- is the insertion of tight=FALSE.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=hide>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-<<outreg33>>
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-My Three Linear Regressions in a Tight Format
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:3tight"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<outreg35, results=tex, echo=F>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-outreg(list(m1,m2,m3), modelLabels=c("A","B","C"), varLabels = list(x1="I
- Forgot x1", x2="He Remembered x2"))
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-In addition to using modelLables to provide headings for the 2 models, the
- other argument that was used in Table is 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab3"
-
-\end_inset
-
- varLabels.
- It is often a problem that the variable names are terse, while a presentation
- must have a full name.
- So in Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Tab3"
-
-\end_inset
-
-, I've demonstrated how to replace the variable name x1 with the word 
-\begin_inset Quotes eld
-\end_inset
-
-Billie
-\begin_inset Quotes erd
-\end_inset
-
-.
- Any of the predictor variables can be re-named in this way.
- Another usage of varLabels is offered in an example with three models in
- Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:3tight"
-
-\end_inset
-
-, which is a result of
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=hide>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-<<outreg35>>
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-As one can see, outreg gracefully handles the situation in which variables
- are inserted or removed from a fitted model.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float table
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Three Regressions in the Spread out Format
-\begin_inset CommandInset label
-LatexCommand label
-name "tab:3RegNotTIght"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=tex, echo=F>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-outreg(list(m1,m2,m3), tight=F, modelLabels=c("I Love love love really long
- titles","Hate Long","Medium"), alpha = c(0.05, 0.01))
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-I have not bothered too much with some fine points of LaTeX table formatting.
- In order to produce tables that are completely ready for publication in
- a journal, it would be necessary to use some special LaTeX packages to
- control the vertical alignment of columns and such.
- Doing so would make outreg more difficult for researchers to use, and I
- believe the benefit would be minimal.
- In Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:3RegNotTIght"
-
-\end_inset
-
-, we have regression output which is, in my opinion, completely acceptable
- for inclusion in a presentation or conference paper.
- There are some warts: because the model labels are not equal in length,
- the columns are not equally sized.
- 
 \end_layout
 
 \begin_layout Standard
@@ -2242,7 +1320,7 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m1,gm1), modelLabels=c("OLS:y1","GLM: Categorized y1"))
+outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2261,18 +1339,157 @@ outreg(list(m1,gm1), modelLabels=c("OLS:y1","GLM: Categorized y1"))
 \end_layout
 
 \begin_layout Standard
-Another feature of outreg is that it can present the estimates of different
- kinds of models.
- It can present the estimates from R's lm and glm functions in a single
- table.
- Consider Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:Combined-OLSGLM"
+In rockchalk 1.8, a translator from LaTeX markup to simple HTML was introduced.
+ The function outreg2HTML() can write an HTML code file that a word processor
+ program such as Libre Office or Microsoft Word is able to import without
+ a struggle.
+ 
+\end_layout
+
+\begin_layout Section
+Plotting Regressions with Interactions 
+\end_layout
+
+\begin_layout Subsection
+Interaction in Linear Regression.
+ 
+\end_layout
+
+\begin_layout Standard
+One of the most fundamental skills in regression analysis is the interpretation
+ of interactive predictors.
+ It is much easier for students to understand the effect of an interaction
+ if they can create a nice plot to show how the predicted value depends
+ on various values of a predictor.
+ The plotSlopes() function was introduced in 2010 when I was teaching a
+ large first-year graduate course (more than 50 students) and it became
+ apparent that about 20 percent of them would not be able to manage the
+ R coding required to draw several lines on a single plot.
+ Unfortunately, R's termplot() function will not draw regressions involving
+ interactions.
+\end_layout
+
+\begin_layout Standard
+The rockchalk package has two functions to help with this, plotSlopes()
+ and plotCurves().
+ plotCurves() is more general, it can handle any kind of formula that the
+ user estimates.
+ plotSlopes() is more limited, it is only for lm objects.
+ In return for that limitation, plotSlopes() creates an output object which
+ can be used to conduct post-hoc hypothesis tests.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps05, fig=T, echo=F, include=F, height=5, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval
+ = "confidence", opacity = 80, col = "red", ylim = c(20, 70))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
 
 \end_inset
 
-, which resulted from the command
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[height=4in]{rockchalk-ps05}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+plotSlopes Illustrated
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:ps05"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+At its most elementary level, plotSlopes() is a 
+\begin_inset Quotes eld
+\end_inset
+
+one step
+\begin_inset Quotes erd
+\end_inset
+
+ regression line plotter.
+ If the regression model includes more than one predictor, then a single
+ predictor is displayed on the horizontal axis and the other predictors
+ are set on their central values.
+ A plot for the model m1, that was illustrated above, is presented in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps05"
+
+\end_inset
+
+.
+ In rockchalk-1.8, new arguments were added to allow the 
+\begin_inset Quotes eld
+\end_inset
+
+see though
+\begin_inset Quotes erd
+\end_inset
+
+ confidence region.
+ The command to generate Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps05"
+
+\end_inset
+
+ was
 \end_layout
 
 \begin_layout Standard
@@ -2281,107 +1498,17 @@ status open
 
 \begin_layout Plain Layout
 
-<<results=hide>>=
+<<echo=T, eval=F>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-<<outreg70>>
-\end_layout
-
-\begin_layout Plain Layout
-
-print(rnorm(10))
+<<ps05>>
 \end_layout
 
 \begin_layout Plain Layout
 
 @
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-In the future, outreg will be enhanced to handle more types of regression
- models, including mixed (hierarchical) models.
-\end_layout
-
-\begin_layout Section
-plotSlopes, plotPlane and plotCurves
-\end_layout
-
-\begin_layout Subsection
-plotSlopes for linear models with moderator variables
-\end_layout
-
-\begin_layout Standard
-Suppose the fitted model includes several variables, 
-\begin_inset Formula 
-\begin{equation}
-\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}x2_{i}+\hat{b}_{4}x3_{i}.\label{eq:plotSl10}
-\end{equation}
-
-\end_inset
-
-We would like to visualize the effect of 
-\begin_inset Formula $x1$
-\end_inset
-
- on 
-\begin_inset Formula $y$
-\end_inset
-
- for several values of 
-\begin_inset Formula $x2$
-\end_inset
-
-, keeping 
-\begin_inset Formula $x3_{i}$
-\end_inset
-
- set at some reference value.
- 
-\end_layout
-
-\begin_layout Standard
-The plotSlopes function assists with that project.
- First, we fit a regression model, and then we pass that object to plotSlopes.
- Suppose we estimate the model in equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:plotSl10"
-
-\end_inset
-
-.
- Then use plotSlopes to illustrate the effect of 
-\begin_inset Formula $x1$
-\end_inset
-
- as it depends on 
-\begin_inset Formula $x2$
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
-\end_layout
-
-\begin_layout Plain Layout
-
-plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
 \end_layout
 
 \end_inset
@@ -2391,36 +1518,74 @@ plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
 
 \begin_layout Standard
 \noindent
-The plotx argument is variable x1, meaning that x1 will be on the horizontal
- axis, and x2 serves as the moderator variable.
- plotSlopes requires that the plotx argument must be the name of a numeric
- variable, but modx may be the name of either a numeric or a factor variable.
+I've adjusted the color and opacity to illustrate the usage of those arguments.
+ The y range is adjusted to make a little extra room for the legend.
+ The plotSlopes() function is very flexible.
+ All of the label, color, and scale arguments of a plot function are also
+ available.
+ The plotSlopes function also works well if the moderator is a categorical
+ variable.
  
 \end_layout
 
 \begin_layout Standard
-When modx is a numeric variable, then some particular values must be selected
- for calculation of predictive lines.
- By default, three hypothetical values of plotx are selected (the quantiles
- 25%, 50%, and 75%).
- Any other variables in the model are set at central values, which would
- be the mean for a numeric variable and the mode for a categorical variable.
- The user can also use the modxVals argument to specify a different selection
- of values of the moderator for plotting.
+It is important to note that the output object, m1ps, has the information
+ necessary to re-create the plotted line in the form of a newdata data frame.
+ The first few lines in the newdata object are
 \end_layout
 
 \begin_layout Standard
-Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ps10"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m1ps$newdata[1:3, ]
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
 
 \end_inset
 
- illustrates the plotSlopes function for two use cases.
- The first is the default selection of values for the moderator.
- The second example in that figure illustrates user-selected values for
- the moderator, which in this case are {8, 10.5, 12}.
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps09, fig=F, echo=F, height=9, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y4 <- 1 + 0.1 * dat$x1 - 6.9 * dat$x2 + 0.5 * dat$x1*dat$x2 + 0.2 * dat$x3
+ + rnorm(100, m = 0, sd = 10)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2440,25 +1605,18 @@ status open
 
 \begin_layout Plain Layout
 
-m4 <- lm (y4 ~ x1*x2 + x3, data=dat)
-\end_layout
-
-\begin_layout Plain Layout
-
 par(mfcol=c(2,1))
 \end_layout
 
 \begin_layout Plain Layout
 
-m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a Continuous
- Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$x1, c(1.2,1)))
+m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a fun plotx")
 \end_layout
 
 \begin_layout Plain Layout
 
-m4psb <- plotSlopes(m4, plotx = "x1", modx = "x2", modxVals=c(8, 10.5, 12),
- xlab="Continuous Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$
-x1, c(1.2,1)))
+m4psb <- plotSlopes(m4, plotx = "x2", modx = "x1", modxVals = "std.dev.",
+ xlab = "x2 is plotx", ylim = c(-100, 20))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2501,68 +1659,104 @@ name "fig:ps10"
 \end_layout
 
 \begin_layout Standard
-plotSlopes is intended for linear models with multiplicative interactions,
- but it will also draw ordinary linear models.
- It returns an object that may facilitate further analysis.
- The output object includes the newdata object that was used to construct
- the plots that are draw.
- That output object is used by the function testSlopes, which is discussed
- below.
+This is more interesting if we fit a regression with an interaction term,
+ such as 
 \end_layout
 
 \begin_layout Standard
-The plotSlopes function also works well if the moderator is a categorical
- variable.
- When modx is categorical, the points and lines are drawn with colors that
- represent the categories of the plotted responses.
- Suppose we have a four-valued categorical variable, 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+We then ask plotSlopes to draw the predicted values using one numeric variable
+ as the horizontal axis and values of another variable (a moderator) are
+ set at particular values.
+ Either x1 or x2 can be viewed as the 
 \begin_inset Quotes eld
 \end_inset
 
-West
+moderator
 \begin_inset Quotes erd
 \end_inset
 
-,
-\begin_inset Quotes erd
-\end_inset
-
-Midwest
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-South
-\begin_inset Quotes erd
-\end_inset
-
-, and 
-\begin_inset Quotes eld
-\end_inset
-
-East
-\begin_inset Quotes erd
-\end_inset
-
-.
- If that variable is used in an interaction in the regression model, then
- the plotSlopes output will include four lines, one for each region.
- Like other plot functions in R, the col option can be used to adjust the
- colors to suit the taste of the user.
- In Figure 
+ predictor, the one on which the effect of the other depends.
+ In rockchalk version 1.8, the selection of values of the moderator was generaliz
+ed, so that the user can specify either a function that selects values,
+ or a vector of values, or the name of an algorithm.
+ The default algorithm will choose quantile values, but Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:ps20"
+reference "fig:ps10"
 
 \end_inset
 
-, the categorical variable is x4.
+ demonstrates also the 
+\begin_inset Quotes eld
+\end_inset
+
+std.dev.
+\begin_inset Quotes erd
+\end_inset
+
+ divider algorithm.
+ The code to produce that figure was
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F, echo=T>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<ps10>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When modx is a numeric variable, then some particular values must be selected
+ for calculation of predicted value lines.
+ The modxVals argument is used to either specify moderator values or an
+ algorithm to select focal values.
+ By default, three hypothetical values of plotx are selected (the quantiles
+ 25%, 50%, and 75%).
+ 
+\end_layout
+
+\begin_layout Standard
+If modx is a factor variable, then the most frequently observed scores will
+ be selected for consideration.
+ The default display will include the regression line as well as color-coded
+ points for the subgroups represented by values of the moderator.
+\end_layout
+
+\begin_layout Standard
+\noindent
 \begin_inset Float figure
 wide false
 sideways false
@@ -2574,7 +1768,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<ps20, fig=T, echo=F>>=
+<<echo=F>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -2584,7 +1778,7 @@ fourCat <- gl(4,25, labels=c("East","West","South", "Midwest"))
 
 \begin_layout Plain Layout
 
-dat$x4 <- sample(fourCat, 100, replace=TRUE)
+dat$x4 <- sample(fourCat, 100, replace = TRUE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2600,8 +1794,27 @@ m5 <- lm (y5 ~ x1*x4 + x3, data=dat)
 
 \begin_layout Plain Layout
 
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ps20, fig=T, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
 m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous
- Predictor", xlim=magRange(dat$x1, c(1.2,1)))
+ Predictor", xlim = magRange(dat$x1, c(1.2,1)))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2639,39 +1852,7 @@ name "fig:ps20"
 \end_layout
 
 \begin_layout Standard
-A new feature in the 1.7.x series is the 
-\begin_inset Quotes eld
-\end_inset
-
-interval
-\begin_inset Quotes erd
-\end_inset
-
- argument, which will draw shaded confidence or predicted value intervals.
- I don't calculate these intervals.
- These intervals are calculated by R's predict.lm() function.
- These intervals use 
-\begin_inset Quotes eld
-\end_inset
-
-transparent
-\begin_inset Quotes erd
-\end_inset
-
- shading to help us see overlaps.
- In order to make this more useful, we limit the number of values of the
- moderator that are investigated.
- See Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ps21"
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Standard
+\noindent
 \begin_inset Float figure
 wide false
 sideways false
@@ -2688,7 +1869,7 @@ status open
 
 \begin_layout Plain Layout
 
-m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"),
+m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"),
  xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)),
  interval = "conf")
 \end_layout
@@ -2707,7 +1888,7 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"),
 \begin_inset Caption
 
 \begin_layout Plain Layout
-plotSlopes: the new interval option
+plotSlopes: the interval argument
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:ps21"
@@ -2724,49 +1905,63 @@ name "fig:ps21"
 
 \end_inset
 
+Suppose we have a four-valued categorical variable, 
+\begin_inset Quotes eld
+\end_inset
 
-\end_layout
+West
+\begin_inset Quotes erd
+\end_inset
 
-\begin_layout Standard
-This would work for any kind of regression model that supplies a predict
- function that answers to the interval argument.
- Unfortunately, predict.glm() does not do so.
- 
-\end_layout
+,
+\begin_inset Quotes erd
+\end_inset
 
-\begin_layout Standard
-Quite often, students want to display predicted values with pleasant confidence
- intervals.
- I've re-worked plotSlopes() so that it will make a pleasant plot for a
- single value of a moderator, as shown in Figure 
+Midwest
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+South
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+East
+\begin_inset Quotes erd
+\end_inset
+
+.
+ If that variable is used in an interaction in the regression model, then
+ the plotSlopes output will include four lines, one for each region.
+ For example, consider Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:ps22"
+reference "fig:ps20"
 
 \end_inset
 
-
+, which is created by
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-<<ps22, fig=T, echo=F>>=
+<<eval=F>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", n = 1,  xlab = "x1 is
- a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
+<<ps20>>
 \end_layout
 
 \begin_layout Plain Layout
@@ -2779,28 +1974,81 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", n = 1,  xlab = "x1 is
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
+\begin_layout Standard
+\noindent
+The categorical variable is x4.
+ 
+\end_layout
 
-\begin_layout Plain Layout
-plotSlopes: the new interval option
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:ps22"
+\begin_layout Standard
+It is possible to superimpose confidence intervals for many subgroups, but
+ sometimes these plots start to look a little bit 
+\begin_inset Quotes eld
+\end_inset
+
+busy
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The mixing of shades in overlapping intervals may help with that problem.
+ A plot that focuses on just two subgroups is presented in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps21"
 
 \end_inset
 
+, which is produced by 
+\end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<ps21>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
 \end_layout
 
 \end_inset
 
-
+ 
 \end_layout
+
+\begin_layout Standard
+In rockchalk version 1.8, I've exerted quite a bit of effort to make sure
+ that colors are chosen consistently when users remove or insert groups
+ in these plots.
+ The same value of the moderator should always be plotted in the same way--the
+ line, points, and interval colors should not change.
+ Note, for example, in Figures 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps20"
 
 \end_inset
 
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps21"
 
+\end_inset
+
+, the line for East is black in both plots, while the line for West is red
+ in both.
+ 
 \end_layout
 
 \begin_layout Subsection
@@ -2808,23 +2056,10 @@ testSlopes, a companion of plotSlopes
 \end_layout
 
 \begin_layout Standard
-In psychology, methodologists have recommended the analysis of 
-\begin_inset Quotes eld
-\end_inset
-
-simple slopes
-\begin_inset Quotes erd
-\end_inset
-
- to depict the effect of several variables in a 2 dimensional plot.
- This is most often of interest in the analysis of regression models with
- interactive terms.
- 
-\end_layout
-
-\begin_layout Standard
-Aiken and West (and later Cohen, Cohen, West, and Aiken) propose using the
- t test to find out if the effect of the 
+The students in psychology and political science are usually interested
+ in conducting some diagnostic analysis of the interactive terms.
+ Aiken and West (1991) (and later Cohen, Cohen, West, and Aiken) propose
+ using the t test to find out if the effect of the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2834,47 +2069,15 @@ plotx
 
  variable is statistically significantly different from zero for each particular
  value of the moderator variable.
- The user should first run plotSlopes, and then submit the output object
- to testSlopes.
- The usual case would be the following:
+ The new version of rockchalk declares a method plot.testSlopes that handles
+ the work of plotting the interaction.
 \end_layout
 
 \begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-m4 <- lm (y1 ~ x1*x2 + x3, data = dat)
-\end_layout
-
-\begin_layout Plain Layout
-
-m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous
- Predictor")
-\end_layout
-
-\begin_layout Plain Layout
-
-testSlopes(m4ps)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\noindent
-The output from that testSlopes usage is illustrated in Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ts10"
-
-\end_inset
-
-.
+The usual case would be the following.
+ First, carry out the regression analysis.
+ Then run plotSlopes, and run testSlopes, and then pass that result object
+ to the plot method.
 \end_layout
 
 \begin_layout Standard
@@ -2889,7 +2092,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<ts10, fig=T, echo=T, height=6, width=6>>=
+<<ts10, fig=T, echo=F, height=6, width=6>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -2937,27 +2140,72 @@ name "fig:ts10"
 \end_layout
 
 \begin_layout Standard
-The hypothesis tests reported by testSlopes should be understood as follows.
- Each of the lines in the output from plotSlopes, say Figure 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:ps10"
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+m4 <- lm(y ~ x1*x2 + x3, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous
+ Predictor")
+\end_layout
+
+\begin_layout Plain Layout
+
+m4psats <- testSlopes(m4ps)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(m4psats)
+\end_layout
 
 \end_inset
 
-, can be tested to find out if its 
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+The output from testSlopes will differ, depending on whether modx is numeric
+ or a factor.
+ If it is a factor, then the slope of the lines and the associated t-test
+ for each will be presented.
+ My psychology students call these 
 \begin_inset Quotes eld
 \end_inset
 
-simple slope
+simple-slopes
 \begin_inset Quotes erd
 \end_inset
 
- is different from zero.
- The tests calculated by testSlopes represent the null hypothesis that 
+, following the terminology of Aiken and West.
+ The general idea is that we want to know if the 
+\begin_inset Quotes eld
+\end_inset
+
+combined
+\begin_inset Quotes erd
+\end_inset
+
+ effect of plotx is not zero.
+ For a model stated with predictors 
+\begin_inset Formula $plotx_{i}$
+\end_inset
+
+ and 
+\begin_inset Formula $modx_{i}$
+\end_inset
+
+as
 \begin_inset Formula 
 \begin{equation}
-H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+b_{plotx\cdot modx}modx
+y_{i}=b_{0}+b_{plotx}plotx_{i}+b_{modx}modx_{i}+b_{plotx:modx}plotx_{i}\cdot modx_{i}+\ldots+e_{i}
 \end{equation}
 
 \end_inset
@@ -2967,23 +2215,44 @@ H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+b_{plotx\cdot modx}modx
 
 \begin_layout Standard
 \noindent
-where 
-\begin_inset Formula $modx$
-\end_inset
-
- is the moderator variable and 
-\begin_inset Formula $plotx$
-\end_inset
-
- is plotted on the horizontal axis in the plotSlopes output.
- 
+the null hypothesis would be
 \end_layout
 
 \begin_layout Standard
-Following a suggestion of Preacher, Curran, and Bauer (2006), the testSlopes
- function also tries to calculate the Johnson-Neyman (1936) interpretation
- of the same test.
- It presents a plot, as illustrated in Figure 
+\noindent
+\begin_inset Formula 
+\begin{equation}
+H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+If modx is a factor, then we simply calculate the slope of each line and
+ the test is straight-forward.
+ If modx is a numeric variable, then we confront a problem that is a bit
+ more interesting.
+ We don't really want to say that the simple slope is different from 0 for
+ particular values of 
+\begin_inset Formula $modx$
+\end_inset
+
+, but instead we want to answer the question, 
+\begin_inset Quotes eld
+\end_inset
+
+for which values of the moderator would the effect of the plotx variable
+ be statistically significant?
+\begin_inset Quotes erd
+\end_inset
+
+.
+ This necessitates the calculation of the so-called Johnson-Neyman interval
+ (1936), a plot of which is presented in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:ts10"
@@ -2991,25 +2260,11 @@ reference "fig:ts10"
 \end_inset
 
 .
- The J-N test would have us ask, 
-\begin_inset Quotes eld
-\end_inset
+\end_layout
 
-for which values of the moderator would the value 
-\begin_inset Formula $\hat{b}_{simple\, slope}$
-\end_inset
-
- be statistically significantly different from zero?
-\begin_inset Quotes erd
-\end_inset
-
- The J-N calculation requires the solution an equation that is quadratic
- in the value of the moderator variable, 
-\begin_inset Formula $modx$
-\end_inset
-
-.
- The interval of values of 
+\begin_layout Standard
+The method of calculation is outlined in Preacher, Curran, and Bauer (2006).
+ The values of 
 \begin_inset Formula $modx$
 \end_inset
 
@@ -3027,7 +2282,7 @@ for which values of the moderator would the value
 \begin_inset Formula $modx$
 \end_inset
 
- for which the following holds:
+ for which the following (quadratic equation) holds:
 \begin_inset Formula 
 \begin{equation}
 \hat{t}=\frac{\hat{b}_{simple\, slope}}{std.err(\hat{b}_{simple\, slope})}=\frac{\hat{b}_{simple\, slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
@@ -3058,6 +2313,13 @@ Suppose there are two real roots,
 \begin_inset Formula $[root1,root2]$
 \end_inset
 
+, as demonstrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ts10"
+
+\end_inset
+
 , or it may two open intervals, 
 \begin_inset Formula $(-\infty,root1]$
 \end_inset
@@ -3067,38 +2329,40 @@ Suppose there are two real roots,
 \end_inset
 
 .
+ I had expected almost all applications to result in that latter case, but
+ the somewhat surprising case illustrated in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ts10"
+
+\end_inset
+
+ is not too infrequently observed.
  
 \end_layout
 
-\begin_layout Standard
-\noindent
-The J-N interpretation is most useful when the moderator is a continuous
- variable and the result specifies an interval inside the range of the moderator.
- In quite a few cases, the J-N interval is outside the observed range of
- the moderator, which makes it either difficult to interpret or irrelevant.
-\end_layout
-
 \begin_layout Subsection
-plotCurves
+plotCurves for nonlinear predictor formulae
 \end_layout
 
 \begin_layout Standard
-plotCurves generalizes the plotting capability of plotSlopes.
- plotCurves should be able to handle any regression formulas that include
+plotCurves() generalizes the plotting capability of plotSlopes.
+ plotCurves() should be able to handle any regression formulas that include
  nonlinear transformations.
  Models that have polynomials or terms that are logged (or otherwise transformed
 ) can be plotted.
- In that sense, plotCurves is rather similar to R's own termplot function.
- The difference is that plotCurves allows for moderator variables, which
- implies that one can draw several different curves to represent separate
- groups.
+ In that sense, plotCurves() is rather similar to R's own termplot() function,
+ but plotCurves() has two major advantages.
+ First, it allows interactions, and second, it handles some complicated
+ formulae that termplot() is not able to manage.
+ 
 \end_layout
 
 \begin_layout Standard
 Suppose a dependent variable y5 is created according to a nonlinear process.
 \begin_inset Formula 
 \begin{equation}
-y5_{i}=-3x1_{i}+1.5*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
+y5_{i}=-3x1_{i}+7*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
 \end{equation}
 
 \end_inset
@@ -3117,8 +2381,8 @@ status open
 
 \begin_layout Plain Layout
 
-dat$y5 <- with(dat, -3*x1 + 3.5*log(x2) + 2.1*x2 + 2.2 *x1 * x2 + 20*rnorm(100))
- 
+dat$y5 <- with(dat, -3*x1 + 15*log(0.1 + x2 - min(x2)) + 1.1*x2 + 8.2 *x1 *
+ x2 + 10*rnorm(100))
 \end_layout
 
 \begin_layout Plain Layout
@@ -3143,17 +2407,17 @@ status open
 
 \begin_layout Plain Layout
 
-<<pcps20, fig=T, height=6, width=6>>=
+<<pcps20, fig=T, echo = F, height=6, width=6>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-m6 <- lm (y5 ~ log(x2*x2) + x1 * x2, data=dat)
+m5 <- lm(y5 ~ log(x2) + x1 * x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-plotCurves(m6, plotx="x2", modx="x1")
+m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3190,6 +2454,42 @@ name "fig:pcps20"
 
 \end_layout
 
+\begin_layout Standard
+We fit a model with an elaborate specification and create the plot in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pcps20"
+
+\end_inset
+
+ with these commands:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<pcps20>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 plotPlane
 \end_layout
@@ -3197,37 +2497,48 @@ plotPlane
 \begin_layout Standard
 The persp function in R works well, but its interface is too complicated
  for most elementary and intermediate R users.
- To facilitate its use for regression users, the plotPlane is offered.
+ To facilitate its use for regression users, the plotPlane() function is
+ offered.
 \end_layout
 
 \begin_layout Standard
 The plotPlane function offers a visualization of the mutual effect of two
- predictors in m4.
- See Figure 
+ predictors, whether or not the regression model is linear.
+ plotPlane() is designed to work like plotCurves(), to tolerate nonlinear
+ components in the regression formula.
+ plotPlane() allows the depiction of a 3 dimensional curving plane that
+ 
+\begin_inset Quotes eld
+\end_inset
+
+sits
+\begin_inset Quotes erd
+\end_inset
+
+ in the cloud of data points.
+ The variables that are not explicitly pictured in the plotPlane() figure
+ are set to central reference values.
+ Recall model m4, which used the formula 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+y4 ~ x1*x2 + x3
+\end_layout
+
+\end_inset
+
+.
+ As illustrated in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:pp100"
 
 \end_inset
 
- for the plot created by
-\end_layout
-
-\begin_layout Standard
-\noindent
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-\noindent
-
-plotPlane(m4, plotx1="x1", plotx2="x2")
-\end_layout
-
-\end_inset
-
-
+, plotCurves() presents a reasonable view of the predicted values.
 \end_layout
 
 \begin_layout Standard
@@ -3242,12 +2553,12 @@ status open
 
 \begin_layout Plain Layout
 
-<<pp100, fig=T>>=
+<<pp100, fig=T, echo=F>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2")
+p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -40)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3264,7 +2575,7 @@ p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2")
 \begin_inset Caption
 
 \begin_layout Plain Layout
-plotPlane for the Interactive Model
+plotPlane for the Interactive Model m4
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:pp100"
@@ -3285,139 +2596,90 @@ name "fig:pp100"
 \end_layout
 
 \begin_layout Standard
-plotPlane is designed to work like plotCurves, to tolerate nonlinear components
- in the regression formula.
- As illustrated in Figure 
+Because plotPlane() is a simple convenience wrapper for R's persp() function,
+ it responds to the same customizing arguments that perp would allow.
+ The arguments phi and theta will rotate the figure, for example.
+ The output in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
-reference "fig:pcps10"
+reference "fig:pp100"
 
 \end_inset
 
-, plotPlane allows the depiction of a 3 dimensional curving plane that 
-\begin_inset Quotes eld
+ is produced by the following.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=T,eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<pp100>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
 \end_inset
 
-sits
-\begin_inset Quotes erd
+
+\end_layout
+
+\begin_layout Standard
+\noindent
+One of the major educational benefits of the 3-D figure is that students
+ can easily see that a model with a simple interaction effect is 
+\emph on
+not a linear model any more.
+ 
+\emph default
+We will return to that point in the discussion of mean centering in regression
+ analysis.
+\end_layout
+
+\begin_layout Standard
+Recall that model m5 is the rather complicated nonlinear formula 
+\begin_inset listings
+inline true
+status open
+
+\begin_layout Plain Layout
+
+log(x2*x2) + x1 * x2
+\end_layout
+
 \end_inset
 
- in the cloud of data points.
- The variables that are not explicitly pictured in the plotPlane figure
- are set to central reference values.
- As illustrated in Figure 
+.
+ The plotCurves() output for that was already presented in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:pcps20"
 
 \end_inset
 
-, plotCurves is a 2 dimensional depiction of the same model.
- 
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<pcps10, fig=T, height=4, width=4>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-plotPlane(m6, plotx1 = "x1", plotx2 = "x2")
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<results=tex>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-outreg(m6, tight = FALSE)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-plotPlane
-\begin_inset CommandInset label
-LatexCommand label
-name "fig:pcps10"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-At some point in the future, the ability to make plotSlopes and plotPlane
- work together will be introduced.
- The user will be able to see how the two and three dimensional graphs relate
- to each other.
- A preliminary rendering of what that might look like is presented in Figure
- 
+.
+ The three dimensional view of the same is presented in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:pp110"
 
 \end_inset
 
-.
- It is as if we can 
-\begin_inset Quotes eld
-\end_inset
-
-press the plane down
-\begin_inset Quotes erd
-\end_inset
-
- into the 2-D slopes plot, or the 2-D simple slopes can be depicted in the
- 3 dimensional plane.
+, but with an added twist.
+ The twist is that the predicted value lines from the 2-D plot functions
+ can be superimposed on the plane.
+ The function addLines() does the work for translating 2-D plot object onto
+ the regression plane.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -3432,55 +2694,18 @@ status open
 
 \begin_layout Plain Layout
 
-<<pp110, fig=T, echo=F, width=5, height=4>>=
+<<pp111, fig = T, echo = F, height = 5, results = hide>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-m6ps <- plotSlopes(m6, plotx = "x1", modx = "x2", xlab = "Continuous Predictor",
- ylim = c(-25, 105))
+ppm5 <- plotPlane(m5, plotx1 = "x2", plotx2 = "x1", phi = 0, npp = 15, llwd
+ = 0.01)
 \end_layout
 
 \begin_layout Plain Layout
 
-@
-\end_layout
-
-\begin_layout Plain Layout
-
-<<pp111, fig = T, echo = F, height = 5>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-p110 <- plotPlane(m6, plotx1 = "x1", plotx2 = "x2", x1lab = "Continuous
- Predictor", phi = 30)
-\end_layout
-
-\begin_layout Plain Layout
-
-addLines(from = m6ps, to = p110, col = m6ps$col)
-\end_layout
-
-\begin_layout Plain Layout
-
-#for(j in unique(m6ps$newdata$x2)){
-\end_layout
-
-\begin_layout Plain Layout
-
-#    subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
-\end_layout
-
-\begin_layout Plain Layout
-
-#    lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat = p110$res), col
- = "red", lwd = 3)
-\end_layout
-
-\begin_layout Plain Layout
-
-#}
+addLines(from = m5pc, to = ppm5, col = m5pc$col)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3497,7 +2722,7 @@ addLines(from = m6ps, to = p110, col = m6ps$col)
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Making plotSlopes and plotPlane work Together
+Making plotSlopes and plotPlane Work Together
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:pp110"
@@ -3526,18 +2751,26 @@ Standardized regression
 \end_layout
 
 \begin_layout Standard
-Many of us learned to conduct regression analysis with SPSS, which (historically
-, at least) reported both the ordinary regression coefficients as well as
- a column of coefficients obtained from a regression in which each of the
- predictors in the design matrix had been 
+Many of us learned to conduct regression analysis with SPSS, which reported
+ both the ordinary (unstandardized) regression coefficients as well as a
+ column of 
 \begin_inset Quotes eld
 \end_inset
 
-standardized.
+beta weights
 \begin_inset Quotes erd
 \end_inset
 
- That is to say, each variable, for example 
+, the output of a 
+\begin_inset Quotes eld
+\end_inset
+
+standardized
+\begin_inset Quotes erd
+\end_inset
+
+ regression analysis.
+ Each variable, for example 
 \begin_inset Formula $x1_{i}$
 \end_inset
 
@@ -3550,40 +2783,22 @@ standardized.
 \end_inset
 
 ).
- A regression fitted with those standardized variables is said to produce
- 
-\begin_inset Quotes eld
-\end_inset
-
-standardized coefficients.
-\begin_inset Quotes erd
-\end_inset
-
- These standardized coefficients, dubbed 
-\begin_inset Quotes eld
-\end_inset
-
-beta weights
-\begin_inset Quotes erd
-\end_inset
-
- in common parlance, were thought to set different kinds of variables onto
- a common metric.
- While this idea appears to have been in error (see, for example, King 1986),
- it still is of interest to many scholars who want to standardize their
- variables in order to compare them more easily.
+ Some people think these coefficients are easier to interpret (but, for
+ a strong cautionary argument against them, see King 1986).
+ R offers no such thing as standardized regression, probably because this
+ practice is practice is thought to be mistaken.
+ The automatic standardization of all predictors, no matter whether they
+ are categorical, interaction terms, or transformed values (such as logs)
+ is dangerous.
  
 \end_layout
 
 \begin_layout Standard
-The function standardize was included in rockchalk to facilitate lectures
- about what a researcher ought not do.
- standardize performs the complete, mindless standardization of all predictors,
- no matter whether they are categorical, interaction terms, or transformed
- values (such as logs).
+To illustrate that, the rockchalk introduces a function called standardize().
  Each column of the design matrix is scaled to a new variable with mean
  0 and standard deviation 1.
- The input to standardize should be a fitted regression model.
+ The result from standardize() will be an R lm object, which will respond
+ to any follow-up analysis commands.
  For example:
 \end_layout
 
@@ -3617,9 +2832,8 @@ m4s <- standardize(m4)
 \end_layout
 
 \begin_layout Standard
-It does seem odd to me that a person would actually want a standardized
- regression of that sort, and the commentary included with the summary method
- for the standardized regression object probably makes that clear.
+I doubt that a reasonable person would actually want a standardized regression
+ and have tried to warn users in the output.
 \end_layout
 
 \begin_layout Standard
@@ -3821,8 +3035,7 @@ y_{i}=b_{o}+b_{1}(x1_{i}-\overline{x1})+b_{2}(x2_{i}-\overline{x2})+b_{3}(x1_{i}
 \end_layout
 
 \begin_layout Standard
-This is easy enough to do in R, but it can be tedious to center the variables
- and then run the model.
+This is a little tedious to do in R.
  To make it easier for users to compare the results of the 
 \begin_inset Quotes eld
 \end_inset
@@ -3919,13 +3132,60 @@ Residual-centered Models
 \begin_layout Standard
 Residual-centering is another adjustment that has been recommended for models
  that include interactions or squared terms.
- Like mean-centering, it is recommended mainly as a way to ameliorate multicolli
-nearity.
+ Like mean-centering, it is recommended for a variety of reasons.
+ Some of the reasons are 
+\begin_inset Quotes eld
+\end_inset
+
+easier
+\begin_inset Quotes erd
+\end_inset
+
+ analysis of reported coefficients.
+ Some of the reasons are more technical, and, I believe, fundamentally mistaken,
+ a point to which we will return in a moment.
  
 \end_layout
 
 \begin_layout Standard
-I think of residual-centering as follows.
+The residualCenter() function is used in the same manner as meanCenter.
+ The user fits an interactive model and the result object is passed to residualC
+enter() like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m4rc <- residualCenter(m4)
+\end_layout
+
+\begin_layout Plain Layout
+
+summary(m4rc)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+There is a lot of jargon associated with these models, but it is pretty
+ easy to cut through it with an example.
+ I suggest that students should think of residual-centering as follows.
  Suppose we fit the linear model, with no interaction
 \end_layout
 
@@ -3962,46 +3222,38 @@ right ones
  We want to estimate the interactive model, 
 \begin_inset Formula 
 \begin{equation}
-y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i},
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i},\label{eq:rcwant}
 \end{equation}
 
 \end_inset
 
-but if we estimate that, it will 
-\begin_inset Quotes eld
-\end_inset
+If we estimate the ordinary regression model with 
+\begin_inset listings
+inline true
+status open
 
-ruin
-\begin_inset Quotes erd
-\end_inset
+\begin_layout Plain Layout
+\noindent
 
- our estimates for the effects of 
-\begin_inset Formula $x1$
-\end_inset
-
- and 
-\begin_inset Formula $x2$
-\end_inset
-
-.
- So we proceed by constraining the fitted coefficients in the interactive
- model so that the main effects remain the same.
- That is to say, require that the parameter estimates of 
-\begin_inset Formula $x1$
-\end_inset
-
- and 
-\begin_inset Formula $x2$
-\end_inset
-
- must match match estimates from equation 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:rc20"
+lm(y ~ x1 * x2)
+\end_layout
 
 \end_inset
 
-.
+, the coefficients can bounce around in unexpected ways.
+ Residual centering is one way to force the estimate of 
+\begin_inset Formula $b_{1}$
+\end_inset
+
+ to match 
+\begin_inset Formula $\hat{c}_{1}$
+\end_inset
+
+ exactly.
+ It is if we were fitting a constrained model, but residualCentering() makes
+ that seem easier.
+ In a residual centered model, it will always be true that the linear terms
+ have the same coefficients as the no-interaction model.
  Effectively, 
 \begin_inset Formula $\hat{b}_{1}=\hat{c}_{1}$
 \end_inset
@@ -4014,16 +3266,9 @@ reference "eq:rc20"
 \end_layout
 
 \begin_layout Standard
-How can this be done in a convenient, practical way? The answer: use 
-\begin_inset Quotes eld
-\end_inset
-
-residual-centering.
-\begin_inset Quotes erd
-\end_inset
-
- First, estimate the following regression, in which the left hand side is
- the interaction product term:
+In case the reader is curious how this is done, here is the gist of it.
+ First, we estimate a regression in which the left hand side is the interaction
+ product term:
 \begin_inset Formula 
 \begin{equation}
 (x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2+u_{i}\label{eq:residCentered}
@@ -4035,6 +3280,7 @@ residual-centering.
 \end_layout
 
 \begin_layout Standard
+\noindent
 The residuals from that regression are, by definition, orthogonal to both
  
 \begin_inset Formula $x1$
@@ -4050,19 +3296,24 @@ The residuals from that regression are, by definition, orthogonal to both
 \end_inset
 
 .
- We fit the interactive model using 
+ The we run the interactive regression, replacing the column of the predictor
+ 
+\begin_inset Formula $x1_{i}\times x2_{i}$
+\end_inset
+
+, with 
 \begin_inset Formula $\widehat{u}_{i}$
 \end_inset
 
- in place actual product term 
-\begin_inset Formula $(x1_{i}\times x2_{i})$
+.
+ That is to say, the model we want, equation (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:rcwant"
+
 \end_inset
 
-.
- 
-\end_layout
-
-\begin_layout Standard
+), is estimated as: 
 \begin_inset Formula 
 \begin{equation}
 y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3\widehat{u_{i}}+e_{i},\label{eq:rc10-1}
@@ -4092,41 +3343,6 @@ In essence, we have taken the interaction
 \end_layout
 
 \begin_layout Standard
-The rockchalk function residualCenter handles this for the user.
- Like meanCenter, the user has to fit an interactive model first, and the
- result object is passed to residualCenter like so:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-m4rc <- residualCenter(m4)
-\end_layout
-
-\begin_layout Plain Layout
-
-summary(m4rc)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 The objects created by residualCenter are assigned the class 
 \begin_inset Quotes eld
 \end_inset
@@ -4152,31 +3368,69 @@ Why are we bothering with mean-centering and residual-centering in the first
 \end_layout
 
 \begin_layout Standard
-In the long run, think the correct answer will be, 
+Residual and mean centering are widely misunderstood.
+ Changing a predictor from 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+ to 
+\begin_inset Formula $x_{i}-7$
+\end_inset
+
+, for example, has the simple effect of moving the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis 7 units to the right from its original position.
+ The slope is unchanged, and the reported intercept is changed in a completely
+ superficial way.
+ Some people find that new model to be more understandable because the position
+ of the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis may help them to understand the coefficient estimates more clearly.
+ This is simply a matter of user convenience, I do not argue against it.
+ In my view, it is a completely inconsequential change in the regression.
+ The predicted value line, the parameter estimates, their standard errors,
+ and so forth, are not changed in any substantial way.
+ Similarly, many textbooks derive OLS results with data in 
 \begin_inset Quotes eld
 \end_inset
 
-we were mistaken.
+deviations from,
 \begin_inset Quotes erd
 \end_inset
 
- Nevertheless, the advice that one ought to mean-center or residual-center
- in regression analysis has become quite widely established.
- The primary advocates of 
-\begin_inset Quotes eld
+ meaning it has been mean-centered to simplify notation.
+ Those simplifications don't alter the regression in a substantial way,
+ as long as we remember we are just altering the location of the 
+\begin_inset Formula $y$
 \end_inset
 
-mean-centering
-\begin_inset Quotes erd
-\end_inset
+ axis.
+ 
+\end_layout
 
- have been Aiken and West (1991), who integrated that advice into the very
- widely used regression textbook, 
+\begin_layout Standard
+Mean and residual centering are sometimes recommended as ways of solving
+ numerical instabilities in regression analysis.
+ Primary advocates for that view have been Aiken and West (1991), who integrated
+ that advice into the very widely used regression textbook, 
 \emph on
 Applied Multiple Regression/Correlation for the Behavioral Sciences
 \emph default
  (Cohen, et.
  al , 2002).
+ They claim that centering helps to alleviate the 
+\begin_inset Quotes eld
+\end_inset
+
+inessential multicollinearity
+\begin_inset Quotes erd
+\end_inset
+
+ that arises when a product term is introduced in a regression analysis.
  The advice that one ought to mean-center the predictors has been picked
  up in other fields.
  One statistics text for biologists notes, 
@@ -4190,22 +3444,117 @@ We support the recommendation of Aiken & West (1991) and others that multiple
 \end_inset
 
  (Quinn and Keough, 2002, Chapter 6).
+ Some writers seem to think they are somehow getting 
+\begin_inset Quotes eld
+\end_inset
+
+better
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+more precise
+\begin_inset Quotes erd
+\end_inset
+
+ parameter estimates from centered data.
+ That is the argument that I intend to re-examine.
+\end_layout
+
+\begin_layout Standard
+In statistics, as in life, there is generally no such thing as a 
+\begin_inset Quotes eld
+\end_inset
+
+free lunch.
+\begin_inset Quotes erd
+\end_inset
+
+ If re-scaling variables would make them somehow less correlated, I would
+ be the first to endorse the practice.
+ Sadly, there is no such benefit to be had.
+ To begin, I ask the reader to review Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:ps05"
+
+\end_inset
+
+.
+ Notice that the confidence interval is hourglass shaped.
+ The 
+\begin_inset Formula $y$
+\end_inset
+
+ axis is on the far left, at a position where the hourglass is wider.
+ Suppose we 
+\begin_inset Quotes eld
+\end_inset
+
+center
+\begin_inset Quotes erd
+\end_inset
+
+ the predictor, thus shifting the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis into the center.
+ Then, 
+\emph on
+at the new 
+\begin_inset Formula $y$
+\end_inset
+
+ axis
+\emph default
+, the confidence interval for the predicted value will be smaller than it
+ was at the old 
+\begin_inset Formula $y$
+\end_inset
+
+ axis.
+ Does anybody believe that the shifted axis is somehow better than the other?
+ I'd like to hear the argument.
+ If the research customer does not understand the hourglass-shaped nature
+ of the confidence interval, then the reporter can fool the customer by
+ picking the 
+\begin_inset Quotes eld
+\end_inset
+
+best
+\begin_inset Quotes erd
+\end_inset
+
+ interval to report.
+ The estimate of the intercept's standard error will be smaller as well,
+ reflecting the fact that it is a component in the confidence interval.
+ Generally, we get a different estimate for the intercept's standard error
+ every time we move the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis.
+ We are not gaining certainty, we are shifting our 
+\begin_inset Quotes eld
+\end_inset
+
+snapshot
+\begin_inset Quotes erd
+\end_inset
+
+ of it.
  
 \end_layout
 
 \begin_layout Standard
-In order to understand how mean-centering came to seem like a 
-\begin_inset Quotes eld
-\end_inset
-
-magic bullet,
-\begin_inset Quotes erd
-\end_inset
-
- it is necessary to re-trace some steps to find out how we arrived in our
- current situation.
- For this example, I used the function genCorrelatedData in rockchalk.
- The 
+I have been tempted to mean-center as a way to fix parameter estimates.
+ I expect every regression student has been tempted.
+ Let's work though an example.
+ Suppose the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4213,7 +3562,7 @@ true model
 \begin_inset Quotes erd
 \end_inset
 
- from which the data is produced is
+ is an interaction like so
 \begin_inset Formula 
 \begin{equation}
 y_{i}=2+0.1x1_{i}+0.1x2_{i}+0.2\cdot(x1_{i}\times x2_{i})+e_{i},
@@ -4235,27 +3584,7 @@ where
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Standard
-Virtually everybody who has experimented with regression has had the 
-\begin_inset Quotes eld
-\end_inset
-
-what the heck happened to my predictors?
-\begin_inset Quotes erd
-\end_inset
-
- experience.
- Please consider the Table 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "tab:meancenter10-1"
-
-\end_inset
-
-.
- In the first column, we have the ordinary linear specification
+ A regression analysis that ignores the interaction, 
 \end_layout
 
 \begin_layout Standard
@@ -4265,7 +3594,7 @@ status open
 
 \begin_layout Plain Layout
 
-lm(y ~ x1 + x2, data=dat2).
+lm(y ~ x1 + x2, data = dat2)
 \end_layout
 
 \end_inset
@@ -4275,24 +3604,23 @@ lm(y ~ x1 + x2, data=dat2).
 
 \begin_layout Standard
 \noindent
-The coefficients of 
-\begin_inset Formula $x1$
+is reported in the first column of Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:meancenter10-1"
+
 \end_inset
 
- and 
-\begin_inset Formula $x2$
-\end_inset
-
- appear to be 
+.
+ Notice that everything is 
 \begin_inset Quotes eld
 \end_inset
 
-statistically significant,
+statistically significant!
 \begin_inset Quotes erd
 \end_inset
 
- a very gratifying regression indeed.
- It appears we might have found something!
+ Maybe we found something that a journal will want to publish.
 \end_layout
 
 \begin_layout Standard
@@ -4319,22 +3647,14 @@ reference "tab:meancenter10-1"
 
 \end_inset
 
- summarizes the regression that includes an interaction term.
- That interaction model, which adds the product variable 
-\begin_inset Formula $x1\times x2$
-\end_inset
-
-, is estimated in R with
-\end_layout
-
-\begin_layout Standard
+ summarizes the regression that includes an interaction term, 
 \begin_inset listings
 inline false
 status open
 
 \begin_layout Plain Layout
 
-lm(y ~ x1 * x2, data=dat2)
+lm(y ~ x1 * x2, data = dat2)
 \end_layout
 
 \end_inset
@@ -4344,7 +3664,7 @@ lm(y ~ x1 * x2, data=dat2)
 
 \begin_layout Standard
 \noindent
-A quick scan of column two usually lead to the 
+A quick scan of column two usually leads to the user to say 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4360,8 +3680,15 @@ Holy Cow!
 \begin_inset Quotes erd
 \end_inset
 
- response.
- The regression went to hell! Neither of the key variables, 
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+Oh My God, my great result went to Hell, I'll never get tenure.
+\begin_inset Quotes erd
+\end_inset
+
+ Neither of the key variables, 
 \begin_inset Formula $x1$
 \end_inset
 
@@ -4378,25 +3705,8 @@ statistically significant
 \end_inset
 
  any more.
- While the coefficients for the variables 
-\begin_inset Formula $x1$
-\end_inset
-
- and 
-\begin_inset Formula $x2$
-\end_inset
-
- did seem to be substantial in the first model, the introduction of the
- interactive effect appears to ruin the whole thing.
- What should be done when adding a product term seems to 
-\begin_inset Quotes eld
-\end_inset
-
-ruin
-\begin_inset Quotes erd
-\end_inset
-
- a regression model? 
+ The introduction of the interactive effect appears to ruin the whole thing.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4411,10 +3721,6 @@ status open
 \begin_layout Plain Layout
 
 dat2 <- genCorrelatedData(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
-\end_layout
-
-\begin_layout Plain Layout
-
 \end_layout
 
 \begin_layout Plain Layout
@@ -4509,11 +3815,11 @@ Cohen, et al.
 \begin_inset Quotes eld
 \end_inset
 
-inessential collinearity
+inessential collinearity,
 \begin_inset Quotes erd
 \end_inset
 
- among the predictors, due to the fact that 
+ due to the fact that 
 \begin_inset Formula $x1$
 \end_inset
 
@@ -4536,12 +3842,16 @@ mean center
 
  their predictors, to subtract the mean of each predictor from the observed
  model and run the regression again.
- 
+ In light of the fact that confidence about regression estimates is hourglass
+ shaped, shifting the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis might make things look better.
 \end_layout
 
 \begin_layout Standard
-Mean-centering seems to help.
- The result of the meanCenter function is displayed in the third column
+The result of the meanCenter() function is displayed in the third column
  of Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -4550,15 +3860,15 @@ reference "tab:meancenter10-1"
 \end_inset
 
 .
- It appears that the estimates for the slopes are 
+ The point estimates in that snapshot are 
 \begin_inset Quotes eld
 \end_inset
 
-significant again
+significant again.
 \begin_inset Quotes erd
 \end_inset
 
- and we have 
+ It appears we have 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4576,59 +3886,61 @@ The solution, however, is simply an illusion.
  D., & Foster-Johnson, L.
  , 1998; Echambadi and Hess, 2007), but applied researchers continue to
  use the practice.
- The argument against mean-centering is really quite simple.
- It has no effect.
- There is no benefit.
- The ordinary model and the mean-centered models are actually exactly the
- same in every important way.
- The technical critiques have focused on the multicollinearity issue, but
- they leave open the possibility that mean-centering may facilitate interpretati
-on of the estimates.
- The presentation here should convince the reader that even the interpretation
- is not facilitated by mean-centering.
+ The argument against mean-centering, as I have already foreshadowed, is
+ that it does not really change the model at all, it just re-positions the
+ 
+\begin_inset Formula $y$
+\end_inset
+
+ axis so that the reported estimates are at a narrow part of the confindence
+ interval hourglass.
+ 
 \end_layout
 
 \begin_layout Standard
 The first hint of trouble is in the fact that the coefficient of the interactive
  effect in columns 2 and 3 is identical.
- Those coefficients are the same because they are estimates of a constant,
- the cross partial derivative 
+ Those coefficients are the same because they are estimates the cross partial
+ derivative 
 \begin_inset Formula $\partial^{2}y/\partial x1\partial x2$
 \end_inset
 
 .
- That is to say, when the different models try to estimate the same coefficient,
- they get the same result.
+ That particular value is the same at all possible positions of the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis, and thus the re-positioning of the axis entailed by mean-centering
+ does not affect that value.
  Note as well that the root mean square and 
 \begin_inset Formula $R^{2}$
 \end_inset
 
  estimates are identical.
- Is it possible that the mean-centered regression could really be 
-\begin_inset Quotes eld
+ Everything that should not be altered by a superficial re-positioning of
+ the 
+\begin_inset Formula $y$
 \end_inset
 
-better
-\begin_inset Quotes erd
-\end_inset
-
- if its fit statistics are not altered?
+ axis remains exactly the same.
 \end_layout
 
 \begin_layout Standard
-The models only appear different because we sometimes forget that we are
- studying a nonlinear problem when the regression model includes interactions.
- To assist in the visualization of this situation, we can use some functions
- in rockchalk.
- In Figure 
+Why do the slopes change? We sometimes forget that we are studying a nonlinear
+ problem when the regression model includes interactions.
+ To assist in the visualization of this situation, I've assembled 3-D plots
+ of these models in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:mcenter30"
 
 \end_inset
 
-, we see that the ordinary interaction and mean-centered models produce
- identical predicted values! 
+.
+ We see that the ordinary interaction, mean-centered, and residual-centered
+ models produce identical predicted values! The only difference in the figures
+ is that the axes of the predictors have been re-numbered.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4725,23 +4037,37 @@ name "fig:mcenter30"
 \end_layout
 
 \begin_layout Standard
-The curves in Figure 
+The regression coefficient estimates are a snapshot, a report on the slopes
+ at one particular point in the regression plane.
+ Moving the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis about offers different, but equivalent reports.
+ Thus, although the curved surfaces in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:mcenter30"
 
 \end_inset
 
- are identical.
- With the original, non-transformed data, the vertical (y) axis is positioned
- at the front-left edge of the graph, while the centered one re-positions
- the y axis into the center of the graph.
- The coefficient estimates from a regression model on a nonlinear surface
- depend on the location of the y axis.
- At some points, the estimates will be large, at some points they will be
- small.
- Mean-centering may accidentally reposition the axis to a location that
- has 
+ are identical, we receive different regression reports from different spots.
+ The non-centered data offers us the slope estimate from the 
+\begin_inset Quotes eld
+\end_inset
+
+front-left
+\begin_inset Quotes erd
+\end_inset
+
+ part of the graph.
+ Mean-centered estimates report on the slope in the middle of the graph.
+ Mean-centering (inadvertently?) repositions the 
+\begin_inset Formula $y$
+\end_inset
+
+ axis so that the coefficient snapshots have smaller standard errors and
+ 
 \begin_inset Quotes eld
 \end_inset
 
@@ -4750,19 +4076,12 @@ better
 \end_inset
 
  (bigger?) point estimates.
- The estimated standard errors, of course, also change as we move the y
- axis about.
- In the middle of the data, the point estimates of the standard errors are
- generally smaller than they are when the axis is positioned on the periphery
- of the data.
- It can be shown that, from either fitted model, the estimated slopes and
- standard errors at any given point in the data are exactly the same.
  Included with the rockchalk package, in the examples folder, one can find
  a file called 
 \begin_inset Quotes eld
 \end_inset
 
-residualCentering.R
+centeredRegression.R
 \begin_inset Quotes erd
 \end_inset
 
@@ -4771,51 +4090,41 @@ residualCentering.R
 \end_layout
 
 \begin_layout Standard
-If mean-centering does not help, perhaps residual-centering will address
- the problem.
- Residual-centering is offered as a new, improved sort of mean-centering.
+What about residual-centering? Because the transformation that it employs
+ is more abstract, I initially thought it was actually a different model.
  Where mean-centering seems to reduce the damage done by inessential collinearit
-y, residual-centering completely eliminates it.
- Because the residual-centered interaction variable is, by definition, completel
-y uncorrelated with the other variables in the model, the problem of collinearit
-y seems to be completely solved.
+y, residual-centering seems to solve the problem entirely.
+ The residual-centered estimates are presented in the fourth column in Table
  
-\end_layout
-
-\begin_layout Standard
-The fourth column in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:meancenter10-1"
 
 \end_inset
 
- presents the residual centered results.
+.
  The parameter estimates are a little larger, the standard errors are a
  bit smaller.
- In the way that applied researchers usually look at situations like this,
- it is a 
+ It seems to be 
 \begin_inset Quotes eld
 \end_inset
 
-better
+even better
 \begin_inset Quotes erd
 \end_inset
 
- model.
- 
+ than the mean-centered regression.
 \end_layout
 
 \begin_layout Standard
-And, yet again, our high hopes are dashed.
- In the end, we will find out that the residual-centered model is completely
- equivalent to the ordinary interaction model and the mean-centered model.
- My effort to visualize this was initially frustrated by the difficulty
- of writing a predict function that worked for arbitrary new data objects,
- but once that was finished, the result became completely clear.
+In the end, this is mistaken.
+ The residual-centered model is completely equivalent to the ordinary interactio
+n model and the mean-centered model.
+ Now that the predict method for residual-centered models has been perfected,
+ this is especially easy to see.
  The predicted values of the ordinary interactive model, the mean-centered
- model, and the residual-centered models are exactly the same.
- Perhaps the most persuasive case is found in Figure 
+ model, and the residual-centered models are exactly the same, as illustrated
+ in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:rcenter40"
@@ -4823,6 +4132,9 @@ reference "fig:rcenter40"
 \end_inset
 
 .
+ If we calculate the confidence or prediction intervals, we find exactly
+ the same thing in each of these models.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4837,7 +4149,7 @@ status open
 
 \begin_layout Plain Layout
 
-<<rcenter40, fig=T,echo=FALSE, height=5, width=7>>=
+<<rcenter40, fig=T,echo=FALSE, include=F, height=4, width=8>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -4887,16 +4199,6 @@ par(mfcol=c(1,2))
 
 \begin_layout Plain Layout
 
-##plot(fitted(m6rc), predict(m6rc, newdata=dat3))
-\end_layout
-
-\begin_layout Plain Layout
-
-##plot(fitted(m6mc), predict(m6mc, newdata=dat3))
-\end_layout
-
-\begin_layout Plain Layout
-
 plot(m6intpred, m6rcpred, main="", xlab="Predictions of Uncentered Interaction",
  ylab="Residual-centered Predictions")
 \end_layout
@@ -4908,7 +4210,7 @@ predcor <- round(cor(m6intpred, m6rcpred),3)
 
 \begin_layout Plain Layout
 
-legend("topleft", legend=c(paste("Correlation=", predcor)))
+legend("topleft", legend=c(paste0("Correlation=", predcor)))
 \end_layout
 
 \begin_layout Plain Layout
@@ -4924,7 +4226,7 @@ predcor <- round(cor(m6mcpred, m6rcpred),3)
 
 \begin_layout Plain Layout
 
-legend("topleft", legend=c(paste("Correlation=", predcor)))
+legend("topleft", legend=c(paste0("Correlation=", predcor)))
 \end_layout
 
 \begin_layout Plain Layout
@@ -4935,6 +4237,22 @@ par(op)
 \begin_layout Plain Layout
 
 @
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width = 6.5in]{rockchalk-rcenter40}
 \end_layout
 
 \end_inset
@@ -4967,44 +4285,22 @@ name "fig:rcenter40"
 \end_layout
 
 \begin_layout Standard
-The conclusion is this.
- One can code a nonlinear model in various ways, all of which are theoretically
- and analytically identical.
- There are superficial differences in the estimates of the coefficients
- of the various specifications, but these differences are understandable
- in light of the changes in the design matrix.
+The take-away point from this should be that the main goal of regression
+ analysis is the translation of predictor values into predictions and uncertaint
+y estimates.
+ Because the predictor input can be re-phrased in various ways, the regression
+ summaries appear different, but the differences are superficial.
+ The differences are a reflection of the fact that a model that includes
+ an interaction is a nonlinear model, so our appreciation of the slope estimates
+ is influenced by our vantage point.
  The connection between the observed values of the predictors and the predicted
  values remains the same in all of these specifications.
 \end_layout
 
 \begin_layout Standard
-Why do the coefficients differ if the models are actually the same? Recall
- that we are estimating the slopes of a curving plane, and so estimates
- of the marginal effects of 
-\begin_inset Formula $x1$
-\end_inset
-
- and 
-\begin_inset Formula $x2$
-\end_inset
-
- will depend on the point at which we are calculating the slopes.
- Mean-centering and residual-centering are different methods for re-positioning
- the 
-\begin_inset Formula $y$
-\end_inset
-
- axis.
- The interactive model has a constant mixed partial derivative, so the estimate
- of the interaction coefficient is not affected by the position of the y
- axis.
- The other coefficients, however, do change.
- 
-\end_layout
-
-\begin_layout Standard
-It is possible to translate between the estimates of any one of these fitted
- models and the estimates of another.
+In order to drive the point home, I'd like to show that it is possible to
+ translate between the estimates of any one of these fitted models and the
+ estimates of the others.
  The derivation proceeds as follows.
  The ordinary model is
 \begin_inset Formula 
@@ -5151,20 +4447,11 @@ reference "eq:mc1"
 
 \begin_layout Standard
 The estimation of the residual centered model requires two steps.
- First, estimate a regression 
-\begin_inset Formula 
-\begin{equation}
-(x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2_{i}+u_{i}
-\end{equation}
-
-\end_inset
-
-
+ The residual from this regression model
 \end_layout
 
 \begin_layout Standard
 \noindent
-from which the predicted value can be calculated:
 \begin_inset Formula 
 \begin{equation}
 \widehat{(x1_{i}\times x2_{i})}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}.
@@ -5177,10 +4464,10 @@ from which the predicted value can be calculated:
 
 \begin_layout Standard
 \noindent
-The residual of that regression 
+is 
 \begin_inset Formula 
 \begin{equation}
-\widehat{u}_{i}=(x1_{i}\times x2_{i})-\widehat{(x1_{i}\times x2_{i})}
+\widehat{u}_{i}=(x1_{i}\times x2_{i})-\widehat{(x1_{i}\times x2_{i})},
 \end{equation}
 
 \end_inset
@@ -5190,19 +4477,7 @@ The residual of that regression
 
 \begin_layout Standard
 \noindent
-is used as the 
-\begin_inset Quotes eld
-\end_inset
-
-residual-centered
-\begin_inset Quotes erd
-\end_inset
-
- predictor in place of 
-\begin_inset Formula $(x1_{i}\times x2_{i})$
-\end_inset
-
- in equation 
+which is inserted into equation 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:int"
@@ -5257,8 +4532,8 @@ y_{i} & = & h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\hat{d}_{0}
 \end_layout
 
 \begin_layout Standard
-As in the previous comparison of models, we can translate coefficient estimates
- between the ordinary specification and the residual-centered model.
+As in the previous comparison, we can translate coefficient estimates between
+ the ordinary specification and the residual-centered model.
  The coefficient estimated for the product term, 
 \begin_inset Formula $\hat{h}_{3}$
 \end_inset
@@ -5297,6 +4572,64 @@ From the preceding, it should be clear enough that the three models are
  equivalent, in the sense that the parameter estimates (parameters, predicted
  values, and so forth) from any one can be translated into the terminology
  of the other.
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Standard
+The rockchalk package is offered as a system of support for teachers and
+ students of regression analysis.
+ It should help with the preparation of plots, summary tables, and other
+ diagnostics.
+ 
+\end_layout
+
+\begin_layout Standard
+A number of functions are currently offered in this package that have not
+ been emphasized in this writeup.
+ I would draw the reader to the help page for these functions
+\end_layout
+
+\begin_layout Description
+combineLevels a recoder for factor variables
+\end_layout
+
+\begin_layout Description
+mcDiagnose a one stop shop for multicollinearity diagnostic information
+\end_layout
+
+\begin_layout Description
+getDeltaRsquare calculate the change in the 
+\begin_inset Formula $R^{2}$
+\end_inset
+
+ that results from the omission of each variable.
+ This is the squared semi-partial correlation coefficient.
+\end_layout
+
+\begin_layout Description
+getPartialCor calculates the partial correlation matrix of the predictors
+ in a regression model
+\end_layout
+
+\begin_layout Description
+lazyCor
+\begin_inset space ~
+\end_inset
+
+and
+\begin_inset space ~
+\end_inset
+
+lazyCov convenient ways to create correlation and covariance matrices that
+ are needed in many simulation exercises
+\end_layout
+
+\begin_layout Description
+mvrnorm a slightly improved version of the MASS package's multivariate normal
+ generator.
 \end_layout
 
 \begin_layout Bibliography

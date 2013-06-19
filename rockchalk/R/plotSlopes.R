@@ -1,6 +1,9 @@
 ##' Generic function for plotting regressions and interaction effects
 ##'
-##' This is a generic function for plotting regression objects.
+##' This is a generic function for plotting regression
+##' objects. So far, there is an implementation for \code{lm()} objects.
+##' This allows interaction effects, but not nonlinearities like log(x1).
+##' For that, please see \code{plotCurves}.
 ##'
 ##' @param model Required. A fitted Regression
 ##' @param plotx Required. Name of one predictor from the fitted model to be plotted on horizontal axis
@@ -108,7 +111,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 plotSlopes.lm <-
     function (model, plotx, modx, n = 3, modxVals = NULL ,
               interval = c("none", "confidence", "prediction"),
-              plotPoints = TRUE, plotLegend = TRUE, col = 1,
+              plotPoints = TRUE, plotLegend = TRUE, col = NULL,
               llwd = 2, opacity = 100, ...)
 {
     if (missing(model))
@@ -200,7 +203,7 @@ plotSlopes.lm <-
         stop("plotSlopes: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
     }
 
-    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, opacity = opacity, xlim = plotxRange, ylim = plotyRange, ylab = ylab, llwd = llwd)
+    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, col = col, opacity = opacity, xlim = plotxRange, ylim = plotyRange, ylab = ylab, llwd = llwd)
     parms <- modifyList(parms, dotargs)
     plotArgs <- do.call("plotFancy", parms)
 
@@ -209,11 +212,11 @@ plotSlopes.lm <-
 
     invisible(z)
 }
-
+NULL
 
 ##' Regression plots with predicted value lines, confidence intervals, color coded interactions
 ##'
-##' This is the back-end for the functions plotSlopes and plotCurves
+##' This is the back-end for the functions plotSlopes and plotCurves. Don't use it directly.
 ##'
 ##' @param newdf The new data frame with predictors and fit, lwr, upr variables
 ##' @param olddf A data frame with variables(modxVar, plotxVar, depVar)
@@ -231,7 +234,7 @@ plotSlopes.lm <-
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##'
 plotFancy <-
-    function(newdf, olddf, plotx, modx, modxVals, interval, plotPoints, plotLegend, col = 1, llwd = 2, opacity, ...)
+    function(newdf, olddf, plotx, modx, modxVals, interval, plotPoints, plotLegend, col = NULL, llwd = 2, opacity, ...)
 {
     dotargs <- list(...)
 
@@ -260,7 +263,7 @@ plotFancy <-
         if (is.null(names(modxVals))) names(modxVals) <- modxVals
     }
     ## Deal w colors
-    if (missing(col)) {
+    if (is.null(col)) {
         if (is.factor(modxVar)) {
             col <- seq_along(modxLevels)
             names(col) <- modxLevels
@@ -270,12 +273,13 @@ plotFancy <-
         }
     } else {
         if (length(col) == lmx & is.null(names(col))) {
-            names(col) <- modxVals
+            if (is.factor(modxVar)) names(col) <- modxLevels
+            else names(col) <- names(modxVals)
         } else if (length(col) < lmx) {
-            stop("plotSlopes: wrong number of colors")
+            stop("plotFancy: wrong number of colors. please fix the col argument.")
         } else if (length(col) < length(modxLevels)) {
-            if (is.null(names(col))){
-                names(col) <- modxLevels[1:length(col)]
+            if (is.null(names(col))) {
+                names(col) <- names(modxLevels[1:length(col)])
             }
             col <- rep(col, length.out = length(modxLevels))
         }

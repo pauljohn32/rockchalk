@@ -1,4 +1,4 @@
-%% LyX 2.0.3 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.0.6 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{article}
 \usepackage[T1]{fontenc}
@@ -92,7 +92,7 @@
 \usepackage{babel}
 \begin{document}
 
-\title{Using rockchalk for Regression Presentations (1.7.x development)}
+\title{Using rockchalk for Regression Analysis}
 
 
 \author{Paul Johnson}
@@ -108,41 +108,6 @@ options(width=80, prompt=" ", continue="  ")
 options(useFancyQuotes = FALSE) 
 @
 
-
-\section*{Development on version 1.7.x}
-
-The ``stable'' version of rockchalk on CRAN is 1.6.3. Version 1.7.x
-is an ``unstable'' testing branch to add features. The next stable
-release will be numbered 1.8.0. 
-
-Test versions can be downloaded \& installed from our local test repository,
-can be retrieved with:
-
-\begin{Sinput}
-install.packages("rockchalk", repos = "http://rweb.quant.ku.edu/kran", type = "source")
-\end{Sinput}I don't upload versions unless they ``run'' and pass the usual tests
-for uploading packages on CRAN, so I think they are mostly safe for
-you to test. CRAN now asks we not upload packages frequently, so the
-KRAN alternative is used for rapid-release development.
-
-As always, the best way to learn what this does is to run the examples.
-
-Installed with the package will be a directory called ``examples''.
-I recently learned that it is possible to include not only the examples
-that you run with the R function example(), but also other demonstration
-files. These demonstration files are not linked to particular functions
-in the package, they are ``just there'' waiting for you to explore.
-For programming tutorial examples, look for ``noWords-{*}.R'' and
-other filenames that do not end in ``{*}-ex.R''. 
-
-The vignettes distributed with the package are
-\begin{itemize}
-\item rockchalk: a survey of package features, lags behind development slightly
-(because I don't write out explanations until things actually work)
-\item Rstyle: an essay about how my students should write R code
-\item Rchaeology: an essay about difficult problems that I've had to solve
-while working on rockchalk.
-\end{itemize}
 In case you want to be involved in development, the source code is
 available on GitHub. Please browse http://github.com/pauljohn32. The
 read-only git archive address is \url{git://github.com/pauljohn32/rockchalk.git}.
@@ -152,90 +117,61 @@ then we can discuss ways for you to contribute.
 
 \section{Introduction}
 
-The rockchalk package is a collection of functions that I need, or
-my students might need, when I'm teaching about regression. The functions
-here divide into three categories. 
-\begin{enumerate}
-\item Functions that help me prepare lectures and reports. The function
-to create \LaTeX{} tables from regression output, outreg, falls into
-this category. It speeds up the preparation of lectures immensely
-to include table generating code that ``just works'' with R output.
-Some functions in R are very hard to use and get right consistently,
-especially where 3 dimensional plotting is concerned. That's where
-functions like mcGraph1(), mcGraph2(), mcGraph3(), and plotPlane()
-come in handy. These don't do any work that is particularly original,
-but they do help to easily make the multidimensional plots that turn
-out ``about right'' most of the time. 
-\item Functions simplify vital chores that are difficult for regression
-students. I keep track of the R idioms that bother the students and
-try to craft functions that simplify them. I have often asked students
-to plot several regression lines, ``one for each sub-group of respondents,''
-and this sometimes proves frustrating. The functions plotSlopes is
-offered as my suggestion for creating interaction plots of ``simple
-slopes''. The plotSlopes() function is intended for ``straight lines,''
-but as soon a students discover log(x) or poly(x, 2), then they want
-predicted lines plotted as well. That is why I created plotCurves().
-These functions handle the work of calculating predicted values and
-drawing them for several possible values of a third variable. plotPlane()
-is along the same line. If students find that useful, they can then
-use the examples to build up more complicated drawings. Most recently,
-a function to transfer the lines from plotSlopes() and plotCurves()
-onto the plotPlane() drawings was added (look for the function addLines().
-\item Functions that people often ask for, even if they might be unwise
-to use them. A function to estimate a ``standardized regression''
-is offered. Although that is clearly unwise (in the eyes of many),
-some folks still want to calculate ``beta weights.'' Hence the function
-standardize(). 
+This is the Spring, 2013 update of the rockchalk package. I offer
+a course in regression analysis for social and behavioral scientists
+every year. As the course goes on, I keep track of the difficulties
+that the students experience with R and I craft functions that facilitate
+their work on particular assignments. In this edition, I offer several
+enhancements in the calculation of predicted values, regression plots,
+and regression tables. 
 
+The core of the effort this time has been development of an internally
+coherent framework that allows students to create ``newdata'' objects
+in a flexible and convenient way. Users are welcome to use the newdata()
+function directly, but I offer a convenience called predictOMatic()
+that allows one to specify a regression model and then receive predicted
+values for a range of various input values. The default output will
+be similar to other regression software tools that provide ``marginal
+effect'' estimates for regression analysis. 
 
-A person might want to mean-center some predictors, or standardize
-variables selectively the model. The function meanCenter() can optionally
-center and/or standardize variables and re-run a regression. Mean
-centering of variables, or its cousin ``residual centering,'' are
-sometimes proposed enthusiastically as analytical simplifications
-or statistical fixes for various perceived maladies. Because other
-people propose those methods to the students, I have to provide functions
-to implement them so we can investigate. I've concluded that those
-methods are not truly helpful, and below I have an illustration. 
+In this edition of rockchalk, I have exerted a great deal of effort
+to improve the consistency of predicted value plots for regression
+analysis. The plotSlopes() function is a plotter for linear models
+with interaction terms. It draws a plot on the screen, but it also
+creates an output object that can be subjected to a follow-up hypothesis
+test (by the testSlopes() function). In version 1.8, there is a new
+plot method for testSlopes objects that employ interactions of numeric
+predictors. The plots for testSlopes objects will be the most useful
+new feature in this version of the package. 
 
-\end{enumerate}
+For people who want to plot nonlinear regressions, the function plotCurves()
+is a replacement for plotSlopes. It can handle any sort of nonlinearity
+and interaction on the right hand side. Where some regression formula
+can cause R's termplot() function to fail, plotCurves() will succeed.
+
+The core functionality of many functions has not been altered. Functions
+to provide standardized regression coefficients, mean-centered, or
+residual-centered regression coefficients have not changed much, although
+the plots of them are improved. 
+
 
 \section{Facilitating Collection of Summary Information}
 
 
 \subsection{summarize: A replacement for summary}
 
-R's summary function has some limitations. For example, no indicators
-of diversity are included in the presentation. I'd like to see the
-standard deviation and/or the variance. For categorical variables,
-I'd like an indicator like entropy, which, roughly speaking, is a
-way of summarizing the chances that two observations (randomly drawn)
-do not fall into the same category. 
-
-As work progressed on a revision of summary(), I realized there are
-other things about R's summary that I wanted to change. First, I want
-to separate the numeric from the categorical (factor) variables. Second,
-I want the option to have alphabetized columns in the output. Third,
-I want more workable objects to be returned. I find it almost impossible
-to use the returned value from summary() for further analysis. It
-offers a large block of text in a table format. 
+When an R function provides output that is not suitable for a term
+paper, the student must cobble together some code and assemble a customized
+table. In my opinion, R's summary() function for data frames is not
+adequate. It lacks summaries for diversity of observations. In addition,
+the output is not formatted in a way that is conducive to the creation
+of plots or tables. As a result, I offer the function summarize(),
+which separates the numeric from factor variables and provides an
+alphabetized summary. 
 
 <<echo=F>>=
 library(rockchalk)
 @
-
-In order to create more workable output objects, some re-arrangement
-of the work behind the scenes can be done. Basically, it is necessary
-that the summarize() function return the more-workable, less easily
-printable output object, and then a print method is used to ``pretty
-print'' that output for the user. 
-
-The summarize() function returns a list with two components, ``numerics''
-and ``factors''. The numeric summary is a data frame, with named
-rows, that can be used for further analysis. Users who wish to summarize
-only the numeric variables can run summarizeNumerics() instead, while
-others who want to summarize only factors can run summarizeFactors().
-The output from summarizeFactors() is a list of factor summaries. 
 
 Consider the results of applying summarize() to Fox's Chile data set
 from the car package:
@@ -244,6 +180,13 @@ from the car package:
 data(Chile)
 (summChile <- summarize(Chile))
 @
+
+The result object is a list that includes a data frame for the numeric
+variables, with named rows and (optionally) alphabetized columns,
+as well as a separate report for each factor variable. Users who wish
+to summarize only the numeric variables can run summarizeNumerics()
+instead, while others who want to summarize only factors can run summarizeFactors().
+The output from summarizeFactors() is a list of factor summaries. 
 
 A companion function is centralValues(), which will provide only one
 number for each variable in a data frame. For numerics, it returns
@@ -254,127 +197,38 @@ centralValues(Chile)
 @
 
 
-\subsection{Easier newdata objects for predict}
+\subsection{Easier predictions and newdata objects}
 
-Two functions, newdata() and predictOMatic(), will greatly facilitate
-the creation of ``newdata'' objects for use with R's predict methods. 
+Students struggle with R's predict() methods. The problem is in the
+creation of a newdata object of interesting values of the predictors.
+They are often befuddled when they need to create an object like myNewDF
+in a command like \inputencoding{latin9}\lstinline!predict(m1, newdata = myNewDF)!\inputencoding{utf8}.
+If the regression formula uses functions like ``as.numeric()'' or
+``as.factor()'', its almost impossible for first-time R users to
+get this right. In version 1.8, I believe I have solved the problem
+entirely with the functions newdata() and predictOMatic(). 
 
-In order to understand the benefits of the approach proposed here,
-it is necessary to understand the ``old way'' we were supposed to
-do this in R. There are 3 steps in the usual procedure. First, fit
-a regression, like so. This uses the Chile data set from the car package.
+Let's fit an example regression with the Chile data set from the car
+package.
 
 <<echo=T>>=
 m1 <- lm(statusquo ~ age + income + population + region + sex, data=Chile)
 @\\
-Second, we need to build a newdata obect. It must be a new data frame
-that includes values for all of the predictors. I usually do this
-by extracting the data frame that was used to fit the model 
 
-<<echo=T>>=
-m1mf <- model.frame(m1)
-@
-
-\noindent and it will help us to make a new data object to be used
-along with the predict function. 
-
-\noindent Third, we need to use that new data object with the regression
-model's predict method. If we were to run
-
-\inputencoding{latin9}\begin{lstlisting}
-predict(m1)
-\end{lstlisting}
-\inputencoding{utf8}
-
-\noindent we would receive a predicted value for each observation.
-That doesn't simplify anything. Instead, we want predicted values
-for a focal set of values, values that are substantively interesting
-(say, quantiles or other variations above and below the mean). I'll
-explain details on how to create this new data object below, lets
-just suppose it exists. R's predict function has a newdata argument
-that will offer predictions for those focal cases, if only we could
-construct myNewDF.
-
-\inputencoding{latin9}\begin{lstlisting}
-predict(m1, newdata = myNewDF)
-\end{lstlisting}
-\inputencoding{utf8}
 
 \noindent The new data must include one column for each variable in
 the model, and those variables must have exactly the same names as
-were used in the regression formula. I've taught R for almost a decade
-and this is often a source of frustration. 
-
-I still teach the Three Step sequence of ``can't miss'' steps. But
-I expect I won't be doing that for long because the functions newdata()
-and predictOMatic() will do most of this automatically. In order to
-understand what's going on, I need the reader to understand the steps
-in principle. 
-
-Now, what kind of a process is required to create a workable newdata
-frame? First, calculate values for the predictors at their central
-values (say, mean or mode or median). The summarize function and the
-centralValues functions are run first to collect up the needed information.
+were used in the regression formula. The default output of predictOMatic()
+will cycle through the predictors, one by one.
 
 <<echo=T>>=
-m1mfsumm <- summarize(m1mf)
-m1cv <- centralValues(m1mf)
+m1pred <- predictOMatic(m1)
+m1pred
 @
 
-Second, specify some alternate levels for particular predictors in
-a new data frame. 
-
-<<>>=
-focalVals <- list(age = m1mfsumm$numerics[2:4, "age"], region = c("C","N"))
-@
-
-R's expand.grid() function offers a very convenient way to get all
-combinations of those predictors.
-
-<<echo=T>>=
-mixAndMatch <- expand.grid(focalVals)
-mixAndMatch
-@
-
-Third, combine those focal values with the central values for the
-other variables in the data set. Recall that we must specify values
-for all of the predictors in the model. There is a danger that we
-may end up with columns that have duplicate names (there is a variable
-``age'' in both m1cv and mixAndMatch). To avoid duplicate column
-names, I keep only the columns from m1cv that are not already in mixAndMatch
-when I join the two together. 
-
-<<echo=T>>=
-mynewdf <- cbind(mixAndMatch, m1cv[  ,!colnames(m1cv) %in% colnames(mixAndMatch)])
-mynewdf
-@
-
-\noindent The predicted values are called fit and added to mynewdf.
-
-<<echo=T>>=
-mynewdf$fit <- predict(m1, newdata = mynewdf)
-mynewdf
-@
-
-If one desires confidence intervals, the procedure is similar, although
-the data management is slightly more tedious. I usually prefer to
-rename the fit and lower and upper confidence interval regions so
-that they have unique names.
-
-<<echo=T>>=
-mynewdf <- cbind(mixAndMatch, m1cv[  ,!colnames(m1cv) %in% colnames(mixAndMatch)])
-preds <- predict(m1, newdata = mynewdf, interval="confidence")
-colnames(preds) <- paste("m1", colnames(preds), sep = "")
-mynewdf <- cbind(mynewdf, preds)
-mynewdf
-@
-
-That seems like a lot of work to me, and I've done it many times. 
-
-Can this be made easier? And can it be robust and flexible? I believe
-the answer is yes. The newdata() and predictOMatic() functions handle
-the details and allow the user to adjust their requests to allow for
-very fine grained control. Here are the key arguments for these functions.
+The newdata() and predictOMatic() functions handle the details and
+allow the user to adjust their requests to allow for very fine grained
+control. Here are the key arguments for these functions.
 \begin{enumerate}
 \item divider. The name of an algorithm to select among observed values
 for which predictions are to be calculated. These are the possibilities.
@@ -392,13 +246,40 @@ values, this selects the most frequently observed values.
 \item n. The number of values to be selected.
 \item predVals. Where the divider argument sets the default algorithm to
 be used, the predVals argument can choose variables for focus and
-select divider algorithms. It is also allowed to declare particular
-values.
+select divider algorithms separately for the variables. It is also
+allowed to declare particular values.
 \end{enumerate}
-The function newdata() is a way of asking for a new data frame that
-demonstrates certain focal values of one or more variables. We start
-with a fitted regression, m1, which was fitted above. This asks for
-a ``mix and match'' of values from age and region. 
+The user can request that particular values of the predictors are
+used, or can declare one of several algorithms for selection of focal
+values. All of these details are managed by the argument called predVals,
+which is described in the help pages (with plenty of examples). 
+
+<<echo=T>>=
+mypred2 <- predictOMatic(m1, predVals = c("age", "region"), n = 3)
+mypred2
+mypred3 <- predictOMatic(m1, predVals = c(age = "std.dev.", region = "table"), n = 3)
+mypred3
+mypred4 <- predictOMatic(m1, predVals = list(age = summChile$numerics[2:4, "age"], region = c("SA", "C","N")), n = 3)
+mypred4
+@
+
+I've invested quite a bit of effort to make sure this works dependably
+with complicated regression formulae. All formulae, such as y \textasciitilde{}
+x1 + log(x2 + alpha) + ploy(x3, d) will just work. (In case one is
+interested to know \emph{why} this works, the secret recipe is a new
+function called model.data(). Under the hood, this required some hard
+work, a frustrating chain of trial and error that is discussed in
+the vignette \emph{Rchaeology}, which is distributed with this package).
+
+The predictOMatic() function will work when the regression model provides
+a predict function that can handle the newdata argument. If the regression
+package does not provide such a function, the user should step back
+and used the newdata function to create the examplar predictor data
+frames and then calculate predicted values manually. The newdata()
+function will set all variables to center values and then it will
+create a ``mix and match'' combination of the ones that the user
+asks for. This sequence shows ways to ask for various ``mix and match''
+combinations of values from age and region. 
 
 <<echo=T>>=
 mynewdf <- newdata(m1, predVals = c("age","region"), n = 3)
@@ -421,287 +302,196 @@ placed into the process for choosing focal values.
 mynewdf <- newdata(m1, predVals = list(age = getFocal(Chile$age, n = 3), region = getFocal(Chile$region, n = 3)))
 mynewdf
 @\\
-The function getFocal() is a generic function, which means that it
-can receive variables of different types and it is supposed to notice
-and ``do the right thing.'' It allows the section of algorithms
-as explained in the documentation, but the default for numeric variables
-is the quantile and for factors the most frequenly observed outcomes
-are selected. The newdata() output can be used in a predict() function
-call as demonstrated above. 
+The function getFocal() is a generic function; it will receive variables
+of different types and ``do the right thing.'' By default, focal
+values of numeric variables are quantile values. For factor values,
+the most frequently observed values are selected. These are customizable,
+as explained in the documentation. The newdata() output can be used
+in a predict() function call as demonstrated above. 
 
-Note that I've tried to help users to catch typographical errors in
-the predVals. 
-
-\begin{Sinput}
-> mynewdf <- newdata(m1, predVals = list(age = summChile$numerics[2:4, "age"], place = c("SA", "C","N")))
-Error. The focus list: predVals requests variables that are not included in the original model. 
-The names of the variables in the focus list be drawn from this list: age income population region sex
-\end{Sinput}
-
-I've tried to go one step further, offering a function called predictOMatic().
-predictOMatic() receives a regression model and if no other details
-are supplied, it takes each variable, one at a time, and collects
-some focal values and estimates predictions for each one. The user
-can request that particular values of the predictors are used, or
-can declare one of several algorithms for selection of focal values.
-All of these details are managed by the argument called predVals,
-which is described in the help pages (with plenty of examples). 
+It would be nice if every regression model's predicted values were
+accompanied by 95\% confidence intervals. Models fit by lm() can supply
+confidence intervals, but not glm(). At the current time, there are
+many competing methods that might be used to calculate those intervals;
+predict.glm() in R's stats package avoids the issue entirely by not
+calculating intervals. In rockchalk-1.8, I crafted some code to calculate
+confidence intervals for glm objects using the (admittedly crude)
+Wald-based approximation. In the scale of the linear predictor, we
+calculate a 95\% confidence interval, and then use the inverse link
+function to transform that onto the space of the observed response.
+In this example, I replicate an example that is an R classic, from
+the help page of predict.glm. The reader will note that the output
+includes a warning about the construction of the confidence interval.
 
 <<echo=T>>=
-mypred1 <- predictOMatic(m1)
-mypred1
-mypred2 <- predictOMatic(m1, predVals = c("age", "region"), n = 3)
-mypred2
-mypred3 <- predictOMatic(m1, predVals = c(age = "std.dev.", region = "table"), n = 3)
-mypred3
-mypred4 <- predictOMatic(m1, predVals = list(age = summChile$numerics[2:4, "age"], region = c("SA", "C","N")), n = 3)
-mypred4
+df <- data.frame(ldose = rep(0:5, 2), sex = factor(rep(c("M", "F"), c(6, 6))), 
+	SF.numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16))      
+df$SF.numalive <-  20 - df$SF.numdead
+budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family = binomial)
+predictOMatic(budworm.lg, predVals = c(ldose = "std.dev.", sex = "table"), interval = "confidence")  
 @
-
-I've invested quite a bit of effort to make sure this works dependably
-with complicated regression formulae. It is fairly easy to write a
-prediction scheme for a simple linear equation like y \textasciitilde{}
-x1 + x2, we also need to handle y \textasciitilde{} x1 + log(x2 +
-alpha) + ploy(x3, d) and so forth. That was a hard problem for me,
-but I believed it is solved now (the secret recipe is a new function
-called model.data()). Under the hood, this required some hard work,
-a frustrating chain of trial and error that is discussed in the vignette
-\emph{Rchaeology}, which is distributed with this package. 
 
 
 \section{Better Regression Tables: Some outreg Examples.}
 
-On May 8, 2006, Dave Armstrong, a political science PhD student at
-University of Maryland, posted a code snippet in r-help that demonstrated
+On May 8, 2006, Dave Armstrong, who was a political science PhD student
+at University of Maryland, posted a code snippet in r-help that demonstrated
 one way to use the ``cat'' function from R to write \LaTeX{} markup.
 That gave me the idea to write a \LaTeX{} output scheme that would
-help create some nice looking term and research papers. I'd been frustrated
-with the \LaTeX{} output from other R functions. I needed a table-maker
-to include all of the required information in a regression table without
-including a lot of chaff (in my opinion). I don't want both the standard
-error of b and the t value, I never want p values, I need stars for
-the significant variables, and I want a minimally sufficient set of
-summary statistics. In 2006, there was no function that met those
-needs.
+help create some nice looking term and research papers. I wanted ``just
+enough'' information, but not too much.
 
-Tables \ref{tab:Tab1} through \ref{tab:Combined-OLSGLM} present
-examples of table output that I am able to generate with outreg. The
-regression models are fit with some simulated data.
+Since 2006, many new R packages have been introduced for the creation
+of regression tables, but I still prefer to maintain outreg. I fight
+to keep this simple, but have added some features in response to user
+requests. In rockchalk-1.8, I have compromised with users who want
+``more stars.'' Personally, I think the one-two-three stars for
+p-values are silly, but they are used so widely that I now have incorporated
+a user option to request various alphas. I've also made it easier
+for users to request additional summary statistics in the bottom half
+of the table.
 
-<<createdata, echo=T>>=
+In the following, I will demonstrate some tables for lm and glm fits
+on a simulated data set. This new simulation function, genCorrelatedData2(),
+is a convenient way to create multiple-predictor regression data sets
+of arbitary size and complexity, allowing for interactions and nonlinearity. 
+
+<<createdata1, echo=T>>=
 set.seed(1234)
-x1 <- rnorm(100)
-x2 <- rnorm(100, m=10)
-x3 <- rnorm(100)
-y1 <- 5*rnorm(100) - 3*x1 + 4*x2
-y2 <- rnorm(100)+5*x2
-dat <- data.frame(x1, x2, x3, y1, y2)
-rm (x1, x2, y1, y2)
-m1 <- lm (y1~x1, data=dat)
-m2 <- lm (y1~x2, data=dat)
-m3 <- lm (y1 ~ x1 + x2, data=dat)
+dat <- genCorrelatedData2(N = 100, means = c(0, 10, 0), sds = c(1, 1, 1), rho = c(0, 0, 0), 
+  	stde = 5, beta = c(0, -3, 4, 0), verbose = FALSE)
+@\\
+That creates a new matrix with variables $x1,$ $x2$, $x3$, and
+y. We run some linear regressions and then create a categorical output
+variable for a logistic regression.
+
+<<createdata1, echo=T>>=
+m1 <- lm(y ~ x1 + x2, data = dat)
+m2 <- lm(y ~ x2, data = dat)
+m3 <- lm(y ~ x1 + x2 + x3, data = dat)
+## Create categorical variant
 myilogit <- function(x) exp(x)/(1 + exp(x))
-dat$y3 <- rbinom(100, size=1, p=myilogit(scale(dat$y1)))
-gm1 <- glm(y3~x1 + x2, data=dat)
-dat$y4 <- 1 + 0.1 * dat$x1 - 6.9 * dat$x2 + 0.5 * dat$x1*dat$x2 + 0.2 * dat$x3 + rnorm(100,0, sd=10)
+dat$y3 <- rbinom(100, size = 1, p = myilogit(scale(dat$y)))
+gm1 <- glm(y3 ~ x1 + x2, data = dat)
 @
 
+The outreg examples are offered in Tables \ref{tab:Tab1} through
+\ref{tab:Combined-OLSGLM}. Table \ref{tab:Tab1} is the default output
+for three models, obtained from \inputencoding{latin9}\lstinline!outreg(list(m1, m2, m3))!\inputencoding{utf8}.
+On the other hand, users can pack output estimates into a single column
+and ask for more stars, as illustrated in Table \ref{tab:Tab2}. .
+In Table \ref{tab:Combined-OLSGLM}, observe that the linear and generalized
+linear model output peacefully co-exist, side-by-side. This output
+is, in my opinion, completely acceptable for inclusion in a presentation
+or conference paper There are some warts in this output. Because the
+model labels are not equal in length, the columns are not equally
+sized. Because may \LaTeX{} distributions do not include the dcolumns
+package, I've not aligned the coefficient estimates vertically as
+some users might like.
+
 \begin{table}
-\caption{My One Tightly Printed Regression\label{tab:Tab1}}
+\caption{Default Outreg Table\label{tab:Tab1}}
 
 
-<<outreg10, results=tex, echo=F>>=
-outreg(m1)
+<<outreg10, echo = F, results=tex>>=
+outreg(list(m1, m2, m3))
 @
 \end{table}
 
-
-Table \ref{tab:Tab1} displays the default outreg output, without
-any special options. The command is
-
-<<results=hide>>=
-<<outreg10>>
-@, 
 
 \begin{table}
 \caption{My Spread Out Regressions\label{tab:Tab2}}
 
 
 <<outreg20, results=tex, echo=F>>=
-outreg(m1, tight=FALSE, modelLabels=c("Fingers"), alpha = c(0.05, 0.01, 0.001))
+outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with a Long Title", "Another Model"), alpha = c(0.05, 0.01, 0.001))
 @
 \end{table}
 
-
-In the literature, regression tables are sometimes presented in a
-tight column format, with the estimates of the coefficients and standard
-errors ``stacked up'' to allow multiple models side by side, while
-sometimes they are printed with separate columns for the coefficients
-and standard errors. The outreg option tight=F provides the two column
-style. In Table \ref{tab:Tab2}, I've also used the argument modelLabels
-to insert the word ``Fingers'' above the regression model. The command
-that produces the table is
-
-<<results=hide>>=
-<<outreg20>>
-@
-
-\begin{table}
-\caption{My Two Linear Regressions Tightly Printed\label{tab:Tab3}}
-
-
-\bigskip{}
-a) Tightly Formatted Columns
-
-<<outreg30, results=tex, echo=FALSE>>=
-outreg(list(m1,m2), modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie"), alpha = c(0.05, 0.01, 0.001))
-@
-
-\\
-
-\bigskip{}
-b) Two Columns Per Regression Model
-
-<<outreg33, results=tex, echo=FALSE>>=
-outreg(list(m1,m2), tight=FALSE,  modelLabels=c("Mine","Yours"), varLabels = list(x1="Billie"), alpha = c(0.05, 0.01, 0.001))
-@
-\end{table}
-
-
-The outreg function can present different models in a single table,
-as we see in Table \ref{tab:Tab3}. The default output uses the tight
-format, so there is no need to specify that explicitly. In part (a)
-of Table \ref{tab:Tab3}, we have tightly formatted columns of regression
-output that result from this command:
-
-<<results=hide>>=
-<<outreg30>>
-@\\
-To my eye, there is something pleasant about the less-tightly-packed
-format, as illustrated in part (b) of Table \ref{tab:Tab3}. Note
-that the only difference in the commands that produce those tables
-is the insertion of tight=FALSE.
-
-<<results=hide>>=
-<<outreg33>>
-@
-
-\begin{table}
-\caption{My Three Linear Regressions in a Tight Format\label{tab:3tight}}
-
-
-<<outreg35, results=tex, echo=F>>=
-outreg(list(m1,m2,m3), modelLabels=c("A","B","C"), varLabels = list(x1="I Forgot x1", x2="He Remembered x2"))
-@
-\end{table}
-In addition to using modelLables to provide headings for the 2 models,
-the other argument that was used in Table is \ref{tab:Tab3} varLabels.
-It is often a problem that the variable names are terse, while a presentation
-must have a full name. So in Table \ref{tab:Tab3}, I've demonstrated
-how to replace the variable name x1 with the word ``Billie''. Any
-of the predictor variables can be re-named in this way. Another usage
-of varLabels is offered in an example with three models in Table \ref{tab:3tight},
-which is a result of
-
-<<results=hide>>=
-<<outreg35>>
-@\\
-As one can see, outreg gracefully handles the situation in which variables
-are inserted or removed from a fitted model.
-
-\begin{table}
-\caption{Three Regressions in the Spread out Format\label{tab:3RegNotTIght}}
-
-
-<<results=tex, echo=F>>=
-outreg(list(m1,m2,m3), tight=F, modelLabels=c("I Love love love really long titles","Hate Long","Medium"), alpha = c(0.05, 0.01))
-@
-\end{table}
-
-
-I have not bothered too much with some fine points of \LaTeX{} table
-formatting. In order to produce tables that are completely ready for
-publication in a journal, it would be necessary to use some special
-\LaTeX{} packages to control the vertical alignment of columns and
-such. Doing so would make outreg more difficult for researchers to
-use, and I believe the benefit would be minimal. In Table \ref{tab:3RegNotTIght},
-we have regression output which is, in my opinion, completely acceptable
-for inclusion in a presentation or conference paper. There are some
-warts: because the model labels are not equal in length, the columns
-are not equally sized. 
 
 \begin{table}
 \caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
 
 
 <<outreg70, results=tex, echo=F>>=
-outreg(list(m1,gm1), modelLabels=c("OLS:y1","GLM: Categorized y1"))
+outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
 @
 \end{table}
 
 
-Another feature of outreg is that it can present the estimates of
-different kinds of models. It can present the estimates from R's lm
-and glm functions in a single table. Consider Table \ref{tab:Combined-OLSGLM},
-which resulted from the command
 
-<<results=hide>>=
-<<outreg70>>
-print(rnorm(10))
+\section{Plotting and Testing Interactions }
+
+
+\subsection{Interaction in Linear Regression. }
+
+One of the most fundamental skills in regression analysis is the interpretation
+of interactive predictors. It is much easier for students to understand
+the effect of an interaction if they can create a nice plot to show
+how the predicted value depends on various values of a predictor.
+The plotSlopes() function was introduced in 2010 when I was teaching
+a large first-year graduate course (more than 50 students) and it
+became apparent that about 20 percent of them would not be able to
+manage the R coding required to draw several lines on a single plot.
+Unfortunately, R's termplot() function will not draw regressions involving
+interactions.
+
+The rockchalk package has two functions to help with this, plotSlopes()
+and plotCurves(). plotCurves() is more general, it can handle any
+kind of formula that the user estimates. plotSlopes() is more limited,
+it is only for lm objects. In return for that limitation, plotSlopes()
+creates an output object which can be used to conduct post-hoc hypothesis
+tests. 
+
+\begin{figure}
+<<ps05, fig=T, echo=F, include=F, height=5, width=6>>=
+m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval = "confidence", opacity = 80, col = "red", ylim = c(20, 70))
 @
 
-In the future, outreg will be enhanced to handle more types of regression
-models, including mixed (hierarchical) models.
+\includegraphics[height=4in]{rockchalk-ps05}
+
+\caption{plotSlopes Illustrated\label{fig:ps05}}
+\end{figure}
 
 
-\section{plotSlopes, plotPlane and plotCurves}
+At its most elementary level, plotSlopes() is a ``one step'' regression
+line plotter. If the regression model includes more than one predictor,
+then a single predictor is displayed on the horizontal axis and the
+other predictors are set on their central values. A plot for the model
+m1, that was illustrated above, is presented in Figure \ref{fig:ps05}.
+In rockchalk-1.8, new arguments were added to allow the ``see though''
+confidence region. The command to generate Figure \ref{fig:ps05}
+was
 
+<<echo=T, eval=F>>=
+<<ps05>>
+@
 
-\subsection{plotSlopes for linear models with moderator variables}
+\noindent I've adjusted the color and opacity to illustrate the usage
+of those arguments. The y range is adjusted to make a little extra
+room for the legend. The plotSlopes() function is very flexible. All
+of the label, color, and scale arguments of a plot function are also
+available. The plotSlopes function also works well if the moderator
+is a categorical variable. 
 
-Suppose the fitted model includes several variables, 
-\begin{equation}
-\hat{y}_{i}=\hat{b}_{0}+\hat{b}_{1}x1_{i}+\hat{b}_{2}x2_{i}+\hat{b}_{3}x1_{i}x2_{i}+\hat{b}_{4}x3_{i}.\label{eq:plotSl10}
-\end{equation}
-We would like to visualize the effect of $x1$ on $y$ for several
-values of $x2$, keeping $x3_{i}$ set at some reference value. 
+It is important to note that the output object, m1ps, has the information
+necessary to re-create the plotted line in the form of a newdata data
+frame. The first few lines in the newdata object are
 
-The plotSlopes function assists with that project. First, we fit a
-regression model, and then we pass that object to plotSlopes. Suppose
-we estimate the model in equation \ref{eq:plotSl10}. Then use plotSlopes
-to illustrate the effect of $x1$ as it depends on $x2$. 
+<<>>=
+m1ps$newdata[1:3, ]
+@
 
-\inputencoding{latin9}\begin{lstlisting}
-m4 <- lm (y1 ~ x1*x2 + x3, data=dat)
-plotSlopes(m4, plotx="x1", modx="x2", xlab="x1 is a Continuous Predictor")
-\end{lstlisting}
-\inputencoding{utf8}
-
-\noindent The plotx argument is variable x1, meaning that x1 will
-be on the horizontal axis, and x2 serves as the moderator variable.
-plotSlopes requires that the plotx argument must be the name of a
-numeric variable, but modx may be the name of either a numeric or
-a factor variable. 
-
-When modx is a numeric variable, then some particular values must
-be selected for calculation of predictive lines. By default, three
-hypothetical values of plotx are selected (the quantiles 25\%, 50\%,
-and 75\%). Any other variables in the model are set at central values,
-which would be the mean for a numeric variable and the mode for a
-categorical variable. The user can also use the modxVals argument
-to specify a different selection of values of the moderator for plotting.
-
-Figure \ref{fig:ps10} illustrates the plotSlopes function for two
-use cases. The first is the default selection of values for the moderator.
-The second example in that figure illustrates user-selected values
-for the moderator, which in this case are \{8, 10.5, 12\}.
+<<ps09, fig=T, echo=F, height=9, width=6>>=
+dat$y4 <- 1 + 0.1 * dat$x1 - 6.9 * dat$x2 + 0.5 * dat$x1*dat$x2 + 0.2 * dat$x3 + rnorm(100, m = 0, sd = 10)
+m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
+@
 
 \begin{figure}
 <<ps10, fig=T, echo=F, height=9, width=6>>=
-m4 <- lm (y4 ~ x1*x2 + x3, data=dat)
 par(mfcol=c(2,1))
-m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a Continuous Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$x1, c(1.2,1)))
-m4psb <- plotSlopes(m4, plotx = "x1", modx = "x2", modxVals=c(8, 10.5, 12), xlab="Continuous Predictor", ylim=magRange(dat$y4, c(1,1.3)), xlim=magRange(dat$x1, c(1.2,1)))
+m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a fun plotx")
+m4psb <- plotSlopes(m4, plotx = "x2", modx = "x1", modxVals = "std.dev.", xlab = "x2 is plotx", ylim = c(-100, 20))
 par(mfcol=c(1,1))
 @
 
@@ -709,70 +499,93 @@ par(mfcol=c(1,1))
 \end{figure}
 
 
-plotSlopes is intended for linear models with multiplicative interactions,
-but it will also draw ordinary linear models. It returns an object
-that may facilitate further analysis. The output object includes the
-newdata object that was used to construct the plots that are draw.
-That output object is used by the function testSlopes, which is discussed
-below.
+Now, suppose we fit a regression with an interaction term. 
 
-The plotSlopes function also works well if the moderator is a categorical
-variable. When modx is categorical, the points and lines are drawn
-with colors that represent the categories of the plotted responses.
-Suppose we have a four-valued categorical variable, ``West'',''Midwest'',
-``South'', and ``East''. If that variable is used in an interaction
-in the regression model, then the plotSlopes output will include four
-lines, one for each region. Like other plot functions in R, the col
-option can be used to adjust the colors to suit the taste of the user.
-In Figure \ref{fig:ps20}, the categorical variable is x4.
+\inputencoding{latin9}\begin{lstlisting}
+m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
+\end{lstlisting}
+\inputencoding{utf8}
 
+\noindent We then ask plotSlopes to draw the predicted values using
+one numeric variable as the horizontal axis and values of another
+variable (a moderator) are set at particular values. Either x1 or
+x2 can be viewed as the ``moderator'' predictor, the one on which
+the effect of the other depends. In version 1.8, the selection of
+values of the moderator was generalized, so that the user can specify
+either a function that selects values, or a vector of values, or the
+name of an algorithm. The default algorithm will choose quantile values,
+but Figure \ref{fig:ps10} demonstrates also the ``std.dev.'' divider
+algorithm. The code to produce that figure was
+
+<<eval=F, echo=T>>=
+<<ps10>>
+@
+
+When modx is a numeric variable, then some particular values must
+be selected for calculation of predicted value lines. The modxVals
+argument is used to either specify moderator values or an algorithm
+to select focal values. By default, three hypothetical values of plotx
+are selected (the quantiles 25\%, 50\%, and 75\%). 
+
+If modx is a factor variable, then the most frequently observed scores
+will be selected for consideration. The default display will include
+the regression line as well as color-coded points for the subgroups
+represented by values of the moderator.
+
+\noindent 
 \begin{figure}
-<<ps20, fig=T, echo=F>>=
+<<echo=F>>=
 fourCat <- gl(4,25, labels=c("East","West","South", "Midwest"))
-dat$x4 <- sample(fourCat, 100, replace=TRUE)
+dat$x4 <- sample(fourCat, 100, replace = TRUE)
 dat$y5 <- 1 + 0.1 * dat$x1 + contrasts(dat$x4)[dat$x4, ] %*% c(-1,1,2) + rnorm(100,0, sd=10)
 m5 <- lm (y5 ~ x1*x4 + x3, data=dat)
-m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)))
+@
+
+<<ps20, fig=T, echo=F>>=
+m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Predictor", xlim = magRange(dat$x1, c(1.2,1)))
 @
 
 \caption{plotSlopes with a Categorical Moderator\label{fig:ps20}}
 \end{figure}
 
 
-A new feature in the 1.7.x series is the ``interval'' argument,
-which will draw shaded confidence or predicted value intervals. I
-don't calculate these intervals. These intervals are calculated by
-R's predict.lm() function. These intervals use ``transparent'' shading
-to help us see overlaps. In order to make this more useful, we limit
-the number of values of the moderator that are investigated. See Figure
-\ref{fig:ps21}.
-
+\noindent 
 \begin{figure}
 <<ps21, fig=T, echo=F>>=
-m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"), xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
+m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"), xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
 @
 
-\caption{plotSlopes: the new interval option\label{fig:ps21}}
+\caption{plotSlopes: the interval argument\label{fig:ps21}}
 \end{figure}
+Suppose we have a four-valued categorical variable, ``West'',''Midwest'',
+``South'', and ``East''. If that variable is used in an interaction
+in the regression model, then the plotSlopes output will include four
+lines, one for each region. For example, consider Figure \ref{fig:ps20},
+which is created by
 
-
-This would work for any kind of regression model that supplies a predict
-function that answers to the interval argument. Unfortunately, predict.glm()
-does not do so. 
-
-Quite often, students want to display predicted values with pleasant
-confidence intervals. I've re-worked plotSlopes() so that it will
-make a pleasant plot for a single value of a moderator, as shown in
-Figure \ref{fig:ps22}
-
-\begin{figure}
-<<ps22, fig=T, echo=F>>=
-m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", n = 1,  xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
+\noindent <<eval=F>>=
+<<ps20>>
 @
 
-\caption{plotSlopes: the new interval option\label{fig:ps22}}
-\end{figure}
+\noindent The categorical variable is x4. 
 
+It is possible to superimpose confidence intervals for many subgroups,
+but sometimes these plots start to look a little bit ``busy''. The
+mixing of shades in overlapping intervals may help with that problem.
+A plot that focuses on just two subgroups is presented in Figure \ref{fig:ps21},
+which is produced by 
+
+\noindent <<eval=F>>=
+<<ps21>>
+@ 
+
+In rockchalk version 1.8, I've exerted quite a bit of effort to make
+sure that colors are chosen consistently when users remove or insert
+groups in these plots. The same value of the moderator should always
+be plotted in the same way--the line, points, and interval colors
+should not change. Note, for example, in Figures \ref{fig:ps20} and
+\ref{fig:ps21}, the line for East is black in both plots, while the
+line for West is red in both. 
 
 
 \subsection{testSlopes, a companion of plotSlopes}
@@ -790,7 +603,7 @@ and then submit the output object to testSlopes. The usual case would
 be the following:
 
 \inputencoding{latin9}\begin{lstlisting}
-m4 <- lm (y1 ~ x1*x2 + x3, data = dat)
+m4 <- lm (y ~ x1*x2 + x3, data = dat)
 m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous Predictor")
 testSlopes(m4ps)
 \end{lstlisting}
@@ -851,7 +664,7 @@ is outside the observed range of the moderator, which makes it either
 difficult to interpret or irrelevant.
 
 
-\subsection{plotCurves}
+\subsection{plotCurves for nonlinear predictor formulae}
 
 plotCurves generalizes the plotting capability of plotSlopes. plotCurves
 should be able to handle any regression formulas that include nonlinear

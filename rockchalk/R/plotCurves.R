@@ -73,7 +73,7 @@ plotCurves <-
     function (model, plotx, modx, n, modxVals = NULL,
               interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE,
-              col = 1, llwd = 2, opacity = 100,
+              col = NULL, llwd = 2, opacity = 100,
               envir = environment(formula(model)), ...)
 {
     if (missing(model))
@@ -160,7 +160,7 @@ plotCurves <-
     }
 
 
-    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, opacity = opacity, xlim = plotxRange,  ylab = ylab, ylim = plotyRange)
+    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, col = col,  opacity = opacity, xlim = plotxRange,  ylab = ylab, ylim = plotyRange)
     parms <- modifyList(parms, dotargs)
     plotArgs <- do.call("plotFancy", parms)
 
