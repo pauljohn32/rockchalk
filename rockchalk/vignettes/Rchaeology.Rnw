@@ -168,10 +168,6 @@ dir.create("plots", showWarnings=F)
 options(width=100, continue="  ")
 options(useFancyQuotes = FALSE) 
 set.seed(12345)
-#op <- par() 
-#pjmar <- c(5.1, 5.1, 1.5, 2.1) 
-#pjmar <- par("mar")
-#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
 pdf.options(onefile=F,family="Times",pointsize=12)
 @
 
@@ -181,8 +177,7 @@ pdf.options(onefile=F,family="Times",pointsize=12)
 This vignette is about the R idioms I have learned while working on
 the rockchalk package. At the current time, I don't understand all
 of the R idioms that are common in the advanced R programmers' conversation,
-but I have a grasp on many of the staples that I have noticed before,
-and not understood. 
+but I am getting some traction.
 
 There is a language gap between an R user and an R programmer. Users
 write ``scripts'' that use functions from R packages. Users don't
@@ -218,40 +213,73 @@ is the \emph{R Language Definition}. I find that one difficult to
 understand, and I usually can't understand it until I search through
 the R source code and packages for usage examples.
 
+I usually approach R coding in three phases. I write code that ``works'',
+however tedious and slow it might be. There will be a lot of ``copy
+and paste'' constructions with tedious, manual editing of commands.
+Then I read through the code and look for repetitious elements, and
+I re-organize to make functions that abstract that work. If there
+are any stanzas that look mostly the same, except that ``x1'' is
+repalced by ``x2'', I know the work is not done. Finally, I look
+through the code to find ``dumb'' constructions that can be cleaned
+up and completed with fewer lines. A dumb construction is one that
+I would be ashamed to show to an expert R programmer.
+
+Beginning R programmers, the ones who have never studied C or Java
+or Fortran, will often become ``stuck'' in stage one of that process.
+Experienced programmers with more formal training will usually have
+the ``little voice'' in the back of their minds saying ``there's
+a better way,'' and, unfortunately, R novices don't see to hear that
+voice. Lacking some of the discipline imposed by those other languages,
+the usual ``rambling'' R script will seem ``good enough.'' The
+first step for the transitional R programmer, the one who does not
+want to be a novice any more, is to take a harsh look at the code
+that has already been written.
+
+The rockchalk package has many functions that receive fitted regression
+models and re-arrange their components for re-fitting or plotting.
+A good deal of the advice I have to offer is about the process of
+managing R formula, but I have also accumulated some lessons in argument
+handling. 
+
 
 \section{do.call(), eval(), substitute(), formula().}
 
-If the transitional programmer understands these four functions, R
-programming will become much more understandable.
+If the transitional programmer understands these four functions, she/he
+will be well on the way to escaping the category of novice R programmer.
+The other benefit is that the code written by the experts, including
+the R source code itself, will become much more understandable.
 
 
 \subsection{Rewriting Formulas. My Introductory Puzzle.}
 
 On May 29, 2012, I was working on a regression problem in the rockchalk
 package. I have a number of functions that receive elementary regressions
-and then change them. 
+and then change them. I need to receive a fitted model, extract the
+formula, change some variables, and then revise the formula to match
+the new variables.
 
 The functions meanCenter() and residualCenter() receive a fitted regression
-model, transform some variables, and then fit a new regression. They
-have to change the data used by the regressions, and they have to
-revise the regression formulae. The non-centered variable ``x1''
-is has to be centered to create ``x1c''. The original formula y
-\textasciitilde{} x1{*}x2 must be replaced with y \textasciitilde{}
-x1c{*}x2c. I found this to be a very complicated problem with a very
-satisfying answer. 
+model, transform some variables, and then fit a new regression. Suppose
+a regression has been fitted as ``y \textasciitilde{} x1{*}x2''.
+The R result will estimate a predictive formula such as $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}++\hat{\beta}_{3}x1_{i}\cdot x2_{i}$.
+meanCenter() will replace the non-centered variables ``x1'' and
+``x2'' with mean-centered variables ``x1c'' and ``x2c''. The
+original formula y \textasciitilde{} x1{*}x2 must be replaced with
+y \textasciitilde{} x1c{*}x2c. I found this to be a very complicated
+problem with a very satisfying answer. 
 
 My first effort used R's update function. That is the most obvious
-approach, it is the one that was recommended on r-help. I learned
-that update() is not sufficient. It is fairly easy to replace x1 with
-x1c in the formula, but not when x1 is logged or otherwise transformed.
-Here is the runable example code that demonstrates the problem. 
+approach. I learned very quickly that update() is not sufficient.
+It is fairly easy to replace x1 with x1c in the formula, but not when
+x1 is logged or otherwise transformed. Here is the runable example
+code that demonstrates the problem. 
 
 <<include=T, results=hide>>=
-dat <- data.frame(x1 = rnorm(100, m=50), x2 = rnorm(100, m=50),
+dat <- data.frame(x1 = rnorm(100, m = 50), x2 = rnorm(100, m = 50),
   x3 = rnorm(100, m = 50), x4 = rnorm(100, m=50), y = rnorm(100))
 m2 <- lm(y ~ log(x1) + x2*x3, data = dat)
 suffixX <- function(fmla, x, s){
-    upform <- as.formula(paste(". ~ .", "-", x, "+", paste(x, s, sep=""), sep=""))
+    upform <- as.formula(paste(". ~ .", "-", x, "+", paste(x, s, sep = ""), sep=""))
     update.formula(fmla, upform)
 }
 newFmla <- formula(m2)
@@ -274,10 +302,9 @@ y ~ log(x1) + x2 + x3 + x1c + x2:x3
 \end{lstlisting}
 \inputencoding{utf8}
 
-I asked the members of r-help.
-
-Lately I've had very good luck with r-help. Gabor Grothendieck wrote
-an answer to r-help on May 29, 2012, ``Try substitute:''
+I asked the members of r-help for assistance. Lately I've had very
+good luck with r-help. Gabor Grothendieck wrote an answer to r-help
+on May 29, 2012. He said simply, ``Try substitute,'' with this example.
 
 \inputencoding{latin9}\begin{lstlisting}
 > do.call("substitute", list(newFmla, setNames(list(as.name("x1c")), "x1")))
@@ -287,7 +314,7 @@ y ~ log(x1c) + x2 * x3
 
 Problem solved, in a single line. 
 
-That's quintessential R. It packs together a half-dozen very deep
+That's very clever, I think. It packs together a half-dozen very deep
 thoughts. It has most of the essential secrets of R's guts, laid out
 in a single line. It has do.call(), substitute(), it interprets a
 formula as a list, and it shows that every command in R is, when it
@@ -298,7 +325,7 @@ I would like to take up these separate pieces in order.
 
 \subsection{A Formula Object is a List.}
 
-While struggling with this, I noticed this really interesting thing.
+While struggling with this, I noticed this really interesting pattern.
 The solution depends on it. The object ``newFmla'' is not just a
 text string. It prints out as if it were text, but it is actually
 an R list object. Its parts can be probed recursively, to eventually
@@ -318,10 +345,12 @@ How could I put that information to use? Read on.
 
 \subsection{do.call() and eval()}
 
-In my early work as an Rchaeologist, I had noticed eval and do.call,
-but did not understand their significance in the mind of the R programmers.
-Whenever difficult problems arose in r-help, the answer almost invariably
-involved do.call or eval. 
+In my early work as an Rchaeologist, I had noticed eval() and do.call(),
+but did not understand their significance. Coming to grips with these
+ideas is a critical step in the R programmer's growth, because they
+separate the ``script writer'' from the ``language programmer.''
+Whenever difficult problems arise in r-help, the answer almost invariably
+involves do.call() or eval(). 
 
 
 \subsubsection{do.call()}
@@ -340,16 +369,19 @@ someRFunction(aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
 \inputencoding{utf8}
 
+We use do.call() because it is much more flexible than calling someRFunction()
+directly.
+
 Let's consider an example that runs a regression the ordinary way,
 and then with do.call. In this example, the role of ``someRFunction''
-will be played by lm and the list of arguments will be the parameters
+will be played by lm() and the list of arguments will be the parameters
 of the regression. The regression m1 will be constructed the ordinary
-way, while m2 is constructed with do.call.
+way, while m2 is constructed with do.call().
 
 <<>>=
-m1 <- lm(y ~ x1*x2, data=dat)
+m1 <- lm(y ~ x1*x2, data = dat)
 coef(m1)
-regargs <- list(formula = y ~ x1*x2, data= quote(dat))
+regargs <- list(formula = y ~ x1*x2, data = quote(dat))
 m2 <- do.call("lm", regargs)
 coef(m2)
 all.equal(m1, m2)
@@ -359,12 +391,12 @@ The object regargs is a list of arguments that R can understand when
 they are supplied to the lm function. 
 
 do.call() is a powerful, mysterious symbol. It holds flexibility;
-we can calculate commands and then run them. I first needed it when
-we had a simulation project that ran very slowly when confronted with
-medium or large sized problems. There's a writeup in the working examples
-distributed with rockchalk called stackListItems-01.R. I was using
-rbind over and over to join the results of simulation runs. Basically,
-the code was like this
+we can calculate ``on the language'' to create commands and then
+run them. I first needed do.call() when we had a simulation project
+that ran very slowly. There's a writeup in the working examples distributed
+with rockchalk called stackListItems-01.R. I was using rbind() over
+and over to join the results of simulation runs. Basically, the code
+was like this
 
 \inputencoding{latin9}\begin{lstlisting}
 for (i in 1:10000){
@@ -375,10 +407,9 @@ for (i in 1:10000){
 \inputencoding{utf8}
 
 That will call rbind() 10000 times. I had not realized that rbind()
-is a comparatively time-consuming task because it accesses a new chunk
-of memory each time it is run. On the other hand, we could collect
-those results in a list, then we can call rbind one time to smash
-together all of the results.
+is time-consuming. It accesses a new chunk of memory each time it
+is run. On the other hand, we could collect those results in a list,
+then we can call rbind() one time to smash together all of the results.
 
 \inputencoding{latin9}\begin{lstlisting}
 for (i in 1:10000){
@@ -388,11 +419,11 @@ result <- do.call("rbind", mylist)
 \end{lstlisting}
 \inputencoding{utf8}
 
-It is much faster to run rbind only once. It would be OK if we typed
+It is much faster to run rbind() only once. It would be OK if we typed
 it all out like this:
 
 \inputencoding{latin9}\begin{lstlisting}
-result <- rbind(mylist[[1]],mylist[[2]],mylist[[3]],mylist[[4]], ..., mylist[[10000])
+result <- rbind(mylist[[1]], mylist[[2]], mylist[[3]], ..., mylist[[10000])
 \end{lstlisting}
 \inputencoding{utf8}
 
@@ -445,7 +476,8 @@ coef(m4)
 @
 
 The main reason for using eval is that we can ``piece together''
-commands and then run them after we have assembled all the pieces. 
+commands and then run them after we have assembled all the pieces.
+The nickname for this seems to be ``computing on the language.''
 
 We can create a formula object implicitly (without explicitly asking
 for it) by using this code. 
@@ -534,7 +566,7 @@ lm <- function (formula, data, subset, weights, na.action, method = "qr",
 Lets consider what those lines do with a command like this.
 
 \inputencoding{latin9}\begin{lstlisting}
-m1 <- lm(y ~ x1*x2, data=dat, x = TRUE, y = TRUE)
+m1 <- lm(y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
 \inputencoding{utf8}
 
@@ -590,11 +622,11 @@ lm takes what it needs to build a model frame.
 
 \subsection{substitute()}
 
-Most R users I know have not used substitute, except as it arises
-in the plotmath. In the context of plotmath, the problem is as follows.
-Plotmath causes the R plot functions to convert expressions into mathematical
-symbols in a way that is reminiscent of \LaTeX{}. For example, a command
-like this:
+Most R users I know have not used substitute, except possibly if they
+try to use plotmath. In the context of plotmath, the problem is as
+follows. Plotmath causes the R plot functions to convert expressions
+into mathematical symbols in a way that is reminiscent of \LaTeX{}.
+For example, a command like this:
 
 \inputencoding{latin9}\begin{lstlisting}
 text(4, 4, expression(gamma))
@@ -614,13 +646,16 @@ text(4, 4, expression(paste(gamma, mean(x))))
 \end{lstlisting}
 \inputencoding{utf8}In order to smuggle the result of a calculation into an expression,
 some fancy footwork is required. In the help page for plotmath, examples
-using the functions bquote and substitute are offered. 
+using the functions bquote and substitute are offered. I have found
+this to be quite frustrating and difficult to do, and if one examines
+my collection of examples on \url{http://pj.freefaculty.org/R/WorkingExamples},
+one will find quite a few plotmath exercises.
 
 For the particular purpose of blending expressions with calculation
-results, I find the bquote function to be more immediately understandable.
-In this section, I'm trying to understand the use of substitute, so
-let's stick with that. The plotmath help page points to syntax like
-this:
+results, I find the bquote function to be more easily understandable.
+However, when going beyond plotmath, I expect most R programmers will
+need to use substitute() instead, so I will discuss that in this section.
+The plotmath help page points to syntax like this:
 
 <<fig=T, height=3, width=4>>=
 plot(1:10, seq(1,5, length.out=10), type = "n", main="Illustrating Substitute with plotmath", xlab="x", ylab="y")
@@ -638,37 +673,42 @@ Pardon me. parse tree? We've seen expressions already, that part is
 not so off putting. But ``parse tree''? Really?
 
 This is one of those points at which being an Rchaeologist has real
-benefits. The manual page gives us some insights into the R programmer,
-and it is his or her view of his or her own actions, but it doesn't
-necessarily speak to how we should understand substitute(). For me,
-the only workable approach is to build up a sequence of increasingly
-complicated examples. 
+benefits. We have to dig deeper, to try to understand not only what
+the R programmer says, but what she is actually trying to do. The
+manual page gives us some insights into the R programmer, and it is
+his or her view of his or her own actions, but it doesn't necessarily
+speak to how we should understand substitute(). 
 
-I start by creating the list of replacements. This replacement list
-can have a format like this: 
+For me, the only workable approach is to build up a sequence of increasingly
+complicated examples. I start by creating the list of replacements.
+This replacement list can have a format like this: 
 
 <<>>=
 sublist <- list(x1 = "alphabet", x2 = "zoology")
 @
 
-I want to replace x1 with alphabet and x2 with zoology. The quotes
-indicate that alphabet and zoology are strings, not other objects
-that already exist. Consider:
+Suppose I have some other object in which x1 and x2 need to be replaced.
+Specifically, when an expression has ``x1'', I want ``alphabet'',
+and ``x2'' should become ``zoology.'' The quotes in the R code
+indicate that alphabet and zoology are character strings, not other
+objects that already exist. Consider replacing x1 and x2 in x1 + x2
++ log(x1) + x3:
 
 <<>>=
 substitute(expression(x1 + x2 + log(x1) + x3), sublist)
 @
 
 Note that the substitution 1) leaves other variables alone (since
-they are not named in sublist) and 2) it finds all valid use of the
+they are not named in sublist) and 2) it finds all valid uses of the
 symbols x1 and x2 and replaces them.
 
 This isn't quite what I wanted, however, because the strings have
 been inserted into the middle of my expression. I don't want text.
-I just want symbols. It turns out that the functions as.name() and
-as.symbol() are exactly the same, and usually I use as.symbol() because
-that name has more intuition for me, but in Gabor's answer to my question,
-as.name() is used. Using as.name(), so I will illustrate that.
+I just want symbols. I've seen the conversion from character to symbol
+done with as.symbol() and with as.name(), recently I realized that
+they are synonymous. I usually use as.symbol() because that name has
+more intuition for me, but in Gabor's answer to my question, as.name()
+is used. Using as.name(), my example would become:
 
 <<>>=
 sublist <- list(x1 = as.name("alphabet"), x2 = as.name("zoology"))
@@ -705,15 +745,16 @@ function allows us to do this in one shot. I'll paste the data frame
 creating commands and the name vector in for a first try:
 
 <<>>=
-dat2 <- setNames(data.frame(x1=rnorm(10), x2=rnorm(10), x3=rnorm(10), x4=gl(2,5)), c("good","names","tough","find"))
+dat2 <- setNames(data.frame(x1 = rnorm(10), x2 = rnorm(10),
+    x3 = rnorm(10), x4 = gl(2,5)), c("good", "names", "tough", "find"))
 head(dat2, 2)
 @
 
 In order to make this more generally useful, the first step is to
 take the data-frame-creating code and set it into an expression that
-is not immediately evaluated (that's datcommand). When I want the
-data frame to be created, I use eval(), and then the newnames vector
-is put to use. 
+is not immediately evaluated (that's datcommand in what follows).
+When I want the data frame to be created, I use eval(), and then the
+newnames vector is put to use. 
 
 <<>>=
 newnames <- c("iVar", "uVar", "heVar", "sheVar")
@@ -762,7 +803,7 @@ formulaReplace <- function(fmla, xname, newname){
 
 This is put to use in meanCenter(). Suppose a vector of variable names
 called nc (stands for ``needs centering'') has already been calculated.
-The function std creates a centered variable.
+The function std() creates a centered variable.
 
 \inputencoding{latin9}\begin{lstlisting}
 newFmla <- mc$formula

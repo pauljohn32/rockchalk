@@ -1,6 +1,11 @@
-%% LyX 2.0.6 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/GIT/rockchalk/package/rockchalk/vignettes//}}
+\makeatother
 \documentclass[american,noae]{article}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
@@ -79,7 +84,19 @@
 
 %\usepackage{listings}
 % Make ordinary listings look as if they come from Sweave
-\lstset{tabsize=2, breaklines=true,style=Rstyle}
+\lstset{tabsize=2, breaklines=true, %,style=Rstyle}
+                        fancyvrb=false,escapechar=`,language=R,%
+                        %%basicstyle={\Rcolor\Sweavesize},%
+                        backgroundcolor=\Rbackground,%
+                        showstringspaces=false,%
+                        keywordstyle=\Rcolor,%
+                        commentstyle={\Rcommentcolor\ttfamily\itshape},%
+                        literate={<<-}{{$\twoheadleftarrow$}}2{~}{{$\sim$}}1{<=}{{$\leq$}}2{>=}{{$\geq$}}2{^}{{$^{\scriptstyle\wedge}$}}1{==}{{=\,=}}1,%
+                        alsoother={$},%
+                        alsoletter={.<-},%
+                        otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+                        escapeinside={(*}{*)}}%
+
 
 % In document Latex options:
 \fvset{listparameters={\setlength{\topsep}{0em}}}
@@ -92,12 +109,33 @@
 \usepackage{babel}
 \begin{document}
 
-\title{Using rockchalk for Regression Analysis}
+\title{Using rockchalk for Regression Analysis%
+\thanks{In case you want to be involved in development, the source code is
+available on GitHub. Please browse http://github.com/pauljohn32. The
+read-only git archive address is \protect\url{git://github.com/pauljohn32/rockchalk.git}.
+Once you learn how to ``clone'' the repository with a git client,
+then we can discuss ways for you to contribute.%
+}}
 
 
-\author{Paul Johnson}
-
+\author{Paul E. Johnson}
 \maketitle
+\begin{abstract}
+The rockchalk package includes functions for estimating regressions,
+extracting diagnostic information from them, preparing presentable
+tables, and creating helpful two and three dimensional plots. It is
+primarily intended to facilitate teachers and students who are conducting
+ordinary least squares and elementary generalized models. Compared
+to other packages that help with regression analysis, this one offers
+more-than-the-usual amount of emphasis on the analysis of regression
+models that include interaction terms. It includes functions that
+can receive a fitted model and then return standardized, mean-centered,
+and residual-centered regression results. The plotting functions address
+some limitations of R's termplot function. Version 1.8 introduces
+a consistent framework for the creation of ``newdata'' objects and
+the calculation of predicted values so that the marginal effects of
+separate predictors can be easily explored.
+\end{abstract}
 % In document Latex options:
 \fvset{listparameters={\setlength{\topsep}{0em}}}
 \SweaveOpts{ae=F,nogin=T}
@@ -107,12 +145,6 @@ options(device = pdf)
 options(width=80, prompt=" ", continue="  ")
 options(useFancyQuotes = FALSE) 
 @
-
-In case you want to be involved in development, the source code is
-available on GitHub. Please browse http://github.com/pauljohn32. The
-read-only git archive address is \url{git://github.com/pauljohn32/rockchalk.git}.
-Once you learn how to ``clone'' the repository with a git client,
-then we can discuss ways for you to contribute.
 
 
 \section{Introduction}
@@ -199,27 +231,24 @@ centralValues(Chile)
 
 \subsection{Easier predictions and newdata objects}
 
-Students struggle with R's predict() methods. The problem is in the
-creation of a newdata object of interesting values of the predictors.
-They are often befuddled when they need to create an object like myNewDF
-in a command like \inputencoding{latin9}\lstinline!predict(m1, newdata = myNewDF)!\inputencoding{utf8}.
-If the regression formula uses functions like ``as.numeric()'' or
-``as.factor()'', its almost impossible for first-time R users to
-get this right. In version 1.8, I believe I have solved the problem
-entirely with the functions newdata() and predictOMatic(). 
+Students struggle with R's predict() methods. The primary challenge
+is in the creation of a newdata object of interesting values of the
+predictors. If the newdata argument, here myNewDF in \inputencoding{latin9}\lstinline!predict(m1, newdata = myNewDF)!\inputencoding{utf8}
+is not exactly right, the command will fail. If the regression formula
+uses functions like ``as.numeric()'' or ``as.factor()'', its almost
+impossible for first-time R users to get this right. In version 1.8,
+I believe I have solved the problem entirely with the functions newdata()
+and predictOMatic(). 
 
 Let's fit an example regression with the Chile data set from the car
 package.
 
 <<echo=T>>=
 m1 <- lm(statusquo ~ age + income + population + region + sex, data=Chile)
-@\\
+@
 
-
-\noindent The new data must include one column for each variable in
-the model, and those variables must have exactly the same names as
-were used in the regression formula. The default output of predictOMatic()
-will cycle through the predictors, one by one.
+\noindent The default output of predictOMatic() will cycle through
+the predictors, one by one.
 
 <<echo=T>>=
 m1pred <- predictOMatic(m1)
@@ -274,7 +303,7 @@ the vignette \emph{Rchaeology}, which is distributed with this package).
 The predictOMatic() function will work when the regression model provides
 a predict function that can handle the newdata argument. If the regression
 package does not provide such a function, the user should step back
-and used the newdata function to create the examplar predictor data
+and use the newdata function to create the examplar predictor data
 frames and then calculate predicted values manually. The newdata()
 function will set all variables to center values and then it will
 create a ``mix and match'' combination of the ones that the user
@@ -358,8 +387,8 @@ of arbitary size and complexity, allowing for interactions and nonlinearity.
 
 <<createdata1, echo=T>>=
 set.seed(1234)
-dat <- genCorrelatedData2(N = 100, means = c(0, 10, 0), sds = c(1, 1, 1), rho = c(0, 0, 0), 
-  	stde = 5, beta = c(0, -3, 4, 0), verbose = FALSE)
+dat <- genCorrelatedData2(N = 100, means = c(0, 10, 0), sds = c(1, 2, 1), rho = c(0, 0, 0), 
+  	stde = 10, beta = c(0, -3, 4, 0), verbose = FALSE)
 @\\
 That creates a new matrix with variables $x1,$ $x2$, $x3$, and
 y. We run some linear regressions and then create a categorical output
@@ -379,15 +408,17 @@ The outreg examples are offered in Tables \ref{tab:Tab1} through
 \ref{tab:Combined-OLSGLM}. Table \ref{tab:Tab1} is the default output
 for three models, obtained from \inputencoding{latin9}\lstinline!outreg(list(m1, m2, m3))!\inputencoding{utf8}.
 On the other hand, users can pack output estimates into a single column
-and ask for more stars, as illustrated in Table \ref{tab:Tab2}. .
-In Table \ref{tab:Combined-OLSGLM}, observe that the linear and generalized
+and ask for more stars, as illustrated in Table \ref{tab:Tab2}. In
+Table \ref{tab:Combined-OLSGLM}, observe that the linear and generalized
 linear model output peacefully co-exist, side-by-side. This output
 is, in my opinion, completely acceptable for inclusion in a presentation
-or conference paper There are some warts in this output. Because the
-model labels are not equal in length, the columns are not equally
-sized. Because may \LaTeX{} distributions do not include the dcolumns
+or conference paper. There are some warts in this output. Because
+the model labels are not equal in length, the columns are not equally
+sized. Because many \LaTeX{} distributions do not include the dcolumns
 package, I've not aligned the coefficient estimates vertically as
-some users might like.
+some users might prefer. It seems to me that, if the vertical alignment
+of estimates along the decimal is required, most users will install
+dcolumn and make a few obvious changes in the markup that I provide.
 
 \begin{table}
 \caption{Default Outreg Table\label{tab:Tab1}}
@@ -419,8 +450,13 @@ outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
 \end{table}
 
 
+In rockchalk 1.8, a translator from \LaTeX{} markup to simple HTML
+was introduced. The function outreg2HTML() can write an HTML code
+file that a word processor program such as Libre Office or Microsoft
+Word is able to import without a struggle. 
 
-\section{Plotting and Testing Interactions }
+
+\section{Plotting Regressions with Interactions }
 
 
 \subsection{Interaction in Linear Regression. }
@@ -450,7 +486,7 @@ m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval = "conf
 
 \includegraphics[height=4in]{rockchalk-ps05}
 
-\caption{plotSlopes Illustrated\label{fig:ps05}}
+\caption{plotSlopes: Linear Model with Confidence Interval\label{fig:ps05}}
 \end{figure}
 
 
@@ -482,7 +518,7 @@ frame. The first few lines in the newdata object are
 m1ps$newdata[1:3, ]
 @
 
-<<ps09, fig=T, echo=F, height=9, width=6>>=
+<<ps09, fig=F, echo=F, height=9, width=6>>=
 dat$y4 <- 1 + 0.1 * dat$x1 - 6.9 * dat$x2 + 0.5 * dat$x1*dat$x2 + 0.2 * dat$x3 + rnorm(100, m = 0, sd = 10)
 m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 @
@@ -499,7 +535,8 @@ par(mfcol=c(1,1))
 \end{figure}
 
 
-Now, suppose we fit a regression with an interaction term. 
+This is more interesting if we fit a regression with an interaction
+term, such as 
 
 \inputencoding{latin9}\begin{lstlisting}
 m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
@@ -510,8 +547,8 @@ m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 one numeric variable as the horizontal axis and values of another
 variable (a moderator) are set at particular values. Either x1 or
 x2 can be viewed as the ``moderator'' predictor, the one on which
-the effect of the other depends. In version 1.8, the selection of
-values of the moderator was generalized, so that the user can specify
+the effect of the other depends. In rockchalk version 1.8, the selection
+of values of the moderator was generalized, so that the user can specify
 either a function that selects values, or a vector of values, or the
 name of an algorithm. The default algorithm will choose quantile values,
 but Figure \ref{fig:ps10} demonstrates also the ``std.dev.'' divider
@@ -563,7 +600,7 @@ in the regression model, then the plotSlopes output will include four
 lines, one for each region. For example, consider Figure \ref{fig:ps20},
 which is created by
 
-\noindent <<eval=F>>=
+<<eval=F>>=
 <<ps20>>
 @
 
@@ -575,7 +612,7 @@ mixing of shades in overlapping intervals may help with that problem.
 A plot that focuses on just two subgroups is presented in Figure \ref{fig:ps21},
 which is produced by 
 
-\noindent <<eval=F>>=
+<<eval=F>>=
 <<ps21>>
 @ 
 
@@ -590,30 +627,20 @@ line for West is red in both.
 
 \subsection{testSlopes, a companion of plotSlopes}
 
-In psychology, methodologists have recommended the analysis of ``simple
-slopes'' to depict the effect of several variables in a 2 dimensional
-plot. This is most often of interest in the analysis of regression
-models with interactive terms. 
+The students in psychology and political science are usually interested
+in conducting some diagnostic analysis of the interactive terms. Aiken
+and West (1991) (and later Cohen, Cohen, West, and Aiken) propose
+using the t test to find out if the effect of the ``plotx'' variable
+is statistically significantly different from zero for each particular
+value of the moderator variable. The new version of rockchalk declares
+a method plot.testSlopes that handles the work of plotting the interaction.
 
-Aiken and West (and later Cohen, Cohen, West, and Aiken) propose using
-the t test to find out if the effect of the ``plotx'' variable is
-statistically significantly different from zero for each particular
-value of the moderator variable. The user should first run plotSlopes,
-and then submit the output object to testSlopes. The usual case would
-be the following:
-
-\inputencoding{latin9}\begin{lstlisting}
-m4 <- lm (y ~ x1*x2 + x3, data = dat)
-m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous Predictor")
-testSlopes(m4ps)
-\end{lstlisting}
-\inputencoding{utf8}
-
-\noindent The output from that testSlopes usage is illustrated in
-Figure \ref{fig:ts10}.
+The usual case would be the following. First, carry out the regression
+analysis. Then run plotSlopes, and run testSlopes, and then pass that
+result object to the plot method.
 
 \begin{figure}
-<<ts10, fig=T, echo=T, height=6, width=6>>=
+<<ts10, fig=T, echo=F, height=6, width=6>>=
 m4psats <- testSlopes(m4psa)
 plot(m4psats)
 @
@@ -622,31 +649,50 @@ plot(m4psats)
 \end{figure}
 
 
-The hypothesis tests reported by testSlopes should be understood as
-follows. Each of the lines in the output from plotSlopes, say Figure
-\ref{fig:ps10}, can be tested to find out if its ``simple slope''
-is different from zero. The tests calculated by testSlopes represent
-the null hypothesis that 
+\inputencoding{latin9}\begin{lstlisting}
+m4 <- lm(y ~ x1*x2 + x3, data = dat)
+m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous Predictor")
+m4psats <- testSlopes(m4ps)
+plot(m4psats)
+\end{lstlisting}
+\inputencoding{utf8}
+
+\noindent The output from testSlopes will differ, depending on whether
+modx is numeric or a factor. If it is a factor, then the slope of
+the lines and the associated t-test for each will be presented. My
+psychology students call these ``simple-slopes'', following the
+terminology of Aiken and West. The general idea is that we want to
+know if the ``combined'' effect of plotx is not zero. For a model
+stated with predictors $plotx_{i}$ and $modx_{i}$as
 \begin{equation}
-H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+b_{plotx\cdot modx}modx
+y_{i}=b_{0}+b_{plotx}plotx_{i}+b_{modx}modx_{i}+b_{plotx:modx}plotx_{i}\cdot modx_{i}+\ldots+e_{i}
 \end{equation}
 
 
-\noindent where $modx$ is the moderator variable and $plotx$ is
-plotted on the horizontal axis in the plotSlopes output. 
+\noindent the null hypothesis would be
 
-Following a suggestion of Preacher, Curran, and Bauer (2006), the
-testSlopes function also tries to calculate the Johnson-Neyman (1936)
-interpretation of the same test. It presents a plot, as illustrated
-in Figure \ref{fig:ts10}. The J-N test would have us ask, ``for
-which values of the moderator would the value $\hat{b}_{simple\, slope}$
-be statistically significantly different from zero?'' The J-N calculation
-requires the solution an equation that is quadratic in the value of
-the moderator variable, $modx$. The interval of values of $modx$
-associated with a statistically significant effect of $plotx$ on
-the outcome is determined from the computation of a T statistic for
-$\hat{b}_{simple\, slope}$. The J-N interval is the set of values
-of $modx$ for which the following holds:
+\noindent 
+\begin{equation}
+H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
+\end{equation}
+
+
+\noindent If modx is a factor, then we simply calculate the slope
+of each line and the test is straight-forward. If modx is a numeric
+variable, then we confront a problem that is a bit more interesting.
+We don't really want to say that the simple slope is different from
+0 for particular values of $modx$, but instead we want to answer
+the question, ``for which values of the moderator would the effect
+of the plotx variable be statistically significant?''. This necessitates
+the calculation of the so-called Johnson-Neyman interval (1936), a
+plot of which is presented in Figure \ref{fig:ts10}.
+
+The method of calculation is outlined in Preacher, Curran, and Bauer
+(2006). The values of $modx$ associated with a statistically significant
+effect of $plotx$ on the outcome is determined from the computation
+of a T statistic for $\hat{b}_{simple\, slope}$. The J-N interval
+is the set of values of $modx$ for which the following (quadratic
+equation) holds:
 \begin{equation}
 \hat{t}=\frac{\hat{b}_{simple\, slope}}{std.err(\hat{b}_{simple\, slope})}=\frac{\hat{b}_{simple\, slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
 \end{equation}
@@ -654,116 +700,109 @@ of $modx$ for which the following holds:
 
 \noindent Suppose there are two real roots, $root1$ and $root2$.
 The values of $modx$ for which the slope is statistically significant
-may be a compact interval, $[root1,root2]$, or it may two open intervals,
-$(-\infty,root1]$ and $[root2,\infty)$. 
-
-\noindent The J-N interpretation is most useful when the moderator
-is a continuous variable and the result specifies an interval inside
-the range of the moderator. In quite a few cases, the J-N interval
-is outside the observed range of the moderator, which makes it either
-difficult to interpret or irrelevant.
+may be a compact interval, $[root1,root2]$, as demonstrated in Figure
+\ref{fig:ts10}, or it may two open intervals, $(-\infty,root1]$
+and $[root2,\infty)$. I had expected almost all applications to result
+in that latter case, but the somewhat surprising case illustrated
+in Figure \ref{fig:ts10} is not too infrequently observed. 
 
 
 \subsection{plotCurves for nonlinear predictor formulae}
 
-plotCurves generalizes the plotting capability of plotSlopes. plotCurves
+plotCurves() generalizes the plotting capability of plotSlopes. plotCurves()
 should be able to handle any regression formulas that include nonlinear
 transformations. Models that have polynomials or terms that are logged
-(or otherwise transformed) can be plotted. In that sense, plotCurves
-is rather similar to R's own termplot function. The difference is
-that plotCurves allows for moderator variables, which implies that
-one can draw several different curves to represent separate groups.
+(or otherwise transformed) can be plotted. In that sense, plotCurves()
+is rather similar to R's own termplot() function, but plotCurves()
+has two major advantages. First, it allows interactions, and second,
+it handles some complicated formulae that termplot() is not able to
+manage. 
 
 Suppose a dependent variable y5 is created according to a nonlinear
 process.
 \begin{equation}
-y5_{i}=-3x1_{i}+1.5*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
+y5_{i}=-3x1_{i}+7*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
 \end{equation}
 
 
 <<echo=F,include=F>>=
-dat$y5 <- with(dat, -3*x1 + 3.5*log(x2) + 2.1*x2 + 2.2 *x1 * x2 + 20*rnorm(100)) 
+dat$y5 <- with(dat, -3*x1 + 15*log(0.1 + x2 - min(x2)) + 1.1*x2 + 8.2 *x1 * x2 + 10*rnorm(100))
 @
 
 \begin{figure}
-<<pcps20, fig=T, height=6, width=6>>=
-m6 <- lm (y5 ~ log(x2*x2) + x1 * x2, data=dat)
-plotCurves(m6, plotx="x2", modx="x1")
+<<pcps20, fig=T, echo = F, height=6, width=6>>=
+m5 <- lm(y5 ~ log(x2) + x1 * x2, data = dat)
+m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 @
 
 \caption{plotCurves\label{fig:pcps20}}
 \end{figure}
 
 
+We fit a model with an elaborate specification and create the plot
+in Figure \ref{fig:pcps20} with these commands:
+
+<<eval=F>>=
+<<pcps20>>
+@
+
 
 \subsection{plotPlane}
 
 The persp function in R works well, but its interface is too complicated
 for most elementary and intermediate R users. To facilitate its use
-for regression users, the plotPlane is offered.
+for regression users, the plotPlane() function is offered.
 
 The plotPlane function offers a visualization of the mutual effect
-of two predictors in m4. See Figure \ref{fig:pp100} for the plot
-created by
-
-\noindent \inputencoding{latin9}
-\begin{lstlisting}
-plotPlane(m4, plotx1="x1", plotx2="x2")
-\end{lstlisting}
-\inputencoding{utf8}
+of two predictors, whether or not the regression model is linear.
+plotPlane() is designed to work like plotCurves(), to tolerate nonlinear
+components in the regression formula. plotPlane() allows the depiction
+of a 3 dimensional curving plane that ``sits'' in the cloud of data
+points. The variables that are not explicitly pictured in the plotPlane()
+figure are set to central reference values. Recall model m4, which
+used the formula \inputencoding{latin9}\lstinline!y4 ~ x1*x2 + x3!\inputencoding{utf8}.
+As illustrated in Figure \ref{fig:pp100}, plotCurves() presents a
+reasonable view of the predicted values.
 
 \begin{figure}
-<<pp100, fig=T>>=
-p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2")
+<<pp100, fig=T, echo=F>>=
+p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80, lcol = gray(.70))
 @
 
-\caption{plotPlane for the Interactive Model\label{fig:pp100}}
+\caption{plotPlane for the Interactive Model m4\label{fig:pp100}}
 \end{figure}
 
 
-plotPlane is designed to work like plotCurves, to tolerate nonlinear
-components in the regression formula. As illustrated in Figure \ref{fig:pcps10},
-plotPlane allows the depiction of a 3 dimensional curving plane that
-``sits'' in the cloud of data points. The variables that are not
-explicitly pictured in the plotPlane figure are set to central reference
-values. As illustrated in Figure \ref{fig:pcps20}, plotCurves is
-a 2 dimensional depiction of the same model. 
+Because plotPlane() is a simple convenience wrapper for R's persp()
+function, it responds to the same customizing arguments that perp
+would allow. The arguments phi and theta will rotate the figure, for
+example. The output in Figure \ref{fig:pp100} is produced by the
+following.
+
+<<echo=T,eval=F>>=
+<<pp100>>
+@
+
+\noindent One of the major educational benefits of the 3-D figure
+is that students can easily see that a model with a simple interaction
+effect is \emph{not a linear model any more. }We will return to that
+point in the discussion of mean centering in regression analysis.
+
+Recall that model m5 is the rather complicated nonlinear formula \inputencoding{latin9}\lstinline!log(x2*x2) + x1 * x2!\inputencoding{utf8}.
+The plotCurves() output for that was already presented in Figure \ref{fig:pcps20}.
+The three dimensional view of the same is presented in Figure \ref{fig:pp110},
+but with an added twist. The twist is that the predicted value lines
+from the 2-D plot functions can be superimposed on the plane. The
+function addLines() does the work for translating 2-D plot object
+onto the regression plane. 
 
 \begin{figure}
-<<pcps10, fig=T, height=4, width=4>>=
-plotPlane(m6, plotx1 = "x1", plotx2 = "x2")
+<<pp111, fig = T, echo = F, height = 5, results = hide>>=
+ppm5 <- plotPlane(m5, plotx1 = "x2", plotx2 = "x1", phi = 0, npp = 15, lcol = gray(.80))
+addLines(from = m5pc, to = ppm5, col = m5pc$col)
 @
 
-<<results=tex>>=
-outreg(m6, tight = FALSE)
-@
-
-\caption{plotPlane\label{fig:pcps10}}
-\end{figure}
-
-
-At some point in the future, the ability to make plotSlopes and plotPlane
-work together will be introduced. The user will be able to see how
-the two and three dimensional graphs relate to each other. A preliminary
-rendering of what that might look like is presented in Figure \ref{fig:pp110}.
-It is as if we can ``press the plane down'' into the 2-D slopes
-plot, or the 2-D simple slopes can be depicted in the 3 dimensional
-plane.
-
-\begin{figure}
-<<pp110, fig=T, echo=F, width=5, height=4>>=
-m6ps <- plotSlopes(m6, plotx = "x1", modx = "x2", xlab = "Continuous Predictor", ylim = c(-25, 105))
-@
-<<pp111, fig = T, echo = F, height = 5>>=
-p110 <- plotPlane(m6, plotx1 = "x1", plotx2 = "x2", x1lab = "Continuous Predictor", phi = 30)
-addLines(from = m6ps, to = p110, col = m6ps$col)
-#for(j in unique(m6ps$newdata$x2)){
-#    subdat <- m6ps$newdata[m6ps$newdata$x2==j,]
-#    lines(trans3d(subdat$x1, subdat$x2, subdat$fit, pmat = p110$res), col = "red", lwd = 3)
-#}
-@
-
-\caption{Making plotSlopes and plotPlane work Together\label{fig:pp110}}
+\caption{Making plotSlopes and plotPlane Work Together\label{fig:pp110}}
 \end{figure}
 
 
@@ -774,36 +813,30 @@ addLines(from = m6ps, to = p110, col = m6ps$col)
 \subsection{Standardized regression}
 
 Many of us learned to conduct regression analysis with SPSS, which
-(historically, at least) reported both the ordinary regression coefficients
-as well as a column of coefficients obtained from a regression in
-which each of the predictors in the design matrix had been ``standardized.''
-That is to say, each variable, for example $x1_{i}$, was replaced
+reported both the ordinary (unstandardized) regression coefficients
+as well as a column of ``beta weights'', the output of a ``standardized''
+regression analysis. Each variable, for example $x1_{i}$, was replaced
 by an estimated $Z-score:$ $(x1_{i}-\overline{x1})/std.dev.(x1_{i}$).
-A regression fitted with those standardized variables is said to produce
-``standardized coefficients.'' These standardized coefficients,
-dubbed ``beta weights'' in common parlance, were thought to set
-different kinds of variables onto a common metric. While this idea
-appears to have been in error (see, for example, King 1986), it still
-is of interest to many scholars who want to standardize their variables
-in order to compare them more easily. 
+Some people think these coefficients are easier to interpret (but,
+for a strong cautionary argument against them, see King 1986). R offers
+no such thing as standardized regression, probably because this practice
+is practice is thought to be mistaken. The automatic standardization
+of all predictors, no matter whether they are categorical, interaction
+terms, or transformed values (such as logs) is dangerous. 
 
-The function standardize was included in rockchalk to facilitate lectures
-about what a researcher ought not do. standardize performs the complete,
-mindless standardization of all predictors, no matter whether they
-are categorical, interaction terms, or transformed values (such as
-logs). Each column of the design matrix is scaled to a new variable
-with mean 0 and standard deviation 1. The input to standardize should
-be a fitted regression model. For example:
+To illustrate that, the rockchalk introduces a function called standardize().
+Each column of the design matrix is scaled to a new variable with
+mean 0 and standard deviation 1. The result from standardize() will
+be an R lm object, which will respond to any follow-up analysis commands.
+For example:
 
 <<>>=
 m4 <- lm (y4 ~ x1 * x2, data = dat)
 m4s <- standardize(m4)
 @
 
-It does seem odd to me that a person would actually want a standardized
-regression of that sort, and the commentary included with the summary
-method for the standardized regression object probably makes that
-clear.
+I doubt that a reasonable person would actually want a standardized
+regression and have tried to warn users in the output.
 
 <<>>=
 summary(m4s)
@@ -843,89 +876,98 @@ m2 <- lm(y ~ x1 + x2 + x1:x2)
 \end{lstlisting}
 \inputencoding{utf8}
 
-For a variety of reasons, researchers have been advised that they
-should not run the ordinary interaction model. Instead, they should
-``mean center'' the variables $x1$ and $x2$ before entering them
-into the regression model. That is, they should replace $x1_{i}$
-with $(x1_{i}-\overline{x1})$ and $x2_{i}$ with $(x2_{i}-\overline{x2})$,
-so that the fitted model is actually
+Researchers have been advised that they should not run the ordinary
+interaction model without ``mean-centering'' the predictors (Aiken
+and West, 1991). They are advised to replace $x1_{i}$ with $(x1_{i}-\overline{x1})$
+and $x2_{i}$ with $(x2_{i}-\overline{x2})$, so that the fitted model
+will
 \begin{equation}
 y_{i}=b_{o}+b_{1}(x1_{i}-\overline{x1})+b_{2}(x2_{i}-\overline{x2})+b_{3}(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})+e_{i}
 \end{equation}
 
 
-This is easy enough to do in R, but it can be tedious to center the
-variables and then run the model. To make it easier for users to compare
-the results of the ``ordinary interaction'' and the ``mean centered''
-model, this package includes a function meanCenter. meanCenter will
-receive a model, scan it for interaction terms, and then center the
-variables that are involved in interactions. It is used as follows.
-First, fit any regression, such as m4 above, the same one with which
-the standardize function was demonstrated. Pass the output object
-to the meanCenter function.
+This is a little tedious to do in R, so I provide a function meanCenter()
+that can handle the details. meanCenter() will receive a model, scan
+it for interaction terms, and then center the variables that are involved
+in interactions. We previously fit the model m4, and now we center
+it.
 
 <<>>=
 m4mc <- meanCenter(m4)
 summary(m4mc)
 @
 
-The default settings for meanCenter cause it to center only the variables
-involved in an interaction, and it leaves the others unchanged. If
-the user wants all of the numeric predictors to be mean-centered,
-the usage would be
+By default, meanCenter() will only center the variables involved in
+an interaction, and it leaves the others unchanged. The user can request
+a different treatment of the variables. Version 1.8 introduces the
+argument ``terms'', which allows the user to list the names of the
+predictors that should be centered. If the user wants all of the numeric
+predictors to be mean-centered, the usage of the argument centerOnlyInteractors
+would be appropriate:
 
 \inputencoding{latin9}\begin{lstlisting}
 m4mc <- meanCenter(m4, centerOnlyInteractors = FALSE)
-summary(m1mc4)
 \end{lstlisting}
 \inputencoding{utf8}
 
 By default, it does not standardize while centering (but the user
-can request standardization). Users who want to standardize the variables
-that are centered can use the argument standardize=TRUE. The option
-centerDV causes the dependent variable to be centered as well.
+can request standardization with the argument standardize = TRUE.
+The option centerDV causes the dependent variable to be centered as
+well.
 
 
 \subsection{Residual-centered Models}
 
 Residual-centering is another adjustment that has been recommended
 for models that include interactions or squared terms. Like mean-centering,
-it is recommended mainly as a way to ameliorate multicollinearity. 
+it is often recommended as a way to obtain smaller standard errors
+or to make estimates more numerically stable. 
 
-I think of residual-centering as follows. Suppose we fit the linear
-model, with no interaction
+The residualCenter() function is used in the same manner as meanCenter().
+The user fits an interactive model and the result object is passed
+to residualCenter() like so:
+
+<<>>=
+m4rc <- residualCenter(m4)
+summary(m4rc)
+@
+
+I would explain residual-centering as follows. Suppose we fit the
+linear model, with no interaction (note, I'm calling the coefficients
+$c_{j}$, not $b_{j}$ as usual):
 
 \begin{equation}
 y=c_{0}+c_{1}x1+c_{2}x2+e{}_{i}.\label{eq:rc20}
 \end{equation}
 
 
-\noindent Suppose that those parameter estimates, $\hat{c}_{1}$,
-$\hat{c}_{2}$, are the ``right ones''. We want to estimate the
-interactive model, 
+\noindent Let's proceed as if those parameter estimates, $\hat{c}_{1}$,
+$\hat{c}_{2}$, are the ``right ones'' for our analytical purpose.
+We'd like to fit an interactive model, but protect the linear parts
+from fluctuation. In R, when we run th \inputencoding{latin9}\lstinline!lm(y ~ x1 * x2)!\inputencoding{utf8},
+we are allowing all of the coefficients to fluctuate 
 \begin{equation}
-y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i},
+y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i}\label{eq:rcwant}
 \end{equation}
-but if we estimate that, it will ``ruin'' our estimates for the
-effects of $x1$ and $x2$. So we proceed by constraining the fitted
-coefficients in the interactive model so that the main effects remain
-the same. That is to say, require that the parameter estimates of
-$x1$ and $x2$ must match match estimates from equation \ref{eq:rc20}.
-Effectively, $\hat{b}_{1}=\hat{c}_{1}$ and $\hat{b}_{2}=\hat{c}_{2}$.
+Residual centering is one way to stabilize the estimation by assuring
+that $\hat{b}_{1}=\hat{c}_{1}$ and $\hat{b}_{2}=\hat{c}_{2}$. Only
+the coefficient $\hat{b}_{3}$ floats freely.
 
-How can this be done in a convenient, practical way? The answer: use
-``residual-centering.'' First, estimate the following regression,
-in which the left hand side is the interaction product term:
+One of the reasons that residual-centering is so appealing is that
+its stabilizing benefit is obtained almost by accident. Here is the
+gist of the calculations. First, estimate a regression in which the
+left hand side is the interaction product term:
 \begin{equation}
 (x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2+u_{i}\label{eq:residCentered}
 \end{equation}
 
 
-The residuals from that regression are, by definition, orthogonal
+\noindent The residuals from that regression are, by definition, orthogonal
 to both $x1$ and $x2$. Call those fitted residuals $\widehat{u_{i}}$.
-We fit the interactive model using $\widehat{u}_{i}$ in place actual
-product term $(x1_{i}\times x2_{i})$. 
-
+The we run the interactive regression, replacing the column of the
+predictor $x1_{i}\times x2_{i}$, with $\widehat{u}_{i}$. That is
+to say, the model we want, equation (\ref{eq:rcwant}), is estimated
+as: 
 \begin{equation}
 y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3\widehat{u_{i}}+e_{i},\label{eq:rc10-1}
 \end{equation}
@@ -933,88 +975,113 @@ y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3\widehat{u_{i}}+e_{i},\label{eq:rc10-1}
 
 \noindent In essence, we have taken the interaction $(x1_{i}\times x2_{i})$,
 and purged it of its parts that are linearly related to $x1_{i}$
-and $x2_{i}$ separately. 
+and $x2_{i}$. 
 
-The rockchalk function residualCenter handles this for the user. Like
-meanCenter, the user has to fit an interactive model first, and the
-result object is passed to residualCenter like so:
+rockchalk 1.6 included summary, print, and predict methods for the
+residual-centered regression objects. It is worth mentioning that
+the code can handle interactions of arbitrarily many predictors. If
+the formula has \inputencoding{latin9}\lstinline!lm(y ~ x1 * x2 * x3 * x4)!\inputencoding{utf8},
+for example, this implies many separate interactions must be calculated.
+We need to calculate residual-centered residuals for $x1\cdot x2$,
+$x1\cdot x3$, $x1\cdot x4$, $x2\cdot x3$ and so forth, and then
+use them as predictors to get centered estimates of terms $x1\cdot x2\cdot x3$,
+and then their centered values are predictors four term interactions.
+Aspiring R programmers who want to learn about programming with R
+formula objects might benefit from the study of the function residualCenter.R
+in the rockchalk source code. 
 
-<<>>=
-m4rc <- residualCenter(m4)
-summary(m4rc)
-@
 
-The objects created by residualCenter are assigned the class ``rcreg''
-and the package includes summary, print, and predict methods for these
-objects. In the regression output, the residual-centered interaction
-term is labeled as $(x1Xx2)$. 
+\section{A Brief Analysis of Mean-Centering}
 
+We can put the tools together by making a little detour into the question
+that seems to plague every regression analyst at one time or another:
+What does that interaction term \emph{really mean}? Along the way,
+we will try to dispel the idea that centering somehow makes estimates
+``better'' or more numerically precise. The primary advocates of
+centering as a way to deal with numerical instability are Aiken and
+West (1991), who integrated that advice into the very widely used
+regression textbook, \emph{Applied Multiple Regression/Correlation
+for the Behavioral Sciences} (Cohen, et. al , 2002). They claim that
+the inclusion of interactions causes ``inessential multicollinearity''
+that is alleviated by centering. The advice is widely followed. One
+statistics book intended for biologists observed, for example, ``We
+support the recommendation of Aiken \& West (1991) and others that
+multiple regression with interaction terms should be fitted to data
+with centered predictor values'' (Quinn and Keough, 2002, Chapter
+6). 
 
-\subsection{Why are we bothering with mean-centering and residual-centering in
-the first place?}
+Technical rebuttals have been published already (Kromrey, J. D., \&
+Foster-Johnson, L. , 1998; Echambadi and Hess, 2007), but the matter
+still seems not widely understood. The argument is not that mean-centering
+(or residual-centering) is wrong, but rather that it is unnecessary.
+It is irrelevant, and possibly, misleading.
 
-In the long run, think the correct answer will be, ``we were mistaken.''
-Nevertheless, the advice that one ought to mean-center or residual-center
-in regression analysis has become quite widely established. The primary
-advocates of ``mean-centering'' have been Aiken and West (1991),
-who integrated that advice into the very widely used regression textbook,
-\emph{Applied Multiple Regression/Correlation for the Behavioral Sciences}
-(Cohen, et. al , 2002). The advice that one ought to mean-center the
-predictors has been picked up in other fields. One statistics text
-for biologists notes, ``We support the recommendation of Aiken \&
-West (1991) and others that multiple regression with interaction terms
-should be fitted to data with centered predictor values'' (Quinn
-and Keough, 2002, Chapter 6). 
+At the core of the matter is the fact that our uncertainty about regression
+estimates depends on our point of view. Please review the confidence
+interval in Figure \ref{fig:ps05}. The $y$ axis is not even ``in
+the picture.'' Would one's appreciation of the regression's predictive
+line be enhanced if the y axis were moved into the picture? 
 
-In order to understand how mean-centering came to seem like a ``magic
-bullet,'' it is necessary to re-trace some steps to find out how
-we arrived in our current situation. For this example, I used the
-function genCorrelatedData in rockchalk. The ``true model'' from
-which the data is produced is
+We can move the $y$ axis by centering the predictor variable. Suppose
+we replace $x_{i}$ with $x_{i}-5$ and then re-estimate the model.
+That has the simple effect of moving the $y$ axis 5 units to the
+right. The slope is unchanged, and the reported intercept is changed
+in a completely superficial way. The predicted value line, the slope
+estimates, the residual standard error, and so forth, are not changed
+in any substantial way. This is simply a matter of user convenience.
+I believe that no reasonable person can say the regression is ``better''
+after centering $x_{i}$.
+
+However, there is a superficial difference that has deceived many
+authors. Notice that the confidence interval is hourglass shaped.
+\emph{At the new $y$ axis}, our prediction is more precise. If we
+move the y axis further to the right, into the center of the data,
+say by mean-centering ($x_{i}-10$), we move to the position that
+allows an even more precise prediction. The estimate of the intercept's
+standard error will be smaller for the obvious reason. We are not
+actually gaining certainty, we are simply reporting our most favorable
+``snapshot'' of it. The predicted value, and the confidence interval
+for any observed value of $x_{i}$ is completely unchanged by centering.
+
+It should not surprise the reader to learn that mean-centering interactive
+predictors enhances the standard errors in the same illusory way.
+Let's work though an example to see why this is so tempting. Suppose
+the true data generating mechanism is an interaction like so
 \begin{equation}
 y_{i}=2+0.1x1_{i}+0.1x2_{i}+0.2\cdot(x1_{i}\times x2_{i})+e_{i},
 \end{equation}
 
 
-\noindent where $e_{i}\sim N(0,300^{2})$ and $\rho_{x1,x2}=0.4$.
+\noindent where $e_{i}\sim N(0,300^{2})$ and $\rho_{x1,x2}=0.4$. 
 
-Virtually everybody who has experimented with regression has had the
-``what the heck happened to my predictors?'' experience. Please
-consider the Table \ref{tab:meancenter10-1}. In the first column,
-we have the ordinary linear specification
+A regression analysis that ignores the interaction, 
 
 \inputencoding{latin9}\begin{lstlisting}
-lm(y ~ x1 + x2, data=dat2).
+lm(y ~ x1 + x2, data = dat2)
 \end{lstlisting}
 \inputencoding{utf8}
 
-\noindent The coefficients of $x1$ and $x2$ appear to be ``statistically
-significant,'' a very gratifying regression indeed. It appears we
-might have found something!
+\noindent is reported in the first column of Table \ref{tab:meancenter10-1}.
+I've used outreg's new alpha argument to emphasize the ``really good''
+estimates with more stars. Notice that everything is ``statistically
+significant!''
 
 Unable to leave well enough alone, the researcher wonders, ``is there
-an interaction between $x1$ and $x2$?'' The second column in Table
-\ref{tab:meancenter10-1} summarizes the regression that includes
-an interaction term. That interaction model, which adds the product
-variable $x1\times x2$, is estimated in R with
-
-\inputencoding{latin9}\begin{lstlisting}
-lm(y ~ x1 * x2, data=dat2)
+an interaction between $x1$ and $x2$?'' Run \inputencoding{latin9}
+\begin{lstlisting}
+lm(y ~ x1 * x2, data = dat2)
 \end{lstlisting}
 \inputencoding{utf8}
 
-\noindent A quick scan of column two usually lead to the ``what the
-heck?'' or ``Holy Cow!'' response. The regression went to hell!
-Neither of the key variables, $x1$ nor $x2$, is ``statistically
-significant'' any more. While the coefficients for the variables
-$x1$ and $x2$ did seem to be substantial in the first model, the
-introduction of the interactive effect appears to ruin the whole thing.
-What should be done when adding a product term seems to ``ruin''
-a regression model? 
+\noindent The second column in Table \ref{tab:meancenter10-1} summarizes
+that regression. Be prepared for a shock when you scan the estimates.
+Almost everybody I know has said ``what the heck?'' or ``Holy Cow!''
+or ``Oh My God, my great result went to Hell, I'll never get tenure!''
+Neither of the key variables is ``statistically significant'' any
+more. 
 
 <<echo=F, include=F>>=
 dat2 <- genCorrelatedData(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
-
 m6linear <- lm (y ~ x1 + x2, data=dat2)
 m6int <- lm (y ~ x1 * x2, data=dat2)
 m6mc <- meanCenter(m6int)
@@ -1026,50 +1093,69 @@ m6rc <- residualCenter(m6int)
 
 
 <<mcenter10, results=tex, echo=F>>=
-outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"))
+outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
 @
 \end{table}
 
 
-Cohen, et al. refer to the apparent instability of the coefficients
-as a reflection of ``inessential collinearity'' among the predictors,
-due to the fact that $x1$ and $x2$ are correlated with the new term,
-$x1\times x2$. They advised their readers to ``mean center'' their
-predictors, to subtract the mean of each predictor from the observed
-model and run the regression again. 
+Cohen, et al. claim that the apparent instability of the coefficients
+is a reflection of ``inessential collinearity,'' due to the fact
+that $x1$ and $x2$ are correlated with the new term, $x1\times x2$.
+They advised their readers to ``mean-center'' their predictors and
+run the regression again. 
 
-Mean-centering seems to help. The result of the meanCenter function
-is displayed in the third column of Table \ref{tab:meancenter10-1}.
-It appears that the estimates for the slopes are ``significant again''
-and we have ``solved'' the problem of inessential collinearity. 
+Remember the hourglass shape of the confidence interval. By mean-centering,
+we are re-positioning ourself for a much more favorable snapshot.
+The welcoming effect of the centered estimates is found in the third
+column of Table \ref{tab:meancenter10-1}. The point estimates in
+that snapshot are ``significant again.'' It appears we have ``solved''
+the problem of inessential collinearity. 
 
-The solution, however, is simply an illusion. Technical rebuttals
-have been published (Kromrey, J. D., \& Foster-Johnson, L. , 1998;
-Echambadi and Hess, 2007), but applied researchers continue to use
-the practice. The argument against mean-centering is really quite
-simple. It has no effect. There is no benefit. The ordinary model
-and the mean-centered models are actually exactly the same in every
-important way. The technical critiques have focused on the multicollinearity
-issue, but they leave open the possibility that mean-centering may
-facilitate interpretation of the estimates. The presentation here
-should convince the reader that even the interpretation is not facilitated
-by mean-centering.
+The first hint of trouble is in the fact that the coefficients of
+the interactive effects in columns 2 and 3 are identical. Those coefficients
+are the same because they are estimates of the cross partial derivative
+$\partial^{2}y/\partial x1\partial x2$. That particular value is
+the same, no matter where we position the $y$ axis, as it should
+be. Note as well that the root mean square and $R^{2}$ estimates
+are identical. Everything that we expect to remain the same is the
+same. Except for the fact that the slopes and their hypothesis tests
+seem better in the centered model, we would think there is nothing
+interesting here.
 
-The first hint of trouble is in the fact that the coefficient of the
-interactive effect in columns 2 and 3 is identical. Those coefficients
-are the same because they are estimates of a constant, the cross partial
-derivative $\partial^{2}y/\partial x1\partial x2$. That is to say,
-when the different models try to estimate the same coefficient, they
-get the same result. Note as well that the root mean square and $R^{2}$
-estimates are identical. Is it possible that the mean-centered regression
-could really be ``better'' if its fit statistics are not altered?
+Here's a puzzle for you. Consider Figure \ref{fig:pscentering}, which
+shows the predicted values and confidence intervals from the centered
+and uncentered regressions. Is there any substantively important difference
+between these two regressions?
 
-The models only appear different because we sometimes forget that
-we are studying a nonlinear problem when the regression model includes
-interactions. To assist in the visualization of this situation, we
-can use some functions in rockchalk. In Figure \ref{fig:mcenter30},
-we see that the ordinary interaction and mean-centered models produce
-identical predicted values! 
+\begin{figure}
+<<pscenter, fig=T, echo=F, include = F, height = 10, width = 5, results = hide>>=
+par(mfcol = c(2, 1))
+plotSlopes(m6int, plotx = "x1", modx = "x2", modxVals = "std.dev.",  n = 2, interval = "confidence", main= "Not Centered")
+plotSlopes(m6mc, plotx = "x1c", modx = "x2c", modxVals = "std.dev.", n = 2, interval = "confidence", main = "Mean Centered")
+par(mfcol = c(1, 1))
+@
+
+\includegraphics[height=8in]{rockchalk-pscenter.pdf}
+
+\caption{plotSlopes for the centered and non-centered regressions\label{fig:pscentering}}
+\end{figure}
+
+
+Perhaps the 2-D plots are not persuasive. Don't stop yet. In the 3-D
+plots will help quite a bit. We have not yet grasped the most fundamental
+changed caused by the insertion of the interaction term. When we insert
+$x1_{i}\times x2_{i}$, we change the fudamental nature of the regression
+surface. The surface of the fitted model is no longer a ``flat''
+plane, but rather it is a curving surface. 
+
+I've assembled 3-D plots in Figure \ref{fig:mcenter30}. We see that
+the ordinary interaction, mean-centered, and residual-centered models
+produce identical predicted values! The only difference in the figures
+is that the axes of the predictors have been re-scaled, so that the
+$y$ axis is (implicitly) re-positioned. Now that we understand the
+situation, we could play around with the data and move the axis back
+and forth until we arrive at a position that is most favorable to
+our interpretation. 
 
 \begin{figure}
 <<mcenter50, fig=T,echo=FALSE, height=5, width=7>>=
@@ -1087,49 +1173,27 @@ par(op)
 \end{figure}
 
 
-The curves in Figure \ref{fig:mcenter30} are identical. With the
-original, non-transformed data, the vertical (y) axis is positioned
-at the front-left edge of the graph, while the centered one re-positions
-the y axis into the center of the graph. The coefficient estimates
-from a regression model on a nonlinear surface depend on the location
-of the y axis. At some points, the estimates will be large, at some
-points they will be small. Mean-centering may accidentally reposition
-the axis to a location that has ``better'' (bigger?) point estimates.
-The estimated standard errors, of course, also change as we move the
-y axis about. In the middle of the data, the point estimates of the
-standard errors are generally smaller than they are when the axis
-is positioned on the periphery of the data. It can be shown that,
-from either fitted model, the estimated slopes and standard errors
-at any given point in the data are exactly the same. Included with
-the rockchalk package, in the examples folder, one can find a file
-called ``residualCentering.R'' that walks through this argument
-step by step. 
+The regression coefficient estimates are snapshots, each summarizing
+the curvature at one particular point in a curving surface. It seems
+quite apparent in Figure \ref{fig:mcenter30} that the models are
+identical, and yet we receive different regression reports from different
+spots. The non-centered data offers us the slope estimate from the
+``front-left'' part of the graph. Mean-centered estimates report
+on the slope in the middle of the graph. In the rockchalk examples
+folder, one can find a file called ``centeredRegression.R'' that
+walks through this argument step by step. 
 
-If mean-centering does not help, perhaps residual-centering will address
-the problem. Residual-centering is offered as a new, improved sort
-of mean-centering. Where mean-centering seems to reduce the damage
-done by inessential collinearity, residual-centering completely eliminates
-it. Because the residual-centered interaction variable is, by definition,
-completely uncorrelated with the other variables in the model, the
-problem of collinearity seems to be completely solved. 
-
-The fourth column in Table \ref{tab:meancenter10-1} presents the
-residual centered results. The parameter estimates are a little larger,
-the standard errors are a bit smaller. In the way that applied researchers
-usually look at situations like this, it is a ``better'' model. 
-
-And, yet again, our high hopes are dashed. In the end, we will find
-out that the residual-centered model is completely equivalent to the
-ordinary interaction model and the mean-centered model. My effort
-to visualize this was initially frustrated by the difficulty of writing
-a predict function that worked for arbitrary new data objects, but
-once that was finished, the result became completely clear. The predicted
-values of the ordinary interactive model, the mean-centered model,
-and the residual-centered models are exactly the same. Perhaps the
-most persuasive case is found in Figure \ref{fig:rcenter40}.
+What about residual-centering? Because the transformation that it
+employs is more abstract, I initially thought it was actually a different
+model. And yet it is not. The residual-centered model is completely
+equivalent to the ordinary interaction model and the mean-centered
+model. For a given combination of the input values, the predicted
+values and confidence intervals are the same. The predicted values
+of the ordinary interactive model, the mean-centered model, and the
+residual-centered models are illustrated in Figure \ref{fig:rcenter40}. 
 
 \begin{figure}
-<<rcenter40, fig=T,echo=FALSE, height=5, width=7>>=
+<<rcenter40, fig=T,echo=FALSE, include=F, height=4, width=8>>=
 dat3 <- centerNumerics(dat2)
 ##m6mcpred <- fitted(m6mc) ##
 m6mcpred <- predict(m6mc, newdata=dat3)
@@ -1139,49 +1203,36 @@ m6rcpred <- predict(m6rc, newdata=dat3)
 m6intpred <- predict(m6int, newdata=dat3)
 op <- par(no.readonly = TRUE)
 par(mfcol=c(1,2))
-##plot(fitted(m6rc), predict(m6rc, newdata=dat3))
-##plot(fitted(m6mc), predict(m6mc, newdata=dat3))
 plot(m6intpred, m6rcpred, main="", xlab="Predictions of Uncentered Interaction", ylab="Residual-centered Predictions")
 predcor <- round(cor(m6intpred, m6rcpred),3)
-legend("topleft", legend=c(paste("Correlation=", predcor)))
+legend("topleft", legend=c(paste0("Correlation=", predcor)))
 plot(m6mcpred, m6rcpred, main="", xlab="Mean-centered Predictions", ylab = "Residual-centered Predictions")
 predcor <- round(cor(m6mcpred, m6rcpred),3)
-legend("topleft", legend=c(paste("Correlation=", predcor)))
+legend("topleft", legend=c(paste0("Correlation=", predcor)))
 par(op)
 @
+
+\includegraphics[width = 6.5in]{rockchalk-rcenter40}
 
 \caption{Predicted Values of Mean and Residual-centered Models\label{fig:rcenter40}}
 \end{figure}
 
 
-The conclusion is this. One can code a nonlinear model in various
-ways, all of which are theoretically and analytically identical. There
-are superficial differences in the estimates of the coefficients of
-the various specifications, but these differences are understandable
-in light of the changes in the design matrix. The connection between
-the observed values of the predictors and the predicted values remains
-the same in all of these specifications.
+The take-away point from this is that there is no free lunch in regression
+analysis. If re-scaling a variable by adding or subtracting a constant
+seems to change a result, one should be cautious and suspect an error. 
 
-Why do the coefficients differ if the models are actually the same?
-Recall that we are estimating the slopes of a curving plane, and so
-estimates of the marginal effects of $x1$ and $x2$ will depend on
-the point at which we are calculating the slopes. Mean-centering and
-residual-centering are different methods for re-positioning the $y$
-axis. The interactive model has a constant mixed partial derivative,
-so the estimate of the interaction coefficient is not affected by
-the position of the y axis. The other coefficients, however, do change. 
-
-It is possible to translate between the estimates of any one of these
-fitted models and the estimates of another. The derivation proceeds
-as follows. The ordinary model is
+In order to drive the point home, I'd like to show that it is possible
+to translate between the estimates of any one of these fitted models
+and the estimates of the others. The ordinary model is
 \begin{equation}
-y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3(x1_{i}\times x2_{i})+e1_{i}\label{eq:int}
+y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}(x1_{i}\times x2_{i})+e1_{i}\label{eq:int}
 \end{equation}
 
 
 The mean-centered model is 
 \begin{equation}
-y_{i}=c_{0}+c_{1}(x1_{i}-\overline{x1})+c_{2}(x2_{i}-\overline{x2})+c_{3}(x1_{i}-\overline{x1})\times(x2_{i}-\overline{x2})+e2_{i}\label{eq:mc1}
+y_{i}=c_{0}+c_{1}(x1_{i}-\overline{x1})+c_{2}(x2_{i}-\overline{x2})+c_{3}(x1_{i}-\overline{x1})\cdot(x2_{i}-\overline{x2})+e2_{i}\label{eq:mc1}
 \end{equation}
 
 
@@ -1204,12 +1255,10 @@ y_{i}=\{c_{0}-c_{1}\overline{x1}-c_{2}\overline{x2}+c_{3}\overline{x1}\overline{
 
 
 One can then compare the parameter estimates from equations \ref{eq:int}
-and \ref{eq:mc3} in order to understand the observed changes in fitted
-coefficients after changing from the ordinary to the mean-centered
-coding. Both \ref{eq:int} and \ref{eq:mc3} include a single parameter
-times $(x1_{i}x2_{i}),$ leading one to expect that the estimate $\hat{b}_{3}$
-should be equal to the estimate of $\hat{c}_{3}$ (and they are, as
-we have found). Less obviously, one can use the fitted coefficients
+and \ref{eq:mc3}. Both \ref{eq:int} and \ref{eq:mc3} include a
+single parameter times $(x1_{i}x2_{i}),$ leading one to expect that
+the estimate $\hat{b}_{3}$ should be equal to the estimate of $\hat{c}_{3}$,
+and they are! Less obviously, one can use the fitted coefficients
 from either model to deduce the fitted coefficients from the other.
 The following equalities describe that relationship.
 \begin{eqnarray}
@@ -1220,29 +1269,24 @@ The following equalities describe that relationship.
 \end{eqnarray}
 The estimated fit of equation \ref{eq:mc1} would provide estimated
 coefficients $\hat{c}_{j}$, $j=0,...,3$, which would then be used
-to calculate the estimates from the noncentered model.
+to calculate the estimates from the non-centered model.
 
-The estimation of the residual centered model requires two steps.
-First, estimate a regression 
-\begin{equation}
-(x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2_{i}+u_{i}
-\end{equation}
+The estimation of the residual-centered model requires two steps.
+The residual from this regression model
 
-
-\noindent from which the predicted value can be calculated:
+\noindent 
 \begin{equation}
 \widehat{(x1_{i}\times x2_{i})}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}.
 \end{equation}
 
 
-\noindent The residual of that regression 
+\noindent is 
 \begin{equation}
-\widehat{u}_{i}=(x1_{i}\times x2_{i})-\widehat{(x1_{i}\times x2_{i})}
+\widehat{u}_{i}=(x1_{i}\times x2_{i})-\widehat{(x1_{i}\times x2_{i})},
 \end{equation}
 
 
-\noindent is used as the ``residual-centered'' predictor in place
-of $(x1_{i}\times x2_{i})$ in equation \ref{eq:int}. 
+\noindent which is inserted into equation \ref{eq:int}. 
 
 \begin{equation}
 y_{i}=h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\widehat{x1_{i}\times x2_{i}}\}+e3_{i}\label{eq:rc1}
@@ -1259,23 +1303,47 @@ y_{i} & = & h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\hat{d}_{0}
 \end{eqnarray}
 
 
-As in the previous comparison of models, we can translate coefficient
-estimates between the ordinary specification and the residual-centered
-model. The coefficient estimated for the product term, $\hat{h}_{3}$,
-should be equal to $\hat{b}_{3}$ and $\hat{c}_{3}$ (and it is!).
-If we fit the residual centered model, \ref{eq:rc1}, we can re-generate
+As in the previous comparison, we can translate coefficient estimates
+between the ordinary specification and the residual-centered model.
+The coefficient estimated for the product term, $\hat{h}_{3}$, should
+be equal to $\hat{b}_{3}$ and $\hat{c}_{3}$ (and it is!). If we
+fit the residual centered model, \ref{eq:rc1}, we can re-generate
 the coefficients of the other models like so: 
 \begin{eqnarray}
-b_{0} & =\hat{c}_{0}-\hat{c}_{1}\overline{x1}-\hat{c}_{2}\overline{x2}+\hat{c}_{3}\overline{x1}\overline{x2}= & h_{0}-h_{3}\hat{d}_{0}\\
-b_{1} & =\hat{c}_{1}-\hat{c}_{3}\overline{x2}= & h_{1}-h_{3}\hat{d}_{1}\\
-b_{2} & =\hat{c}_{2}-\hat{c}_{3}\overline{x1}= & h_{2}-h_{3}\hat{d}_{2}
+\hat{b}_{0} & =\hat{c}_{0}-\hat{c}_{1}\overline{x1}-\hat{c}_{2}\overline{x2}+\hat{c}_{3}\overline{x1}\overline{x2}= & h_{0}-h_{3}\hat{d}_{0}\\
+\hat{b}_{1} & =\hat{c}_{1}-\hat{c}_{3}\overline{x2}= & h_{1}-h_{3}\hat{d}_{1}\\
+\hat{b}_{2} & =\hat{c}_{2}-\hat{c}_{3}\overline{x1}= & h_{2}-h_{3}\hat{d}_{2}
 \end{eqnarray}
 
 
 From the preceding, it should be clear enough that the three models
-are equivalent, in the sense that the parameter estimates (parameters,
-predicted values, and so forth) from any one can be translated into
-the terminology of the other.
+are equivalent.
+
+
+\section{Conclusion}
+
+The rockchalk package is offered as a system of support for teachers
+and students of regression analysis. It should help with the preparation
+of plots, summary tables, and other diagnostics. 
+
+A number of functions are currently offered in this package that have
+not been emphasized in this writeup. I would draw the reader to the
+help pages for these functions
+\begin{description}
+\item [{combineLevels}] a recoder for factor variables
+\item [{mcDiagnose}] a one stop shop for multicollinearity diagnostic information
+\item [{getDeltaRsquare}] calculate the change in the $R^{2}$ that results
+from the omission of each variable. This is the squared semi-partial
+correlation coefficient.
+\item [{getPartialCor}] calculates the partial correlation matrix of the
+predictors in a regression model
+\item [{lazyCor~and~lazyCov}] convenient ways to create correlation and
+covariance matrices that are needed in many simulation exercises
+\item [{mvrnorm}] a slightly improved version of the MASS package's multivariate
+normal generator.
+\end{description}
+Development on the package will continue on the basis of classroom
+experience.
 \begin{thebibliography}{1}
 \bibitem{key-1}Aiken, L. S., \& West, S. G. (1991). \emph{Multiple
 Regression: Testing and Interpreting Interactions}. Newbury Park,
@@ -1304,10 +1372,6 @@ Multilevel Modeling, and Latent Curve Analysis. \emph{Journal of Educational
 and Behavioral Statistics}, 31(4), 437–448.
 
 \bibitem{key-5}Quinn, G.P, and Keough, Michael J. (2002) Experimental
-Design and Data Analysis for Biologists. Cambridge University Press.The
-primary advocates of ``mean-centering'' have been Aiken and West
-(1991), who then integrated that advice into the very widely used
-regression textbook, \emph{Applied Multiple Regression/Correlation
-for the Behavioral Sciences} (Cohen, et. al , 2002). \end{thebibliography}
+Design and Data Analysis for Biologists. Cambridge University Press.\end{thebibliography}
 
 \end{document}

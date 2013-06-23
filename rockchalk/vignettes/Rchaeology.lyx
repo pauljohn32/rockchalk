@@ -374,26 +374,6 @@ set.seed(12345)
 
 \begin_layout Plain Layout
 
-#op <- par() 
-\end_layout
-
-\begin_layout Plain Layout
-
-#pjmar <- c(5.1, 5.1, 1.5, 2.1) 
-\end_layout
-
-\begin_layout Plain Layout
-
-#pjmar <- par("mar")
-\end_layout
-
-\begin_layout Plain Layout
-
-#options(SweaveHooks=list(fig=function() par(mar=pjmar, ps=12)))
-\end_layout
-
-\begin_layout Plain Layout
-
 pdf.options(onefile=F,family="Times",pointsize=12)
 \end_layout
 
@@ -415,9 +395,7 @@ Introduction: R Idioms.
 This vignette is about the R idioms I have learned while working on the
  rockchalk package.
  At the current time, I don't understand all of the R idioms that are common
- in the advanced R programmers' conversation, but I have a grasp on many
- of the staples that I have noticed before, and not understood.
- 
+ in the advanced R programmers' conversation, but I am getting some traction.
 \end_layout
 
 \begin_layout Standard
@@ -520,13 +498,126 @@ R Language Definition
  it until I search through the R source code and packages for usage examples.
 \end_layout
 
+\begin_layout Standard
+I usually approach R coding in three phases.
+ I write code that 
+\begin_inset Quotes eld
+\end_inset
+
+works
+\begin_inset Quotes erd
+\end_inset
+
+, however tedious and slow it might be.
+ There will be a lot of 
+\begin_inset Quotes eld
+\end_inset
+
+copy and paste
+\begin_inset Quotes erd
+\end_inset
+
+ constructions with tedious, manual editing of commands.
+ Then I read through the code and look for repetitious elements, and I re-organi
+ze to make functions that abstract that work.
+ If there are any stanzas that look mostly the same, except that 
+\begin_inset Quotes eld
+\end_inset
+
+x1
+\begin_inset Quotes erd
+\end_inset
+
+ is repalced by 
+\begin_inset Quotes eld
+\end_inset
+
+x2
+\begin_inset Quotes erd
+\end_inset
+
+, I know the work is not done.
+ Finally, I look through the code to find 
+\begin_inset Quotes eld
+\end_inset
+
+dumb
+\begin_inset Quotes erd
+\end_inset
+
+ constructions that can be cleaned up and completed with fewer lines.
+ A dumb construction is one that I would be ashamed to show to an expert
+ R programmer.
+\end_layout
+
+\begin_layout Standard
+Beginning R programmers, the ones who have never studied C or Java or Fortran,
+ will often become 
+\begin_inset Quotes eld
+\end_inset
+
+stuck
+\begin_inset Quotes erd
+\end_inset
+
+ in stage one of that process.
+ Experienced programmers with more formal training will usually have the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+little voice
+\begin_inset Quotes erd
+\end_inset
+
+ in the back of their minds saying 
+\begin_inset Quotes eld
+\end_inset
+
+there's a better way,
+\begin_inset Quotes erd
+\end_inset
+
+ and, unfortunately, R novices don't see to hear that voice.
+ Lacking some of the discipline imposed by those other languages, the usual
+ 
+\begin_inset Quotes eld
+\end_inset
+
+rambling
+\begin_inset Quotes erd
+\end_inset
+
+ R script will seem 
+\begin_inset Quotes eld
+\end_inset
+
+good enough.
+\begin_inset Quotes erd
+\end_inset
+
+ The first step for the transitional R programmer, the one who does not
+ want to be a novice any more, is to take a harsh look at the code that
+ has already been written.
+\end_layout
+
+\begin_layout Standard
+The rockchalk package has many functions that receive fitted regression
+ models and re-arrange their components for re-fitting or plotting.
+ A good deal of the advice I have to offer is about the process of managing
+ R formula, but I have also accumulated some lessons in argument handling.
+ 
+\end_layout
+
 \begin_layout Section
 do.call(), eval(), substitute(), formula().
 \end_layout
 
 \begin_layout Standard
-If the transitional programmer understands these four functions, R programming
- will become much more understandable.
+If the transitional programmer understands these four functions, she/he
+ will be well on the way to escaping the category of novice R programmer.
+ The other benefit is that the code written by the experts, including the
+ R source code itself, will become much more understandable.
 \end_layout
 
 \begin_layout Subsection
@@ -539,15 +630,28 @@ On May 29, 2012, I was working on a regression problem in the rockchalk
  package.
  I have a number of functions that receive elementary regressions and then
  change them.
- 
+ I need to receive a fitted model, extract the formula, change some variables,
+ and then revise the formula to match the new variables.
 \end_layout
 
 \begin_layout Standard
 The functions meanCenter() and residualCenter() receive a fitted regression
  model, transform some variables, and then fit a new regression.
- They have to change the data used by the regressions, and they have to
- revise the regression formulae.
- The non-centered variable 
+ Suppose a regression has been fitted as 
+\begin_inset Quotes eld
+\end_inset
+
+y ~ x1*x2
+\begin_inset Quotes erd
+\end_inset
+
+.
+ The R result will estimate a predictive formula such as 
+\begin_inset Formula $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}++\hat{\beta}_{3}x1_{i}\cdot x2_{i}$
+\end_inset
+
+.
+ meanCenter() will replace the non-centered variables 
 \begin_inset Quotes eld
 \end_inset
 
@@ -555,11 +659,27 @@ x1
 \begin_inset Quotes erd
 \end_inset
 
- is has to be centered to create 
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+x2
+\begin_inset Quotes erd
+\end_inset
+
+ with mean-centered variables 
 \begin_inset Quotes eld
 \end_inset
 
 x1c
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+x2c
 \begin_inset Quotes erd
 \end_inset
 
@@ -571,9 +691,8 @@ x1c
 
 \begin_layout Standard
 My first effort used R's update function.
- That is the most obvious approach, it is the one that was recommended on
- r-help.
- I learned that update() is not sufficient.
+ That is the most obvious approach.
+ I learned very quickly that update() is not sufficient.
  It is fairly easy to replace x1 with x1c in the formula, but not when x1
  is logged or otherwise transformed.
  Here is the runable example code that demonstrates the problem.
@@ -591,7 +710,7 @@ status open
 
 \begin_layout Plain Layout
 
-dat <- data.frame(x1 = rnorm(100, m=50), x2 = rnorm(100, m=50),
+dat <- data.frame(x1 = rnorm(100, m = 50), x2 = rnorm(100, m = 50),
 \end_layout
 
 \begin_layout Plain Layout
@@ -612,7 +731,7 @@ suffixX <- function(fmla, x, s){
 \begin_layout Plain Layout
 
     upform <- as.formula(paste(".
- ~ .", "-", x, "+", paste(x, s, sep=""), sep=""))
+ ~ .", "-", x, "+", paste(x, s, sep = ""), sep=""))
 \end_layout
 
 \begin_layout Plain Layout
@@ -706,20 +825,18 @@ y ~ log(x1) + x2 + x3 + x1c + x2:x3
 \end_layout
 
 \begin_layout Standard
-I asked the members of r-help.
-\end_layout
-
-\begin_layout Standard
-Lately I've had very good luck with r-help.
- Gabor Grothendieck wrote an answer to r-help on May 29, 2012, 
+I asked the members of r-help for assistance.
+ Lately I've had very good luck with r-help.
+ Gabor Grothendieck wrote an answer to r-help on May 29, 2012.
+ He said simply, 
 \begin_inset Quotes eld
 \end_inset
 
-Try substitute:
+Try substitute,
 \begin_inset Quotes erd
 \end_inset
 
-
+ with this example.
 \end_layout
 
 \begin_layout Standard
@@ -748,7 +865,7 @@ Problem solved, in a single line.
 \end_layout
 
 \begin_layout Standard
-That's quintessential R.
+That's very clever, I think.
  It packs together a half-dozen very deep thoughts.
  It has most of the essential secrets of R's guts, laid out in a single
  line.
@@ -767,7 +884,7 @@ A Formula Object is a List.
 \end_layout
 
 \begin_layout Standard
-While struggling with this, I noticed this really interesting thing.
+While struggling with this, I noticed this really interesting pattern.
  The solution depends on it.
  The object 
 \begin_inset Quotes eld
@@ -841,10 +958,27 @@ do.call() and eval()
 \end_layout
 
 \begin_layout Standard
-In my early work as an Rchaeologist, I had noticed eval and do.call, but
- did not understand their significance in the mind of the R programmers.
- Whenever difficult problems arose in r-help, the answer almost invariably
- involved do.call or eval.
+In my early work as an Rchaeologist, I had noticed eval() and do.call(),
+ but did not understand their significance.
+ Coming to grips with these ideas is a critical step in the R programmer's
+ growth, because they separate the 
+\begin_inset Quotes eld
+\end_inset
+
+script writer
+\begin_inset Quotes erd
+\end_inset
+
+ from the 
+\begin_inset Quotes eld
+\end_inset
+
+language programmer.
+\begin_inset Quotes erd
+\end_inset
+
+ Whenever difficult problems arise in r-help, the answer almost invariably
+ involves do.call() or eval().
  
 \end_layout
 
@@ -892,6 +1026,11 @@ someRFunction(aListOfArgumentsToGoInTheParentheses)
 \end_layout
 
 \begin_layout Standard
+We use do.call() because it is much more flexible than calling someRFunction()
+ directly.
+\end_layout
+
+\begin_layout Standard
 Let's consider an example that runs a regression the ordinary way, and then
  with do.call.
  In this example, the role of 
@@ -902,10 +1041,10 @@ someRFunction
 \begin_inset Quotes erd
 \end_inset
 
- will be played by lm and the list of arguments will be the parameters of
- the regression.
+ will be played by lm() and the list of arguments will be the parameters
+ of the regression.
  The regression m1 will be constructed the ordinary way, while m2 is constructed
- with do.call.
+ with do.call().
 \end_layout
 
 \begin_layout Standard
@@ -919,7 +1058,7 @@ status open
 
 \begin_layout Plain Layout
 
-m1 <- lm(y ~ x1*x2, data=dat)
+m1 <- lm(y ~ x1*x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -929,7 +1068,7 @@ coef(m1)
 
 \begin_layout Plain Layout
 
-regargs <- list(formula = y ~ x1*x2, data= quote(dat))
+regargs <- list(formula = y ~ x1*x2, data = quote(dat))
 \end_layout
 
 \begin_layout Plain Layout
@@ -965,12 +1104,20 @@ The object regargs is a list of arguments that R can understand when they
 
 \begin_layout Standard
 do.call() is a powerful, mysterious symbol.
- It holds flexibility; we can calculate commands and then run them.
- I first needed it when we had a simulation project that ran very slowly
- when confronted with medium or large sized problems.
+ It holds flexibility; we can calculate 
+\begin_inset Quotes eld
+\end_inset
+
+on the language
+\begin_inset Quotes erd
+\end_inset
+
+ to create commands and then run them.
+ I first needed do.call() when we had a simulation project that ran very
+ slowly.
  There's a writeup in the working examples distributed with rockchalk called
  stackListItems-01.R.
- I was using rbind over and over to join the results of simulation runs.
+ I was using rbind() over and over to join the results of simulation runs.
  Basically, the code was like this
 \end_layout
 
@@ -1006,10 +1153,10 @@ for (i in 1:10000){
 
 \begin_layout Standard
 That will call rbind() 10000 times.
- I had not realized that rbind() is a comparatively time-consuming task
- because it accesses a new chunk of memory each time it is run.
+ I had not realized that rbind() is time-consuming.
+ It accesses a new chunk of memory each time it is run.
  On the other hand, we could collect those results in a list, then we can
- call rbind one time to smash together all of the results.
+ call rbind() one time to smash together all of the results.
 \end_layout
 
 \begin_layout Standard
@@ -1043,7 +1190,7 @@ result <- do.call("rbind", mylist)
 \end_layout
 
 \begin_layout Standard
-It is much faster to run rbind only once.
+It is much faster to run rbind() only once.
  It would be OK if we typed it all out like this:
 \end_layout
 
@@ -1054,8 +1201,7 @@ status open
 
 \begin_layout Plain Layout
 
-result <- rbind(mylist[[1]],mylist[[2]],mylist[[3]],mylist[[4]], ..., mylist[[10000
-])
+result <- rbind(mylist[[1]], mylist[[2]], mylist[[3]], ..., mylist[[10000])
 \end_layout
 
 \end_inset
@@ -1239,7 +1385,15 @@ piece together
 \end_inset
 
  commands and then run them after we have assembled all the pieces.
- 
+ The nickname for this seems to be 
+\begin_inset Quotes eld
+\end_inset
+
+computing on the language.
+\begin_inset Quotes erd
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1577,7 +1731,7 @@ status open
 
 \begin_layout Plain Layout
 
-m1 <- lm(y ~ x1*x2, data=dat, x = TRUE, y = TRUE)
+m1 <- lm(y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end_layout
 
 \end_inset
@@ -1736,8 +1890,8 @@ substitute()
 \end_layout
 
 \begin_layout Standard
-Most R users I know have not used substitute, except as it arises in the
- plotmath.
+Most R users I know have not used substitute, except possibly if they try
+ to use plotmath.
  In the context of plotmath, the problem is as follows.
  Plotmath causes the R plot functions to convert expressions into mathematical
  symbols in a way that is reminiscent of LaTeX.
@@ -1793,14 +1947,26 @@ In order to smuggle the result of a calculation into an expression, some
  fancy footwork is required.
  In the help page for plotmath, examples using the functions bquote and
  substitute are offered.
- 
+ I have found this to be quite frustrating and difficult to do, and if one
+ examines my collection of examples on 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://pj.freefaculty.org/R/WorkingExamples
+\end_layout
+
+\end_inset
+
+, one will find quite a few plotmath exercises.
 \end_layout
 
 \begin_layout Standard
 For the particular purpose of blending expressions with calculation results,
- I find the bquote function to be more immediately understandable.
- In this section, I'm trying to understand the use of substitute, so let's
- stick with that.
+ I find the bquote function to be more easily understandable.
+ However, when going beyond plotmath, I expect most R programmers will need
+ to use substitute() instead, so I will discuss that in this section.
  The plotmath help page points to syntax like this:
 \end_layout
 
@@ -1866,16 +2032,18 @@ parse tree
 
 \begin_layout Standard
 This is one of those points at which being an Rchaeologist has real benefits.
+ We have to dig deeper, to try to understand not only what the R programmer
+ says, but what she is actually trying to do.
  The manual page gives us some insights into the R programmer, and it is
  his or her view of his or her own actions, but it doesn't necessarily speak
  to how we should understand substitute().
- For me, the only workable approach is to build up a sequence of increasingly
- complicated examples.
  
 \end_layout
 
 \begin_layout Standard
-I start by creating the list of replacements.
+For me, the only workable approach is to build up a sequence of increasingly
+ complicated examples.
+ I start by creating the list of replacements.
  This replacement list can have a format like this: 
 \end_layout
 
@@ -1904,10 +2072,42 @@ sublist <- list(x1 = "alphabet", x2 = "zoology")
 \end_layout
 
 \begin_layout Standard
-I want to replace x1 with alphabet and x2 with zoology.
- The quotes indicate that alphabet and zoology are strings, not other objects
- that already exist.
- Consider:
+Suppose I have some other object in which x1 and x2 need to be replaced.
+ Specifically, when an expression has 
+\begin_inset Quotes eld
+\end_inset
+
+x1
+\begin_inset Quotes erd
+\end_inset
+
+, I want 
+\begin_inset Quotes eld
+\end_inset
+
+alphabet
+\begin_inset Quotes erd
+\end_inset
+
+, and 
+\begin_inset Quotes eld
+\end_inset
+
+x2
+\begin_inset Quotes erd
+\end_inset
+
+ should become 
+\begin_inset Quotes eld
+\end_inset
+
+zoology.
+\begin_inset Quotes erd
+\end_inset
+
+ The quotes in the R code indicate that alphabet and zoology are character
+ strings, not other objects that already exist.
+ Consider replacing x1 and x2 in x1 + x2 + log(x1) + x3:
 \end_layout
 
 \begin_layout Standard
@@ -1936,8 +2136,8 @@ substitute(expression(x1 + x2 + log(x1) + x3), sublist)
 
 \begin_layout Standard
 Note that the substitution 1) leaves other variables alone (since they are
- not named in sublist) and 2) it finds all valid use of the symbols x1 and
- x2 and replaces them.
+ not named in sublist) and 2) it finds all valid uses of the symbols x1
+ and x2 and replaces them.
 \end_layout
 
 \begin_layout Standard
@@ -1945,10 +2145,11 @@ This isn't quite what I wanted, however, because the strings have been inserted
  into the middle of my expression.
  I don't want text.
  I just want symbols.
- It turns out that the functions as.name() and as.symbol() are exactly the
- same, and usually I use as.symbol() because that name has more intuition
- for me, but in Gabor's answer to my question, as.name() is used.
- Using as.name(), so I will illustrate that.
+ I've seen the conversion from character to symbol done with as.symbol()
+ and with as.name(), recently I realized that they are synonymous.
+ I usually use as.symbol() because that name has more intuition for me, but
+ in Gabor's answer to my question, as.name() is used.
+ Using as.name(), my example would become:
 \end_layout
 
 \begin_layout Standard
@@ -2084,8 +2285,12 @@ status open
 
 \begin_layout Plain Layout
 
-dat2 <- setNames(data.frame(x1=rnorm(10), x2=rnorm(10), x3=rnorm(10), x4=gl(2,5))
-, c("good","names","tough","find"))
+dat2 <- setNames(data.frame(x1 = rnorm(10), x2 = rnorm(10),
+\end_layout
+
+\begin_layout Plain Layout
+
+    x3 = rnorm(10), x4 = gl(2,5)), c("good", "names", "tough", "find"))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2106,7 +2311,7 @@ head(dat2, 2)
 \begin_layout Standard
 In order to make this more generally useful, the first step is to take the
  data-frame-creating code and set it into an expression that is not immediately
- evaluated (that's datcommand).
+ evaluated (that's datcommand in what follows).
  When I want the data frame to be created, I use eval(), and then the newnames
  vector is put to use.
  
@@ -2317,7 +2522,7 @@ needs centering
 \end_inset
 
 ) has already been calculated.
- The function std creates a centered variable.
+ The function std() creates a centered variable.
 \end_layout
 
 \begin_layout Standard

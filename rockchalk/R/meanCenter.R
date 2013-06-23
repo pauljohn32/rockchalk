@@ -31,7 +31,7 @@ standardize.lm <-
     mt <- terms(model)
     mdata <- model.frame(model)
     ys  <- drop(scale(mdata[, 1]))
-                                        #dm = design matrix, columns of predictors as numerically coded
+    ##dm = design matrix, columns of predictors as numerically coded
     dm <- model.matrix(model)[ , -1, drop=FALSE] #no intercept
     dmnames <- paste(colnames(dm),"s", sep = "")
     dmnamesticked <- paste("`",dmnames,"`", sep = "")
@@ -357,8 +357,8 @@ predict.mcreg <-
     nc <- setdiff(nc, dvname) #remove dv name if present
     if (missing(newdata)) {
         newdata <- model.frame(object)##should be centered already
-        tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm=T)
-        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes=F))) stop(paste("In predict.mcreg, the newdata object claims to have centered variables,", paste(nc, collapse=" "), "but not all of those centered values have observed means very close to 0. Something's wrong"))
+        tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm = TRUE)
+        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes = FALSE))) stop(paste("In predict.mcreg, the newdata object claims to have centered variables,", paste(nc, collapse=" "), "but not all of those centered values have observed means very close to 0. Something's wrong"))
         ## } else {
         ##     if (isTRUE(attr(newdata, "isCentered"))){
         ##         ##verify the claim
