@@ -353,21 +353,15 @@ predict.mcreg <-
     originalCall <- object$call
     centeredVars <- attr(object, "centeredVars")
     nc <- colnames(centeredVars) #need centering
-    dvname <- parse(text=formula(originalCall)[[2]])
+    dvname <- parse(text = formula(originalCall)[[2]])
     nc <- setdiff(nc, dvname) #remove dv name if present
     if (missing(newdata)) {
         newdata <- model.frame(object)##should be centered already
         tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm = TRUE)
-        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes = FALSE))) stop(paste("In predict.mcreg, the newdata object claims to have centered variables,", paste(nc, collapse=" "), "but not all of those centered values have observed means very close to 0. Something's wrong"))
-        ## } else {
-        ##     if (isTRUE(attr(newdata, "isCentered"))){
-        ##         ##verify the claim
-        ##         print("data claims it is already centered")
-        ##     } else {
-        ##         for(i in nc){
-        ##             newdata[ , i] <- (newdata[ ,i] - centeredVars["mean", i])/centeredVars["scale", i]
-        ##         }
-        ##     }
+        if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes = FALSE)))
+            stop(paste("In predict.mcreg, the fitted regression claims to have centered variables,",
+                       paste(nc, collapse=" "), "but not all of those centered values have",
+                       "observed means very close to 0. Something's wrong"))
     }
     NextMethod(object, newdata = newdata, ...)
 }
