@@ -348,14 +348,20 @@ NULL
 ##' @method predict mcreg
 ##' @S3method predict mcreg
 predict.mcreg <-
-    function (object, newdata, ...)
+    function (object, ...)
 {
     originalCall <- object$call
+    dots <- list(...)
+    newdata <- NULL
+    if (! is.null(dots[["newdata"]])) {
+        newdata <- dots[["newdata"]]
+        dots[["newdata"]] <- NULL
+    }
     centeredVars <- attr(object, "centeredVars")
     nc <- colnames(centeredVars) #need centering
     dvname <- parse(text = formula(originalCall)[[2]])
     nc <- setdiff(nc, dvname) #remove dv name if present
-    if (missing(newdata)) {
+    if (is.null(newdata)) {
         newdata <- model.frame(object)##should be centered already
         tmeans <- sapply(newdata[ , nc, drop = FALSE], mean, na.rm = TRUE)
         if (! isTRUE(all.equal(abs(tmeans), rep(0, length(nc)), check.attributes = FALSE)))
@@ -363,7 +369,7 @@ predict.mcreg <-
                        paste(nc, collapse=" "), "but not all of those centered values have",
                        "observed means very close to 0. Something's wrong"))
     }
-    NextMethod(object, newdata = newdata, ...)
+    NextMethod(object, newdata = newdata, dots)
 }
 NULL
 

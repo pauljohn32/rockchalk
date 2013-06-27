@@ -519,7 +519,7 @@ predictCI <-
     ## frustrating.
     if (interval == "none") {
         dots <- list(...)
-        pargs <- list(object, newdata, type = "response", se.fit = TRUE, na.action = na.action)
+        pargs <- list(object, newdata = newdata, type = "response", se.fit = TRUE, na.action = na.action)
         pargs <-  modifyList(pargs, dots)
         predtry <-  try(do.call("predict", pargs))
         if (inherits(predtry, "try-error")) {
@@ -573,7 +573,7 @@ predictCI <-
     if (interval == "none") intervaltry <- "confidence"
     ## TODO previous "none" should be impossible, please verify that
     ## can never happen.
-    predtry <- try(predict(object, newdata, se.fit = TRUE,
+    predtry <- try(predict(object, newdata = newdata, se.fit = TRUE,
                            type = type, interval = intervaltry,
                            na.action = na.action))
 
@@ -642,7 +642,7 @@ predictCI <-
         ## set se.fit = TRUE always, even if user doesn't want it.
         ## make them have it! Trying to make return structure more understandable.
 
-        pred <- predict.lm(object, newdata, se.fit = TRUE, scale = scale,
+        pred <- predict.lm(object, newdata = newdata, se.fit = TRUE, scale = scale,
                            type = "response", interval = "none", na.action = na.action)
 
         ## pred insides, at least:

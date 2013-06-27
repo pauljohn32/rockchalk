@@ -163,9 +163,12 @@ cutBySD <-
     } else {
         mx <- round(mean(x, na.rm = TRUE),2)
         sdx <- round(sd(x, na.rm = TRUE),2)
-        if (n == 1){
+        if (n == 1) {
             qs <- c( mx )
             suffix <- c("(m)")
+        } else if (n == 2) {
+            qs <- c(mx - sdx, mx + sdx)
+            suffix <- c("(m-sd)", "(m+sd)")
         } else if (n <= 4) {
             qs <- c(mx - sdx, mx, mx + sdx)
             suffix <- c("(m-sd)", "(m)", "(m+sd)")

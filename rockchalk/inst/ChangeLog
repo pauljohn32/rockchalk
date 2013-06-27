@@ -1,3 +1,11 @@
+2013-06-24  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
+
+	* ../R/utils.R (cutBySD): add n = 2 definition for cutBySD and
+	cutByQuantile methods.
+
+	* ../R/meanCenter.R: runtime error from predict.mcreg because the
+	argument newdata was double-entering through ...
+
 2013-06-06  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
 
 	* ../R/plotSlopes.R (plotSlopes.lm): col needs to be in arguments
