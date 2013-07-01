@@ -100,12 +100,24 @@ NULL
 ##' @rdname residualCenter
 ##' @example inst/examples/predict.rcreg-ex.R
 ##' @param object Fitted residual-centered regression from residualCenter
-##' @param newdata A dataframe of values of the predictors for which predicted values are sought. Needs to include values for all predictors individually; need not include the interactions, since those are re-calculated inside this function.
-##' @param ... Other parameters that will be passed to the predict method of the model.
+##' @param ... Other named arguments. May include newdata, a dataframe of 
+##' predictors. That should include values for individual predictor, need 
+##' not include interactions that are constructed by residualCenter. 
+##' These parameters that will be passed to the predict method of the model.
 predict.rcreg <-
-    function (object, newdata, ...)
+    function (object, ...)
 {
     if ( ! c("rcreg") %in% class(object) ) stop("predict.rcreg is intended for rcreg objects, which are created by residualCenter in the rockchalk package")
+
+    dots <- list(...)
+    newdata <- NULL
+    if (!is.null(dots[["newdata"]])) {
+        newdata <- dots[["newdata"]]
+        dots[["newdata"]] <- NULL
+    } else {
+        newdata <- model.frame(object)
+    }
+
     objectTerms <- terms(object)
     dvname <- names(attr(objectTerms, "dataClasses"))[1]
     rcRegs <- object$rcRegressions
@@ -115,10 +127,10 @@ predict.rcreg <-
     for(i in seq_along(rcRegs)){
         aReg <- rcRegs[[i]]
         prodVars <-  unlist(strsplit(nams[i], ".X."))
-        predvals <-  predict.lm( aReg, newdata = newdata )
+        predvals <-  predict.lm(aReg, newdata = newdata )
         actualProduct <- apply(newdata[ ,prodVars], 1, prod)
         myresids <-  actualProduct - predvals
         newdata[[nams[i]]] <- myresids
     }
-    NextMethod(object, newdata = newdata, ...)
+    NextMethod(object, newdata = newdata, dots)
 }
