@@ -48,7 +48,7 @@ perspEmpty <-
     dotargs[["zlab"]] <- ylab
     if (!missing(x1lim)) dotargs[["xlim"]] <- x1lim
     if (!missing(x2lim)) dotargs[["ylim"]] <- x2lim
-    myDefaults <- list(x = x1, y = x2, z=zZero, zlim=yrange, lwd=1, theta=-20, phi=15)
+    myDefaults <- list(x = x1, y = x2, z = zZero, zlim = yrange, lwd = 1, theta = -20, phi = 15)
 
     myargs <- modifyList(myDefaults, dotargs)
     res <- do.call("persp", myargs)

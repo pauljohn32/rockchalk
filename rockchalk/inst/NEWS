@@ -15,7 +15,7 @@ release.
    with predict function.  This is convenient for users but also very
    flexible. 
 
-*** The newdata framework is built on top of "divider" methods tha can
+*** The newdata framework is built on top of "divider" methods that can
     check whether a variable is numeric or categorical, and select
     example values according to user-specified criteria.
 
@@ -59,7 +59,7 @@ options centerOnlyInteractors.
 Please run example(plotSlopes) and example(plotCurves)
 
 *** Changes under the hood. The common plotting functions of
-    plotSlopes and plotCurves are abstracted into as function
+    plotSlopes and plotCurves are abstracted into a function
     plotFancy, so now this will be eaiser for me to maintain. The
     plotting ritual is the same, why keep 2 functions, you ask?
     plotCurves tolerates more complicated regression
