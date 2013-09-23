@@ -2,6 +2,15 @@ rockchalk package NEWS -- history of user-visible changes.
 
 Copyright (C) 2013 Paul E. Johnson.
 
+* version 1.8.1 2013-09-22
+
+This is a minor bugfix update. 
+
+** genCorrelatedData2: calculations were correct, but printout of
+   formula was in error (off by one in beta1[2:(d+1))]
+** plotCurves: plotx always need to take series of points across axis
+   until I learn way to ask formula if plotx has curvature in it. 
+
 * version 1.8 2013-07-30
 
 This is the end of the Spring semester, so its time for the new rockchalk
