@@ -83,7 +83,8 @@
 ##' @export
 ##' @seealso \code{predictOMatic}
 ##' @example inst/examples/predictOMatic-ex.R
-newdata <- function (model = NULL, predVals = NULL, emf = NULL, n = 3, divider = "quantile"){
+newdata <- function (model = NULL, predVals = NULL, emf = NULL, n = 3,
+                     divider = "quantile"){
     if (is.null(emf)) emf <- model.data(model = model)
     divider <- match.arg(tolower(divider),
                          c("quantile", "std.dev.","table","seq"))
@@ -93,7 +94,8 @@ newdata <- function (model = NULL, predVals = NULL, emf = NULL, n = 3, divider =
     modelcv <- centralValues(emf)
     if (is.null(predVals)) return(modelcv)
 
-    ## if predVals is a vector with no names, create predVals, a list with predVals's values as names
+    ## if predVals is a vector with no names, create predVals,
+    ## a list with predVals's values as names
     ## if predVals is a vector with names, create predVals, a list
     if(!is.list(predVals)){
         flnames <- names(predVals)

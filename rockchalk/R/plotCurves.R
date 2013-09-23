@@ -98,11 +98,14 @@ plotCurves <-
     plotxRange <- range(plotxVar, na.rm = TRUE)
     plotxVals <- plotSeq(plotxRange, length.out = 40)
 
-
+    ##Bug noticed 2013-09-22
+    ## focalVals for a nonlinear model needs to be long set,
+    ## not just end points as I imagined before. See 3 lines below
     if (missing(modx) || is.null(modx)) {
         modxVar <- rep(1, nobs(model))
         if (interval == "none") {
-            focalVals <- list(plotxRange)
+            ## focalVals <- list(plotxRange)
+            focalVals <- list(plotxVals)
         } else {
             focalVals <- list(plotxVals)
         }

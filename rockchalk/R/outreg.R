@@ -67,7 +67,12 @@
 ##' The \code{runFuns} argument is inspired by a user request: could
 ##' this include the BIC or other summaries that some models report?
 ##' We have to run the BIC function, and divert the result into the
-##' correct column of the result table. Any R function, whether supplied with and R package or in the user's own code, may be used. This is a two-part specification, one representing the function to be run, the other representing the name that is desired in the output. For example, it might be \code{runFuns = c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
+##' correct column of the result table. Any R function, whether
+##' supplied with and R package or in the user's own code, may be used.
+##' This is a two-part specification, one representing the function to
+##' be run, the other representing the name that is desired in the output.
+##' For example, it might be
+##' \code{runFuns = c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
 ##'
 ##' @param modelList A regression model or an R list of regression
 ##' models.  If this is a named list, the names will be used as column
@@ -125,37 +130,55 @@
 ##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
 ##' outreg0(m1, tight = FALSE, modelLabels=c("Fingers"),
-##' title = "My Only Spread Out Regressions", float = TRUE, alpha = c(0.05, 0.01, 0.001))
+##'     title = "My Only Spread Out Regressions",
+##'     float = TRUE, alpha = c(0.05, 0.01, 0.001))
 ##'
 ##' outreg0(list(ModelA = m1, "Model B label with Spaces" = m2),
-##'        varLabels = list(x1 = "Billie"), title = "My Two Linear Regressions", request = c(fstatistic = "F"))
+##'       varLabels = list(x1 = "Billie"),
+##'       title = "My Two Linear Regressions",
+##'       request = c(fstatistic = "F"))
 ##'
-##' outreg0(list(ModelA = m1, ModelB = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-##' varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names")
+##' outreg0(list(ModelA = m1, ModelB = m2),
+##'     modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+##'     varLabels = list(x1 = "Billie"),
+##'     title = "Note modelLabels Overrides model names")
 ##'
 ##' outreg0(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
-##' title = "Still have showAIC argument, as in previous versions",
-##' showAIC = TRUE, float = TRUE)
+##'     title = "Still have showAIC argument, as in previous versions",
+##'     showAIC = TRUE, float = TRUE)
 ##'
 ##' outreg0(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
-##' title = "Another way to get AIC output", runFuns = c("AIC" = "Akaike IC"))
+##'     title = "Another way to get AIC output",
+##'     runFuns = c("AIC" = "Akaike IC"))
 ##'
-##' outreg0(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three Linear Regressions", float = FALSE)
+##' outreg0(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
+##'     title = "My Three Linear Regressions", float = FALSE)
 ##'
 ##' outreg0(list(m1, m2, m3), tight = FALSE,
-##' modelLabels = c("I Love really long titles", "Hate Long", "Medium"),
-##' float = FALSE)
+##'     modelLabels = c("I Love really long titles", "Hate Long", "Medium"),
+##'     float = FALSE)
 ##'
 ##' outreg0(list(gm1), modelLabels = c("GLM"), float = TRUE)
 ##'
-##' outreg0(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE, alpha = c(0.05, 0.01))
+##' outreg0(list(m1, gm1), modelLabels = c("OLS", "GLM"),
+##'     float = TRUE, alpha = c(0.05, 0.01))
 ##'
-##' outreg0(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
+##' outreg0(list(OLS = m1, GLM = gm1), float = TRUE,
+##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
 ##'
-##' outreg0(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"), digits = 5, alpha = 0.01)
+##' outreg0(list(OLS = m1, GLM = gm1), float = TRUE,
+##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
+##'     digits = 5, alpha = 0.01)
 ##'
-##'  outreg0(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC", logLik = "ll"), digits = 5, alpha = c(0.05, 0.01, 0.001))
-##' outreg0(list(ModelA = gm1, "Model B label with Spaces" = m2), request = c(fstatistic = "F"), runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "nobs" = "N Again?"))
+##' outreg0(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+##'     request = c(fstatistic = "F"),
+##'     runFuns = c("BIC" = "BIC", logLik = "ll"),
+##'     digits = 5, alpha = c(0.05, 0.01, 0.001))
+##' 
+##' outreg0(list(ModelA = gm1, "Model B label with Spaces" = m2),
+##'     request = c(fstatistic = "F"),
+##'     runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC",
+##'          "nobs" = "N Again?"))
 outreg0 <-
     function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
@@ -562,7 +585,12 @@ outreg0 <-
 ##' The \code{runFuns} argument is inspired by a user request: could
 ##' this include the BIC or other summaries that some models report?
 ##' We have to run the BIC function, and divert the result into the
-##' correct column of the result table. Any R function, whether supplied with and R package or in the user's own code, may be used. This is a two-part specification, one representing the function to be run, the other representing the name that is desired in the output. For example, it might be \code{runFuns = c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
+##' correct column of the result table. Any R function, whether
+##' supplied with and R package or in the user's own code, may be used.
+##' This is a two-part specification, one representing the function
+##' to be run, the other representing the name that is desired in the
+##' output. For example, it might be
+##' \code{runFuns = c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
 ##'
 ##' @param modelList A regression model or an R list of regression
 ##' models.  If this is a named list, the names will be used as column
@@ -620,38 +648,54 @@ outreg0 <-
 ##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
 
 ##' outreg(m1, tight = FALSE, modelLabels=c("Fingers"),
-##' title = "My Only Spread Out Regressions", float = TRUE, alpha = c(0.05, 0.01, 0.001))
+##'     title = "My Only Spread Out Regressions", float = TRUE,
+##'     alpha = c(0.05, 0.01, 0.001))
 ##'
 ##' outreg(list(ModelA = m1, "Model B label with Spaces" = m2),
-##'        varLabels = list(x1 = "Billie"), title = "My Two Linear Regressions", request = c(fstatistic = "F"))
+##'     varLabels = list(x1 = "Billie"),
+##'     title = "My Two Linear Regressions", request = c(fstatistic = "F"))
 ##'
-##' outreg(list(ModelA = m1, ModelB = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-##' varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names")
+##' outreg(list(ModelA = m1, ModelB = m2),
+##'     modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+##'     varLabels = list(x1 = "Billie"),
+##'     title = "Note modelLabels Overrides model names")
 ##'
 ##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
-##' title = "Still have showAIC argument, as in previous versions",
-##' showAIC = TRUE, float = TRUE)
+##'     title = "Still have showAIC argument, as in previous versions",
+##'     showAIC = TRUE, float = TRUE)
 ##'
 ##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
-##' title = "Another way to get AIC output", runFuns = c("AIC" = "Akaike IC"))
+##'     title = "Another way to get AIC output",
+##'     runFuns = c("AIC" = "Akaike IC"))
 ##'
-##' outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three Linear Regressions", float = FALSE)
+##' outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
+##'     title = "My Three Linear Regressions", float = FALSE)
 ##'
 ##' outreg(list(m1, m2, m3), tight = FALSE,
-##' modelLabels = c("I Love really long titles", "Hate Long", "Medium"),
-##' float = FALSE)
+##'     modelLabels = c("I Love really long titles", "Hate Long", "Medium"),
+##'     float = FALSE)
 ##'
 ##' outreg(list(gm1), modelLabels = c("GLM"), float = TRUE)
 ##'
-##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE, alpha = c(0.05, 0.01))
+##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE,
+##'     alpha = c(0.05, 0.01))
 ##'
-##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
+##' outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
 ##'
-##' outreg(list(OLS = m1, GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"), digits = 5, alpha = 0.01)
+##' outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
+##'     digits = 5, alpha = 0.01)
 ##'
-##'  outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE, request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC", logLik = "ll"), digits = 5, alpha = c(0.05, 0.01, 0.001))
+##' outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+##'     request = c(fstatistic = "F"),
+##'     runFuns = c("BIC" = "BIC", logLik = "ll"),
+##'     digits = 5, alpha = c(0.05, 0.01, 0.001))
 ##'
-##' outreg(list(ModelA = gm1, "Model B label with Spaces" = m2), request = c(fstatistic = "F"), runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "nobs" = "N Again?"))
+##' outreg(list(ModelA = gm1, "Model B label with Spaces" = m2),
+##'     request = c(fstatistic = "F"),
+##'     runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC",
+##'     "nobs" = "N Again?"))
 ##'
 outreg <-
     function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
@@ -1034,12 +1078,14 @@ outreg <-
 ##' @export
 ##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
 ##' @examples
-##' dat <- genCorrelatedData2(means = c(50,50,50,50,50,50), sds = c(10,10,10,10,10,10), rho = 0.2, beta = rnorm(7), stde = 50)
+##' dat <- genCorrelatedData2(means = c(50,50,50,50,50,50),
+##'     sds = c(10,10,10,10,10,10), rho = 0.2, beta = rnorm(7), stde = 50)
 ##' m1 <- lm(y ~ x1 + x2 + x3 + x4 + x5 + x6 + x1*x2, data = dat)
 ##' summary(m1)
 ##'
 ##' m1out <- outreg(list("Great Regression" = m1), alpha = c(0.05, 0.01, 0.01),
-##'             request = c("fstatistic" = "F"), runFuns = c(AIC = "AIC"), float = TRUE)
+##'          request = c("fstatistic" = "F"), runFuns = c(AIC = "AIC"),
+##'          float = TRUE)
 ##' ##html markup will appear on screen
 ##' outreg2HTML(m1out)
 ##  ## Run this for yourself to create an output file
@@ -1049,8 +1095,9 @@ outreg <-
 ##'
 ##' m2 <- lm(y ~ x1 + x2, data = dat)
 ##'
-##' m2out <- outreg(list("Great Regression" = m1, "Small Regression" = m2), alpha = c(0.05, 0.01, 0.01),
-##'             request = c("fstatistic" = "F"), runFuns = c(BIC = "BIC"))
+##' m2out <- outreg(list("Great Regression" = m1, "Small Regression" = m2),
+##'                alpha = c(0.05, 0.01, 0.01),
+##'                 request = c("fstatistic" = "F"), runFuns = c(BIC = "BIC"))
 ##' outreg2HTML(m2out)
 ##' ## Run this for yourself, it will create the output file funky2.html
 ##' ## outreg2HTML(m2out, filename = "funky2.html")

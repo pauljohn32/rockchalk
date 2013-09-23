@@ -6,7 +6,7 @@ x4 <- rnorm(100)
 y <- rnorm(100)
 dat <- data.frame(y, x1,x2,x3,x4)
 rm(x1,x2,x3,x4,y)
-m1 <- lm(y~ x1*x2 + x4, data=dat)
+m1 <- lm(y~ x1*x2 + x4, data = dat)
  
 m1RC <- residualCenter(m1)
 
@@ -15,10 +15,10 @@ m1RCs <- summary(m1RC)
 ## lapply(m1RC$rcRegressions, summary)
 
 ## Verify residualCenter() output against the manual calculation
-dat$x1rcx2 <- as.numeric(resid(lm(I(x1*x2) ~ x1 + x2, data=dat)))
+dat$x1rcx2 <- as.numeric(resid(lm(I(x1*x2) ~ x1 + x2, data = dat)))
 m1m <- lm(y ~ x1 + x2 + x4 + x1rcx2, data=dat)
 summary(m1m)
-cbind("residualCenter"=coef(m1RC), "manual"=coef(m1m))
+cbind("residualCenter" = coef(m1RC), "manual" = coef(m1m))
 
 
 m2 <- lm(y~ x1*x2*x3 + x4, data=dat)
@@ -26,12 +26,14 @@ m2RC <- residualCenter(m2)
 m2RCs <- summary(m2RC)
 
 ## Verify that result manually
-dat$x2rcx3 <- as.numeric(resid(lm(I(x2*x3) ~ x2 + x3, data=dat)))
-dat$x1rcx3 <- as.numeric(resid(lm(I(x1*x3) ~ x1 + x3, data=dat)))
-dat$x1rcx2rcx3 <- as.numeric( resid(lm(I(x1*x2*x3) ~ x1 + x2 + x3 + x1rcx2 + x1rcx3 + x2rcx3 , data=dat)))
-(m2m <- lm(y ~ x1 + x2 + x3+ x4 + x1rcx2 + x1rcx3 + x2rcx3 + x1rcx2rcx3, data=dat))
+dat$x2rcx3 <- as.numeric(resid(lm(I(x2*x3) ~ x2 + x3, data = dat)))
+dat$x1rcx3 <- as.numeric(resid(lm(I(x1*x3) ~ x1 + x3, data = dat)))
+dat$x1rcx2rcx3 <- as.numeric( resid(lm(I(x1*x2*x3) ~ x1 + x2 + x3 + x1rcx2 +
+                                       x1rcx3 + x2rcx3 , data=dat)))
+(m2m <- lm(y ~ x1 + x2 + x3+ x4 + x1rcx2 + x1rcx3 + x2rcx3 + x1rcx2rcx3,
+           data = dat))
 
-cbind("residualCenter"=coef(m2RC), "manual"=coef(m2m))
+cbind("residualCenter" = coef(m2RC), "manual" = coef(m2m))
 
 
 ### As good as pequod's lmres
@@ -53,11 +55,20 @@ summary(m3RC)
 dat$x1rcx4 <- as.numeric(resid(lm(I(x1*x4) ~ x1 + x4, data=dat)))
 dat$x2rcx4 <- as.numeric(resid(lm(I(x2*x4) ~ x2 + x4, data=dat)))
 dat$x3rcx4 <- as.numeric(resid(lm(I(x3*x4) ~ x3 + x4, data=dat)))
-dat$x1rcx2rcx4 <- as.numeric(resid(lm(I(x1*x2*x4) ~ x1 + x2 + x4 + x1rcx2 + x1rcx4 + x2rcx4, data=dat)))
-dat$x1rcx3rcx4 <- as.numeric(resid(lm(I(x1*x3*x4) ~ x1 + x3 + x4 + x1rcx3 + x1rcx4 + x3rcx4, data=dat)))
-dat$x2rcx3rcx4 <- as.numeric(resid(lm(I(x2*x3*x4) ~ x2 + x3 + x4 + x2rcx3 + x2rcx4 + x3rcx4, data=dat)))
-dat$x1rcx2rcx3rcx4 <- as.numeric(resid(lm(I(x1*x2*x3*x4) ~ x1 + x2 + x3 + x4 + x1rcx2 + x1rcx3 + x2rcx3 + x1rcx4  + x2rcx4 + x3rcx4  + x1rcx2rcx3 + x1rcx2rcx4 + x1rcx3rcx4 + x2rcx3rcx4, data=dat)))
-(m3m <- lm(y ~ x1 + x2 + x3 + x4 + x1rcx2 + x1rcx3 + x2rcx3 + x1rcx4 + x2rcx4 + x3rcx4 + x1rcx2rcx3 + x1rcx2rcx4 + x1rcx3rcx4 + x2rcx3rcx4 + x1rcx2rcx3rcx4, data=dat))
+dat$x1rcx2rcx4 <- as.numeric(resid(lm(I(x1*x2*x4) ~ x1 + x2 + x4 +
+                                      x1rcx2 + x1rcx4 + x2rcx4, data=dat)))
+dat$x1rcx3rcx4 <- as.numeric(resid(lm(I(x1*x3*x4) ~ x1 + x3 + x4 +
+                                      x1rcx3 + x1rcx4 + x3rcx4, data=dat)))
+dat$x2rcx3rcx4 <- as.numeric(resid(lm(I(x2*x3*x4) ~ x2 + x3 + x4 +
+                                      x2rcx3 + x2rcx4 + x3rcx4, data=dat)))
+dat$x1rcx2rcx3rcx4 <-
+    as.numeric(resid(lm(I(x1*x2*x3*x4) ~ x1 + x2 + x3 + x4 +
+                        x1rcx2 + x1rcx3 + x2rcx3 + x1rcx4  + x2rcx4 +
+                        x3rcx4  + x1rcx2rcx3 + x1rcx2rcx4 + x1rcx3rcx4 +
+                        x2rcx3rcx4, data=dat)))
+(m3m <- lm(y ~ x1 + x2 + x3 + x4 + x1rcx2 + x1rcx3 + x2rcx3 + x1rcx4 +
+           x2rcx4 + x3rcx4 + x1rcx2rcx3 + x1rcx2rcx4 + x1rcx3rcx4 +
+           x2rcx3rcx4 + x1rcx2rcx3rcx4, data=dat))
 
 cbind("residualCenter"=coef(m3RC), "manual"=coef(m3m))
 

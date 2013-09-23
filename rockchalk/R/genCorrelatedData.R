@@ -21,19 +21,23 @@
 ##' @param means 2-vector of means for x1 and x2
 ##' @param sds 2-vector of standard deviations for x1 and x2
 ##' @param rho Correlation coefficient for x1 and x2
-##' @param stde standard deviation of the error term in the data generating equation
-##' @param beta beta vector of at most 4 coefficients for intercept, slopes, and interaction
+##' @param stde standard deviation of the error term in the data
+##' generating equation
+##' @param beta beta vector of at most 4 coefficients for intercept,
+##' slopes, and interaction
 ##' @export genCorrelatedData
 ##' @examples
 ##' ## 1000 observations of uncorrelated x1 and x2 with no
 ##' ## interaction between x1 and x2
 ##' dat <- genCorrelatedData(N=1000, rho=0, beta=c(1, 1.0, -1.1, 0.0))
-##' mcGraph1(dat$x1, dat$x2, dat$y, theta=20, phi=8, ticktype="detailed", nticks=10)
+##'   mcGraph1(dat$x1, dat$x2, dat$y, theta=20, phi=8,
+##'   ticktype="detailed", nticks=10)
 ##' m1 <- lm(y ~ x1 + x2, data = dat)
 ##' plotPlane(m1, plotx1 = "x1", plotx2 = "x2")
 ##'
 genCorrelatedData <-
-    function(N = 100, means = c(50,50), sds = c(10,10), rho = 0.0, stde = 1, beta = c(0, 0.2, 0.2, 0.0))
+    function(N = 100, means = c(50,50), sds = c(10,10), rho = 0.0, stde = 1,
+             beta = c(0, 0.2, 0.2, 0.0))
 {
   if (length(beta)> 4) stop("beta vector can have at most 4 values")
   corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
@@ -114,7 +118,8 @@ NULL
 ##' the console when genCorrelatedData2 is called.
 ##'
 ##' @param N Number of cases desired
-##' @param means P-vector of means for X. Implicitly sets the dimension of the predictor matrix as N x P.
+##' @param means P-vector of means for X. Implicitly sets the dimension of
+##' the predictor matrix as N x P.
 ##' @param sds Values for standard deviations for columns of X. If
 ##' less than P values are supplied, they will be recycled.
 ##' @param rho Correlation coefficient for X. Several input formats
@@ -137,20 +142,23 @@ NULL
 ##' @examples
 ##' ## 1000 observations of uncorrelated X with no interactions
 ##' set.seed(234234)
-##' dat <- genCorrelatedData2(N = 10, rho = 0.0, beta = c(1, 2, 1, 1), means = c(0,0,0), sds = c(1,1,1), stde = 0)
+##' dat <- genCorrelatedData2(N = 10, rho = 0.0, beta = c(1, 2, 1, 1),
+##'     means = c(0,0,0), sds = c(1,1,1), stde = 0)
 ##' summarize(dat)
 ##' ## The perfect regression!
 ##' m1 <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m1)
 ##'
-##' dat <- genCorrelatedData2(N = 1000, rho = 0, beta = c(1, 0.2, -3.3, 1.1), stde = 50)
+##' dat <- genCorrelatedData2(N = 1000, rho = 0,
+##'     beta = c(1, 0.2, -3.3, 1.1), stde = 50)
 ##' m1 <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m1)
 ##' predictOMatic(m1)
 ##' plotCurves(m1, plotx = "x2")
 ##'
 ##' ## interaction between x1 and x2
-##' dat <- genCorrelatedData2(N = 1000, rho = 0.2, beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 1)
+##' dat <- genCorrelatedData2(N = 1000, rho = 0.2,
+##'     beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 1)
 ##' summarize(dat)
 ##' ## Fit wrong model? get "wrong" result
 ##' m2w <- lm(y ~ x1 + x2 + x3, data = dat)
@@ -159,12 +167,16 @@ NULL
 ##' m2 <- lm(y ~ x1 * x2 + x3, data = dat)
 ##' summary(m2)
 ##'
-##' dat <- genCorrelatedData2(N = 1000, rho = 0.2, beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 100)
+##' dat <- genCorrelatedData2(N = 1000, rho = 0.2,
+##'     beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16), stde = 100)
 ##' summarize(dat)
 ##' m2.2 <- lm(y ~ x1 * x2 + x3, data = dat)
 ##' summary(m2.2)
 ##'
-##' dat <- genCorrelatedData2(N = 1000, means = c(100, 200, 300, 100),  sds = 20,  rho = c(0.2, 0.3, 0.1, 0, 0, 0), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.16, 0, 0, 0.2, 0, 0, 1.1, 0, 0, 0.1), stde = 200)
+##' dat <- genCorrelatedData2(N = 1000, means = c(100, 200, 300, 100),
+##'     sds = 20,  rho = c(0.2, 0.3, 0.1, 0, 0, 0),
+##'     beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.16, 0, 0, 0.2, 0, 0, 1.1, 0, 0, 0.1),
+##'     stde = 200)
 ##' summarize(dat)
 ##' m2.3w <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m2)
@@ -176,36 +188,43 @@ NULL
 ##' plotCurves(m2.3, plotx = "x1", modx = "x2", modxVals = "std.dev.", n = 5)
 ##'
 ##' simReg <- lapply(1:100, function(x){
-##'     dat <- genCorrelatedData2(N=1000, rho=c(0.2), beta=c(1, 1.0, -1.1, 0.1, 0.0, 0.46), verbose = FALSE)
+##'     dat <- genCorrelatedData2(N = 1000, rho = c(0.2),
+##'         beta = c(1, 1.0, -1.1, 0.1, 0.0, 0.46), verbose = FALSE)
 ##'     mymod <- lm (y ~ x1 * x2 + x3, data = dat)
 ##'     summary(mymod)
 ##' })
 ##'
 ##' x3est <- sapply(simReg, function(reg) {coef(reg)[4 ,1] })
 ##' summarize(x3est)
-##' hist(x3est,  breaks = 40, prob = TRUE, xlab = "Estimated Coefficients for column x3")
+##' hist(x3est,  breaks = 40, prob = TRUE,
+##'     xlab = "Estimated Coefficients for column x3")
 ##'
 ##' r2est <- sapply(simReg, function(reg) {reg$r.square})
 ##' summarize(r2est)
 ##' hist(r2est,  breaks = 40, prob = TRUE, xlab = "Estimates of R-square")
 ##'
 ##' ## No interaction, collinearity
-##' dat <- genCorrelatedData2(N=1000, rho=c(0.1, 0.2, 0.7), beta=c(1, 1.0, -1.1, 0.1), stde = 1)
+##' dat <- genCorrelatedData2(N = 1000, rho = c(0.1, 0.2, 0.7),
+##'     beta = c(1, 1.0, -1.1, 0.1), stde = 1)
 ##' m3 <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m3)
 ##'
-##' dat <- genCorrelatedData2(N=1000, rho=c(0.1, 0.2, 0.7), beta=c(1, 1.0, -1.1, 0.1), stde = 200)
+##' dat <- genCorrelatedData2(N=1000, rho=c(0.1, 0.2, 0.7),
+##'     beta = c(1, 1.0, -1.1, 0.1), stde = 200)
 ##' m3 <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m3)
 ##' mcDiagnose(m3)
 ##'
-##' dat <- genCorrelatedData2(N=1000, rho=c(0.9, 0.5, 0.4), beta=c(1, 1.0, -1.1, 0.1), stde = 200)
+##' dat <- genCorrelatedData2(N = 1000, rho = c(0.9, 0.5, 0.4),
+##'     beta = c(1, 1.0, -1.1, 0.1), stde = 200)
 ##' m3b <- lm(y ~ x1 + x2 + x3, data = dat)
 ##' summary(m3b)
 ##' mcDiagnose(m3b)
 ##'
 genCorrelatedData2 <-
-    function(N = 100, means = c(50,50,50), sds = c(10,10,10), rho = c(0.0, 0.0, 0.0), stde = 100, beta = c(0, 0.15, 0.1, -0.1), verbose = TRUE)
+    function(N = 100, means = c(50,50,50), sds = c(10,10,10),
+             rho = c(0.0, 0.0, 0.0), stde = 100, beta = c(0, 0.15, 0.1, -0.1),
+             verbose = TRUE)
 {
     ## if (length(beta)> 4) stop("beta vector can have at most 4 values")
     ## corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
@@ -248,7 +267,7 @@ genCorrelatedData2 <-
 
     if (verbose == TRUE){
         print("The equation that was calculated was")
-        cat("y =",  beta1[1], "+", paste(beta1[2:d] , c(x.names), collapse = " + ", sep = "*"), "\n" ,
+        cat("y =",  beta1[1], "+", paste(beta1[2:(d+1)] , c(x.names), collapse = " + ", sep = "*"), "\n" ,
             "+ ")
         for(i in seq(d)){
             cat(paste(Bmat2[, i], x.names, x.names[i], collapse = " + ", sep = "*"), "\n",
@@ -291,7 +310,9 @@ vech2Corr <-
 {
     ##compute number of rows from vech. diag not in the vech!
     n <- (sqrt(1 + 8 * length(vech)) + 1)/2
-    if (!as.integer(n) == n) stop(deparse(substitute(vech)), " must have the correct number of elelemnts to fill in a strictly lower triangle in a square matrix.")
+    if (!as.integer(n) == n) stop(deparse(substitute(vech)),
+                       " must have the correct number of elements to fill",
+                       "in a strictly lower triangle in a square matrix.")
     if(any(vech > 1 | vech < -1)) stop("All values in ", deparse(substitute(vech)), " must be in the interval [-1,1]")
     X <- matrix(NA, nrow = n, ncol = n)
     X[lower.tri(X, diag = FALSE)] <- vech

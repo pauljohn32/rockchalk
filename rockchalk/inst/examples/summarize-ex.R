@@ -128,8 +128,8 @@ summarize(dat)
 
 ## Run this if you have internet access
 
-## dat <- read.table(url("http://pj.freefaculty.org/guides/stat/DataSets/USNewsCollege/USNewsCollege.csv"),
-## sep = ",")
+## fn <- "http://pj.freefaculty.org/guides/stat/DataSets/USNewsCollege/USNewsCollege.csv"
+## dat <- read.table(url(fn), sep = ",")
 
 ## colnames(dat) <- c("fice", "name", "state", "private", "avemath",
 ##                    "aveverb", "avecomb", "aveact", "fstmath",

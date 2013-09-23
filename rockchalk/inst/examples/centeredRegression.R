@@ -139,8 +139,10 @@ m2mcmanualpred <- fitted(m2manualmc)
 
 par(mfcol = c(1,2))
 
-plotPlane(m2, "x1", "x2", plotPoints = FALSE, theta = -25, main = "Not Mean Centered", ticktype = "detailed")
-plotPlane(m2mc, "x1", "x2", plotPoints = FALSE, theta = -25, main = "Mean Centered", ticktype = "detailed")
+plotPlane(m2, "x1", "x2", plotPoints = FALSE, theta = -25,
+          main = "Not Mean Centered", ticktype = "detailed")
+plotPlane(m2mc, "x1", "x2", plotPoints = FALSE, theta = -25,
+          main = "Mean Centered", ticktype = "detailed")
 
 par(mfcol = c(1,1))
 
@@ -148,7 +150,9 @@ par(mfcol = c(1,1))
 ## same in two dimensions.  Let's create a scatterplot displaying the
 ## predicted values from the ordinary and the mean-centered models
 
-plot(fitted(m2), fitted(m2mc), xlab = "predicted from uncentered x", ylab = "predicted from centered x", main = "(Not)Centered Predictions Identical")
+plot(fitted(m2), fitted(m2mc), xlab = "predicted from uncentered x",
+     ylab = "predicted from centered x",
+     main = "(Not)Centered Predictions Identical")
 
 ##
 ##
@@ -213,14 +217,16 @@ coef(m2)["x2"] + coef(m2)["x1:x2"] * mean(dat3$x1, na.rm = TRUE)
 
 V <- vcov(m2)
 
-sqrt(V["x1","x1"] + mean(dat3$x2)^2 * V["x1:x2","x1:x2"] + 2 * mean(dat3$x2) * V["x1","x1:x2"])
+sqrt(V["x1","x1"] + mean(dat3$x2)^2 * V["x1:x2","x1:x2"] +
+     2 * mean(dat3$x2) * V["x1","x1:x2"])
 
 ## [1] 0.8400474
 
 ## That's the SAME number reported in the Std.Err. column for the centered
 ## model.
 
-sqrt(V["x2","x2"] + mean(dat3$x1)^2 * V["x1:x2","x1:x2"] + 2 * mean(dat3$x1) * V["x2","x1:x2"])
+sqrt(V["x2","x2"] + mean(dat3$x1)^2 * V["x1:x2","x1:x2"] +
+     2 * mean(dat3$x1) * V["x2","x1:x2"])
 
 ##[1]  0.7791997
 ##
@@ -253,13 +259,17 @@ summary(m2rc)
 op <- par(no.readonly = TRUE)
 par(mar = c(2,2,2,1), mfcol = c(2,2))
 
-plotPlane(m1, "x1", "x2", plotPoints = TRUE, theta = -25, main = "No Interaction", ticktype = "detailed")
+plotPlane(m1, "x1", "x2", plotPoints = TRUE, theta = -25,
+          main = "No Interaction", ticktype = "detailed")
 
-plotPlane(m2, "x1", "x2", plotPoints = TRUE, theta = -25, main = "Not Centered", ticktype = "detailed")
+plotPlane(m2, "x1", "x2", plotPoints = TRUE, theta = -25,
+          main = "Not Centered", ticktype = "detailed")
 
-plotPlane(m2rc, "x1", "x2", plotPoints = TRUE, theta = -25, main = "Residual Centered", ticktype = "detailed")
+plotPlane(m2rc, "x1", "x2", plotPoints = TRUE, theta = -25,
+          main = "Residual Centered", ticktype = "detailed")
 
-plotPlane(m2mc, "x1", "x2", plotPoints = TRUE, theta = -25, main = "Mean Centered", ticktype = "detailed")
+plotPlane(m2mc, "x1", "x2", plotPoints = TRUE, theta = -25,
+          main = "Mean Centered", ticktype = "detailed")
 
 par(mfcol = c(1,1))
 
@@ -289,7 +299,9 @@ dat3mc$x2 <- dat3mc$x2c
 m2mcpred <- predict(m2mc, newdata = dat3mc)
 m2rcpred <- predict(m2rc, newdata = dat3)
 
-dat4 <- data.frame("m2pred"= m2pred, "m2mcpred" = m2mcpred, "m2mcmaunal"= m2mcmanualpred, "m2rcpred" = m2rcpred, "m2rcpred2" = predm2manualrc)
+dat4 <- data.frame("m2pred"= m2pred, "m2mcpred" = m2mcpred,
+                   "m2mcmaunal"= m2mcmanualpred, "m2rcpred" = m2rcpred,
+                   "m2rcpred2" = predm2manualrc)
 
 head(dat4)
 

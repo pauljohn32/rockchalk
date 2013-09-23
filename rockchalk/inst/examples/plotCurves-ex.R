@@ -10,24 +10,34 @@ df <- data.frame(ldose = rep(0:5, 2),
                  SF.numdead = c(1, 4, 9, 13, 18, 20, 0, 2, 6, 10, 12, 16))
 df$SF.numalive = 20 - df$SF.numdead
 
-budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family = binomial)
+budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,
+                  family = binomial)
 
 
-plotCurves(budworm.lg, plotx = "ldose", modx = "sex", interval = "confidence", ylim = c(0, 1))
+plotCurves(budworm.lg, plotx = "ldose", modx = "sex", interval = "confidence",
+           ylim = c(0, 1))
 
 ## See infert
-model2 <- glm(case ~ age + parity + education + spontaneous + induced,  data = infert, family = binomial())
+model2 <- glm(case ~ age + parity + education + spontaneous + induced,
+              data = infert, family = binomial())
 
 ## Curvature so slight we can barely see it
-model2pc1 <- plotCurves(model2, plotx = "age", modx = "education", interval = "confidence", ylim = c(0, 1))
+model2pc1 <- plotCurves(model2, plotx = "age", modx = "education",
+                        interval = "confidence", ylim = c(0, 1))
 
 
-model2pc2 <- plotCurves(model2, plotx = "age", modx = "education", modxVals = levels(infert$education)[1], interval = "confidence", ylim = c(0, 1))
+model2pc2 <- plotCurves(model2, plotx = "age", modx = "education",
+                        modxVals = levels(infert$education)[1],
+                        interval = "confidence", ylim = c(0, 1))
 
 
-model2pc2 <- plotCurves(model2, plotx = "age", modx = "education", modxVals = levels(infert$education)[c(2,3)], interval = "confidence", ylim = c(0, 1))
+model2pc2 <- plotCurves(model2, plotx = "age", modx = "education",
+                        modxVals = levels(infert$education)[c(2,3)],
+                        interval = "confidence", ylim = c(0, 1))
 
-model2pc2 <- plotCurves(model2, plotx = "age", modx = "education", modxVals = levels(infert$education)[c(2,3)], ylim = c(0, 1), type = "response")
+model2pc2 <- plotCurves(model2, plotx = "age", modx = "education",
+                        modxVals = levels(infert$education)[c(2,3)],
+                        ylim = c(0, 1), type = "response")
 
 
 
@@ -49,16 +59,20 @@ dat$xcat2n <- with(dat, contrasts(xcat2)[xcat2, ])
 
 
 stde <- 2
-dat$y <- with(dat, 0.03 + 11.5 * log(x1) * contrasts(dat$xcat1)[dat$xcat1] + 0.1 * x2 + 0.04 * x2^2 + stde*rnorm(N))
+dat$y <- with(dat, 0.03 + 11.5 * log(x1) * contrasts(dat$xcat1)[dat$xcat1] +
+              0.1 * x2 + 0.04 * x2^2 + stde*rnorm(N))
 
 stde <- 1
-dat$y2 <- with(dat, 0.03 + 0.1 * x1 + 0.1 * x2 + 0.25 * x1 * x2 + 0.4 * x3 - 0.1 * x4 + stde * rnorm(N))
+dat$y2 <- with(dat, 0.03 + 0.1 * x1 + 0.1 * x2 + 0.25 * x1 * x2 + 0.4 * x3 -
+               0.1 * x4 + stde * rnorm(N))
 stde <- 8
 dat$y3 <- with(dat, 3 + 0.5 * x1 + 1.2 * (as.numeric(xcat1)-1) +
 -0.8 * (as.numeric(xcat1)-1) * x1 +  stde * rnorm(N))
 
 stde <- 8
-dat$y4 <- with(dat, 3 + 0.5 * x1 + contrasts(dat$xcat2)[dat$xcat2, ] %*% c(0.1, -0.2, 0.3, 0.05)  + stde * rnorm(N))
+dat$y4 <- with(dat, 3 + 0.5 * x1 +
+               contrasts(dat$xcat2)[dat$xcat2, ] %*% c(0.1, -0.2, 0.3, 0.05)  +
+               stde * rnorm(N))
 
 
 ## Curvature with interaction
@@ -138,9 +152,11 @@ plotCurves(mc1, modx = "sex", plotx = "income", modxVals = "M")
 mc2 <- lm(statusquo ~ region * income, data =  Chile)
 summary(mc2)
 plotCurves(mc2, modx = "region", plotx = "income")
-plotCurves(mc2, modx = "region", plotx = "income", modxVals = levels(Chile$region)[c(1,4)])
+plotCurves(mc2, modx = "region", plotx = "income",
+           modxVals = levels(Chile$region)[c(1,4)])
 plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"))
-plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"), interval = "conf")
+plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"),
+           interval = "conf")
 
 plotCurves(mc2, modx = "region", plotx = "income", plotPoints = FALSE)
 

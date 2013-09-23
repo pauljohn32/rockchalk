@@ -39,16 +39,18 @@ x1 <- rpois(100, l=6)
 x2 <- rnorm(100, m=50, s=10)
 x3 <- rnorm(100)
 xcat1 <- gl(2,50, labels=c("M","F"))
-xcat2 <- cut(rnorm(100), breaks=c(-Inf, 0, 0.4, 0.9, 1, Inf), labels=c("R", "M", "D", "P", "G"))
+xcat2 <- cut(rnorm(100), breaks=c(-Inf, 0, 0.4, 0.9, 1, Inf),
+             labels=c("R", "M", "D", "P", "G"))
 dat <- data.frame(x1, x2, x3, xcat1, xcat2)
 rm(x1, x2, x3, xcat1, xcat2)
 dat$xcat1n <- with(dat, contrasts(xcat1)[xcat1, ,drop=FALSE])
 dat$xcat2n <- with(dat, contrasts(xcat2)[xcat2, ])
 
 STDE <- 20
-dat$y <- with(dat, 0.03 + 0.8*x1 + 0.1*x2 + 0.7*x3 + xcat1n %*% c(2) + xcat2n %*% c(0.1,-2,0.3, 0.1) + STDE*rnorm(100))
-
-
+dat$y <- with(dat,
+              0.03 + 0.8*x1 + 0.1*x2 + 0.7*x3 +
+              xcat1n %*% c(2) + xcat2n %*% c(0.1,-2,0.3, 0.1) +
+              STDE*rnorm(100))
 
 
 
@@ -141,7 +143,8 @@ x11 <- rnorm(100)
 
 
 
-m6 <- lm(y ~ x1 + I(x1^2) + cos(x2) + log(10 + x10) + sin(x11) + x10*x11, data=dat)
+m6 <- lm(y ~ x1 + I(x1^2) + cos(x2) + log(10 + x10) + sin(x11) +
+         x10*x11, data = dat)
 m6.data <- model.data(m6)
 head(m6.data)
 dim(m6.data)

@@ -1,12 +1,16 @@
 ## Manufacture some predictors
 set.seed(12345)
 
-dat <- genCorrelatedData2 (N = 100, means = rep(0,4), sds = 1, rho = 0.2,   beta = c(0.3, 0.5, -0.45, 0.5, -0.1, 0, 0.6), stde = 2)
+dat <- genCorrelatedData2 (N = 100, means = rep(0,4), sds = 1, rho = 0.2,
+                           beta = c(0.3, 0.5, -0.45, 0.5, -0.1, 0, 0.6),
+                           stde = 2)
 
 dat$xcat1 <- gl(2, 50, labels = c("M", "F"))
-dat$xcat2 <- cut(rnorm(100), breaks = c(-Inf, 0, 0.4, 0.9, 1, Inf), labels = c("R", "M", "D", "P", "G"))
+dat$xcat2 <- cut(rnorm(100), breaks = c(-Inf, 0, 0.4, 0.9, 1, Inf),
+                 labels = c("R", "M", "D", "P", "G"))
 ## incorporate effect of categorical predictors
-dat$y <- dat$y + 1.9 * dat$x1 * contrasts(dat$xcat1)[dat$xcat1] + contrasts(dat$xcat2)[dat$xcat2 , ] %*% c(0.1, -0.1, 0, 0.2)
+dat$y <- dat$y + 1.9 * dat$x1 * contrasts(dat$xcat1)[dat$xcat1] +
+           contrasts(dat$xcat2)[dat$xcat2 , ] %*% c(0.1, -0.1, 0, 0.2)
 
 m1 <- lm(y ~ x1 * x2 + x3 + x4 + xcat1 + xcat2, data = dat)
 summary(m1)
@@ -30,10 +34,13 @@ plotSlopes(m1, plotx = "x1", modx = "x2", n = 5)
 ## Pick focal values yourself?
 plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = c(-2, 0, 0.5))
 ## Alternative algorithm?
-plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = "std.dev.", main = "Uses \"std.dev.\" Divider for the Moderator", xlab = "My Predictor", ylab = "Write Anything You Want for ylab")
+plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = "std.dev.",
+           main = "Uses \"std.dev.\" Divider for the Moderator",
+           xlab = "My Predictor", ylab = "Write Anything You Want for ylab")
 
 ## Will catch output object from this one
-m1ps <- plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = "std.dev.", n = 5, main = "Setting n = 5 Selects More Focal Values for Plotting")
+m1ps <- plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = "std.dev.", n = 5,
+                 main = "Setting n = 5 Selects More Focal Values for Plotting")
 
 m1ts <- testSlopes(m1ps)
 
@@ -75,10 +82,13 @@ summary(m7)
 plotSlopes(m7, plotx = "income", modx = "region")
 
 plotSlopes(m7, plotx = "income", modx = "region", plotPoints = FALSE)
-plotSlopes(m7, plotx = "income", modx = "region", plotPoints = FALSE, interval = "conf")
-plotSlopes(m7, plotx = "income", modx = "region", modxVals = c("SA","S", "C"), plotPoints = FALSE, interval = "conf")
+plotSlopes(m7, plotx = "income", modx = "region", plotPoints = FALSE,
+           interval = "conf")
+plotSlopes(m7, plotx = "income", modx = "region", modxVals = c("SA","S", "C"),
+           plotPoints = FALSE, interval = "conf")
 ## Same, choosing 3 most frequent values
-plotSlopes(m7, plotx = "income", modx = "region", n = 3, plotPoints = FALSE, interval = "conf")
+plotSlopes(m7, plotx = "income", modx = "region", n = 3, plotPoints = FALSE,
+           interval = "conf")
 
 
 m8 <- lm(statusquo ~ region * income + sex + age, data= Chile)
@@ -106,8 +116,11 @@ m11 <- lm(prestige ~ education * type, data = Prestige)
 
 plotSlopes(m11, plotx = "education", modx = "type", interval = "conf")
 dev.new()
-plotSlopes(m11, plotx = "education", modx = "type", modxVals = c("prof"), interval = "conf")
+plotSlopes(m11, plotx = "education", modx = "type",
+           modxVals = c("prof"), interval = "conf")
 dev.new()
-plotSlopes(m11, plotx = "education", modx = "type", modxVals = c("bc"), interval = "conf")
+plotSlopes(m11, plotx = "education", modx = "type",
+           modxVals = c("bc"), interval = "conf")
 dev.new()
-plotSlopes(m11, plotx = "education", modx = "type", modxVals = c("bc", "wc"), interval = "conf")
+plotSlopes(m11, plotx = "education", modx = "type",
+           modxVals = c("bc", "wc"), interval = "conf")
