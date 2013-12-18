@@ -39,6 +39,7 @@
 ##' Maintainer: Paul Johnson \email{<pauljohn@@ku.edu>}
 ##' @references http://pj.freefaculty.org/R
 ##' @keywords regression hplot
+##' @import MASS
 NULL
 
 

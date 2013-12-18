@@ -1,4 +1,14 @@
+2013-12-17  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/plotSlopes.R (plotSlopes): add argument legendTitle
+
 2013-09-22  pauljohn  <pauljohn@pjlap-d7.pjlap-d7.pols.ku.edu>
+
+	* ../R/plotCurves.R (plotCurves): llwd argument added to parms for
+	plotFancy
+
+	* ../R/plotSlopes.R (plotFancy): dotargs[["lty"]] argument was not
+	handled properly in plotfancy
 
 	* ../R/plotCurves.R (plotCurves): focalVals has to be many
 	points from min to max, even for a linear model, because I have

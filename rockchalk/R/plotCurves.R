@@ -163,7 +163,12 @@ plotCurves <-
     }
 
 
-    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar), plotx = plotx, modx = modx, modxVals = modxVals, interval = interval, plotPoints = plotPoints, plotLegend = plotLegend, col = col,  opacity = opacity, xlim = plotxRange,  ylab = ylab, ylim = plotyRange)
+    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
+                  plotx = plotx, modx = modx, modxVals = modxVals,
+                  interval = interval, plotPoints = plotPoints,
+                  plotLegend = plotLegend, col = col,  opacity = opacity,
+                  xlim = plotxRange,  ylab = ylab, ylim = plotyRange,
+                  llwd = llwd)
     parms <- modifyList(parms, dotargs)
     plotArgs <- do.call("plotFancy", parms)
 

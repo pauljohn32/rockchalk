@@ -1,8 +1,8 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.1
-Date: 2013-09-23
+Version: 1.8.2
+Date: 2013-12-17
 Author: Paul E. Johnson <pauljohn@ku.edu>
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for ease of
@@ -22,22 +22,3 @@ LazyLoad: yes
 Depends:
     MASS,
     car
-Collate:
-    'magRange.R'
-    'mcGraph.R'
-    'outreg.R'
-    'perspEmpty.R'
-    'rockchalk-package.R'
-    'genCorrelatedData.R'
-    'centralValues.R'
-    'plotSlopes.R'
-    'plotPlane.R'
-    'mcDiagnose.R'
-    'meanCenter.R'
-    'plotCurves.R'
-    'testSlopes.R'
-    'residualCenter.R'
-    'summarize.R'
-    'predictOMatic.R'
-    'recodeFactors.R'
-    'utils.R'
