@@ -1,3 +1,14 @@
+2014-01-02  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R (markup): new function to insert either HTML or
+	LaTeX Markup. Mostly works!
+	(outreg): New version of outreg, trying to completely break the
+	markup specifics apart, so one can have a document in the abstract
+	which is then converted to html or latex.  It doesn't work
+	perfectly yet because I don't understand how to work around
+	language specific things, like LaTeX requiring a table's width to
+	be declared, while HTML does not.
+
 2013-12-17  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/plotSlopes.R (plotSlopes): add argument legendTitle
