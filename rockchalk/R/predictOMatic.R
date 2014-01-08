@@ -161,9 +161,12 @@ model.data <- function(model, na.action = na.pass){
     varNamesLHS <- setdiff(varNames, varNamesRHS)
     env <- environment(fmla)
     if (is.null(env))
-        env <- parent.frame()
-
-    dataOrig <-  eval(model$call$data, env)
+        env <- parent.frame() 
+    if (isS4(model)) {
+        dataOrig <- eval(model@call$data, env)
+    } else {
+        dataOrig <-  eval(model$call$data, env)
+    }
     if (is.null(dataOrig)) dataOrig <- model.frame(model)
 
     dataOrigRN <- row.names(dataOrig)

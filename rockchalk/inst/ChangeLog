@@ -1,3 +1,8 @@
+2014-01-07  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/predictOMatic.R (model.data):model$call did not work on S4
+	objects.  So add conditional on isS4. Must be better way. 
+
 2014-01-02  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/outreg.R (markup): new function to insert either HTML or
