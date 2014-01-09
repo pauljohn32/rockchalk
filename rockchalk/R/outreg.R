@@ -1588,10 +1588,9 @@ outreg2HTML <-
 outreg.merMod <-
     function(modelList, title, label, modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
-             runFuns, digits = 3, alpha = 0.05, type = "latex")
+             runFuns, digits = 3, alpha = 0.05, type = "latex", SElist = NULL, PVlist = NULL)
 {
     ##beautified names for gof variables
-
     gofNames <- c(sigma = "RMSE",
                   r.squared = paste("_R2_"),
                   deviance = "Deviance",
@@ -1603,21 +1602,26 @@ outreg.merMod <-
     ## Required methods
     req <- (c("coef", "nobs", "vcov", "summary"))
    
-    checkReg <- function(modl){
-        ## required methods for model
+    checkReg <- function(modlist){
+        ##Pre-approved model classes
+        knownTypes <- c("lm", "glm", "merMod")
+        approved <- sapply(modlist, inherits, knownTypes)
         ## Ask modl for a list of all methods that apply to it
-        methodList <- unlist(sapply(class(modl), function(x) if (x != "list") methods(class = x)))
-        ## find out if methodList members have req
-        reqCheck <- sapply(req, function(x) sum(grepl(x, methodList)))
-        ## stop if any are 0
-        if (length(grep("0", reqCheck)) > 0){
-            if (y <- grep("0", reqCheck)) {
-                messg <- paste("The regression model must have these methods: ",
-                               paste(req, collapse = " "), "\n",
-                               " and the model provided is missing",
-                               req[y])
-                stop(messg)
+        problematic <-  modlist[!approved]
+        if (length(problematic) == 0) return()
+        problematicClasses <- lapply(problematic, class)
+        for (x in problematicClasses) {
+            methodList <- unlist(lapply(x, function(x) if (x != "list") methods(class = x)))
+            reqCheck <- sapply(req, function(x) sum(grepl(x, methodList)))
+            ## stop if any are 0
+            missingMethods <- req[grep("0", reqCheck)]
+            print(paste("The regression model must have these methods: ", paste(req, collapse = " ")))
+            messg <- c()
+            for (i in missingMethods) {
+                messg <- c(messg, paste("The model of class", x, "is missing ",
+                               i, "\n"))
             }
+            stop(messg)
         }
     }
 
@@ -1651,9 +1655,8 @@ outreg.merMod <-
     ## returns text. For getting r.square, adj.r.square, fstatistic.
     harvest <- function(sl, name) {
         res <- vector("character", length = length(sl))
-        namz <- names(sl)
-        names(res) <- namz
-
+        names(res) <- names(sl)
+        
         for(i in seq_along(sl)) {
             sli <- sl[[i]]
             y <- sli[[name]]
@@ -1670,8 +1673,8 @@ outreg.merMod <-
             if (!is.null(y)) res[i] <- y else res[i] <- ""
         }
 
-        if (any(!is.na(res))) nonNull <- TRUE else nonNull <- FALSE
-        names(res) <- names(sl)
+        if (any(res != "")) nonNull <- TRUE else nonNull <- FALSE
+        ##names(res) <- names(sl)
         attr(res, "nonNull") <- nonNull
         res
     }
@@ -1691,8 +1694,9 @@ outreg.merMod <-
         xname <- ifelse(is.na(gofNames[name]), name, gofNames[name])
         if (attr(y, "nonNull")) {
             res <- gofRow(y, xname)
+        } else {
+            res <- ""
         }
-        res
     }
 
     ## Insert a horizontal line, or as close as we can get in an html table
@@ -1716,51 +1720,62 @@ outreg.merMod <-
 
     ## So as if the thing is ONLY a list with setequal
     if ( !setequal(class(modelList), "list") ){
-        ## checkReg(modelList) ### PJPJPJ FIXME TODO!
         ## modelList is not a list only, so put it in a list
         modelList <- list(modelList)
-    } else {
-        ## lapply(modelList, checkReg) ###PJPJP FIXME
     }
+    checkReg(modelList) ###PJPJP FIXME. OK 20140109
+    
     
     nmodels <- length(modelList)
+    modelLabels <- names(modelList)
 
-    if (is.null(modelLabels)){
-        ##Make temporary names
-        modelLabels <- paste("M", 1:nmodels, sep ="")
-        mln <- names(modelList)
-        for (i in seq_along(mln)){
-            modelLabels[i] <- mln[i]
+    for (i in seq_along(modelLabels)) {
+        if (modelLabels[i] == ""){
+            ##Make temporary names
+            modelLabels[i] <- paste0("M", i)
         }
     }
 
+    names(modelList) <- modelLabels
+    
     ##Ugh. nonunique labels. brute force fix
     modelLabels <- make.unique(modelLabels)
     names(modelList) <- modelLabels
 
-    ## Get a regression summary object for each fitted model
-    summaryList <- list()
     parmnames <- vector()
     myModelClass <- vector()
 
 
-    getBSE.merMod <- function(modl, alpha) {
+    getBSE <- function(modl, alpha, modlLab = NULL) {
         estTable <- coef(summary(modl, digits = 11))
         best <- estTable[ , "Estimate"]
-        se <- estTable[ ,"Std. Error"]
-        DF <- nobs(modl)
-        
-        x <- pmatch("Pr", colnames(estTable))
-        if (!is.na(x)) {
-            PT <- estTable[ , colnames(estTable)[x]]
-        } else if ( "t value" %in% colnames(estTable)) {
-            PT <- pt(abs(estTable[ , "t value"]), lower.tail = FALSE, df = DF) * 2
-        } else {
-            stop("outreg: getBSE failed")
+        ## Use SE from list instead if available
+        if (is.null(se <- tryCatch(SElist[[modlLab]], error = function(e) NULL))) {
+            se <- estTable[ , "Std. Error"]
         }
         
+        if (!is.null(xxx <- tryCatch(df.residual(modl), error = function(e) NULL))) {
+            DF <- xxx
+        } else {
+            DF <- nobs(modl) - NROW(estTable) ##FIXME, KR approx
+        }
+
+        if (is.null(PT <- tryCatch(PVlist[[modlLab]], error = function(e) NULL))) {
+            if (!is.na(x <-pmatch("Pr", colnames(estTable)))) {
+                PT <- estTable[ , colnames(estTable)[x]]
+            } else if ( "t value" %in% colnames(estTable)) {
+                PT <- pt(abs(estTable[ , "t value"]), lower.tail = FALSE, df = DF) * 2
+            } else if ( "z value" %in% colnames(estTable)) {
+                PT <- pt(abs(estTable[ , "z value"]), lower.tail = FALSE, df = DF) * 2
+                ##fixme. Use Normal?
+            } else {
+                alpha <- NULL
+                warning("outreg: can't see how to get P Values. No Stars for you")
+            }
+        }
+       
         stars <- function(x, alpha) {xxx <- sum(abs(x) < alpha)
-                                     paste0(rep("*", xxx, collapse = ""))}
+                                     paste0("", rep("*", xxx), collapse = "")}
         nstars <- sapply(PT, stars, alpha)
         addStar <- function(b, nstar) paste0(round(b, digits), nstar)
         BSTAR <- best
@@ -1771,18 +1786,16 @@ outreg.merMod <-
         data.frame(B = BSTAR, SE = se, stringsAsFactors = FALSE)
     }
                       
-    
-    ## for (i in seq_along(modelList)){
-    ##     model <- modelList[[i]]
-    ##     summaryList[[i]] <- summary(model)
-    ##     parmnames <- unique(c(parmnames, names(coef(model))))
-    ##     myModelClass[i] <- class(model)[1]
-    ##     i <- i+1
-    ## }
-
+    ## Get a regression summary object for each fitted model
+    summaryList <- lapply(modelList, summary)
     ##    summaryList <- lapply(modelList, function(x) tryCatch(summary(x), error = NULL))
     
-    BSEs <- lapply(modelList, getBSE.merMod, alpha)
+    ##    BSEs <- lapply(modelList, getBSE, alpha)
+
+    for(i in seq_along(modelList)){
+        xxx <- getBSE(modelList[[i]], alpha, names(modelList)[i])
+    }
+    
     names(BSEs) <- modelLabels
   
     parmnames <- unique(unlist(lapply(BSEs, function(bse) rownames(bse))))
@@ -1813,7 +1826,8 @@ outreg.merMod <-
             vcfmt[ ,1] <- gsub(":$", "", vcfmt[ ,1])
             vcfmt <- vcfmt[ , c("Groups", "Std.Dev."), drop = FALSE]
         } else {
-            vcfmt <- cbind("Groups" = " ", "Std.Dev." = " ")
+           ## vcfmt <- cbind("Groups" = "", "Std.Dev." = "")
+            vcfmt <- NULL
         }
         vcfmt
     }
@@ -1821,13 +1835,15 @@ outreg.merMod <-
 
     getVCmat <- function(modelList, modelLabels){
         VCs <-lapply(modelList, getVC.merMod)
-        names(VCs) <- modelLabels
-        vcnames <-  unique(unlist(lapply(modelLabels, function(bsen) VCs[[bsen]][, "Groups", drop = FALSE])))
-      
-        if(indx <- which(vcnames == "Residual")){
-            vcnames <- vcnames[ -indx ]
-            vcnames <- c("Residual", vcnames)
-        }
+       
+        ##names(VCs) <- modelLabels
+        vcnames <- unique(unlist(lapply(modelLabels, function(bsen) VCs[[bsen]][, "Groups", drop = FALSE])))
+        
+        if(any("Residual" %in% vcnames)) {
+            if(!is.na(indx <- match("Residual" , vcnames))) {
+                vcnames <- vcnames[ -indx ]
+                vcnames <- c("Residual", vcnames)
+        }}
         
         VCmat <- matrix("    ", nrow = length(vcnames), ncol =
                         length(modelList), dimnames = list(vcnames, modelLabels))
@@ -1842,6 +1858,7 @@ outreg.merMod <-
     VCmat <- getVCmat(modelList, modelLabels)
 
     printVC <- function(VCmat){
+        if (!any(VCmat != "")) return()
         aline <- paste0("_BR_", "Random Effects (_SIGMA_)", "_EOR__EOL_")
         if (tight) hereSep <- " _SEP_ " else hereSep <-  " _SEP_     _SEP_ "
  
@@ -1946,10 +1963,10 @@ outreg.merMod <-
     z <- c(z, paste(aline, collapse = ""))
 
     ## The new way
-    ## z <- c(z, gofPrint(summaryList, "sigma"))
+    z <- c(z, gofPrint(summaryList, "sigma"))
 
     ## The new way
-    ## z <- c(z, gofPrint(summaryList, "r.squared"))
+    z <- c(z, gofPrint(summaryList, "r.squared"))
 
     ##"adj.r.squared" if there is more than 1 predictor
 
