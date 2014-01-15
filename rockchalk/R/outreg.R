@@ -126,9 +126,9 @@
 ##' m3 <- lm(y1 ~ x1 + x2, data = dat)
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
 ##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
-
+##'
 ##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
-
+##'
 ##' outreg0(m1, tight = FALSE, modelLabels=c("Fingers"),
 ##'     title = "My Only Spread Out Regressions",
 ##'     float = TRUE, alpha = c(0.05, 0.01, 0.001))
@@ -567,7 +567,7 @@ outreg0 <-
 ##' About the customizations \code{request}.  The \code{request}
 ##' argument supplies a list of names of summary output elements that
 ##' are desired. The format is a pair, a value to be retrieved from
-##' \code{summary(model}}, and a pretty name to be printed for
+##' \code{summary(model)}, and a pretty name to be printed for
 ##' it. With the \code{lm()} regression, for example, one might want
 ##' the output of the F test and the adjusted R-square: Include
 ##' \code{request = c(adj.r.squared = "adj. $R^2$", "fstatistic" =
@@ -639,12 +639,15 @@ outreg0 <-
 ##' table. Not relevant if type = "html".
 ##' @param label A string to be used as a LaTeX label in the table to be
 ##' created. Not relevant if type = "html".
-##' @param gofNames A named vector of character strings that can replace the ugly
-##' statistical output names with beautiful labels in the output. 
-##' @param deviance 
-##' @param adj.r.squared 
-##' @param fstatistic 
+##' @param gofNames Optional pretty names. R regression summaries use
+##' names like "sigma" or "r.squared" that we might want to revise for
+##' presentation. I prefer to refer to "sigma" as "RMSE", but perhaps
+##' you instead prefer something like \code{gofnames = c("sigma" = "That
+##' Estimate I don't understand", "deviance" = "Another Mystery")}. The
+##' words that you might replace are "sigma", "r.squared",
+##' "deviance", "adj.r.squared", "fstatistic".
 ##' @export outreg
+##' @importFrom lme4 VarCorr
 ##' @rdname outreg
 ##' @return A character vector, one element per row of the regression table.
 ##' @keywords regression
@@ -666,33 +669,33 @@ outreg0 <-
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
 ##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
 ##'
-##' outreg(list("Fingers" = m1, tight = FALSE, 
+##' outreg(list("Fingers" = m1), tight = FALSE, 
 ##'     title = "My Only Spread Out Regressions", float = TRUE,
-##'     alpha = c(0.05, 0.01, 0.001))
+##'     alpha = c(0.05, 0.01, 0.001)) 
 ##'
-##' outreg(list(ModelA = m1, "Model B label with Spaces" = m2),
+##' outreg(list("Model A" = m1, "Model B label with Spaces" = m2),
 ##'     varLabels = list(x1 = "Billie"),
 ##'     title = "My Two Linear Regressions", request = c(fstatistic = "F"))
 ##'
-##' outreg(list(ModelA = m1, ModelB = m2),
+##' outreg(list("Model A" = m1, "Model B" = m2),
 ##'     modelLabels = c("Overrides ModelA", "Overrides ModelB"),
 ##'     varLabels = list(x1 = "Billie"),
 ##'     title = "Note modelLabels Overrides model names")
 ##'
-##' ex5 <- outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' ex5 <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, float = TRUE)
 ##' ## make a file:
 ##' ## cat(ex5, file = "some_name_you_choose.tex")
 ##'
-##' ex5html <- outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' ex5html <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, float = TRUE, type = "html")
 ##' ## make a file:
 ##' ## cat(ex5, file = "some_name_you_choose.html")
 ##' ## Open that in LibreOffice or MS Word
 ##' 
-##' outreg(list(m1, m2), modelLabels = c("Whatever", "Whichever"),
+##' outreg(list("Whatever" = m1, "Whatever" =m2),
 ##'     title = "Another way to get AIC output",
 ##'     runFuns = c("AIC" = "Akaike IC"))
 ##'
@@ -709,13 +712,13 @@ outreg0 <-
 ##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3), PVlist =
 ##'        list("Model C" = c(0.004, 0.4, 0.000003)), alpha = c(0.05, 0.01, 0.001))
 ##'
-##' outreg(list(m1, m2, m3), tight = FALSE,
-##'     modelLabels = c("I Love really long titles", "Prefer Brevity", "Short"),
-##'     float = FALSE)
+##' outreg(list("I Love Long Titles" = m1,
+##'        "Prefer Brevity" = m2,
+##'        "Short" = m3), tight = FALSE, float = FALSE)
 ##'
 ##' outreg(list("GLM" = gm1), float = TRUE)
 ##'
-##' outreg(list(m1, gm1), modelLabels = c("OLS", "GLM"), float = TRUE,
+##' outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
 ##'     alpha = c(0.05, 0.01))
 ##'
 ##' outreg(list(OLS = m1, GLM = gm1), float = TRUE,
@@ -730,7 +733,7 @@ outreg0 <-
 ##'     runFuns = c("BIC" = "BIC", logLik = "ll"),
 ##'     digits = 5, alpha = c(0.05, 0.01, 0.001))
 ##'
-##' outreg(list(ModelA = gm1, "Model B label with Spaces" = m2),
+##' outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
 ##'     request = c(fstatistic = "F"),
 ##'     runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC",
 ##'     "nobs" = "N Again?"))
@@ -738,15 +741,23 @@ outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = 0.05,  SElist = NULL,
-             PVlist = NULL, title, label,  gofNames  = c(sigma = "RMSE",
-                 r.squared = paste("_R2_"),
-                 deviance = "Deviance",
-                 adj.r.squared = paste("adj", "_R2_"),
-                 fstatistic = "F"))
+             PVlist = NULL, title, label,  gofNames)
 {
-    ##beautified names for gof variables
- 
 
+    myGofNames <- c(sigma = "RMSE",
+                      r.squared = paste("_R2_"),
+                      deviance = "Deviance",
+                      adj.r.squared = paste("adj", "_R2_"),
+                      fstatistic = "F")
+ 
+    if (missing(gofNames)){
+        gofNames <- myGofNames
+    } else {
+        myGofNames[names(gofNames)] <- gofNames
+        gofNames <- myGofNames
+    }
+
+    
     if (!missing(request)) gofNames <- c(gofNames, request)
 
     ## Required methods
@@ -907,7 +918,7 @@ outreg <-
         if (!is.null(xxx <- tryCatch(df.residual(modl), error = function(e) NULL))) {
             DF <- xxx
         } else {
-            DF <- nobs(modl) - NROW(estTable) ##FIXME, KR approx
+            DF <- stats::nobs(modl) - NROW(estTable) ##FIXME, KR approx
         }
 
         if (is.null(PT <- tryCatch(PVlist[[modlLab]], error = function(e) NULL))) {
@@ -1106,8 +1117,7 @@ outreg <-
     ## Print a row for the number of cases
     aline <- c("_BR_", "N", sprintf("%16s", " "))
     for (model in modelList) {
-        ##myN <- stats::nobs(model)
-        myN <- nobs(model)
+        myN <- stats::nobs(model)
         aline <- c(aline, "_SEP_", myN, sprintf("%6s", " "))
         if (tight == FALSE) aline <- c(aline, "_SEP_ ", rep(" ",6))
     }

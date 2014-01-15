@@ -1,24 +1,26 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.4
-Date: 2014-01-03
+Version: 1.8.5
+Date: 2014-01-09
 Author: Paul E. Johnson <pauljohn@ku.edu>
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for ease of
     presentation and interpretation of regression analysis.
-    These functions are developed in response to student requests
-    that have arisen in our regression course. For regression
-    diagnostics, see mcDiagnose, getDeltaRsquare, meanCenter or
-    residualCenter. See the outreg function for a way to generate
-    LaTeX tables of regression models. For nice, easy to use pictures,
-    see plotSlopes, plotCurves, plotPlane for graphs. There are some
-    functions for re-organization of data, especially useful might be
-    combineLevels for re-coding factors. The vignette "rockchalk"
-    offers a fairly broad survey.  The package title "rockchalk" refers
-    to the expression,  "Rock Chalk Jayhawk, Go K.U.".
+    These functions are used to produce the statistics lectures
+    that are available in http://pj.freefaculty.org/guides. There
+    are functions to explore the effect (or lack thereof) from
+    "mean centering," "residual centering", and standardization.
+    The vignette "rockchalk" offers a fairly comprehensive overview.
+    The vignette "Rstyle" has advice about coding in R.
+    See the outreg function for a convenient way to generate
+    regression models for reports. For nice, easy to use pictures,
+    see plotSlopes, plotCurves, plotPlane.
+    The package title "rockchalk" refers to our school motto,
+    "Rock Chalk Jayhawk, Go K.U.".
 License: GPL (>= 3.0)
 LazyLoad: yes
 Depends:
     MASS,
-    car
+    car,
+    lme4

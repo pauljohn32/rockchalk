@@ -516,8 +516,13 @@ predictCI <-
 {
     interval <- match.arg(interval)
     type <- match.arg(type)
-    na.act <- object$na.action
-    object$na.action <- NULL ## Why did predict.glm do this?
+		if (inherits(object, "merMod")){
+				na.action <- attr(object@frame, "na.action")
+		} else {
+        na.act <- object$na.action
+		}
+    ## commented out 2014-01-10 bc not compatible with S4
+		##object$na.action <- NULL ## Why did predict.glm do this?
 
     ## if interval = none, figure if the predict method gives us a vector of numbers,
     ## or a matrix, or a list with fit as an argument. Oh, this is
