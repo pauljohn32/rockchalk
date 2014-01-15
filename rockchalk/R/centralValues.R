@@ -14,7 +14,6 @@
 ##' centralValues(myDat)
 
 centralValues <- function(x){
-    browser()
     if( !is.data.frame(x)) stop("represent: x must be a data frame!")
     nc <- NCOL(x)
     nams <- colnames(x)
