@@ -17,7 +17,7 @@ centralValues <- function(x){
     if( !is.data.frame(x)) stop("represent: x must be a data frame!")
     nc <- NCOL(x)
     nams <- colnames(x)
-    represents <- x[1, ] ## row 1, so we inherit the df's properties, labels
+    represents <- x[1, , drop = FALSE] ## row 1, so we inherit the df's properties, labels
     for (i in 1: nc) {
         xvar <- x[ , i]
         if (is.numeric(xvar)){
