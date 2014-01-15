@@ -14,14 +14,25 @@
 ##' centralValues(myDat)
 
 centralValues <- function(x){
-  if( !is.data.frame(x)) stop("represent: x must be a data frame!")
-  nc <- NCOL(x)
-  nams <- colnames(x)
-  represents <- list()
-  for (i in 1: nc) {
-    represents[[nams[i]]] <- if (is.numeric(x[ ,i])){
-      mean(x[ ,i], na.rm = TRUE)
-    } else  levels(x[,i]) [which.max(table(x[ ,i]))]
-  }
-  as.data.frame(represents)
+    browser()
+    if( !is.data.frame(x)) stop("represent: x must be a data frame!")
+    nc <- NCOL(x)
+    nams <- colnames(x)
+    represents <- x[1, ] ## row 1, so we inherit the df's properties, labels
+    for (i in 1: nc) {
+        xvar <- x[ , i]
+        if (is.numeric(xvar)){
+            represents[1, i] <- mean(xvar, na.rm = TRUE)
+        } else if (is.factor(xvar)) {
+            xvartable <- table(xvar)
+            xvarmode <- names(xvartable)[which.max(xvartable)]
+            represents[1, i] <- xvarmode          
+        } else {
+            xvar <- factor(xvar)
+            xvartable <- table(xvar)
+            xvarmode <- names(xvartable)[which.max(xvartable)]
+            represents[1, i] <- xvarmode      
+        }
+    }
+    as.data.frame(represents)
 }

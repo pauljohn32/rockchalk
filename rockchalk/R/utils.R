@@ -85,6 +85,7 @@ cutByTable <-
     }
     freq <- 100*round(table1cut/sum(table1),1)
     names(res) <- paste(tabNames," (",freq,"%)", sep="")
+    if (is.factor(x)) res <- factor(res, levels = levels(x))
     res
 }
 NULL
