@@ -155,14 +155,14 @@ plotCurves <-
 
     if ((!is.null(parms[["se.fit"]])) && (parms[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
 
-
-    plotyRange <- if(is.numeric(depVar)){
+    plotyRange <- if (is.logical(depVar) || (is.factor(depVar) && length(levels(depVar)) == 2)) {
+        c(0, 1.2)
+    } else if (is.numeric(depVar)) {
         magRange(depVar, mult = c(1, 1.2))
     } else {
-        stop("plotCurves: I've not decided yet what should be done when this is not numeric. Please be patient, I'll figure it out")
+        stop("plotCurves: The dependent variable is neither numeric nor logical. I don't know what you want me to do. Please be patient, I'll figure it out")
     }
-
-
+    
     parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
                   plotx = plotx, modx = modx, modxVals = modxVals,
                   interval = interval, plotPoints = plotPoints,
@@ -171,7 +171,6 @@ plotCurves <-
                   llwd = llwd)
     parms <- modifyList(parms, dotargs)
     plotArgs <- do.call("plotFancy", parms)
-
 
     z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = plotArgs$col, lty = plotArgs$lty)
 

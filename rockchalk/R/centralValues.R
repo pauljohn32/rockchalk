@@ -34,4 +34,6 @@ centralValues <- function(x){
         }
     }
     as.data.frame(represents)
+    rownames(represents) <- NULL
+    represents
 }

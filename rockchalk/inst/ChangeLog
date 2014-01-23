@@ -1,3 +1,25 @@
+2014-01-23  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/plotCurves.R (plotCurves): noticed plotCurve did not work
+	with logit models where DV was true false. So assume all "logical"
+	DVs need to be on 0,1 scale.  Still don't know why I'm obliteraing
+	ylimits.
+
+	* ../R/predictOMatic.R (predictOMatic): use of newdata must pass
+	along n and divider, else they ignored
+
+2014-01-22  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/summarize.R: if entropy = 0, normedEntropy = 0, no
+	matter how many cases there are
+
+2014-01-15  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/predictOMatic.R (predictCI): predictCI needs to respond to
+	type "link" or "response" correctly!
+	*model.data needs to have class marker "model.class" so we know we
+	can trust the RHS it gives. Silly minuet going on here.
+
 2014-01-14  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/centralValues.R (centralValues): fiddle return value to
@@ -9,7 +31,7 @@
 2014-01-07  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/predictOMatic.R (model.data):model$call did not work on S4
-	objects.  So add conditional on isS4. Must be better way. 
+	objects.  So add conditional on isS4. Must be better way.
 
 2014-01-02  Paul Johnson  <pauljohn@dellap7>
 

@@ -247,10 +247,10 @@ summarize(m3.data)
 
 ## Would like to write a more beautiful print method
 ## for output object, but don't want to obscure structure from user.
-for (i in names(m3.p1)){
-    dns <- cbind(m3.p1[[i]][i], m3.p1[[i]]$fit)
-    colnames(dns) <- c(i, "predicted")
-    print(dns)
-}
+## for (i in names(m3.p1)){
+##     dns <- cbind(m3.p1[[i]][i], m3.p1[[i]]$fit)
+##     colnames(dns) <- c(i, "predicted")
+##     print(dns)
+## }
 
 

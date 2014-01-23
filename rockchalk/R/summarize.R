@@ -65,7 +65,11 @@ summary.factor <-
         sum(divr(p))
     }
     maximumEntropy <- function(N) -log2(1/N)
-    normedEntropy <- function(x) entropy(x)/maximumEntropy(length(x))
+    normedEntropy <- function(x) {
+		xent <- entropy(x)
+	    if(xent == 0) return(0)
+		xent/maximumEntropy(length(x))
+	}
     nas <- is.na(y)
     y <- factor(y)
     ll <- levels(y)
