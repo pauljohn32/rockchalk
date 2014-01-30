@@ -50,6 +50,8 @@
 ##' @param plotPoints Optional. TRUE or FALSE: Should the plot include
 ##' the scatterplot points along with the lines.
 ##' @param plotLegend Optional. TRUE or FALSE: Should the default legend be included?
+##' @param legendTitle Optional. You'll get an automatically generated title, such as "Moderator: modx",
+##' but if you don't like that, specify your own string here.
 ##' @param col Optional.  A color vector to differentiate the moderator
 ##' values in the plot. If not specified, the R's builtin palette()
 ##' will be used. User may supply a vector of valid color names,
@@ -72,7 +74,7 @@
 plotCurves <-
     function (model, plotx, modx, n, modxVals = NULL,
               interval = c("none", "confidence", "prediction"),
-              plotPoints = TRUE, plotLegend = TRUE,
+              plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
               col = NULL, llwd = 2, opacity = 100,
               envir = environment(formula(model)), ...)
 {
@@ -166,9 +168,9 @@ plotCurves <-
     parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
                   plotx = plotx, modx = modx, modxVals = modxVals,
                   interval = interval, plotPoints = plotPoints,
-                  plotLegend = plotLegend, col = col,  opacity = opacity,
-                  xlim = plotxRange,  ylab = ylab, ylim = plotyRange,
-                  llwd = llwd)
+                  plotLegend = plotLegend, legendTitle = legendTitle,
+                  col = col,  opacity = opacity, xlim = plotxRange,
+                  ylab = ylab, ylim = plotyRange, llwd = llwd)
     parms <- modifyList(parms, dotargs)
     plotArgs <- do.call("plotFancy", parms)
 

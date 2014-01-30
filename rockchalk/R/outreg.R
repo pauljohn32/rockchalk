@@ -619,9 +619,8 @@ outreg0 <-
 ##' the user wants printed in the table. See details.
 ##' @param runFuns A list of functions
 ##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
-##' @param alpha Default = 0.05. I think stars are dumb, but enough
-##' people have asked me for more stars that I'm caving in. Enter
-##' c(0.05, 0.01, 0.001) to see what happens.
+##' @param alpha Default = c(0.05, 0.01, 0.001). I think stars are dumb, but enough
+##' people have asked me for more stars that I'm caving in. 
 ##' @param SElist Optional. Replacement standard errors. Must be a
 ##' list of named vectors. \code{outreg} uses the R \code{summary} to
 ##' retrieve standard errors, but one might instead want to use robust
@@ -740,7 +739,7 @@ outreg0 <-
 outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
-             runFuns, digits = 3, alpha = 0.05,  SElist = NULL,
+             runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
              PVlist = NULL, title, label,  gofNames)
 {
 
@@ -750,7 +749,7 @@ outreg <-
                       adj.r.squared = paste("adj", "_R2_"),
                       fstatistic = "F")
  
-    if (missing(gofNames)){
+    if (missing(gofNames)) {
         gofNames <- myGofNames
     } else {
         myGofNames[names(gofNames)] <- gofNames
@@ -789,8 +788,10 @@ outreg <-
 
     markup <- function(x, type){
         if (type == "latex") LATEX <- TRUE else LATEX <- FALSE
-        x <- gsub("_EOC_", ifelse(LATEX, "}", "</td>"), x)
-        x <- gsub("_EOR_", ifelse(LATEX, "\\\\\\\\", "</td></tr>"), x)
+        x <- gsub("_EOC_", ifelse(LATEX, "", "</td>"), x)
+        x <- gsub("_BOC_", ifelse(LATEX, "& ", "<td>"), x)
+        x <- gsub("_EOMC_", ifelse(LATEX, "}", "</td>"), x)
+        x <- gsub("_EOR_", ifelse(LATEX, "\\\\tabularnewline", "</tr>"), x)
         x <- gsub("_BRU_", ifelse(LATEX, "",
                                   paste("<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;")),
                   x)
@@ -799,12 +800,12 @@ outreg <-
         x <- gsub("_BT_", ifelse(LATEX, "\begin{tabular}", "<table>\n"), x)
         x <- gsub("_EOL_",  "\n", x)
         x <- gsub("_HL_", ifelse(LATEX, "\\\\hline", ""), x)
-        x <- gsub("_SEPU_", ifelse(LATEX, "&",
+        x <- gsub("_SEPU_", ifelse(LATEX, " &",
                                    paste("</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"))
                   , x)
-        x <- gsub("_SEP_", ifelse(LATEX, "&", "</td><td>"), x)
+        x <- gsub("_SEP_", ifelse(LATEX, " &", "</td><td>"), x)
         x <- gsub("_EOT_", ifelse(LATEX, "\\\\end{tabular}", "</table>"), x)
-        x <- gsub("_MC2_", ifelse(LATEX, "\\\\multicolumn{2}{c}{", "</td><td colspan = '2'>"), x)
+        x <- gsub("_BOMC2_", ifelse(LATEX, "& \\\\multicolumn{2}{c}{", "<td colspan = '2'>"), x)
         x <- gsub("_X2_",  ifelse(LATEX, "$-2LLR (Model \\chi^2)$", "&chi;<sup>2</sup>"), x)
         x <- gsub("_R2_",  ifelse(LATEX, "$R^2$", "R<sup>2</sup>"), x)
         x <- gsub("_SIGMA_", ifelse(LATEX, "$\\\\sigma$", "&sigma;"), x)
@@ -846,7 +847,7 @@ outreg <-
             zline <- c(zline, "_SEP_", x[mname], paste(rep(" ", max(2, 6-nchar(x[mname]))), collapse = ""))
             if (tight == FALSE) zline <- c(zline, sprintf("%6s", " "), "_SEP_")
         }
-        zline <- paste(paste(zline, collapse = ""), "_EOR__EOL_")
+        zline <- paste(paste(zline, collapse = ""), "_EOC__EOR__EOL_")
     }
 
 
@@ -1020,12 +1021,12 @@ outreg <-
 
     printVC <- function(VCmat){
         if (!any(VCmat != "")) return()
-        aline <- paste0("_BR_", "Random Effects (_SIGMA_)", "_EOR__EOL_")
+        aline <- paste0("_BR_", "Random Effects (_SIGMA_)", "_EOC__EOR__EOL_")
         if (tight) hereSep <- " _SEP_ " else hereSep <-  " _SEP_     _SEP_ "
  
         bline1 <- paste0("_BR__NBSP_", paste0(rownames(VCmat)))
         bline2 <- paste(rep(" ", max(2, (14 - nchar(rownames(VCmat))))), collapse = "")
-        bline3 <- paste(apply(VCmat, 1, paste, collapse = hereSep), "_EOR__EOL_")
+        bline3 <- paste(apply(VCmat, 1, paste, collapse = hereSep), "_EOC__EOR__EOL_")
         bline <- paste(bline1, bline2, "_SEP_",  bline3)
         c(aline, bline)
     }
@@ -1048,18 +1049,20 @@ outreg <-
         if (type == "latex") return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
         paste("<table>\n", SL(n, type))
     }
-    
+
+   
     aline <- paste(BT(nColumns, type = type))
     z <- c(z, aline)
  
     ## Put model labels on top of each model column, if modelLabels were given
     if (!is.null(modelLabels)){
-        aline <- paste("_BR_",  sprintf("%14s", " "))
+        browser()
+        aline <- paste("_BR_",  sprintf("%14s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
-                aline <- c(aline, paste("_SEP_", modelLabel))
-            }else{
-                aline <- c(aline, paste("_SEP__MC2_",modelLabel,"_EOC_",sep=""))
+                aline <- c(aline, paste0("_BOC_", modelLabel, "_EOC_"))
+            } else {
+                aline <- c(aline, paste0(" _BOMC2_", modelLabel, "_EOMC_", sep=""))
             }
         }
         aline <- c(aline, "  _EOR__EOL_")
@@ -1068,14 +1071,16 @@ outreg <-
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- c("_BR_", sprintf("%14s", " "), paste(rep (" _SEP_Estimate", nmodels), collapse = " "), "_EOR__EOL_")
+        aline <- paste("_BR_", sprintf("%14s", " "), paste(rep (" _SEP_Estimate", nmodels), collapse = " "), "_EOR__EOL_", collapse = "") 
         z <- c(z, paste(aline, collapse = ""))
 
         aline <- c("_BRU_", sprintf("%14s", " "), paste(rep (" _SEPU_(S.E.) ", nmodels, collapse = " ")), "_EOR__EOL_")
         z <- c(z, paste(aline, collapse = ""))
     } else {
-        aline <- c("_BRU_", sprintf("%14s", " "), paste(rep (" _SEPU_Estimate _SEPU_(S.E.) ", nmodels, collapse = " ")), "_EOR__EOL_")
-        z <- c(z, paste(aline, collapse = ""))
+        aline1 <- paste("_BRU_", sprintf("%14s", " "))
+        aline2 <- paste(rep (" _SEPU_Estimate _SEPU_(S.E.) ", nmodels), collapse = " ")
+        aline3 <- paste("_EOR__EOL_")
+        z <- c(z, paste(aline1, aline2, aline3, collapse = ""))
     }
    
     ## Here come the regression coefficients
@@ -1226,7 +1231,7 @@ outreg <-
                     aline <- paste0(aline, "${", paste0(rep("*", i), collapse = ""), "}",  "\  p\ \\le ", alpha[i], "$", sep = "")
                 }
             }
-            aline <- paste0("_MC2_", aline, "_EOC__EOR__EOL_")
+            aline <- paste0("_BOMC2_", aline, "_EOMC__EOR__EOL_")
         } else {
             aline <- paste0("<tr>\n",
                            "<td colspan=\"2\">")
@@ -1295,7 +1300,7 @@ outreg <-
 
 ##     markup <- function(x, type){
 ##         if (type == "latex") LATEX <- TRUE else LATEX <- FALSE
-##         x <- gsub("_EOC_", ifelse(LATEX, "}", "</td>"), x)
+##         x <- gsub("_EOMC_", ifelse(LATEX, "}", "</td>"), x)
 ##         x <- gsub("_EOR_", ifelse(LATEX, "\\\\\\\\", "</td></tr>"), x)
 ##         x <- gsub("_BRU_", ifelse(LATEX, "",
 ##                                   paste("<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;")),
@@ -1310,7 +1315,7 @@ outreg <-
 ##                   , x)
 ##         x <- gsub("_SEP_", ifelse(LATEX, "&", "</td><td>"), x)
 ##         x <- gsub("_EOT_", ifelse(LATEX, "\\\\end{tabular}", "</table>"), x)
-##         x <- gsub("_MC2_", ifelse(LATEX, "\\\\multicolumn{2}{c}{", "</td><td colspan = '2'>"), x)
+##         x <- gsub("_BOMC2_", ifelse(LATEX, "\\\\multicolumn{2}{c}{", "</td><td colspan = '2'>"), x)
 ##         x <- gsub("_X2_",  ifelse(LATEX, "$-2LLR (Model \\chi^2)$", "&chi;<sup>2</sup>"), x)
 ##         x <- gsub("_R2_",  ifelse(LATEX, "$R^2$", "R<sup>2</sup>"), x)
 ##         x
@@ -1492,7 +1497,7 @@ outreg <-
 ##             if (tight == TRUE) {
 ##                 aline <- c(aline, paste("_SEP_", modelLabel))
 ##             }else{
-##                 aline <- c(aline, paste("_SEP__MC2_",modelLabel,"_EOC_",sep=""))
+##                 aline <- c(aline, paste("_SEP__BOMC2_",modelLabel,"_EOMC_",sep=""))
 ##             }
 ##         }
 ##         aline <- c(aline, "  _EOR__EOL_")
@@ -1663,7 +1668,7 @@ outreg <-
 ##                     aline <- paste0(aline, "${", paste0(rep("*", i), collapse = ""), "}",  "\  p\ \\le ", alpha[i], "$", sep = "")
 ##                 }
 ##             }
-##             aline <- paste("_MC2_", aline, "_EOC__EOR__EOL_")
+##             aline <- paste("_BOMC2_", aline, "_EOMC__EOR__EOL_")
 ##         } else {
 ##             aline <- paste0("<tr>\n",
 ##                            "<td colspan=\"2\">")

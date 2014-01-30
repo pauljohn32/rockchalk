@@ -90,8 +90,10 @@ newdata <- function (model = NULL, predVals = NULL, emf = NULL, n = 3,
                      divider = "quantile"){
    
     if (is.null(emf)) emf <- model.data(model = model)
-    divider <- match.arg(tolower(divider),
-                         c("quantile", "std.dev.","table","seq"))
+    if (is.character(divider)) {
+        divider <- match.arg(tolower(divider),
+                             c("quantile", "std.dev.","table","seq"))
+    }
 
     ## 20140115: why did i do this, what was I cleaning up by trying
     ## to remove variables from the model frame? First appraoch

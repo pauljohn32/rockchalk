@@ -402,10 +402,10 @@ plotFancy <-
                 llwd <- c(llwd, 0)
             }
         } else if (is.null(names(modxVals))) {
-            titl <- if(missing(legendTitle)) paste("Moderator:", modx)
+            titl <- if(missing(legendTitle)) paste("Moderator:", modx) else legendTitle
             legnd <- paste(modxVals, sep = "")
         } else {
-            titl <- paste("Moderator:", modx)
+            titl <- if(missing(legendTitle)) paste("Moderator:", modx) else legendTitle
             legnd <- paste(names(modxVals), sep = "")
         }
         legend("topleft", legend = legnd, lty = lty, col = col,

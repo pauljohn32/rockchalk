@@ -1,4 +1,18 @@
+2014-01-30  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R (outreg): battle of century to clean up model list
+	at top so that html output does not strangle MS Word import
+
+2014-01-29  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R (##     pline): EOC -> EOMC to clear up notation
+
 2014-01-23  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/predictOMatic.R (newdata): if divider argument is a
+	function, not a character string, ignore it. If it is characters,
+	check it. I don't know why this wasn't crashing before, but the
+	examples don't run with divider = pretty.  Which should be OK now.
 
 	* ../R/plotCurves.R (plotCurves): noticed plotCurve did not work
 	with logit models where DV was true false. So assume all "logical"
