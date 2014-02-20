@@ -1056,7 +1056,6 @@ outreg <-
  
     ## Put model labels on top of each model column, if modelLabels were given
     if (!is.null(modelLabels)){
-        browser()
         aline <- paste("_BR_",  sprintf("%14s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
