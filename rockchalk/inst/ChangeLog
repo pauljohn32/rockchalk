@@ -1,3 +1,14 @@
+2014-02-23  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R (pline): allow the pline as many columns as there
+	are in the table, to prevent it from distorting column placement above
+
+2014-02-22  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R (sigtest): note multicol error. When reg table has
+	only 1 model, error results from  & \multicol because that assumes
+	3 columns.
+
 2014-01-30  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/outreg.R (outreg): battle of century to clean up model list

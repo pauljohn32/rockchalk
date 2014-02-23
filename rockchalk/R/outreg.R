@@ -67,11 +67,12 @@
 ##' this include the BIC or other summaries that some models report?
 ##' We have to run the BIC function, and divert the result into the
 ##' correct column of the result table. Any R function, whether
-##' supplied with and R package or in the user's own code, may be used.
-##' This is a two-part specification, one representing the function to
-##' be run, the other representing the name that is desired in the output.
-##' For example, it might be
-##' \code{runFuns = c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
+##' supplied with and R package or in the user's own code, may be
+##' used.  This is a two-part specification, one representing the
+##' function to be run, the other representing the name that is
+##' desired in the output.  For example, it might be \code{runFuns =
+##' c("AIC" = "Akaike Criterion", "BIC" = "Schwartz Criterion",
+##' "logLik" = "LL")}.
 ##'
 ##' @param modelList A regression model or an R list of regression
 ##' models.  If this is a named list, the names will be used as column
@@ -93,7 +94,8 @@
 ##' @param tight If TRUE, parameter estimates and standard errors are
 ##' printed in a single column.  If FALSE, parameter estimates and
 ##' standard errors are printed side by side.
-##' @param showAIC If TRUE, the AIC estimate is included with the diagnostic values
+##' @param showAIC If TRUE, the AIC estimate is included with the
+##' diagnostic values
 ##' @param float Include boilerplate for a table float, with the tabular
 ##' markup inside it.
 ##' @param request Extra information to be retrieved from the summary(model)
@@ -102,9 +104,11 @@
 ##' a valid name of the output object, the value should be the label
 ##' the user wants printed in the table. See details.
 ##' @param runFuns A list of functions
-##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
-##' @param alpha Default = 0.05. I think stars are dumb, but enough people have asked
-##' me for more stars that I'm caving in. Enter c(0.05, 0.01, 0.001) to see what happens.
+##' @param digits Default = 3. How many digits after decimal sign are
+##' to be displayed.
+##' @param alpha Default = 0.05. I think stars are dumb, but enough
+##' people have asked me for more stars that I'm caving in. Enter
+##' c(0.05, 0.01, 0.001) to see what happens.
 ##' @export outreg0
 ##' @rdname outreg0
 ##' @return None
@@ -125,13 +129,15 @@
 ##' m2 <- lm(y1 ~ x2, data = dat)
 ##' m3 <- lm(y1 ~ x1 + x2, data = dat)
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
-##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
 ##'
-##' outreg0(m1, title = "My One Tightly Printed Regression", float = TRUE )
+##' outreg0(list("Model 1" = m1), title = "My One Tightly Printed Regression")
 ##'
-##' outreg0(m1, tight = FALSE, modelLabels=c("Fingers"),
-##'     title = "My Only Spread Out Regressions",
-##'     float = TRUE, alpha = c(0.05, 0.01, 0.001))
+##' outreg0(list("Model 1" = m1), title = "My One Tightly Printed Regression in a
+##' Float", float = TRUE, label = "outreg1")
+##'
+##' outreg0(list("Fingers" = m1), tight = FALSE, title = "My Only
+##' Spread Out Regression", float = TRUE, alpha = c(0.05, 0.01,
+##' 0.001))
 ##'
 ##' outreg0(list(ModelA = m1, "Model B label with Spaces" = m2),
 ##'       varLabels = list(x1 = "Billie"),
@@ -231,7 +237,7 @@ outreg0 <-
                 nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"] , lower.tail = FALSE) < alpha)
                 y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
             } else if (is.numeric(y)) {
-                y <- round(y, digits)
+                y <- format(round(y, digits), nsmall = digits)
             }
             if (!is.null(y)) res[i] <- y else res[i] <- ""
         }
@@ -514,7 +520,7 @@ outreg0 <-
     cat("\n")
     cat("\\multicolumn{2}{l}{")
     for ( i in seq_along(alpha)){
-        cat("${", paste(rep("*", i), collapse = "\\!"), "}",  "\  p\ \\le ", alpha[i], "$  ", sep = "")
+        cat("${", paste(rep("*", i), collapse = "\\!"), "}",  " p\ \\le ", alpha[i], "$  ", sep = "")
     }
     cat("}\\\\\n")
     cat("\\end{tabular}\n")
@@ -530,39 +536,44 @@ outreg0 <-
 ##' as lme4.
 ##'
 ##' This provides "markup" that the user is will copy into a LaTeX
-##' document. As of rockchalk 1.8.4, this can provide either LaTeX or
-##' HTML markup.  For LaTeX users, this can be called within Sweave
-##' documents for quick, easy-to-produce tables. The markup generated
-##' by the basic usage will generally be presentable as is, while user
-##' requests for additional details may cause output that needs some
-##' hand-editing.
+##' document. As of rockchalk 1.8.4, can also create HTML markup.
+##' The rockchalk vignette demonstrates use of outreg in Sweave.
+##' 
+##' \code{outreg} returns a string vector. It is suggested that users
+##' should save the outreg result and then use cat to save it. That is
+##' myMod <- outreg(m1, ...)  cat(myMod, file = "myMod.html") or
+##' cat(myMod, file = "myMod.tex".  In version 1.8.66, we write the
+##' html file to a temporay location and display it in a web
+##' browser. Many word processors will not accept a cut-and paste
+##' transfer from the browser, they will, however, be able to open the
+##' html file itself and automatically re-format it in the native
+##' table format.
 ##'
-##' In rockchalk 1.7.5, this is revised significantly. \code{outreg} returns
-##' a string vector, one element for each row.
-##' It writes that on the screen, but the user can use R's \code{cat} function
-##' to save it in a file.
+##' The table includes a minimally sufficient (in my opinion) model
+##' summary.  It offers parameter estimates, standard errors, and
+##' minimally sufficient goodness of fit.  My tastes tend toward
+##' minimal tables, but users request more features, and
+##' \code{outreg}'s interface hass been generalized to allow
+##' specialized requests. See \code{request} and \code{runFuns}
+##' arguments.
 ##'
-##' The table include a minimally sufficient (in my opinion) model
-##' summary.  For any fitted model, \code{outreg()} will present the parameter
-##' estimates and standard errors, and it will also scan the summary
-##' of the object for some summary values and goodness of fit
-##' indicators.  Some users may want more information. They can
-##' ask for more goodness of fit values using the \code{request} and
-##' \code{runFuns} arguments.
+##' I don't want to write a separate table function for every
+##' different kind of regression model that exists (how
+##' exhausting). So I've tried to revise \code{outreg()} to work with
+##' regression functions that follow the standard R framework. It is
+##' known to work \code{lm} and \code{glm}, as well as \code{merMod}
+##' class from \code{lmer4}, but it will try to interact with other
+##' kinds of regression models.  Those models should have methods
+##' \code{summary()}, \code{coef()}, \code{vcov()} and \code{nobs()}.
+##' Package writes should provide those, its not my job.
 ##'
-##' While \code{outreg()} originally designed for models fitted by
-##' \code{lm()} and \code{glm()}, it will now work more generally. It
-##' is known to work with models of the \code{merMod} class from
-##' \code{lmer4}, but it will try to interact with other kinds of
-##' regression models.  A regression class that is provided with
-##' standard methods \code{summary()}, \code{coef()}, \code{vcov()}
-##' and \code{nobs()} will generally work. If a package writer fails
-##' to provide those standard R-style extractor methods, there's no hope.
-##'
-##' Version 1.8.4 introduces the possibility of passing in a vector of
-##' standard errors or p-values for each model, so all we really
-##' require is a coefficient vector to be obtained from
-##' \code{coef(summary(model))}.
+##' Do you want "robust standard errors"? P values calculated
+##' according to some alternative logic?  Go ahead, calculate them in
+##' your code, outreg will now accept them as arguments. As of Version
+##' 1.8.4, users can provide their own standard errors and/or p-values
+##' for each model. Thus, if a model answers in the usual way to the
+##' standard R request \code{coef(summary(model))}, outreg can work if
+##' users supply standard errors.
 ##'
 ##' About the customizations \code{request}.  The \code{request}
 ##' argument supplies a list of names of summary output elements that
@@ -573,26 +584,25 @@ outreg0 <-
 ##' \code{request = c(adj.r.squared = "adj. $R^2$", "fstatistic" =
 ##' "F")}. The value on the left is the name of the desired
 ##' information in the summary object, while the value on the right is
-##' \emph{any} valid LaTeX markup that the user desires to display in
-##' the first column of the table. \code{request} terms that generate
-##' a single numerical value will generally work fine, while requests
-##' that ask for more structured information, such as the F test
-##' (including the 2 degrees of freedom values) are still a work in
-##' progress.
+##' \emph{any} valid LaTeX (or HTML) markup that the user desires to
+##' display in the table. \code{request} terms that generate a single
+##' numerical value will generally work fine, while requests that ask
+##' for more structured information, such as the F test (including the
+##' 2 degrees of freedom values) may work (user feedback needed).
 ##'
 ##' The \code{runFuns} argument is inspired by a user request: could
-##' this include the BIC or other summaries that can be easily calculated?
-##' Any R function, whether
-##' supplied with and R package or in the user's own code, may be used.
-##' This is a two-part specification, a function name and a pretty label
-##' to be used in printing. For example, 
-##' \code{runFuns = c("AIC" = "Akaike Criterion",
-##' "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
+##' this include the BIC or other summaries that can be easily
+##' calculated?  Any R function, such as \code{AIC} or \code{BIC},
+##' should work, as long as it returns a single value.  This is a
+##' two-part specification, a function name and a pretty label to be
+##' used in printing. For example, \code{runFuns = c("AIC" = "Akaike
+##' Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
 ##'
 ##' @param modelList A regression model or an R list of regression
-##' models. Drfault model names will be M1, M2, and so forth. User specified
-##' names are allowed, such as \code{list("My Model" = m1, "Her Model" = m2)}.
-##' This is less error prone than the use of the
+##' models. Default model names will be M1, M2, and so forth. User
+##' specified names are allowed, such as \code{list("My Model" = m1,
+##' "Her Model" = m2)}.  This is the currently recommended way to
+##' supply model lables. This is less error prone than the use of the
 ##' modelLabels argument.
 ##' @param type Default = "latex". The alternative is "html"
 ##' @param modelLabels This is allowed, but discouraged. A vector of
@@ -689,7 +699,7 @@ outreg0 <-
 ##'
 ##' ex5html <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
-##'     showAIC = TRUE, float = TRUE, type = "html")
+##'     showAIC = TRUE, type = "html")
 ##' ## make a file:
 ##' ## cat(ex5, file = "some_name_you_choose.html")
 ##' ## Open that in LibreOffice or MS Word
@@ -744,10 +754,10 @@ outreg <-
 {
 
     myGofNames <- c(sigma = "RMSE",
-                      r.squared = paste("_R2_"),
-                      deviance = "Deviance",
-                      adj.r.squared = paste("adj", "_R2_"),
-                      fstatistic = "F")
+                    r.squared = paste("_R2_"),
+                    deviance = "Deviance",
+                    adj.r.squared = paste("adj", "_R2_"),
+                    fstatistic = "F")
  
     if (missing(gofNames)) {
         gofNames <- myGofNames
@@ -759,6 +769,8 @@ outreg <-
     
     if (!missing(request)) gofNames <- c(gofNames, request)
 
+    if (type == "html") float = FALSE
+    
     ## Required methods
     req <- (c("coef", "nobs", "vcov", "summary"))
    
@@ -766,7 +778,7 @@ outreg <-
         ##Pre-approved model classes
         knownTypes <- c("lm", "glm", "merMod")
         approved <- sapply(modlist, inherits, knownTypes)
-        ## Ask modl for a list of all methods that apply to it
+        ## Ask trouble modl for a list of all methods that apply to it
         problematic <-  modlist[!approved]
         if (length(problematic) == 0) return()
         problematicClasses <- lapply(problematic, class)
@@ -779,7 +791,7 @@ outreg <-
             messg <- c()
             for (i in missingMethods) {
                 messg <- c(messg, paste("The model of class", x, "is missing ",
-                               i, "\n"))
+                                        i, "\n"))
             }
             stop(messg)
         }
@@ -830,7 +842,7 @@ outreg <-
                 nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"] , lower.tail = FALSE) < alpha)
                 y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
             } else if (is.numeric(y)) {
-                y <- round(y, digits)
+                y <- format(round(y, digits), nsmall = digits)
             }
             if (!is.null(y)) res[i] <- y else res[i] <- ""
         }
@@ -939,11 +951,11 @@ outreg <-
         stars <- function(x, alpha) {xxx <- sum(abs(x) < alpha)
                                      paste0("", rep("*", xxx), collapse = "")}
         nstars <- sapply(PT, stars, alpha)
-        addStar <- function(b, nstar) paste0(round(b, digits), nstar)
+        addStar <- function(b, nstar) paste0(format(round(b, digits), nsmall = digits), nstar)
         BSTAR <- best
         for (i in seq_along(best)) BSTAR[i] <- addStar(best[i], nstars[i])
         names(BSTAR) <- names(best)
-        se <- paste0("(", round(se, digits), ")")
+        se <- paste0("(", format(round(se, digits), nsmall = digits), ")")
        
         data.frame(B = BSTAR, SE = se, stringsAsFactors = FALSE)
     }
@@ -1061,7 +1073,7 @@ outreg <-
             if (tight == TRUE) {
                 aline <- c(aline, paste0("_BOC_", modelLabel, "_EOC_"))
             } else {
-                aline <- c(aline, paste0(" _BOMC2_", modelLabel, "_EOMC_", sep=""))
+                aline <- c(aline, paste0("_BOMC2_", modelLabel, "_EOMC_", sep=""))
             }
         }
         aline <- c(aline, "  _EOR__EOL_")
@@ -1081,6 +1093,8 @@ outreg <-
         aline3 <- paste("_EOR__EOL_")
         z <- c(z, paste(aline1, aline2, aline3, collapse = ""))
     }
+
+    if (type == "latex") z <- c(z, SL(1, "latex"), SL(1, "latex"))
    
     ## Here come the regression coefficients
     for (regname in parmnames){
@@ -1161,7 +1175,7 @@ outreg <-
         for (model in modelList) {
             if (is.numeric(model$deviance)){
                 n2llr <- model$null.deviance - model$deviance
-                aline <- c(aline, paste("      _SEP_", round(n2llr, digits)))
+                aline <- c(aline, paste("      _SEP_", format(round(n2llr, digits), nsmall = digits)))
                 gmdf <- model$df.null - model$df.residual + 1
                 nstars <- sum(pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha)
                 aline <  paste(aline, rep("*", nstars), sep = "")
@@ -1180,7 +1194,7 @@ outreg <-
     if (showAIC == TRUE) {
         aline <- "_BR_AIC"
         for (model in modelList) {
-            aline <- c(aline, paste("    _SEP_", if(is.numeric(AIC(model)))round(AIC(model), digits)))
+            aline <- c(aline, paste("    _SEP_", if(is.numeric(AIC(model)))format(round(AIC(model), digits), nsmall = 3)))
             if (tight == FALSE) aline <- c(aline, "      _SEP_")
         }
         aline <- c(aline, "_EOR__EOL_")
@@ -1227,13 +1241,13 @@ outreg <-
         if (type == "latex"){
             for ( i in seq_along(alpha)){
                 if (type == "latex") {
-                    aline <- paste0(aline, "${", paste0(rep("*", i), collapse = ""), "}",  "\  p\ \\le ", alpha[i], "$", sep = "")
+                    aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$", sep = "")
                 }
             }
-            aline <- paste0("_BOMC2_", aline, "_EOMC__EOR__EOL_")
+            aline <- paste0("\\multicolumn{", nColumns, "}{c}{", aline, "_EOMC__EOR__EOL_")
         } else {
             aline <- paste0("<tr>\n",
-                           "<td colspan=\"2\">")
+                           "<td colspan=\"", nColumns, "2\">")
             for ( i in seq_along(alpha)){
                 aline <- paste0(aline,  paste0(rep("*", i), collapse = ""), " <it>p</it> &#8804;", alpha[i], sep = "")
             }
@@ -1252,7 +1266,15 @@ outreg <-
         z <- c(z, aline)
     }
     z <- markup(z, type = type)
-    cat(z)
+    if (type == "latex") {
+        cat(z)
+    } else {
+        fn <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".html")
+        cat(z, file = fn)
+        cat(paste("We are launching a browser to view that html file, which we have temporarily \n saved in ", fn))
+        cat("You can copy that temp file, or create \n one of your own with R's cat function. \n")
+        browseURL(fn)
+    }
     invisible(z)
 }
 
