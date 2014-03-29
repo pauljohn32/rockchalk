@@ -701,7 +701,7 @@ outreg0 <-
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, type = "html")
 ##' ## make a file:
-##' ## cat(ex5, file = "some_name_you_choose.html")
+##' ## cat(ex5html, file = "some_name_you_choose.html")
 ##' ## Open that in LibreOffice or MS Word
 ##' 
 ##' outreg(list("Whatever" = m1, "Whatever" =m2),
@@ -891,7 +891,7 @@ outreg <-
     ## > class(res)
     ## [1] "maxLik" "maxim"  "list"
     ## So we can't just ask modelList if it is a list or an object.
-
+   
     ## So as if the thing is ONLY a list with setequal
     if ( !setequal(class(modelList), "list") ){
         ## modelList is not a list only, so put it in a list
@@ -919,6 +919,7 @@ outreg <-
     parmnames <- vector()
     myModelClass <- vector()
 
+    
 
     getBSE <- function(modl, alpha, modlLab = NULL) {
         estTable <- coef(summary(modl, digits = 11))
@@ -957,9 +958,14 @@ outreg <-
         names(BSTAR) <- names(best)
         se <- paste0("(", format(round(se, digits), nsmall = digits), ")")
        
-        data.frame(B = BSTAR, SE = se, stringsAsFactors = FALSE)
+        res <- data.frame(B = BSTAR, SE = se, stringsAsFactors = FALSE)
+        rownames(res) <- rownames(estTable)
+        res
     }
-                      
+
+
+    myModelClass <- lapply(modelList, function(x) {class(x)[1]})
+    
     ## Get a regression summary object for each fitted model
     summaryList <- lapply(modelList, summary)
     ##    summaryList <- lapply(modelList, function(x) tryCatch(summary(x), error = NULL))
@@ -1178,7 +1184,7 @@ outreg <-
                 aline <- c(aline, paste("      _SEP_", format(round(n2llr, digits), nsmall = digits)))
                 gmdf <- model$df.null - model$df.residual + 1
                 nstars <- sum(pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha)
-                aline <  paste(aline, rep("*", nstars), sep = "")
+                aline <-  paste(aline, rep("*", nstars), sep = "")
             } else {
                 aline <- c(aline, "       _SEP_")
             }
@@ -1266,13 +1272,20 @@ outreg <-
         z <- c(z, aline)
     }
     z <- markup(z, type = type)
+    matchCall <- match.call()
+    matchCall[["type"]] <- "html"
+               
     if (type == "latex") {
         cat(z)
     } else {
         fn <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".html")
         cat(z, file = fn)
-        cat(paste("We are launching a browser to view that html file, which we have temporarily \n saved in ", fn))
-        cat("You can copy that temp file, or create \n one of your own with R's cat function. \n")
+        cat(paste("\n We are launching a browser to view that html file, which we have temporarily \n saved in ", fn, "\n"))
+        cat(paste(" You can copy that temp file, or create \n one of your own with R's cat function.  Like this: \n"))
+        cat("myreg <- \n")
+        print(matchCall)
+        cat(" \n cat(myreg, file = \"reg.html\")\n")
+        cat(" Then open reg.html in a word processor or web browser.\n")
         browseURL(fn)
     }
     invisible(z)

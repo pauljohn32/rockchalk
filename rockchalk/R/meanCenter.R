@@ -50,7 +50,7 @@ standardize.lm <-
 
     mc <- model$call
     mc$data <- quote(stddat)
-    fmla <- paste(dvnameticked, " ~ ", paste(dmnamesticked, collapse= " + "))
+    fmla <- paste(dvnameticked, " ~ ", "-1 + ", paste(dmnamesticked, collapse= " + "))
     mc$formula <- formula(fmla)
     res <- eval(mc)
     class(res) <- c("stdreg", class(model))
@@ -147,7 +147,7 @@ NULL
 ##' FALSE. Please note, this WILL NOT center factor variables. But it
 ##' will find all numeric predictors and center them.
 ##'
-##' The  dependent variable will not be centered, unless the user
+##' The dependent variable will not be centered, unless the user
 ##' explicitly requests it by setting centerDV = TRUE.
 ##'
 ##' As an additional convenience to the user, the argument
@@ -179,11 +179,16 @@ NULL
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @seealso \code{\link[pequod]{lmres}} \code{\link[rockchalk]{standardize}} \code{\link[rockchalk]{residualCenter}}
 ##' @references
-##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
+##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and
+##' Interpreting Interactions. Newbury Park, Calif: Sage Publications.
 ##'
-##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences (Third.). Routledge Academic.
+##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied
+##' Multiple Regression/Correlation Analysis for the Behavioral Sciences
+##' (Third.). Routledge Academic.
 ##'
-##' Echambadi, R., and Hess, J. D. (2007). Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple Regression Models. Marketing Science, 26(3), 438-445.
+##' Echambadi, R., and Hess, J. D. (2007). Mean-Centering Does Not Alleviate
+##' Collinearity Problems in Moderated Multiple Regression Models.
+##' Marketing Science, 26(3), 438-445.
 ##' @example inst/examples/meanCenter-ex.R
 meanCenter <-
     function(model, centerOnlyInteractors = TRUE, centerDV = FALSE, standardize=FALSE, terms = NULL)

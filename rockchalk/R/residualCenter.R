@@ -17,8 +17,7 @@
 ##' Powered and Product Terms: Implications for Modeling
 ##' Interactions Among Latent Variables.
 ##' Structural Equation Modeling, 13(4), 497-519.
-residualCenter <-
-    function(model)
+residualCenter <- function(model)
 {
     UseMethod("residualCenter")
 }

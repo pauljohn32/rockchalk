@@ -88,6 +88,14 @@ plotCurves <-
     mf <- model.frame(model)
     emf <- model.data(model, na.action = na.omit)
 
+    zzz <- as.character(substitute(plotx))
+    plotx <- zzz[1L]
+    
+    if (!missing(modx)) {
+        zzz <- as.character(substitute(modx))
+        modx <- zzz[1L]
+    }
+        
     plotxVar <- emf[ , plotx]
     if (!is.numeric(plotxVar))
         stop(paste("plotCurves: The variable", plotx, "should be a numeric variable"))

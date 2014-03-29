@@ -22,8 +22,12 @@
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
     digits = max(3, getOption("digits") - 3)) {
-    if (!is.data.frame(dat))
-        dat <- as.data.frame(dat)
+    if (is.atomic(dat)) {
+		datname <- deparse(substitute(dat))
+        dat <- data.frame(dat)
+        colnames(dat) <- datname 
+    } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+    
     nums <- sapply(dat, is.numeric)
     if (sum(nums) == 0) return(NULL)
     datn <- dat[, nums, drop = FALSE]
@@ -159,7 +163,11 @@ summarizeFactors <-
     function (dat = NULL, maxLevels = 5, alphaSort = TRUE,
               sumstat= TRUE, digits = max(3, getOption("digits") - 3))
 {
-    if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+    if (is.atomic(dat)){
+		datname <- deparse(substitute(dat))
+		dat <- data.frame(dat)
+        colnames(dat) <- datname 
+    } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
     factors <- sapply(dat, function(x) {!is.numeric(x)})
     if (sum(factors) == 0) return(NULL)
     datf <- dat[, factors, drop = FALSE]
@@ -252,6 +260,12 @@ summarize <-
     function(dat, ...)
 {
     dots <- list(...)
+    if (is.atomic(dat)){
+	   datname <- deparse(substitute(dat))
+	   dat <- data.frame(dat)
+	   colnames(dat) <- datname
+	} else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+
     dotnames <- names(dots)
     ## next should give c('digits', 'alphaSort')
     nnames <- names(formals(rockchalk::summarizeNumerics))[-1L]

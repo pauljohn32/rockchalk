@@ -1,3 +1,35 @@
+2014-03-28  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R (harvest): Ben Rogers pointed out error in LLR report
+
+	* (outreg): noticed myModelClass was undefined, causing -2LLR to disappear 
+
+2014-03-17  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/utils.R (cutByTable): problem: character variables return
+	all NA from this. I did not plan for anything but numeric or
+	factor
+
+2014-03-15  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/predictOMatic.R (lenVar): converting newdata and model.data
+	to generic methods. Trying to wrestle with weird results with
+	merMod objects.
+
+	* ../R/genCorrelatedData.R (vech2mat): new argument: lowerOnly = FALSE
+
+	* ../R/plotCurves.R (plotCurves): Trying to tolerate non-quoted
+	argument for plotx and modx.  Am copying strategy in library.R,
+	where they tolerate either help = "package" or help = package.  if
+	(!missing(modx)) modx <- as.character(substitute(modx))[1L]
+
+
+2014-03-02  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/summarize.R (summarizeNumerics): noted that when argument
+	is just a vector, name is lost. I always assumed input would be
+	list or data frame or matrix. So add an if(is.vector... check.
+
 2014-02-23  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/outreg.R (pline): allow the pline as many columns as there
