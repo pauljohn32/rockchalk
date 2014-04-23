@@ -209,7 +209,7 @@ meanCenter.default <-
     std <- function(x) {
         if(!is.numeric(x)) stop("can't center a factor variable. No Can Do!")
         xmean <- mean(x, na.rm = TRUE)
-        if(standardize){
+        if (standardize) {
             xsd <- sd(x, na.rm = TRUE)
         } else {
             xsd <- 1
@@ -221,6 +221,7 @@ meanCenter.default <-
     ## rdf <- get_all_vars(formula(model), model$model) #raw data frame
     rdf <- model.data(model)
     t <- terms(model)
+    ## TODO 20140417: look at using na.action attribute of model to be more delicate here.
     tl <- attr(t, "term.labels")
     tmdc <- attr(t, "dataClasses") ##term model data classes
 

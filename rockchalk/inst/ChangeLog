@@ -1,3 +1,25 @@
+2014-04-23  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/summarize.R (summarizeNumerics): removed signif, replaced
+	with round on the numberic rows.
+
+2014-04-21  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/predictOMatic.R (model.data): changing default action to
+	na.omit. Had been na.pass, but method for S4 objects was failing.
+
+2014-04-17  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/predictOMatic.R (newdata.default): model.data includes
+	missing values in it. They need to be dropped. I remember futzing
+	this before in order to make it include missings, but now there
+	is a bad ripple effect across other functions that use model.data.
+
+2014-04-10  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/utils.R (getFocal.factor): padW0 is new convenience.
+	Delete ::: accesses to functions in rockchalk
+
 2014-03-28  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/outreg.R (harvest): Ben Rogers pointed out error in LLR report

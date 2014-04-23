@@ -86,7 +86,7 @@ plotCurves <-
     cl <- match.call()
     interval <- match.arg(interval)
     mf <- model.frame(model)
-    emf <- model.data(model, na.action = na.omit)
+    emf <- model.data(model)
 
     zzz <- as.character(substitute(plotx))
     plotx <- zzz[1L]

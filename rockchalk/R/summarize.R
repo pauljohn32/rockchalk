@@ -34,14 +34,16 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
     if (alphaSort)
         datn <- datn[, sort(colnames(datn)), drop = FALSE]
     sumdat <- apply(datn, 2, stats::quantile, na.rm = TRUE)
+    sumdat <- round(sumdat, digits)
     if (sumstat) {
         sumdat <- rbind(sumdat, mean = apply(datn, 2, mean, na.rm = TRUE))
         sumdat <- rbind(sumdat, sd = apply(datn, 2, sd, na.rm = TRUE))
         sumdat <- rbind(sumdat, var = apply(datn, 2, var, na.rm = TRUE))
+        sumdat <- round(sumdat, digits)
         sumdat <- rbind(sumdat, `NA's` = apply(datn, 2, function(x) sum(is.na(x))))
         sumdat <- rbind(sumdat, N = apply(datn, 2, function(x) length(x)))
     }
-    signif(sumdat, digits)
+   sumdat
 }
 NULL
 

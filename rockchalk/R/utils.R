@@ -251,7 +251,7 @@ getFocal.default <- function(x, xvals = NULL, n = 3, ...)
     xRange <- magRange(range(x, na.rm = TRUE), 1.1)
 
     if (is.null(xvals))
-        return(xfocal <- rockchalk:::cutByQuantile(x, n))
+        return(xfocal <- cutByQuantile(x, n))
 
     if (is.numeric(xvals)) {
         if ((xvals > max(xRange)) || (xvals < min(xRange))){
@@ -265,10 +265,10 @@ getFocal.default <- function(x, xvals = NULL, n = 3, ...)
         xvals <- match.arg(tolower(xvals),
                            c("quantile", "std.dev.","table", "seq"))
         xfocal <- switch(xvals,
-                         table = rockchalk:::cutByTable(x, n),
-                         quantile = rockchalk:::cutByQuantile(x, n),
-                         "std.dev." = rockchalk:::cutBySD(x, n),
-                         seq = rockchalk:::plotSeq(x, n),
+                         table = cutByTable(x, n),
+                         quantile = cutByQuantile(x, n),
+                         "std.dev." = cutBySD(x, n),
+                         seq = plotSeq(x, n),
                          stop("unknown 'xvals' algorithm in getFocal"))
         return(xfocal)
     }
@@ -315,7 +315,7 @@ NULL
 getFocal.factor <- function(x, xvals = NULL, n = 3, ...)
 {
     if (is.null(xvals)) {
-        xvals <- rockchalk:::cutByTable(x, n)
+        xvals <- cutByTable(x, n)
         return(xvals)
     }
    if (is.vector(xvals)) {
@@ -332,7 +332,7 @@ getFocal.factor <- function(x, xvals = NULL, n = 3, ...)
         xvals <- match.arg(tolower(xvals),
                            c("table"))
         xvals <- switch(xvals,
-                        table = rockchalk:::cutByTable(x, n),
+                        table = cutByTable(x, n),
                         stop("Sorry, only known algorithm for factors is 'table'"))
         return(xvals)
     }
@@ -345,3 +345,46 @@ getFocal.factor <- function(x, xvals = NULL, n = 3, ...)
 }
 
 
+
+
+##' Pad with 0's.
+##'
+##' Sometimes we receive this c(1, 22, 131) and we need character
+##' variables of the same size, such as c("001", "022", "131").  This
+##' happens if a user has mistakenly converted a zip code (US regional
+##' identifier) like "00231" to a number. This function converts the
+##' number back to a 0 padded string.
+##'
+##' This works differently if the number provided is an integer, or a
+##' character string.  Integers are left padded with the character
+##' "0".  A character string will be left-padded with blanks.
+##' @param x a numeric  variable.
+##' @return A character string vector padded with 0's
+##' @export
+##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @examples
+##' x <- c(1 , 11, 22, 121, 14141, 31)
+##' (xpad <- padW0(x))
+##' x <- rpois(7, lambda = 11)
+##' (xpad <- padW0(x))
+##' x <- c("Alabama", "Iowa", "Washington")
+padW0 <- function(x){
+    vtype <- "d"
+    if (is.character(x)) vtype <- "s"
+    sprintf(paste("%0", max(nchar(as.character(x))), vtype, sep=""), x)
+}
+
+
+##' A way of checking if a string is a valid file name.
+##'
+##' A copy from R's grDevices:::checkIntFormat because it is not exported there
+##' @param s An integer
+##' @return logical: TRUE or FALSE
+##' @author R Core Development Team
+checkIntFormat <- function(s) {
+    s <- gsub("%%", "", s)
+    if (length(grep("%", s)) == 0L) 
+        return(TRUE)
+    s <- sub("%[#0 ,+-]*[0-9.]*[diouxX]", "", s)
+    length(grep("%", s)) == 0L
+}

@@ -93,7 +93,10 @@ newdata.default <-
     function (model = NULL, predVals = NULL, n = 3, emf = NULL,
               divider = "quantile", ...){
    
-    if (is.null(emf)) emf <- model.data(model = model)
+    if (is.null(emf)){
+        emf <- model.data(model = model)
+        ##20140417 Danger: missings. Doublecheck later on model.data change
+    }
     if (is.character(divider)) {
         divider <- match.arg(tolower(divider),
                              c("quantile", "std.dev.","table","seq"))
@@ -219,7 +222,9 @@ NULL
 ##'
 ##' This is the default method. Works for lm and glm fits.
 ##' 
-##' @param na.action Defaults to na.pass, so model as it would appear in user workspace is re-created.
+##' @param na.action Defaults to na.omit, so model as it would appear in user workspace is re-created, except that
+##' rows with missing values are deleted.  Changing this argument to na.pass will provide the data as it was in the
+##' workspace.
 ##' @return A data frame
 ##' @export
 ##' @rdname model.data
@@ -227,7 +232,7 @@ NULL
 ##' @S3method model.data default
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/model.data-ex.R
-model.data.default <- function(model, na.action = na.pass, ...){
+model.data.default <- function(model, na.action = na.omit, ...){
     ## from nls, returns -1 for missing variables
     lenVar <- function(var, data) tryCatch(NROW(eval(as.name(var),
                          data, env)), error = function(e) -1)
@@ -263,11 +268,17 @@ model.data.default <- function(model, na.action = na.pass, ...){
     myfmla <- as.formula(paste(mylhs, " ~", myrhs), env = environment(formula(model)))
     data <- model.frame(myfmla, dataOrig, na.action = na.action)
 
-    ## remove rows listed in model's na.action
+    ## FIXME 20140421: commenting out again because lme4 objects don't have
+    ## model$na.action, instead (model@frame)$na.action. And I don't want
+    ## to keep messing with this.
+    ## 2013:remove rows listed in model's na.action
     ## TODO: double check. Following not needed because model.frame does it
-    ##if (!is.null(model$na.action)){
-    ##     data <- data[ -as.vector(model$na.action), , drop = FALSE]
-    ##}
+    ## 20140417: Previous conjecture false. commenting this out causes hell
+    ## with NAs floating into analysis. It hits meanCenter, standardize.
+    ## Fixed there, but now putting this back in.
+    ## if (!is.null(model$na.action)){
+    ##      data <- data[ -as.vector(model$na.action), , drop = FALSE]
+    ## }
 
     ## keep varNamesRHS
     attr(data, "varNamesRHS") <- setdiff(colnames(data), varNamesLHS)
@@ -318,13 +329,13 @@ focalVals <-
         divider <- match.arg(tolower(divider),
                              c("quantile", "std.dev.","table", "seq"))
         res <- switch(divider,
-                      table = rockchalk:::cutByTable(x, n),
-                      quantile = rockchalk:::cutByQuantile(x, n),
-                      "std.dev." = rockchalk:::cutBySD(x, n),
-                      "seq" = rockchalk:::plotSeq(x, n),
+                      table = cutByTable(x, n),
+                      quantile = cutByQuantile(x, n),
+                      "std.dev." = cutBySD(x, n),
+                      "seq" = plotSeq(x, n),
                       stop("unknown 'divider' algorithm"))
     }  else {
-        res <- rockchalk:::cutByTable(x, n)
+        res <- cutByTable(x, n)
     }
     res
 }
@@ -613,8 +624,12 @@ predictCI <-
     ## or a matrix, or a list with fit as an argument. Oh, this is
     ## frustrating.
     if (interval == "none") {
-        pargs <- list(object, newdata = newdata, type = type, se.fit = TRUE, na.action = na.action)
-        pargs <-  modifyList(pargs, dots)
+		if (inherits(object, "merMod")){
+			pargs <- list(object, newdata = newdata, type = type, na.action = na.action)
+		} else {
+        	pargs <- list(object, newdata = newdata, type = type, se.fit = TRUE, na.action = na.action)
+		}
+		pargs <-  modifyList(pargs, dots)
         predtry <-  try(do.call("predict", pargs))
         if (inherits(predtry, "try-error")) {
             stop("rockchalk:::predCI: predict(object) gave an error. Maybe this regression model does not have a predict method? \n")
