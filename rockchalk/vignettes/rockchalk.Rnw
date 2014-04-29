@@ -1,5 +1,7 @@
-%% LyX 2.1.0 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you really know what you are doing.
+\batchmode
+\makeatletter
+\def\input@path{{/home/pauljohn/GIT/rockchalk/package/rockchalk/vignettes//}}
+\makeatother
 \documentclass[american,noae]{article}
 \usepackage{lmodern}
 \renewcommand{\sfdefault}{lmss}
@@ -629,8 +631,8 @@ line for West is red in both.
 \subsection{testSlopes, a companion of plotSlopes}
 
 The students in psychology and political science are usually interested
-in conducting some diagnostic analysis of the interactive terms. Aiken
-and West (1991) (and later Cohen, Cohen, West, and Aiken) propose
+in conducting some diagnostic analysis of the interactive terms. \citet{Aiken1991}
+(and later \citealp{Cohen2002}Cohen, Cohen, West, and Aiken) propose
 using the t test to find out if the effect of the ``plotx'' variable
 is statistically significantly different from zero for each particular
 value of the moderator variable. The new version of rockchalk declares
@@ -999,17 +1001,16 @@ that seems to plague every regression analyst at one time or another:
 What does that interaction term \emph{really mean}? Along the way,
 we will try to dispel the idea that centering somehow makes estimates
 ``better'' or more numerically precise. The primary advocates of
-centering as a way to deal with numerical instability are Aiken and
-West (1991), who integrated that advice into the very widely used
-regression textbook, \emph{Applied Multiple Regression/Correlation
-for the Behavioral Sciences} (Cohen, et. al , 2002). They claim that
-the inclusion of interactions causes ``inessential multicollinearity''
-that is alleviated by centering. The advice is widely followed. One
-statistics book intended for biologists observed, for example, ``We
-support the recommendation of Aiken \& West (1991) and others that
-multiple regression with interaction terms should be fitted to data
-with centered predictor values'' (Quinn and Keough, 2002, Chapter
-6). 
+centering as a way to deal with numerical instability are \citet{Aiken1991},
+who integrated that advice into the very widely used regression textbook,
+\emph{Applied Multiple Regression/Correlation for the Behavioral Sciences}
+\citep{Cohen2002}. They claim that the inclusion of interactions
+causes ``inessential multicollinearity'' that is alleviated by centering.
+The advice is widely followed. One statistics book intended for biologists
+observed, for example, ``We support the recommendation of Aiken \&
+West (1991) and others that multiple regression with interaction terms
+should be fitted to data with centered predictor values'' (Quinn
+and Keough, 2002, Chapter 6). 
 
 Technical rebuttals have been published already (Kromrey, J. D., \&
 Foster-Johnson, L. , 1998; Echambadi and Hess, 2007), but the matter
@@ -1345,34 +1346,8 @@ normal generator.
 \end{description}
 Development on the package will continue on the basis of classroom
 experience.
-\begin{thebibliography}{1}
-\bibitem{key-1}Aiken, L. S., \& West, S. G. (1991). \emph{Multiple
-Regression: Testing and Interpreting Interactions}. Newbury Park,
-Calif: Sage Publications.
 
-\bibitem{key-2}Cohen, J., Cohen, P., West, S. G., \& Aiken, L. S.
-(2002). \emph{Applied Multiple Regression/Correlation Analysis for
-the Behavioral Sciences} (Third.). Routledge Academic.
-
-\bibitem{key-3}Echambadi, R., \& Hess, J. D. (2007). Mean-Centering
-Does Not Alleviate Collinearity Problems in Moderated Multiple Regression
-\emph{Models. Marketing Science}, 26(3), 438–445. doi: 10.1287/mksc.1060.0263
-
-\bibitem{key-4}Kromrey, J. D., \& Foster-Johnson, L. (1998). Mean
-Centering in Moderated Multiple Regression: Much Ado about Nothing.
-\emph{Educational and Psychological Measurement}, 58(1), 42 –67. doi:10.1177/0013164498058001005
-
-\bibitem{key-7}Little, T. D., Bovaird, J. A., and Widaman, K. F.
-(2006). On the Merits of Orthogonalizing Powered and Product Terms:
-Implications for Modeling Interactions Among Latent Variables. \emph{Structural
-Equation Modeling}, 13(4), 497-519.
-
-\bibitem{key-6}Preacher, K. J., Curran, P. J., \& Bauer, D. J. (2006).
-Computational Tools for Probing Interactions in Multiple Linear Regression,
-Multilevel Modeling, and Latent Curve Analysis. \emph{Journal of Educational
-and Behavioral Statistics}, 31(4), 437–448.
-
-\bibitem{key-5}Quinn, G.P, and Keough, Michael J. (2002) Experimental
-Design and Data Analysis for Biologists. Cambridge University Press.\end{thebibliography}
+\bibliographystyle{plainnat}
+\bibliography{0_home_pauljohn_GIT_rockchalk_package_rockchalk_vignettes_rockchalk}
 
 \end{document}

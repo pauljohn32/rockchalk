@@ -1,5 +1,5 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
 \begin_document
 \begin_header
 \textclass sweavel-article
@@ -99,13 +99,13 @@ sweave
 \font_roman lmodern
 \font_sans lmss
 \font_typewriter lmtt
+\font_math auto
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
 \font_sf_scale 100
 \font_tt_scale 100
-
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -116,15 +116,24 @@ sweave
 \use_hyperref false
 \papersize default
 \use_geometry true
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
-\cite_engine natbib_authoryear
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -1219,7 +1228,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Default Outreg Table
@@ -1273,7 +1282,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 My Spread Out Regressions
@@ -1328,7 +1337,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Combined OLS and GLM Estimates
@@ -1465,7 +1474,7 @@ includegraphics[height=4in]{rockchalk-ps05}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes: Linear Model with Confidence Interval
@@ -1672,7 +1681,7 @@ par(mfcol=c(1,1))
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes Illustrated
@@ -1865,7 +1874,7 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes with a Categorical Moderator
@@ -1922,7 +1931,7 @@ m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"),
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes: the interval argument
@@ -2095,8 +2104,22 @@ testSlopes, a companion of plotSlopes
 \begin_layout Standard
 The students in psychology and political science are usually interested
  in conducting some diagnostic analysis of the interactive terms.
- Aiken and West (1991) (and later Cohen, Cohen, West, and Aiken) propose
- using the t test to find out if the effect of the 
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Aiken1991"
+
+\end_inset
+
+ (and later 
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "Cohen2002"
+
+\end_inset
+
+Cohen, Cohen, West, and Aiken) propose using the t test to find out if the
+ effect of the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2153,7 +2176,7 @@ plot(m4psats)
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 testSlopes for an Interactive Model
@@ -2289,7 +2312,14 @@ for which values of the moderator would the effect of the plotx variable
 
 .
  This necessitates the calculation of the so-called Johnson-Neyman interval
- (1936), a plot of which is presented in Figure 
+ (
+\begin_inset CommandInset citation
+LatexCommand citeyear
+key "JohnsonNeyman1936"
+
+\end_inset
+
+), a plot of which is presented in Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:ts10"
@@ -2300,7 +2330,14 @@ reference "fig:ts10"
 \end_layout
 
 \begin_layout Standard
-The method of calculation is outlined in Preacher, Curran, and Bauer (2006).
+The method of calculation is outlined in 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "PreacherCurren2006"
+
+\end_inset
+
+.
  The values of 
 \begin_inset Formula $modx$
 \end_inset
@@ -2468,7 +2505,7 @@ m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotCurves
@@ -2610,7 +2647,7 @@ p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80,
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotPlane for the Interactive Model m4
@@ -2757,7 +2794,7 @@ addLines(from = m5pc, to = ppm5, col = m5pc$col)
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Making plotSlopes and plotPlane Work Together
@@ -2822,7 +2859,14 @@ standardized
 
 ).
  Some people think these coefficients are easier to interpret (but, for
- a strong cautionary argument against them, see King 1986).
+ a strong cautionary argument against them, see 
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "King1986"
+
+\end_inset
+
+).
  R offers no such thing as standardized regression, probably because this
  practice is practice is thought to be mistaken.
  The automatic standardization of all predictors, no matter whether they
@@ -2905,7 +2949,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Comparing Ordinary and Standardized Regression
@@ -3144,11 +3188,20 @@ Residual-centered Models
 \end_layout
 
 \begin_layout Standard
-Residual-centering is another adjustment that has been recommended for models
- that include interactions or squared terms.
+Residual-centering 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "LittleBovaird2006"
+
+\end_inset
+
+is another adjustment that has been recommended for models that include
+ interactions or squared terms.
  Like mean-centering, it is often recommended as a way to obtain smaller
  standard errors or to make estimates more numerically stable.
- 
+ Like mean centering, it causes a completely superficial change in the estimated
+ coefficients.
+ Nothing of substance is altered.
 \end_layout
 
 \begin_layout Standard
@@ -3418,13 +3471,26 @@ better
 
  or more numerically precise.
  The primary advocates of centering as a way to deal with numerical instability
- are Aiken and West (1991), who integrated that advice into the very widely
- used regression textbook, 
+ are 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "Aiken1991"
+
+\end_inset
+
+, who integrated that advice into the very widely used regression textbook,
+ 
 \emph on
 Applied Multiple Regression/Correlation for the Behavioral Sciences
 \emph default
- (Cohen, et.
- al , 2002).
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "Cohen2002"
+
+\end_inset
+
+.
  They claim that the inclusion of interactions causes 
 \begin_inset Quotes eld
 \end_inset
@@ -3445,15 +3511,26 @@ We support the recommendation of Aiken & West (1991) and others that multiple
 \begin_inset Quotes erd
 \end_inset
 
- (Quinn and Keough, 2002, Chapter 6).
+ (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "QuinnKeough2002"
+
+\end_inset
+
+, Chapter 6).
  
 \end_layout
 
 \begin_layout Standard
-Technical rebuttals have been published already (Kromrey, J.
- D., & Foster-Johnson, L.
- , 1998; Echambadi and Hess, 2007), but the matter still seems not widely
- understood.
+Technical rebuttals have been published already (
+\begin_inset CommandInset citation
+LatexCommand citealp
+key "Kromrey1998"
+
+\end_inset
+
+), but the matter still seems not widely understood.
  The argument is not that mean-centering (or residual-centering) is wrong,
  but rather that it is unnecessary.
  It is irrelevant, and possibly, misleading.
@@ -3772,7 +3849,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Comparing Regressions
@@ -3992,7 +4069,7 @@ includegraphics[height=8in]{rockchalk-pscenter.pdf}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes for the centered and non-centered regressions
@@ -4130,7 +4207,7 @@ par(op)
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Predicted Planes from Centered and Uncentered Fits Identical
@@ -4331,7 +4408,7 @@ includegraphics[width = 6.5in]{rockchalk-rcenter40}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Predicted Values of Mean and Residual-centered Models
@@ -4696,135 +4773,15 @@ mvrnorm a slightly improved version of the MASS package's multivariate normal
 Development on the package will continue on the basis of classroom experience.
 \end_layout
 
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-1"
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "rockchalk"
+options "chicago"
 
 \end_inset
 
-Aiken, L.
- S., & West, S.
- G.
- (1991).
- 
-\emph on
-Multiple Regression: Testing and Interpreting Interactions
-\emph default
-.
- Newbury Park, Calif: Sage Publications.
-\end_layout
 
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-2"
-
-\end_inset
-
-Cohen, J., Cohen, P., West, S.
- G., & Aiken, L.
- S.
- (2002).
- 
-\emph on
-Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences
-\emph default
- (Third.).
- Routledge Academic.
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-3"
-
-\end_inset
-
-Echambadi, R., & Hess, J.
- D.
- (2007).
- Mean-Centering Does Not Alleviate Collinearity Problems in Moderated Multiple
- Regression 
-\emph on
-Models.
- Marketing Science
-\emph default
-, 26(3), 438–445.
- doi: 10.1287/mksc.1060.0263
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-4"
-
-\end_inset
-
-Kromrey, J.
- D., & Foster-Johnson, L.
- (1998).
- Mean Centering in Moderated Multiple Regression: Much Ado about Nothing.
- 
-\emph on
-Educational and Psychological Measurement
-\emph default
-, 58(1), 42 –67.
- doi:10.1177/0013164498058001005
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-7"
-
-\end_inset
-
-Little, T.
- D., Bovaird, J.
- A., and Widaman, K.
- F.
- (2006).
- On the Merits of Orthogonalizing Powered and Product Terms: Implications
- for Modeling Interactions Among Latent Variables.
- 
-\emph on
-Structural Equation Modeling
-\emph default
-, 13(4), 497-519.
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-6"
-
-\end_inset
-
-Preacher, K.
- J., Curran, P.
- J., & Bauer, D.
- J.
- (2006).
- Computational Tools for Probing Interactions in Multiple Linear Regression,
- Multilevel Modeling, and Latent Curve Analysis.
- 
-\emph on
-Journal of Educational and Behavioral Statistics
-\emph default
-, 31(4), 437–448.
-\end_layout
-
-\begin_layout Bibliography
-\begin_inset CommandInset bibitem
-LatexCommand bibitem
-key "key-5"
-
-\end_inset
-
-Quinn, G.P, and Keough, Michael J.
- (2002) Experimental Design and Data Analysis for Biologists.
- Cambridge University Press.
 \end_layout
 
 \end_body
