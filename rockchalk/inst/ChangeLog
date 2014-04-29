@@ -1,3 +1,8 @@
+2014-04-29  Paul Johnson  <pauljohn@dellap7>
+
+	* ../R/outreg.R: browser argument to stop web browser from popping
+	up when html table is created.
+
 2014-04-23  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/summarize.R (summarizeNumerics): removed signif, replaced

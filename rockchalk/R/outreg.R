@@ -655,6 +655,7 @@ outreg0 <-
 ##' Estimate I don't understand", "deviance" = "Another Mystery")}. The
 ##' words that you might replace are "sigma", "r.squared",
 ##' "deviance", "adj.r.squared", "fstatistic".
+##' @param browser Display the regression model in a browser? Defaults to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
 ##' @rdname outreg
@@ -750,7 +751,7 @@ outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
-             PVlist = NULL, title, label,  gofNames)
+             PVlist = NULL, title, label,  gofNames, browser = identical(type, "html"))
 {
 
     myGofNames <- c(sigma = "RMSE",
@@ -1277,7 +1278,7 @@ outreg <-
                
     if (type == "latex") {
         cat(z)
-    } else {
+    } else if (browser) {
         fn <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".html")
         cat(z, file = fn)
         cat(paste("\n We are launching a browser to view that html file, which we have temporarily \n saved in ", fn, "\n"))
@@ -1287,6 +1288,14 @@ outreg <-
         cat(" \n cat(myreg, file = \"reg.html\")\n")
         cat(" Then open reg.html in a word processor or web browser.\n")
         browseURL(fn)
+    } else {
+        cat(paste("\n You asked for html output, but set browser = FALSE."))
+        cat(paste("As a result, we suspect you know what you are doing."))
+        cat(paste("Inspect the output object, write it to a file with cat, as in:"))
+        cat("myreg <- \n")
+        print(matchCall)
+        cat(" \n cat(myreg, file = \"reg.html\")\n")
+        cat(" Then open reg.html in a word processor or web browser.\n")
     }
     invisible(z)
 }

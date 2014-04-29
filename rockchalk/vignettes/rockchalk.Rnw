@@ -1,4 +1,4 @@
-%% LyX 2.0.7 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.1.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{article}
 \usepackage{lmodern}
@@ -6,10 +6,10 @@
 \renewcommand{\ttdefault}{lmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
 \usepackage{url}
+\usepackage[authoryear]{natbib}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
@@ -105,6 +105,9 @@
 \makeatother
 
 \usepackage{babel}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{Listing}
+
 \begin{document}
 
 \title{Using rockchalk for Regression Analysis%
@@ -419,7 +422,7 @@ of estimates along the decimal is required, most users will install
 dcolumn and make a few obvious changes in the markup that I provide.
 
 \begin{table}
-\caption{Default Outreg Table\label{tab:Tab1}}
+\protect\caption{Default Outreg Table\label{tab:Tab1}}
 
 
 <<outreg10, echo = F, results=tex>>=
@@ -429,7 +432,7 @@ outreg(list(m1, m2, m3))
 
 
 \begin{table}
-\caption{My Spread Out Regressions\label{tab:Tab2}}
+\protect\caption{My Spread Out Regressions\label{tab:Tab2}}
 
 
 <<outreg20, results=tex, echo=F>>=
@@ -439,7 +442,7 @@ outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with a Long
 
 
 \begin{table}
-\caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
+\protect\caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
 
 
 <<outreg70, results=tex, echo=F>>=
@@ -484,7 +487,7 @@ m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval = "conf
 
 \includegraphics[height=4in]{rockchalk-ps05}
 
-\caption{plotSlopes: Linear Model with Confidence Interval\label{fig:ps05}}
+\protect\caption{plotSlopes: Linear Model with Confidence Interval\label{fig:ps05}}
 \end{figure}
 
 
@@ -529,7 +532,7 @@ m4psb <- plotSlopes(m4, plotx = "x2", modx = "x1", modxVals = "std.dev.", xlab =
 par(mfcol=c(1,1))
 @
 
-\caption{plotSlopes Illustrated\label{fig:ps10}}
+\protect\caption{plotSlopes Illustrated\label{fig:ps10}}
 \end{figure}
 
 
@@ -580,7 +583,7 @@ m5 <- lm (y5 ~ x1*x4 + x3, data=dat)
 m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Predictor", xlim = magRange(dat$x1, c(1.2,1)))
 @
 
-\caption{plotSlopes with a Categorical Moderator\label{fig:ps20}}
+\protect\caption{plotSlopes with a Categorical Moderator\label{fig:ps20}}
 \end{figure}
 
 
@@ -590,7 +593,7 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Pr
 m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"), xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
 @
 
-\caption{plotSlopes: the interval argument\label{fig:ps21}}
+\protect\caption{plotSlopes: the interval argument\label{fig:ps21}}
 \end{figure}
 Suppose we have a four-valued categorical variable, ``West'',''Midwest'',
 ``South'', and ``East''. If that variable is used in an interaction
@@ -643,7 +646,7 @@ m4psats <- testSlopes(m4psa)
 plot(m4psats)
 @
 
-\caption{testSlopes for an Interactive Model\label{fig:ts10}}
+\protect\caption{testSlopes for an Interactive Model\label{fig:ts10}}
 \end{figure}
 
 
@@ -733,7 +736,7 @@ m5 <- lm(y5 ~ log(x2) + x1 * x2, data = dat)
 m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 @
 
-\caption{plotCurves\label{fig:pcps20}}
+\protect\caption{plotCurves\label{fig:pcps20}}
 \end{figure}
 
 
@@ -767,7 +770,7 @@ reasonable view of the predicted values.
 p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80, lcol = gray(.70))
 @
 
-\caption{plotPlane for the Interactive Model m4\label{fig:pp100}}
+\protect\caption{plotPlane for the Interactive Model m4\label{fig:pp100}}
 \end{figure}
 
 
@@ -800,7 +803,7 @@ ppm5 <- plotPlane(m5, plotx1 = "x2", plotx2 = "x1", phi = 0, npp = 15, lcol = gr
 addLines(from = m5pc, to = ppm5, col = m5pc$col)
 @
 
-\caption{Making plotSlopes and plotPlane Work Together\label{fig:pp110}}
+\protect\caption{Making plotSlopes and plotPlane Work Together\label{fig:pp110}}
 \end{figure}
 
 
@@ -841,7 +844,7 @@ summary(m4s)
 @
 
 \begin{table}
-\caption{Comparing Ordinary and Standardized Regression\label{tab:stdreg10}}
+\protect\caption{Comparing Ordinary and Standardized Regression\label{tab:stdreg10}}
 
 
 <<stdreg10, results=tex, echo=F>>=
@@ -1087,7 +1090,7 @@ m6rc <- residualCenter(m6int)
 @
 
 \begin{table}
-\caption{Comparing Regressions\label{tab:meancenter10-1}}
+\protect\caption{Comparing Regressions\label{tab:meancenter10-1}}
 
 
 <<mcenter10, results=tex, echo=F>>=
@@ -1135,7 +1138,7 @@ par(mfcol = c(1, 1))
 
 \includegraphics[height=8in]{rockchalk-pscenter.pdf}
 
-\caption{plotSlopes for the centered and non-centered regressions\label{fig:pscentering}}
+\protect\caption{plotSlopes for the centered and non-centered regressions\label{fig:pscentering}}
 \end{figure}
 
 
@@ -1167,7 +1170,7 @@ plotPlane(m6rc, plotx1="x1", plotx2="x2", plotPoints=FALSE, main="Residual-cente
 par(op)
 @
 
-\caption{Predicted Planes from Centered and Uncentered Fits Identical\label{fig:mcenter30}}
+\protect\caption{Predicted Planes from Centered and Uncentered Fits Identical\label{fig:mcenter30}}
 \end{figure}
 
 
@@ -1212,7 +1215,7 @@ par(op)
 
 \includegraphics[width = 6.5in]{rockchalk-rcenter40}
 
-\caption{Predicted Values of Mean and Residual-centered Models\label{fig:rcenter40}}
+\protect\caption{Predicted Values of Mean and Residual-centered Models\label{fig:rcenter40}}
 \end{figure}
 
 
