@@ -98,7 +98,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' the darkness of confidence interval regions
 ##' @export
 ##' @method plotSlopes lm
-##' @S3method plotSlopes lm
+##'  plotSlopes lm
 ##' @rdname plotSlopes
 ##' @import car
 ##' @return The return object includes the "newdata" object that was

@@ -20,7 +20,7 @@ standardize <-
 ##' @rdname standardize
 ##' @export
 ##' @method standardize lm
-##' @S3method standardize lm
+##'  standardize lm
 ##' @example inst/examples/standardize-ex.R
 standardize.lm <-
     function(model)
@@ -60,7 +60,7 @@ standardize.lm <-
 
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method summary stdreg
-##' @S3method summary stdreg
+##'  summary stdreg
 summary.stdreg <-
     function(object, ...)
 {
@@ -81,7 +81,7 @@ NULL
 
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method print stdreg
-##' @S3method print stdreg
+##'  print stdreg
 print.stdreg <- function(x, ...){
     cat("The standardized variables are suffixed with the letter \"s\" \n")
     NextMethod(generic = "print", object = x, ...)
@@ -90,7 +90,7 @@ NULL
 
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method print summary.stdreg
-##' @S3method print summary.stdreg
+##'  print summary.stdreg
 print.summary.stdreg <-
     function (x, ...)
 {
@@ -201,7 +201,7 @@ meanCenter <-
 ##' @rdname meanCenter
 ##' @export
 ##' @method meanCenter default
-##' @S3method meanCenter default
+##'  meanCenter default
 meanCenter.default <-
     function(model, centerOnlyInteractors = TRUE, centerDV = FALSE, standardize = FALSE, terms = NULL)
 {
@@ -293,7 +293,7 @@ meanCenter.default <-
 }
 
 ##' @author <pauljohn@@ku.edu>
-##' @S3method summary mcreg
+##'  summary mcreg
 ##' @method summary mcreg
 summary.mcreg <-
     function(object, ...)
@@ -317,7 +317,7 @@ NULL
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method print mcreg
-##' @S3method print mcreg
+##'  print mcreg
 print.mcreg <- function(x, ...){
     centeredVars <- attr(x, "centeredVars")
     cat("The centered variables are: \n")
@@ -332,7 +332,7 @@ NULL
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method print summary.mcreg
-##' @S3method print summary.mcreg
+##'  print summary.mcreg
 print.summary.mcreg <-
     function (x, ...)
 {
@@ -353,7 +353,7 @@ NULL
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method predict mcreg
-##' @S3method predict mcreg
+##'  predict mcreg
 predict.mcreg <-
     function (object, ...)
 {

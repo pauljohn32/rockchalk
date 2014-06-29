@@ -86,7 +86,7 @@ NULL
 ##' poly(x,2).2).
 ##' @export
 ##' @method newdata default
-##' @S3method newdata default
+##'  newdata default
 ##' @rdname newdata
 ##' @example inst/examples/predictOMatic-ex.R
 newdata.default <-
@@ -228,7 +228,7 @@ NULL
 ##' @return A data frame
 ##' @export
 ##' @method model.data default
-##' @S3method model.data default
+##'  model.data default
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/model.data-ex.R
 model.data.default <- function(model, na.action = na.omit, ...){
@@ -309,7 +309,6 @@ NULL
 ##' mean at the center and values on either side that are proportional
 ##' to the standard deviation.
 ##' @param n Desired number of focal values.
-##' @export
 ##' @return A named vector of focal values selected from a variable. The
 ##' values of the names should be informative and useful for plotting or
 ##' other diagnostic work.

@@ -203,7 +203,7 @@ NULL
 ##' @return \code{NULL}
 ##' @author <pauljohn@@ku.edu>
 ##' @method plot testSlopes
-##' @S3method plot testSlopes
+##'  plot testSlopes
 ##' @param x   A testSlopes object.
 ##' @param ... Additional arguments that are ignored currently.
 ##' @param shade Optional. Create colored polygon for significant regions.

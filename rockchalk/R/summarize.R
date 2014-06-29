@@ -193,7 +193,7 @@ NULL
 ##' information that these factor summaries include.
 ##'
 ##' @method print factorSummaries
-##' @S3method print factorSummaries
+##'  print factorSummaries
 ##' @param x A factorSummaries object produced by summarizeFactors
 ##' @param ... optional arguments. Only value currently used is digits.
 ##' @return A table of formatted output
