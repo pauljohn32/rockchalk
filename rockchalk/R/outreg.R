@@ -751,7 +751,7 @@ outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
-             PVlist = NULL, title, label,  gofNames, browser = FALSE)
+             PVlist = NULL, title, label,  gofNames, browser = identical(type, "html"))
 {
 
     myGofNames <- c(sigma = "RMSE",
@@ -923,20 +923,25 @@ outreg <-
     
 
     getBSE <- function(modl, alpha, modlLab = NULL) {
+        calcPT <- FALSE ## PT is calcuated with, rather than retrieved
         estTable <- coef(summary(modl, digits = 11))
         best <- estTable[ , "Estimate"]
-        ## Use SE from list instead if available
-        if (is.null(se <- tryCatch(SElist[[modlLab]], error = function(e) NULL))) {
-            se <- estTable[ , "Std. Error"]
-        }
-        
+
         if (!is.null(xxx <- tryCatch(df.residual(modl), error = function(e) NULL))) {
             DF <- xxx
         } else {
             DF <- stats::nobs(modl) - NROW(estTable) ##FIXME, KR approx
         }
 
-        if (is.null(PT <- tryCatch(PVlist[[modlLab]], error = function(e) NULL))) {
+        ## Use SE from list instead if available
+        if (is.null(se <- tryCatch(SElist[[modlLab]], error = function(e) NULL))) {
+            se <- estTable[ , "Std. Error"]
+            T <- best/se
+            PT <- pt(abs(T), lower.tail = FALSE, df = DF) * 2
+            calcPT <- TRUE
+        }
+        
+        if (!calcPT | is.null(PT <- tryCatch(PVlist[[modlLab]], error = function(e) NULL))) {
             if (!is.na(x <-pmatch("Pr", colnames(estTable)))) {
                 PT <- estTable[ , colnames(estTable)[x]]
             } else if ( "t value" %in% colnames(estTable)) {

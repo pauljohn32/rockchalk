@@ -1,7 +1,5 @@
-\batchmode
-\makeatletter
-\def\input@path{{/home/pauljohn/GIT/rockchalk/package/rockchalk/vignettes//}}
-\makeatother
+%% LyX 2.1.0 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{article}
 \usepackage{lmodern}
 \renewcommand{\sfdefault}{lmss}
@@ -687,11 +685,11 @@ We don't really want to say that the simple slope is different from
 0 for particular values of $modx$, but instead we want to answer
 the question, ``for which values of the moderator would the effect
 of the plotx variable be statistically significant?''. This necessitates
-the calculation of the so-called Johnson-Neyman interval (1936), a
-plot of which is presented in Figure \ref{fig:ts10}.
+the calculation of the so-called Johnson-Neyman interval (\citeyear{JohnsonNeyman1936}),
+a plot of which is presented in Figure \ref{fig:ts10}.
 
-The method of calculation is outlined in Preacher, Curran, and Bauer
-(2006). The values of $modx$ associated with a statistically significant
+The method of calculation is outlined in \citet{PreacherCurren2006}.
+The values of $modx$ associated with a statistically significant
 effect of $plotx$ on the outcome is determined from the computation
 of a T statistic for $\hat{b}_{simple\, slope}$. The J-N interval
 is the set of values of $modx$ for which the following (quadratic
@@ -821,11 +819,11 @@ as well as a column of ``beta weights'', the output of a ``standardized''
 regression analysis. Each variable, for example $x1_{i}$, was replaced
 by an estimated $Z-score:$ $(x1_{i}-\overline{x1})/std.dev.(x1_{i}$).
 Some people think these coefficients are easier to interpret (but,
-for a strong cautionary argument against them, see King 1986). R offers
-no such thing as standardized regression, probably because this practice
-is practice is thought to be mistaken. The automatic standardization
-of all predictors, no matter whether they are categorical, interaction
-terms, or transformed values (such as logs) is dangerous. 
+for a strong cautionary argument against them, see \citealp{King1986}).
+R offers no such thing as standardized regression, probably because
+this practice is practice is thought to be mistaken. The automatic
+standardization of all predictors, no matter whether they are categorical,
+interaction terms, or transformed values (such as logs) is dangerous. 
 
 To illustrate that, the rockchalk introduces a function called standardize().
 Each column of the design matrix is scaled to a new variable with
@@ -921,10 +919,12 @@ well.
 
 \subsection{Residual-centered Models}
 
-Residual-centering is another adjustment that has been recommended
-for models that include interactions or squared terms. Like mean-centering,
-it is often recommended as a way to obtain smaller standard errors
-or to make estimates more numerically stable. 
+Residual-centering \citep{LittleBovaird2006}is another adjustment
+that has been recommended for models that include interactions or
+squared terms. Like mean-centering, it is often recommended as a way
+to obtain smaller standard errors or to make estimates more numerically
+stable. Like mean centering, it causes a completely superficial change
+in the estimated coefficients. Nothing of substance is altered.
 
 The residualCenter() function is used in the same manner as meanCenter().
 The user fits an interactive model and the result object is passed
@@ -1009,14 +1009,13 @@ causes ``inessential multicollinearity'' that is alleviated by centering.
 The advice is widely followed. One statistics book intended for biologists
 observed, for example, ``We support the recommendation of Aiken \&
 West (1991) and others that multiple regression with interaction terms
-should be fitted to data with centered predictor values'' (Quinn
-and Keough, 2002, Chapter 6). 
+should be fitted to data with centered predictor values'' (\citealp{QuinnKeough2002},
+Chapter 6). 
 
-Technical rebuttals have been published already (Kromrey, J. D., \&
-Foster-Johnson, L. , 1998; Echambadi and Hess, 2007), but the matter
-still seems not widely understood. The argument is not that mean-centering
-(or residual-centering) is wrong, but rather that it is unnecessary.
-It is irrelevant, and possibly, misleading.
+Technical rebuttals have been published already (\citealp{Kromrey1998}),
+but the matter still seems not widely understood. The argument is
+not that mean-centering (or residual-centering) is wrong, but rather
+that it is unnecessary. It is irrelevant, and possibly, misleading.
 
 At the core of the matter is the fact that our uncertainty about regression
 estimates depends on our point of view. Please review the confidence
@@ -1347,7 +1346,7 @@ normal generator.
 Development on the package will continue on the basis of classroom
 experience.
 
-\bibliographystyle{plainnat}
-\bibliography{0_home_pauljohn_GIT_rockchalk_package_rockchalk_vignettes_rockchalk}
+\bibliographystyle{chicago}
+\bibliography{rockchalk}
 
 \end{document}

@@ -1,3 +1,9 @@
+2014-06-29  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/outreg.R (getBSE): calculate p values from standard errors
+	if SElist is used. Previously, wrongly, had not reclaculated
+	stars. Legacy to time when I refused to give stars.
+
 2014-04-29  Paul Johnson  <pauljohn@dellap7>
 
 	* ../R/outreg.R: browser argument to stop web browser from popping
