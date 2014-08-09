@@ -1,14 +1,14 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.81
-Date: 2014-06-29
+Version: 1.8.85
+Date: 2014-08-08
 Author: Paul E. Johnson <pauljohn@ku.edu>
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for ease of
     presentation and interpretation of regression analysis.
     These functions are used to produce the statistics lectures
-    that are available in http://pj.freefaculty.org/guides. There
+    in http://pj.freefaculty.org/guides. There
     are functions to explore the effect (or lack thereof) from
     "mean centering," "residual centering", and standardization.
     The vignette "rockchalk" offers a fairly comprehensive overview.

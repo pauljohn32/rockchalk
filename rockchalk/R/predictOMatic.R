@@ -86,7 +86,7 @@ NULL
 ##' poly(x,2).2).
 ##' @export
 ##' @method newdata default
-##'  newdata default
+##' @export 
 ##' @rdname newdata
 ##' @example inst/examples/predictOMatic-ex.R
 newdata.default <-
@@ -221,14 +221,15 @@ NULL
 ##'
 ##' This is the default method. Works for lm and glm fits.
 ##' 
+##' @param model 
 ##' @param na.action Defaults to na.omit, so model as it would appear
 ##' in user workspace is re-created, except that rows with missing
 ##' values are deleted.  Changing this argument to na.pass will
 ##' provide the data as it was in the workspace.
+##' @param ...  Place holder for other arguments, not used at present
 ##' @return A data frame
 ##' @export
 ##' @method model.data default
-##'  model.data default
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/model.data-ex.R
 model.data.default <- function(model, na.action = na.omit, ...){

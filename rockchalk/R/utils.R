@@ -236,7 +236,7 @@ NULL
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method getFocal default
-##'  getFocal default
+##' @export 
 ##' @examples
 ##' x <- rnorm(100)
 ##' getFocal(x)
@@ -306,7 +306,7 @@ NULL
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method getFocal factor
-##'  getFocal factor
+##' @export
 ##' @examples
 ##' x <- factor(c("A","B","A","B","C","D","D","D"))
 ##' getFocal(x)

@@ -1,3 +1,23 @@
+2014-08-05  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/summarize.R (summarizeNumerics): noted that poly objects
+	were not working with summarize, summarizeFactors,
+	summarizeNumerics. Revised the "is.atomic" checker to multiply
+	column names.
+
+2014-07-24  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/summarize.R (normedEntropy): POSIXt variable crashed
+	summary. Revised that to ignore POSIXt, with warning comment in
+	instructions.
+
+2014-07-15  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/outreg.R (checkReg): Insert new argument BList, which
+	can provide B's for a model separate from rest.
+	* Reworked bse to try harder to recognize standard errors and
+	pvalues as provided through various parts of the interface
+
 2014-06-29  Paul Johnson  <pauljohn@dellap14>
 
 	* ../R/outreg.R (getBSE): calculate p values from standard errors

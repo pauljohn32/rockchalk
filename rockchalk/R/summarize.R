@@ -13,19 +13,27 @@
 ##' alphabetized. To prevent alphabetization, use
 ##' alphaSort = FALSE.
 ##' @param dat a data frame or a matrix
-##' @param alphaSort If TRUE (default), the columns are re-organized in alphabetical order. If FALSE, they are presented in the original order.
+##' @param alphaSort If TRUE (default), the columns are re-organized
+##' in alphabetical order. If FALSE, they are presented in the
+##' original order.
 ##' @param sumstat If TRUE (default), include mean, standard deviation, and count of NAs.
 ##' @param digits integer, used for number formatting output.
 ##' @export
-##' @return a matrix with one column per variable and the rows representing the quantiles as well as the mean, standard deviation, and variance.
+##' @return a matrix with one column per variable and the rows
+##' representing the quantiles as well as the mean, standard
+##' deviation, and variance.
 ##' @seealso summarize and summarizeFactors
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
     digits = max(3, getOption("digits") - 3)) {
     if (is.atomic(dat)) {
-		datname <- deparse(substitute(dat))
+        datname <- deparse(substitute(dat))
         dat <- data.frame(dat)
-        colnames(dat) <- datname 
+        if (NCOL(dat) == 1) {
+            colnames(dat) <- datname
+        } else {
+            colnames(dat) <- paste0(datname, "_",  seq(1, NCOL(dat)))
+        }
     } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
     
     nums <- sapply(dat, is.numeric)
@@ -55,7 +63,8 @@ NULL
 ##' @param y a factor (non-numeric variable)
 ##' @param maxLevels The maximum number of levels that will
 ##' be presented in the tabulation.
-##' @param sumstat If TRUE (default), entropy (diversity) estimate and the number of NAs will be returned.
+##' @param sumstat If TRUE (default), entropy (diversity) estimate and
+##' the number of NAs will be returned.
 ##' @return a vector of named elements including the summary
 ##' table as well as entropy and normed entropy.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -136,10 +145,18 @@ NULL
 ##' comparison is something of an illusion, since variables with the
 ##' same number of categories will always be comparable by their
 ##' entropy, whether it is normed or not.
+##'
+##' Warning: Variables of class POSIXt will be ignored. This will be
+##' fixed in the future. The function works perfectly well with
+##' numeric, factor, or character variables.  Other more elaborate
+##' structures are likely to be trouble. 
 ##' @param dat A data frame
 ##' @param maxLevels The maximum number of levels that will be reported.
-##' @param alphaSort If TRUE (default), the columns are re-organized in alphabetical order. If FALSE, they are presented in the original order.
-##' @param sumstat If TRUE (default), report indicators of dispersion and the number of missing cases (NAs).
+##' @param alphaSort If TRUE (default), the columns are re-organized
+##' in alphabetical order. If FALSE, they are presented in the
+##' original order.
+##' @param sumstat If TRUE (default), report indicators of dispersion
+##' and the number of missing cases (NAs).
 ##' @param digits  integer, used for number formatting output.
 ##' @export
 ##' @return A list of factor summaries
@@ -166,11 +183,15 @@ summarizeFactors <-
               sumstat= TRUE, digits = max(3, getOption("digits") - 3))
 {
     if (is.atomic(dat)){
-		datname <- deparse(substitute(dat))
-		dat <- data.frame(dat)
-        colnames(dat) <- datname 
+        datname <- deparse(substitute(dat))
+        dat <- data.frame(dat)
+        if (NCOL(dat) == 1) {
+            colnames(dat) <- datname
+        } else {
+            colnames(dat) <- paste0(datname, "_",  seq(1, NCOL(dat)))
+        }
     } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
-    factors <- sapply(dat, function(x) {!is.numeric(x)})
+    factors <- sapply(dat, function(x) {!is.numeric(x) & !inherits(x, "POSIXt")})
     if (sum(factors) == 0) return(NULL)
     datf <- dat[, factors, drop = FALSE]
     if (alphaSort)
@@ -193,7 +214,7 @@ NULL
 ##' information that these factor summaries include.
 ##'
 ##' @method print factorSummaries
-##'  print factorSummaries
+##' @export
 ##' @param x A factorSummaries object produced by summarizeFactors
 ##' @param ... optional arguments. Only value currently used is digits.
 ##' @return A table of formatted output
@@ -265,8 +286,12 @@ summarize <-
     if (is.atomic(dat)){
 	   datname <- deparse(substitute(dat))
 	   dat <- data.frame(dat)
-	   colnames(dat) <- datname
-	} else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+           if (NCOL(dat) == 1) {
+               colnames(dat) <- datname
+           } else {
+               colnames(dat) <- paste0(datname, "_",  seq(1, NCOL(dat)))
+           }
+       } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
 
     dotnames <- names(dots)
     ## next should give c('digits', 'alphaSort')

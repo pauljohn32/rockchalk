@@ -88,7 +88,7 @@ function(model = NULL,  plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,
 ##' values of the plane corresponding to locations x1seq and x2seq.
 ##' @rdname plotPlane
 ##' @method plotPlane default
-##'  plotPlane default
+##' @export
 
 plotPlane.default <-
 function(model = NULL, plotx1 = NULL, plotx2 = NULL, drawArrows = FALSE,

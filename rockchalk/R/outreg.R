@@ -543,7 +543,7 @@ outreg0 <-
 ##' should save the outreg result and then use cat to save it. That is
 ##' myMod <- outreg(m1, ...)  cat(myMod, file = "myMod.html") or
 ##' cat(myMod, file = "myMod.tex".  In version 1.8.66, we write the
-##' html file to a temporay location and display it in a web
+##' html file to a temporary location and display it in a web
 ##' browser. Many word processors will not accept a cut-and paste
 ##' transfer from the browser, they will, however, be able to open the
 ##' html file itself and automatically re-format it in the native
@@ -630,7 +630,8 @@ outreg0 <-
 ##' @param runFuns A list of functions
 ##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
 ##' @param alpha Default = c(0.05, 0.01, 0.001). I think stars are dumb, but enough
-##' people have asked me for more stars that I'm caving in. 
+##' people have asked me for more stars that I'm caving in.
+
 ##' @param SElist Optional. Replacement standard errors. Must be a
 ##' list of named vectors. \code{outreg} uses the R \code{summary} to
 ##' retrieve standard errors, but one might instead want to use robust
@@ -644,8 +645,11 @@ outreg0 <-
 ##' of named vectors, similar in format to SElist. The which the
 ##' elements are the "p values" that the user wants to use for each
 ##' model.
-##' @param title A LaTeX caption for the
-##' table. Not relevant if type = "html".
+##' @param Blist Optional. This is only needed in the rare case where a model's
+##' parameters cannot be discerned from its summary. List must have names
+##' for models, and vectors slope coefficient. See discussion of SElist and PVlist.
+##' @param title A LaTeX caption for the table. Not relevant if type =
+##' "html".
 ##' @param label A string to be used as a LaTeX label in the table to be
 ##' created. Not relevant if type = "html".
 ##' @param gofNames Optional pretty names. R regression summaries use
@@ -751,9 +755,9 @@ outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
-             PVlist = NULL, title, label,  gofNames, browser = identical(type, "html"))
+             PVlist = NULL,  Blist = NULL, title, label,  gofNames,
+             browser = identical(type, "html"))
 {
-
     myGofNames <- c(sigma = "RMSE",
                     r.squared = paste("_R2_"),
                     deviance = "Deviance",
@@ -920,40 +924,51 @@ outreg <-
     parmnames <- vector()
     myModelClass <- vector()
 
-    
-
-    getBSE <- function(modl, alpha, modlLab = NULL) {
-        calcPT <- FALSE ## PT is calcuated with, rather than retrieved
-        estTable <- coef(summary(modl, digits = 11))
-        best <- estTable[ , "Estimate"]
-
-        if (!is.null(xxx <- tryCatch(df.residual(modl), error = function(e) NULL))) {
-            DF <- xxx
-        } else {
-            DF <- stats::nobs(modl) - NROW(estTable) ##FIXME, KR approx
-        }
-
-        ## Use SE from list instead if available
-        if (is.null(se <- tryCatch(SElist[[modlLab]], error = function(e) NULL))) {
-            se <- estTable[ , "Std. Error"]
-            T <- best/se
-            PT <- pt(abs(T), lower.tail = FALSE, df = DF) * 2
-            calcPT <- TRUE
-        }
-        
-        if (!calcPT | is.null(PT <- tryCatch(PVlist[[modlLab]], error = function(e) NULL))) {
-            if (!is.na(x <-pmatch("Pr", colnames(estTable)))) {
-                PT <- estTable[ , colnames(estTable)[x]]
-            } else if ( "t value" %in% colnames(estTable)) {
-                PT <- pt(abs(estTable[ , "t value"]), lower.tail = FALSE, df = DF) * 2
-            } else if ( "z value" %in% colnames(estTable)) {
-                PT <- pt(abs(estTable[ , "z value"]), lower.tail = FALSE, df = DF) * 2
-                ##fixme. Use Normal?
+    getBSE <- function(modl, alpha, modLab = NULL) {
+        if (is.null(best <- tryCatch(Blist[[modLab]], error = function(e) NULL))) {
+            if (!is.null(estTable <- coef(summaryList[[modLab]], digits = 11))) {
+                best <- estTable[ , "Estimate"]
             } else {
-                alpha <- NULL
-                warning("outreg: can't see how to get P Values. No Stars for you")
+                best <- coef(modl)
             }
         }
+        
+        if (is.null(se <- tryCatch(SElist[[modLab]], error = function(e) NULL))) {
+            if (!is.null(estTable <- coef(summaryList[[modLab]], digits = 11))) {
+                se <- estTable[ , "Std. Error"]
+            } else if (!is.null(vcov <- vcov(modl))){
+                se <- sqrt(diag(vcov))
+            } else {
+                stop("outreg:getBSE can't get standard errors")
+            }
+        }
+         
+        if (!is.null(DF <- tryCatch(df.residual(modl), error = function(e) NULL))
+            | !is.null(DF <- tryCatch(nobs(modl) - length(best), error = function(e) NULL))
+            | !is.null(DF <- tryCatch(NROW(model.matrix(modl)), error = function(e) NULL))
+            ) {##diagnostic## print("whew, there is a DF")
+        } else {
+            stop("Sorry, can't find the degrees of freedom on a a model")
+        }
+            
+        if (is.null(PT <- tryCatch(PVlist[[modLab]], error = function(e) NULL))) {
+            if (!is.null(estTable <- coef(summaryList[[modLab]], digits = 11)) & is.null(SElist[[modLab]])) {
+                if (!is.na(x <-pmatch("Pr", colnames(estTable)))) {
+                    PT <- estTable[ , colnames(estTable)[x]]
+                } else if ("t value" %in% colnames(estTable)) {
+                    PT <- pt(abs(estTable[ , "t value"]), lower.tail = FALSE, df = DF) * 2
+                } else if ( "z value" %in% colnames(estTable)) {
+                    PT <- pt(abs(estTable[ , "z value"]), lower.tail = FALSE, df = DF) * 2
+                    ##fixme. Use Normal?
+                }
+            } else if(!is.null(best) & !is.null(se) & !is.null(DF)) {
+                T <- best/se
+                PT <- pt(abs(T), lower.tail = FALSE, df = DF) * 2
+            } else {
+                print(paste("Sorry, outreg can't figure a way to guess the p values for model", modLab))
+            }
+        }
+
        
         stars <- function(x, alpha) {xxx <- sum(abs(x) < alpha)
                                      paste0("", rep("*", xxx), collapse = "")}
@@ -965,7 +980,7 @@ outreg <-
         se <- paste0("(", format(round(se, digits), nsmall = digits), ")")
        
         res <- data.frame(B = BSTAR, SE = se, stringsAsFactors = FALSE)
-        rownames(res) <- rownames(estTable)
+        rownames(res) <- names(best) 
         res
     }
 

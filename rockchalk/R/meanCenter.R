@@ -20,7 +20,6 @@ standardize <-
 ##' @rdname standardize
 ##' @export
 ##' @method standardize lm
-##'  standardize lm
 ##' @example inst/examples/standardize-ex.R
 standardize.lm <-
     function(model)
@@ -60,7 +59,7 @@ standardize.lm <-
 
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method summary stdreg
-##'  summary stdreg
+##' @export
 summary.stdreg <-
     function(object, ...)
 {
@@ -81,7 +80,7 @@ NULL
 
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method print stdreg
-##'  print stdreg
+##' @export 
 print.stdreg <- function(x, ...){
     cat("The standardized variables are suffixed with the letter \"s\" \n")
     NextMethod(generic = "print", object = x, ...)
@@ -90,7 +89,7 @@ NULL
 
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method print summary.stdreg
-##'  print summary.stdreg
+##' @export 
 print.summary.stdreg <-
     function (x, ...)
 {
@@ -201,7 +200,7 @@ meanCenter <-
 ##' @rdname meanCenter
 ##' @export
 ##' @method meanCenter default
-##'  meanCenter default
+##' @export 
 meanCenter.default <-
     function(model, centerOnlyInteractors = TRUE, centerDV = FALSE, standardize = FALSE, terms = NULL)
 {
@@ -293,7 +292,7 @@ meanCenter.default <-
 }
 
 ##' @author <pauljohn@@ku.edu>
-##'  summary mcreg
+##' @export 
 ##' @method summary mcreg
 summary.mcreg <-
     function(object, ...)
@@ -317,7 +316,7 @@ NULL
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method print mcreg
-##'  print mcreg
+##' @export 
 print.mcreg <- function(x, ...){
     centeredVars <- attr(x, "centeredVars")
     cat("The centered variables are: \n")
@@ -332,7 +331,7 @@ NULL
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method print summary.mcreg
-##'  print summary.mcreg
+##' @export 
 print.summary.mcreg <-
     function (x, ...)
 {
@@ -353,7 +352,7 @@ NULL
 
 ##' @author <pauljohn@@ku.edu>
 ##' @method predict mcreg
-##'  predict mcreg
+##' @export
 predict.mcreg <-
     function (object, ...)
 {
