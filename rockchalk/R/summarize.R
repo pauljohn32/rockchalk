@@ -196,7 +196,7 @@ summarizeFactors <-
     datf <- dat[, factors, drop = FALSE]
     if (alphaSort)
         datf <- datf[, sort(colnames(datf)), drop = FALSE]
-    z <- lapply(datf, rockchalk:::summary.factor,
+    z <- lapply(datf, summary.factor,
                 maxLevels = maxLevels, sumstat = sumstat)
     attr(z, "class") <- c("factorSummaries")
     z

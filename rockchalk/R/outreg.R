@@ -528,8 +528,66 @@ outreg0 <-
         cat("\\end{table}\n ")
     }
 }
+NULL
 
 
+##' formatter for merMod objects copied from lme4
+##'
+##' R packaging started to complain about usage of non-exported
+##' functions from packages. lme4 team said they might export
+##' this function at some time in future. Until then, I need to copy it.
+##' @param varc variance estimates
+##' @param digits digits desired
+##' @param comp what do you want
+##' @param formatter a format function
+##' @param ... other arguments
+##' @return formatted text
+##' @author Doug Bates, Martin Machler, Ben Bolker, Stephen Walker
+formatVC <- function(varc, digits = max(3, getOption("digits") - 2),
+                     comp = "Std.Dev.", formatter = format, ...)
+{
+    c.nms <- c("Groups", "Name", "Variance", "Std.Dev.")
+    avail.c <- c.nms[-(1:2)]
+    if(any(is.na(mcc <- pmatch(comp, avail.c))))
+        stop("Illegal 'comp': ", comp[is.na(mcc)])
+    nc <- length(colnms <- c(c.nms[1:2], (use.c <- avail.c[mcc])))
+    if(length(use.c) == 0)
+        stop("Must *either* show variances or standard deviations")
+    useScale <- attr(varc, "useSc")
+    reStdDev <- c(lapply(varc, attr, "stddev"),
+                  if(useScale) list(Residual = unname(attr(varc, "sc"))))
+    reLens <- vapply(reStdDev, length, 1L)
+    nr <- sum(reLens)
+    reMat <- array('', c(nr, nc), list(rep.int('', nr), colnms))
+    reMat[1+cumsum(reLens)-reLens, "Groups"] <- names(reLens)
+    reMat[,"Name"] <- c(unlist(lapply(varc, colnames)), if(useScale) "")
+    if(any("Variance" == use.c))
+    reMat[,"Variance"] <- formatter(unlist(reStdDev)^2, digits = digits, ...)
+    if(any("Std.Dev." == use.c))
+    reMat[,"Std.Dev."] <- formatter(unlist(reStdDev),   digits = digits, ...)
+    if (any(reLens > 1)) {
+        maxlen <- max(reLens)
+        recorr <- lapply(varc, attr, "correlation")
+        corr <-
+            do.call("rBind",
+                    lapply(recorr,
+                           function(x) {
+                               x <- as(x, "matrix")
+                               dig <- max(2, digits - 2) # use 'digits' !
+                               ## not using formatter() for correlations
+                               cc <- format(round(x, dig), nsmall = dig)
+                               cc[!lower.tri(cc)] <- ""
+                               nr <- nrow(cc)
+                               if (nr >= maxlen) return(cc)
+                               cbind(cc, matrix("", nr, maxlen-nr))
+                           }))[, -maxlen, drop = FALSE]
+        if (nrow(corr) < nrow(reMat))
+            corr <- rbind(corr, matrix("", nrow(reMat) - nrow(corr), ncol(corr)))
+        colnames(corr) <- c("Corr", rep.int("", max(0L, ncol(corr)-1L)))
+        cbind(reMat, corr)
+    } else reMat
+}
+NULL
 
 ##' Creates a publication quality result table for
 ##' regression models. Works with models fitted with lm, glm, as well
@@ -562,7 +620,7 @@ outreg0 <-
 ##' exhausting). So I've tried to revise \code{outreg()} to work with
 ##' regression functions that follow the standard R framework. It is
 ##' known to work \code{lm} and \code{glm}, as well as \code{merMod}
-##' class from \code{lmer4}, but it will try to interact with other
+##' class from \code{lme4}, but it will try to interact with other
 ##' kinds of regression models.  Those models should have methods
 ##' \code{summary()}, \code{coef()}, \code{vcov()} and \code{nobs()}.
 ##' Package writes should provide those, its not my job.
@@ -631,7 +689,6 @@ outreg0 <-
 ##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
 ##' @param alpha Default = c(0.05, 0.01, 0.001). I think stars are dumb, but enough
 ##' people have asked me for more stars that I'm caving in.
-
 ##' @param SElist Optional. Replacement standard errors. Must be a
 ##' list of named vectors. \code{outreg} uses the R \code{summary} to
 ##' retrieve standard errors, but one might instead want to use robust
@@ -662,6 +719,7 @@ outreg0 <-
 ##' @param browser Display the regression model in a browser? Defaults to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
+##' @import grDevices  
 ##' @rdname outreg
 ##' @return A character vector, one element per row of the regression table.
 ##' @keywords regression
@@ -702,12 +760,14 @@ outreg0 <-
 ##' ## make a file:
 ##' ## cat(ex5, file = "some_name_you_choose.tex")
 ##'
+##' \donttest{
 ##' ex5html <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, type = "html")
 ##' ## make a file:
 ##' ## cat(ex5html, file = "some_name_you_choose.html")
 ##' ## Open that in LibreOffice or MS Word
+##' }
 ##' 
 ##' outreg(list("Whatever" = m1, "Whatever" =m2),
 ##'     title = "Another way to get AIC output",
@@ -716,16 +776,35 @@ outreg0 <-
 ##' outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
 ##'     title = "My Three Linear Regressions", float = FALSE)
 ##'
-##' ## Suppose you have a special new way to make standard errors smaller!
-##' newSE <- 0.5 *sqrt(diag(vcov(m3)))
+##' ## A new feature in 1.85 is ability to provide vectors of beta estimates
+##' ## standard errors, and p values if desired. 
+##' ## Suppose you have robust standard errors!
+##' library(car)
+##' newSE <- sqrt(diag(car::hccm(m3)))
 ##' ## See 2 versions of m3 in the table?
 ##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, "Model C w Robust SE" = m3),
-##'       SElist= list("Model C w Robust SE" = newSE))
+##'         SElist= list("Model C w Robust SE" = newSE))
+##' 
+##' ## outreg uses a t or normal approximation to calculate p values, but you can
+##' ## calculate your own.  Let's dial down those std errors but insist they are
+##' ## not significantly different from zero
+##' newSE <- 0.3*newSE
+##' newPvals <- rep(0.1, length(newSE))
 ##'
-##' ## Pass in your own P values.
-##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3), PVlist =
-##'        list("Model C" = c(0.004, 0.4, 0.000003)), alpha = c(0.05, 0.01, 0.001))
-##'
+##' \donttest{
+##' ## Pass in your own SE and P values.
+##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3),
+##'        SElist = list("Model C" = newSE), 
+##'        PVlist = list("Model C" = newPvals), alpha = c(0.05, 0.01, 0.001))
+##' ## It took me a while to realize we might as well allow the user to
+##' ## pass in a vector of Beta estimates as well. Seems obvious now, though.
+##' outreg(list("Model C" = m3, "Model C Robust SE" = m3, "Model C MLv2" = m3),
+##'        Blist = list("Model C MLv2" = c("(Intercept)" = 0.222, "x1" = 0.222, "x2" = 0.222)),
+##'        SElist = list("Model C Robust SE" = newSE, "Model C MLv2" = 1.4*newSE), 
+##'        PVlist = list("Model C" = newPvals),
+##'        alpha = c(0.05, 0.01, 0.001), type = "html")
+##' }
+##' 
 ##' outreg(list("I Love Long Titles" = m1,
 ##'        "Prefer Brevity" = m2,
 ##'        "Short" = m3), tight = FALSE, float = FALSE)
@@ -751,6 +830,32 @@ outreg0 <-
 ##'     request = c(fstatistic = "F"),
 ##'     runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC",
 ##'     "nobs" = "N Again?"))
+##'
+##' ## Here's a fit example from lme4.
+##' if (require(lme4)){
+##'   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
+##'   outreg(fm1)
+##'   ## Fit same with lm for comparison
+##'   lm1 <- lm(Reaction ~ Days, sleepstudy)
+##'   ## Get robust standard errors
+##'   lm1rse <- sqrt(diag(car::hccm(lm1)))
+##' \donttest{
+##'   outreg(list("Random Effects" = fm1, "OLS" = lm1, "OLS Robust SE" = lm1),
+##'        SElist = list("OLS Robust SE" = lm1rse), type = "html")
+##'   }
+##'   ## From the glmer examples
+##'   gm2 <- glmer(cbind(incidence, size - incidence) ~ period + (1 | herd),
+##'                    data = cbpp, family = binomial)
+##'   lm2 <- lm(incidence/size ~ period,  data = cbpp)
+##'   lm2rse <- sqrt(diag(hccm(lm2)))
+##'   library(MASS)
+##'   ## Lets see what MASS::rlm objects do? Mostly OK
+##'   rlm2 <- MASS::rlm(incidence/size ~ period, data = cbpp)
+##'   \donttest{
+##'   outreg(list("GLMER" = gm2, "lm" = lm2, "lm w/robust se" = lm2, "rlm" = rlm2),
+##'        SElist = list("lm w/robust se" = lm2rse), type = "html")
+##'   } 
+##' }
 outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
@@ -758,6 +863,7 @@ outreg <-
              PVlist = NULL,  Blist = NULL, title, label,  gofNames,
              browser = identical(type, "html"))
 {
+
     myGofNames <- c(sigma = "RMSE",
                     r.squared = paste("_R2_"),
                     deviance = "Deviance",
@@ -927,7 +1033,13 @@ outreg <-
     getBSE <- function(modl, alpha, modLab = NULL) {
         if (is.null(best <- tryCatch(Blist[[modLab]], error = function(e) NULL))) {
             if (!is.null(estTable <- coef(summaryList[[modLab]], digits = 11))) {
-                best <- estTable[ , "Estimate"]
+                validColNum <-  which(colnames(estTable) %in% c("Estimate", "Value", "Param"))
+                if (length(validColNum) > 1) stop(paste("Model ", modLab, " has a summary table with unusual column names. They are ", colnames(estTable)))
+                if (length(validColNum) == 0) {
+                    warning(paste("Model ", modLab, " summary table does not have a column named Estimate, Value, or Param, so we are guessing on column 1"))
+                    validColNum <- 1
+                }
+                best <- estTable[ , validColNum]
             } else {
                 best <- coef(modl)
             }
@@ -1016,7 +1128,7 @@ outreg <-
     getVC.merMod <- function(modl){
         if(inherits(modl, "merMod")){
             vc <- lme4::VarCorr(modl)
-            vcfmt <- lme4:::formatVC(vc, 3, "Std.Dev.")
+            vcfmt <- formatVC(vc, 3, "Std.Dev.")
             vcfmt[ ,2] <- gsub("\\(Intercept\\)", "", vcfmt[ ,2])
             
             for ( i in seq_along(vcfmt[ ,1])){
@@ -1766,7 +1878,7 @@ outreg <-
 
 ##' Convert LaTeX output from outreg to HTML markup
 ##'
-##' This function is deprecated. Instead, please use \code{outreg(type= "html")}
+##' This function is deprecated. Instead, please use \code{outreg(type = "html")}
 ##'
 ##' This will write the html on the screen, but if a filename argument is
 ##' supplied, it will write a file. One can
@@ -1828,7 +1940,7 @@ outreg2HTML <-
     myz2 <- gsub("\\\\chi\\^2", "&chi;<sup>2</sup>", myz2)
 
     if (!missing(filename)){
-        if (!grDevices:::checkIntFormat(filename))
+        if (!checkIntFormat(filename))
             stop("invalid 'file'")
         cat(myz2, file = filename)
         cat(paste("Saved to ", filename, "\n"))

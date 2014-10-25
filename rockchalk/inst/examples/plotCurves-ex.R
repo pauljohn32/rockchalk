@@ -80,9 +80,9 @@ m1 <- lm(y ~ log(x1)*xcat1 + x2 + I(x2^2), data=dat)
 summary(m1)
 
 ## First, with no moderator
-plotCurves(m1, plotx="x1")
+plotCurves(m1, plotx = "x1")
 
-plotCurves(m1, plotx="x1", modx="xcat1")
+plotCurves(m1, plotx = "x1", modx = "xcat1")
 
 ## ## Verify that plot by comparing against a manually contructed alternative
 ## par(mfrow=c(1,2))

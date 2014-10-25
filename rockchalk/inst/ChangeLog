@@ -1,3 +1,29 @@
+2014-10-25  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/predictOMatic.R (predictCI): fiddling with level on
+	confidence interval to fix bug I caused last time
+
+2014-10-14  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/plotCurves.R (plotCurves): plotxRange
+
+	* ../R/predictOMatic.R (predictCI): level argument passed through
+
+	* ../R/plotSlopes.R (plotSlopes): plotxRange: new argument
+	level: new predict argument pass through
+
+2014-08-09  Paul Johnson  <pauljohn@dellap14>
+
+	* ../DESCRIPTION (Package): drop dependency on lme4. Don't need
+	anymore because I copied formatVC into outreg. Still can fit lme4
+
+	* ../R/outreg.R (getBSE): noticed rlm fits use "Value", not
+	"Estimate" for column header, so put in a checker on the col name.
+	Should go back do same on the SE as well. Maybe would solve
+	lots of idiosyncratic problems with funny packages.
+	* ../R/outreg.R (outreg): examples revised to show ability
+	to input B's, SE's and P values.
+
 2014-08-05  Paul Johnson  <pauljohn@dellap14>
 
 	* ../R/summarize.R (summarizeNumerics): noted that poly objects

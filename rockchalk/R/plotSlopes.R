@@ -66,6 +66,8 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' in the newdata object that is created as a part of the output from
 ##' this function
 ##'
+##' @param plotxRange Optional. If not specified, the observed
+##' range of plotx will be used to determine the axis range.
 ##' @param modx Optional. String for moderator variable name. May be
 ##' either numeric or factor. If omitted, a single predicted value line
 ##' will be drawn.
@@ -94,8 +96,9 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' are more focal values of \code{modx} than colors provided.
 ##' @param llwd Optional, default = 2. Line widths for predicted values. Can be
 ##' single value or a vector, which will be recycled as necessary.
-##' @param opacity Optional, default = 100. A number between 1 and 255. 1 means "transparent" or invisible, 255 means very dark.
-##' the darkness of confidence interval regions
+##' @param opacity Optional, default = 100. A number between 1 and 255.
+##' 1 means "transparent" or invisible, 255 means very dark.
+##' Determines the darkness of confidence interval regions
 ##' @export
 ##' @method plotSlopes lm
 ##' @rdname plotSlopes
@@ -105,13 +108,16 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' values of the moderator for which lines were drawn, and the color
 ##' vector. It also includes the call that generated the plot.
 ##' @references
-##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
+##' Aiken, L. S. and West, S.G. (1991). Multiple Regression:
+##' Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
 ##'
-##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied Multiple Regression/Correlation Analysis for the Behavioral Sciences (Third.). Routledge Academic.
+##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002).
+##' Applied Multiple Regression/Correlation Analysis for the Behavioral
+##' Sciences (Third.). Routledge Academic.
 ##' @example inst/examples/plotSlopes-ex.R
 plotSlopes.lm <-
     function (model, plotx, modx, n = 3, modxVals = NULL ,
-              interval = c("none", "confidence", "prediction"),
+              plotxRange = NULL, interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL, col = NULL,
               llwd = 2, opacity = 100, ...)
 {
@@ -140,7 +146,7 @@ plotSlopes.lm <-
         stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
     ylab <- colnames(model$model)[1]
 
-    plotxRange <- range(mm[, plotx], na.rm = TRUE)
+    plotxRange <- if(is.null(plotxRange)) range(mm[, plotx], na.rm = TRUE) else plotxRange
     plotxVals <- plotSeq(plotxRange, length.out = 40)
 
     ## Create focalVals object, needed by newdata
@@ -193,7 +199,7 @@ plotSlopes.lm <-
         }
     }
 
-    validForPredict <- c("se.fit", "dispersion", "terms", "na.action")
+    validForPredict <- c("se.fit", "dispersion", "terms", "na.action", "level", "pred.var", "weights")
     dotsForPredict <- dotnames[dotnames %in% validForPredict]
 
     if (length(dotsForPredict) > 0) {
@@ -208,7 +214,8 @@ plotSlopes.lm <-
     plotyRange <- if(is.numeric(depVar)){
         magRange(depVar, mult = c(1, 1.2))
     } else {
-        stop(paste("plotSlopes: I've not decided yet what should be done when this is not numeric.",
+        stop(paste("plotSlopes: I've not decided yet what
+                   should be done when the dependent variable is not numeric.",
                    "Please be patient, I'll figure it out"))
     }
 

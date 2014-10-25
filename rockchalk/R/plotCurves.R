@@ -32,6 +32,8 @@
 ##' @param model Required. Fitted regression object. Must have a
 ##' predict method
 ##' @param plotx Required. String with name of predictor for the x axis
+##' @param plotxRange Optional. If not specified, the observed
+##' range of plotx will be used to determine the axis range.
 ##' @param modx Optional. String for moderator variable name. May be
 ##' either numeric or factor.
 ##' @param n Optional.  Number of focal values of \code{modx}, used by
@@ -72,7 +74,7 @@
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example  inst/examples/plotCurves-ex.R
 plotCurves <-
-    function (model, plotx, modx, n, modxVals = NULL,
+    function (model, plotx, modx,  plotxRange = NULL, n, modxVals = NULL,
               interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
               col = NULL, llwd = 2, opacity = 100,
@@ -104,8 +106,7 @@ plotCurves <-
     depVar <- model.response(mf)[row.names(emf)]
 
     ylab <- names(mf)[1]  ## returns transformed DV
-
-    plotxRange <- range(plotxVar, na.rm = TRUE)
+    plotxRange <- if(is.null(plotxRange)) range(plotxVar, na.rm = TRUE) else plotxRange
     plotxVals <- plotSeq(plotxRange, length.out = 40)
 
     ##Bug noticed 2013-09-22

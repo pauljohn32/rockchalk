@@ -221,7 +221,7 @@ NULL
 ##'
 ##' This is the default method. Works for lm and glm fits.
 ##' 
-##' @param model 
+##' @param model A fitted model
 ##' @param na.action Defaults to na.omit, so model as it would appear
 ##' in user workspace is re-created, except that rows with missing
 ##' values are deleted.  Changing this argument to na.pass will
@@ -595,7 +595,8 @@ NULL
 ##' @param scale The square root of dispersion. In an lm, this is the
 ##' RMSE, called sigma in summary.lm.
 ##' @param na.action What to do with missing values
-##' @param level 0.95 or whatever confidence level one desires.
+##' @param level Optional. Default = 0.95.  Specify whatever
+##' confidence level one desires.
 ##' @param ... Other arguments to be passed to predict
 ##' @return c(fit, lwr, upr), and possibly more.
 ##'
@@ -603,12 +604,12 @@ predictCI <-
   function(object, newdata = NULL, type = c("response", "link"),
            interval = c("none", "confidence", "prediction"),
            dispersion = NULL, scale = NULL,
-           na.action = na.pass, level = .95, ...)
+           na.action = na.pass, level = 0.95, ...)
 {
     dots <- list(...)
     interval <- match.arg(interval)
     type <- if(!missing(type)) match.arg(type) else "response"
-
+    
     if (inherits(object, "merMod")){
         na.action <- attr(object@frame, "na.action")
         dots[["REform"]] <- NA
@@ -623,12 +624,12 @@ predictCI <-
     ## or a matrix, or a list with fit as an argument. Oh, this is
     ## frustrating.
     if (interval == "none") {
-		if (inherits(object, "merMod")){
-			pargs <- list(object, newdata = newdata, type = type, na.action = na.action)
-		} else {
-        	pargs <- list(object, newdata = newdata, type = type, se.fit = TRUE, na.action = na.action)
-		}
-		pargs <-  modifyList(pargs, dots)
+        if (inherits(object, "merMod")){
+            pargs <- list(object, newdata = newdata, type = type, na.action = na.action)
+        } else {
+            pargs <- list(object, newdata = newdata, type = type, se.fit = TRUE, na.action = na.action)
+        }
+        pargs <-  modifyList(pargs, dots)
         predtry <-  try(do.call("predict", pargs))
         if (inherits(predtry, "try-error")) {
             stop("rockchalk:::predCI: predict(object) gave an error. Maybe this regression model does not have a predict method? \n")
@@ -683,7 +684,7 @@ predictCI <-
     ## can never happen.
     predtry <- try(predict(object, newdata = newdata, se.fit = TRUE,
                            type = type, interval = intervaltry,
-                           na.action = na.action))
+                           na.action = na.action, level = level))
 
     if (inherits(predtry, "try-error")) {
         cat(paste("rockchalk:::predCI: There was an error from predict(object).",
@@ -693,7 +694,8 @@ predictCI <-
         ## other non-standard predict methods.
         if (is.list(predtry)) {
             if (is.vector(predtry$fit)) {
-                cat(paste("rockchalk:::predCI: model's predict method does not return an interval.",
+                cat(paste("rockchalk:::predCI: model's predict",
+                          "method does not return an interval.",
                           "We will improvize with a Wald type approximation",
                           "to the confidence interval \n"))
             } else if (is.null(dimnames(predtry[["fit"]]))) {
@@ -751,7 +753,7 @@ predictCI <-
         ## make them have it! Trying to make return structure more understandable.
 
         pred <- predict.lm(object, newdata = newdata, se.fit = TRUE, scale = scale,
-                           type = type, interval = "none", na.action = na.action)
+                           type = type, interval = "none", na.action = na.action, level = level)
 
         ## pred insides, at least:
         ## pred$fit      on linear predictor (==link) scale
@@ -760,9 +762,10 @@ predictCI <-
         ## glm: use normal approximation. Calculate fit +/- on link scale first
         ## lm: use Wald-type CI with correct t value
         if (inherits(object, "glm")) {
+            tval <-  qnorm((1 - level)/2, lower.tail = FALSE)
             fit <- cbind(fit = pred$fit,
-                         lwr = pred$fit - 1.96 * pred$se.fit,
-                         upr = pred$fit + 1.96 * pred$se.fit)
+                         lwr = pred$fit - tval * pred$se.fit,
+                         upr = pred$fit + tval * pred$se.fit)
         } else if (inherits(object, "lm")) {
             tval <- qt((1 - level)/2, lower.tail = FALSE, object$df.residual)
             fit <- cbind(fit = pred$fit,

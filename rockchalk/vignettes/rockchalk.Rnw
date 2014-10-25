@@ -208,6 +208,7 @@ Consider the results of applying summarize() to Fox's Chile data set
 from the car package:
 
 <<echo=T>>=
+library(car)
 data(Chile)
 (summChile <- summarize(Chile))
 @
@@ -243,7 +244,7 @@ Let's fit an example regression with the Chile data set from the car
 package.
 
 <<echo=T>>=
-m1 <- lm(statusquo ~ age + income + population + region + sex, data=Chile)
+m1 <- lm(statusquo ~ age + income + population + region + sex, data = Chile)
 @
 
 \noindent The default output of predictOMatic() will cycle through
