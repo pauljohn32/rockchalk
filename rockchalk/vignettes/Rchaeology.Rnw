@@ -1,6 +1,6 @@
 %% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[american,noae]{article}
+\documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
 \renewcommand{\sfdefault}{lmss}
 \renewcommand{\ttdefault}{cmtt}
@@ -22,12 +22,12 @@
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
-\usepackage{Sweavel}
 <<echo=F>>=
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 @
 \usepackage{enumitem}		% customizable list environments
 \newlength{\lyxlabelwidth}      % auxiliary length 
+\newcommand{\code}[1]{\texttt{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %\VignetteIndexEntry{Rchaeology}
@@ -228,12 +228,12 @@ Beginning R programmers, the ones who have never studied C or Java
 or Fortran, will often become ``stuck'' in stage one of that process.
 Experienced programmers with more formal training will usually have
 the ``little voice'' in the back of their minds saying ``there's
-a better way,'' and, unfortunately, R novices don't see to hear that
-voice. Lacking some of the discipline imposed by those other languages,
-the usual ``rambling'' R script will seem ``good enough.'' The
-first step for the transitional R programmer, the one who does not
-want to be a novice any more, is to take a harsh look at the code
-that has already been written.
+a better way,'' and, unfortunately, R novices don't hear that voice.
+Lacking some of the discipline imposed by those other languages, the
+usual ``rambling'' R script will seem ``good enough.'' The first
+step for the transitional R programmer, the one who does not want
+to be a novice any more, is to take a harsh look at the code that
+has already been written.
 
 The rockchalk package has many functions that receive fitted regression
 models and re-arrange their components for re-fitting or plotting.
@@ -256,11 +256,11 @@ On May 29, 2012, I was working on a regression problem in the rockchalk
 package. I have a number of functions that receive elementary regressions
 and then change them. I need to receive a fitted model, extract the
 formula, change some variables, and then revise the formula to match
-the new variables.
+the new variables. And then run the model over again. 
 
 The functions meanCenter() and residualCenter() receive a fitted regression
 model, transform some variables, and then fit a new regression. Suppose
-a regression has been fitted as ``y \textasciitilde{} x1{*}x2''.
+a regression has been fitted as ``\code{y \textasciitilde{} x1{*}x2}''.
 The R result will estimate a predictive formula such as $\hat{y}_{i}=\hat{\beta}_{0}+\hat{\beta}_{1}x1_{i}+\hat{\beta}_{2}x2_{i}++\hat{\beta}_{3}x1_{i}\cdot x2_{i}$.
 meanCenter() will replace the non-centered variables ``x1'' and
 ``x2'' with mean-centered variables ``x1c'' and ``x2c''. The

@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass sweavel-article
+\textclass scrartcl
 \begin_preamble
 %\VignetteIndexEntry{Rchaeology}
 
@@ -96,6 +96,7 @@
 \begin_modules
 sweave
 enumitem
+logicalmkup
 \end_modules
 \maintain_unincluded_children false
 \language american
@@ -455,7 +456,14 @@ http://stackoverflow.com/questions/tagged/r
 \emph on
 S Programming
 \emph default
-, by William Venables and Brian Ripley (2000), is a classic.
+, by William Venables and Brian Ripley 
+\begin_inset CommandInset citation
+LatexCommand citeyearpar
+key "venables_s_2000"
+
+\end_inset
+
+, is a classic.
  Books by pioneering developers Robert Gentleman, 
 \emph on
 R Programming for Bioinformatics
@@ -464,7 +472,14 @@ R Programming for Bioinformatics
 \emph on
 Software for Data Analysis
 \emph default
- (2009), are, well, awesome.
+ 
+\begin_inset CommandInset citation
+LatexCommand citeyearpar
+key "chambers_software_2008"
+
+\end_inset
+
+, are, well, awesome.
  In 2012, I started teaching R programming using Norman Matloff's, 
 \emph on
 The Art of R Programming
@@ -578,7 +593,7 @@ there's a better way,
 \begin_inset Quotes erd
 \end_inset
 
- and, unfortunately, R novices don't see to hear that voice.
+ and, unfortunately, R novices don't hear that voice.
  Lacking some of the discipline imposed by those other languages, the usual
  
 \begin_inset Quotes eld
@@ -632,6 +647,8 @@ On May 29, 2012, I was working on a regression problem in the rockchalk
  change them.
  I need to receive a fitted model, extract the formula, change some variables,
  and then revise the formula to match the new variables.
+ And then run the model over again.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -641,7 +658,17 @@ The functions meanCenter() and residualCenter() receive a fitted regression
 \begin_inset Quotes eld
 \end_inset
 
+
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
 y ~ x1*x2
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
@@ -1282,8 +1309,10 @@ eval()
 \end_layout
 
 \begin_layout Standard
-Where does eval fit into the picture? As far as I can tell, do.call("rbind",
- mylist) is basically the same as eval(call(
+Where does eval() fit into the picture? R allows delayed calculation, so
+ one can prepare some syntax and then use it when it is needed.
+ As far as I can tell, do.call("lm", list(arguments)) is basically the same
+ as eval(call(
 \begin_inset Quotes eld
 \end_inset
 
@@ -1291,7 +1320,7 @@ rbind
 \begin_inset Quotes erd
 \end_inset
 
-, mylist)).
+, arguments)).
  The call() function manufactures the call object, the eval() function tells
  it to do its work.
  I think of do.call() as a contraction of 
@@ -1311,24 +1340,140 @@ call
 \end_inset
 
 .
- eval() evaluates any valid R expression, and a call is a valid expression.
- I'm leaving the question of 
-\begin_inset Quotes eld
-\end_inset
-
-what is an expression
-\begin_inset Quotes erd
-\end_inset
-
- to a later time.
+ 
 \end_layout
 
 \begin_layout Standard
-Here's a quick example that repeats the two regressions exercise that was
- completed with do.call.
- Now I'll create an expression regargs2.
- Note it is necessary for me to evaluate the expression before the lm function
- can understand it.
+Everybody has experienced an error like this:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> x1 + x2
+\end_layout
+
+\begin_layout Plain Layout
+
+Error: object 'x1' not found
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Whenever we use a variable, the R interpreter expects to find it.
+ We know those variables are in the data frame dat, but the interpreter
+ does not know that's what we mean.
+ But we can ask R to trust us with the quote() function, which, basically,
+ means 
+\begin_inset Quotes eld
+\end_inset
+
+here's some code we will evaluate later
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> mycall <- quote(x1 + x2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The object 
+\begin_inset Quotes eld
+\end_inset
+
+mycall
+\begin_inset Quotes erd
+\end_inset
+
+ is an R call object, something that might be evaluated in the future.
+ 
+\end_layout
+
+\begin_layout Standard
+When we want to evaluate 
+\begin_inset Quotes eld
+\end_inset
+
+x1 + x2
+\begin_inset Quotes erd
+\end_inset
+
+, we ask R do to so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+eval(mycall, dat)
+\end_layout
+
+\end_inset
+
+The second argument supplies the place where x1 and x2 are to be found.
+ R users may never have noticed the eval() function, but most will have
+ used the with() function, which is simply a clever re-phrasing of the eval
+ function's interface.
+ It does the same thing:
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+with(dat, x1 + x2)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and so does 
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+with(dat, eval(mycall)).
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now, back to the regression example we were working on before.
+ We can create the call object using the call() function, which requires
+ the name of a function and a comma-separated list of quoted arguments.
 \end_layout
 
 \begin_layout Standard
@@ -1342,7 +1487,7 @@ status open
 
 \begin_layout Plain Layout
 
-m3 <- lm(y ~ x1*x2, data=dat)
+m3 <- lm(y ~ x1*x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1352,12 +1497,12 @@ coef(m3)
 
 \begin_layout Plain Layout
 
-regargs2 <- expression(y ~ x1*x2, data = dat)
+mycall <- call("lm", quote(y ~ x1*x2), data = quote(dat))
 \end_layout
 
 \begin_layout Plain Layout
 
-m4 <- lm(eval(regargs2))
+m4 <- eval(mycall)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1393,13 +1538,73 @@ computing on the language.
 \begin_inset Quotes erd
 \end_inset
 
+ There is a discussion of it in the R Language Definition.
+ It is also surveyed in Hadley Wickham's new book, 
+\emph on
+Advanced R
+\emph default
+ 
+\begin_inset CommandInset citation
+LatexCommand citeyearpar
+key "Wickham2015"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Did you ever notice that you get an error if you run 
+\begin_inset Quotes eld
+\end_inset
+
+x1 + x2
+\begin_inset Quotes erd
+\end_inset
+
+, but if you run 
+\begin_inset Quotes eld
+\end_inset
+
+y 
+\begin_inset Formula $\sim$
+\end_inset
+
+ x1 + x2
+\begin_inset Quotes erd
+\end_inset
+
+, then there is no error? The R interpreter notices the symbol 
+\begin_inset Formula $\sim$
+\end_inset
+
+ in the syntax, and so it assumes you meant to run
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+formula(y ~ x1 + x2)
+\end_layout
+
+\end_inset
+
 
 \end_layout
 
 \begin_layout Standard
-We can create a formula object implicitly (without explicitly asking for
- it) by using this code.
+A formula is a not-yet-evaluated thing.
+ It is something that we can fiddle with.
  
+\end_layout
+
+\begin_layout Standard
+Create a complicated formula.
+ Note that the lm function receives that formula object without trouble.
 \end_layout
 
 \begin_layout Standard
@@ -1428,6 +1633,11 @@ m5 <- lm(f1, data = dat)
 
 \begin_layout Plain Layout
 
+coef(m5)
+\end_layout
+
+\begin_layout Plain Layout
+
 @
 \end_layout
 
@@ -1437,13 +1647,8 @@ m5 <- lm(f1, data = dat)
 \end_layout
 
 \begin_layout Standard
-The object f1 is a formula object because R has created it that way.
+The object f1 is a formula object.
  Its not just a text string.
- R notices the 
-\begin_inset Formula $\sim$
-\end_inset
-
- symbol and the whole line is interpreted as a formula.
  Observe it has separate pieces, just like newFmla in the example problem
  that started this section.
 \end_layout
@@ -1550,7 +1755,7 @@ class(f1exp)
 
 \begin_layout Plain Layout
 
-m6 <- lm(eval(f1exp), data=dat)
+m6 <- lm(eval(f1exp), data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1614,18 +1819,57 @@ all.equal(coef(m5), coef(m6), coef(m7))
 \begin_layout Standard
 The point here is that the pieces of an ordinary use command can be separated
  and put back together again before the work of doing calculations begins.
- 
+ We can edit the formula.
+ Suppose we replace a part:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+f1[[3]][[2]] <- quote(x1 + log(x2))
+\end_layout
+
+\begin_layout Plain Layout
+
+m8 <- lm(f1, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+coef(m8)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
 Now we turn back to the main theme.
  How is eval() used in functions? Some functions take a lot of arguments.
- They need to pick some arguments, and send those to some functions.
+ We may want to do a lot of fine tuning on the arguments, before they are
+ assembled and evaluated.
+ Hence, it is very important that we can keep some bits of R that are symbolic,
+ rather than calculated, until we need them.
  
 \end_layout
 
 \begin_layout Standard
-Let's consider the lm() code in some detail.
+If you are looking for a use of eval in the R source code, there is a nice
+ one in the beginning of the lm() function.
  Suppose a user submits a command like 
 \begin_inset Quotes eld
 \end_inset
@@ -1634,8 +1878,7 @@ lm(y ~ x, data = dat, x = TRUE, y = TRUE).
 \begin_inset Quotes erd
 \end_inset
 
- Inside lm(), it is necessary to pick through those arguments and then pass
- them off to other functions in order to build the data matrix and so forth.
+ Inside lm(), the import is re-organized.
  Here are the first lines of the lm() function
 \end_layout
 
@@ -1785,8 +2028,7 @@ status open
 
 \begin_layout Plain Layout
 
-> names(mf) [1] ""                   "formula"            "data" [4] "drop.unused.
-levels"
+> names(mf) [1] ""      "formula"       "data" [4] "drop.unused.levels"
 \end_layout
 
 \begin_layout Plain Layout
@@ -1869,7 +2111,7 @@ status open
 
 \begin_layout Plain Layout
 
-mf <- model.frame(y ~ x1 * x2, data=dat, drop.unused.levels=TRUE)
+mf <- model.frame(y ~ x1 * x2, data = dat, drop.unused.levels = TRUE)
 \end_layout
 
 \end_inset
@@ -1992,7 +2234,7 @@ text(5, 4, substitute(gamma + x1mean, list(x1mean = mean(dat$x1))))
 
 \begin_layout Plain Layout
 
-text(5, 2, expression(paste(gamma, " is the mean of x1")))
+text(5, 2, expression(paste(gamma, " plus the mean of x1")))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2578,28 +2820,6 @@ ter).
 \end_layout
 
 \begin_layout Section
-Function Arguments (Stub).
- 
-\end_layout
-
-\begin_layout Standard
-While surveying R packages, we see many different styles for handling arguments.
- This section will discuss some pros and cons of various styles.
-\end_layout
-
-\begin_layout Standard
-How much argument checking is required? 
-\end_layout
-
-\begin_layout Standard
-Is it better to default arguments to NULL?
-\end_layout
-
-\begin_layout Standard
-myfn <- function(x = NULL, y = NULL)
-\end_layout
-
-\begin_layout Subsection
 Make Re-Usable Tools (Rather than Cutting and Pasting)
 \end_layout
 
@@ -3228,6 +3448,28 @@ Error in biVec1(3.3, 4.4) (from #2) :
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Function Arguments (Stub).
+ 
+\end_layout
+
+\begin_layout Standard
+While surveying R packages, we see many different styles for handling arguments.
+ This section will discuss some pros and cons of various styles.
+\end_layout
+
+\begin_layout Standard
+How much argument checking is required? 
+\end_layout
+
+\begin_layout Standard
+Is it better to default arguments to NULL?
+\end_layout
+
+\begin_layout Standard
+myfn <- function(x = NULL, y = NULL)
 \end_layout
 
 \begin_layout Section
