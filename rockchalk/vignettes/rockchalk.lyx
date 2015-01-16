@@ -2,7 +2,7 @@
 \lyxformat 413
 \begin_document
 \begin_header
-\textclass sweavel-article
+\textclass scrartcl
 \begin_preamble
 %\VignetteIndexEntry{Using rockchalk}
 
@@ -90,6 +90,7 @@
 \use_default_options true
 \begin_modules
 sweave
+logicalmkup
 \end_modules
 \maintain_unincluded_children false
 \language american

@@ -105,7 +105,7 @@ logicalmkup
 \fontencoding T1
 \font_roman lmodern
 \font_sans lmss
-\font_typewriter cmtt
+\font_typewriter lmtt
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
@@ -1309,20 +1309,41 @@ eval()
 \end_layout
 
 \begin_layout Standard
-Where does eval() fit into the picture? R allows delayed calculation, so
- one can prepare some syntax and then use it when it is needed.
- As far as I can tell, do.call("lm", list(arguments)) is basically the same
- as eval(call(
+Where does eval() fit into the picture? do.call() manufactures a call and
+ executes it immediately.
+ It is possible to arrest the process mid stream, to capture the call without
+ evaluating it with eval().
+ The terminology in the R documentation on this is difficult, mainly because
+ there are several different ways to create a piece of not-yet-evaluated
+ code.
+ By 
+\begin_inset Flex Strong
+status collapsed
+
+\begin_layout Plain Layout
+not-yet-evaluated code
+\end_layout
+
+\end_inset
+
+, I mean an 
 \begin_inset Quotes eld
 \end_inset
 
-rbind
+unevaluated expression
 \begin_inset Quotes erd
 \end_inset
 
-, arguments)).
- The call() function manufactures the call object, the eval() function tells
- it to do its work.
+ or a 
+\begin_inset Quotes eld
+\end_inset
+
+call object
+\begin_inset Quotes erd
+\end_inset
+
+, anything that can be handled by the eval() function.
+ A not-yet-evaluated object holds some syntax that can we need later.
  I think of do.call() as a contraction of 
 \begin_inset Quotes eld
 \end_inset
@@ -1340,7 +1361,24 @@ call
 \end_inset
 
 .
+ As far as I can tell, do.call("lm", list(arguments)) is the same as eval(call(
+\begin_inset Quotes eld
+\end_inset
+
+rbind
+\begin_inset Quotes erd
+\end_inset
+
+, arguments)).
  
+\end_layout
+
+\begin_layout Standard
+There are many ways to ask R to create the not-yet-evaluated object, that's
+ one of the confusing things (in my opinion).
+ Most obviously, call() function can be used for that.
+ But functions like quote() and expression() can also create not-yet-evaluated
+ code.
 \end_layout
 
 \begin_layout Standard
@@ -1474,6 +1512,16 @@ with(dat, eval(mycall)).
 Now, back to the regression example we were working on before.
  We can create the call object using the call() function, which requires
  the name of a function and a comma-separated list of quoted arguments.
+ I quote each of the bits of syntax in the arguments because I don't want
+ R to replace 
+\begin_inset Quotes eld
+\end_inset
+
+dat
+\begin_inset Quotes erd
+\end_inset
+
+ with the actual data frame, I only want it to remember the name.
 \end_layout
 
 \begin_layout Standard
@@ -1574,7 +1622,11 @@ y
 \begin_inset Quotes erd
 \end_inset
 
-, then there is no error? The R interpreter notices the symbol 
+, then there is no error? It is as if R is wrapping your code in protective
+ tissue, something like quote().
+ However, the protective wrapper in this case is actually the function called
+ formula().
+ The R interpreter notices the symbol 
 \begin_inset Formula $\sim$
 \end_inset
 
@@ -1597,8 +1649,8 @@ formula(y ~ x1 + x2)
 \end_layout
 
 \begin_layout Standard
-A formula is a not-yet-evaluated thing.
- It is something that we can fiddle with.
+A formula is another kind of not-yet-evaluated thing.
+ It is something that we can fiddle with before evaluating.
  
 \end_layout
 
@@ -1868,8 +1920,8 @@ Now we turn back to the main theme.
 \end_layout
 
 \begin_layout Standard
-If you are looking for a use of eval in the R source code, there is a nice
- one in the beginning of the lm() function.
+If you are looking for examples of eval() in the R source code, there is
+ a nice one in the beginning of the lm() function.
  Suppose a user submits a command like 
 \begin_inset Quotes eld
 \end_inset
@@ -1964,13 +2016,19 @@ lm <- function (formula, data, subset, weights, na.action, method = "qr",
 \end_layout
 
 \begin_layout Standard
-Lets consider what those lines do with a command like this.
+Now suppose we turn on the debugger and run a regression in R with a command
+ like this.
 \end_layout
 
 \begin_layout Standard
 \begin_inset listings
 inline false
 status open
+
+\begin_layout Plain Layout
+
+debug(lm)
+\end_layout
 
 \begin_layout Plain Layout
 
@@ -1983,11 +2041,18 @@ m1 <- lm(y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end_layout
 
 \begin_layout Standard
-The lm function notices that I supply some arguments.
- In line 8, the match.call function is used to grab a copy of the command
+After that, we are 
+\begin_inset Quotes eld
+\end_inset
+
+in
+\begin_inset Quotes erd
+\end_inset
+
+ the function, stepping through line-by-line.
+ In line 8, the match.call() function is used to grab a copy of the command
  that I typed.
- If we use R's debugging facility to stop the program at that point, we
- would see that mf is exactly the same as my command, except R has named
+ We can see that mf is exactly the same as my command, except R has named
  the arguments:
 \end_layout
 
@@ -2013,7 +2078,9 @@ lm(formula = y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 
 \begin_layout Standard
 That's not just a string of letters, however.
- It is a call object, a list with individual pieces that we can revise.
+ It is a call object, a list with individual pieces that can be revised.
+ Recall that the first element in a call object is the name of a function,
+ and the following elements are the arguments.
  Lines 10 and 11 check the names of mf for the presence of certain arguments,
  and throw away the rest.
  It only wants the arguments we would be needed to run the function model.frame.
@@ -2028,7 +2095,12 @@ status open
 
 \begin_layout Plain Layout
 
-> names(mf) [1] ""      "formula"       "data" [4] "drop.unused.levels"
+> names(mf) 
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] ""      "formula"       "data" [4] "drop.unused.levels"
 \end_layout
 
 \begin_layout Plain Layout
@@ -2714,7 +2786,7 @@ x1c
 \end_inset
 
 .
- So the user's regression formula that uses variables agec or x1 must be
+ So the user's regression formula that uses variables age or x1 must be
  revised.
  This is a function that takes a formula 
 \begin_inset Quotes eld
@@ -3042,7 +3114,15 @@ this runs
 \end_inset
 
 .
- 
+ One might suspect that the author was eager to say, 
+\begin_inset Quotes eld
+\end_inset
+
+my project is based on 10,000 lines of R code
+\begin_inset Quotes erd
+\end_inset
+
+ in order to impress a lay audience.
 \end_layout
 
 \begin_layout Standard
@@ -3451,25 +3531,1186 @@ Error in biVec1(3.3, 4.4) (from #2) :
 \end_layout
 
 \begin_layout Section
-Function Arguments (Stub).
+Function Arguments.
+\end_layout
+
+\begin_layout Standard
+While developing functions for the rockchalk package, one of the most important
+ learning experiences I've had is in argument management.
  
 \end_layout
 
 \begin_layout Standard
-While surveying R packages, we see many different styles for handling arguments.
- This section will discuss some pros and cons of various styles.
+To state the obvious, argument names should be clear, unambiguous, convenient,
+ short, and minimally necessary.
+ Some people are gifted in the selection of function and argument names,
+ while others have to try harder.
+ 
 \end_layout
 
 \begin_layout Standard
-How much argument checking is required? 
+I think these are the most important points.
+\end_layout
+
+\begin_layout Enumerate
+Protect your function's calculations from the user's workspace.
+\end_layout
+
+\begin_layout Enumerate
+Protect your function from user errors.
+\end_layout
+
+\begin_layout Enumerate
+If possible, design your function so that it runs with a minimum number
+ of arguments.
 \end_layout
 
 \begin_layout Standard
-Is it better to default arguments to NULL?
+One of the reasons that it is difficult to design functions is that there
+ is no 
+\begin_inset Quotes eld
+\end_inset
+
+mandatory manual
+\begin_inset Quotes erd
+\end_inset
+
+ on this.
+ The R framework allows programmer creativity, which is a good thing.
+ But it is also a bad thing, since every programmer has his/her own opinion
+ about what ought to be done.
+ 
 \end_layout
 
 \begin_layout Standard
-myfn <- function(x = NULL, y = NULL)
+Before I consider the 4 main points, I need to mention some R functions
+ that are very helpful in dealing with arguments.
+\end_layout
+
+\begin_layout Description
+missing() Inside a function, we often wonder 
+\begin_inset Quotes eld
+\end_inset
+
+did the user supply this argument in their function call?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Description
+stop() Suppose we want the function to fail if something happens.
+ Write 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (isTRUE(x)) stop(paste("I'm sorry, you failed to supply the right information.
+ The variable x has value", x, "which is silly, from my point of view.")))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Description
+stopifnot() It is so frequent to run 
+\begin_inset Quotes eld
+\end_inset
+
+if(isTRUE(x)) stop()
+\begin_inset Quotes erd
+\end_inset
+
+ that they created a wrapper, stopifnot(x).
+\end_layout
+
+\begin_layout Description
+warning() If you don't want the function to fail, but you need to warn the
+ user about a condition that seems dubious, run
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (isTRUE(x)) warning(paste("Are you sure the value of x ought to be",
+ x, "?"))
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Protect your function's calculations from the user's workspace.
+\end_layout
+
+\begin_layout Standard
+If I'm writing a little project for myself, I might be lazy and allow R's
+ 
+\begin_inset Quotes eld
+\end_inset
+
+lexical scoping
+\begin_inset Quotes erd
+\end_inset
+
+ process to find variables that are not defined inside a function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+x <- c(1, 2, 3, 4)
+\end_layout
+
+\begin_layout Plain Layout
+
+y <- c(8, 9, 10, 11)
+\end_layout
+
+\begin_layout Plain Layout
+
+z <- c(1, 1, 2, 2)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme <- function(x){
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme(x)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I might write code for myself that lets the function go and find 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+.
+ This will run, but you have to admit it is pretty risky.
+ It depends on R's willingness to reach outside the boundaries of the function
+ to find 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+, and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+.
+ If I have inadvertently altered 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+, this will end badly.
+\end_layout
+
+\begin_layout Standard
+If I'm writing a function for somebody else to use, as in a package, I believe
+ the function should to NOT rely on variables from the environment.
+ In other words, I want to prevent R from filling in the gaps for users.
+ The reason is simple.
+ Users may alter variables in their environment and the function may behave
+ badly as a result.
+ The best case scenario is that 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+ do not exist in the workspace, so the user will receive an error message:
+\end_layout
+
+\begin_layout Standard
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+> plotme(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Schunk}
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\backslash
+begin{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in xy.coords(x, y, xlabel, ylabel, log) : object 'y' not found
+\end_layout
+
+\begin_layout Plain Layout
+
+  
+\backslash
+end{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Schunk}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The worst case scenario is that the user has some other variables y and
+ z sitting about in the workspace.
+ Those 
+\begin_inset Quotes eld
+\end_inset
+
+found
+\begin_inset Quotes erd
+\end_inset
+
+ variables are put to use with a completely unintentional result.
+ 
+\end_layout
+
+\begin_layout Standard
+As a first step toward fixing this, I propose the following idea.
+ Every variable put to use inside a function should be named in the list
+ of arguments.
+ If we define the function as follows,
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, z){
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+the user's use of 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plotme(x)
+\end_layout
+
+\end_inset
+
+ will result in the error
+\end_layout
+
+\begin_layout Standard
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Schunk}
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\backslash
+begin{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in xy.coords(x, y, xlabel, ylabel, log) :
+\end_layout
+
+\begin_layout Plain Layout
+
+    argument "y" is missing, with no default
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\backslash
+end{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Schunk}
+\end_layout
+
+\end_inset
+
+
+\lang american
+Naming all of the arguments effectively protects the function against the
+ accidental importation of data.
+ The major challenge is avoiding the user error of accidentally depending
+ on a variable that is in the workspace (the global environment).
+ I often make this mistake, that's why I'm bringing it to your attention.
+ 
+\end_layout
+
+\begin_layout Standard
+There's a function called checkUsage() in the codetools package that can
+ help check functions for reliance on global variables.
+ First, we'll make sure the workspace is clean by removing 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+, and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Schunk}
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\backslash
+begin{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+> rm(x, y, z)
+\end_layout
+
+\begin_layout Plain Layout
+
+> library(codetools) 
+\end_layout
+
+\begin_layout Plain Layout
+
+> checkUsage(plotme) 
+\end_layout
+
+\begin_layout Plain Layout
+
+<anonymous>: no visible binding for global variable 'y' (:2) 
+\end_layout
+
+\begin_layout Plain Layout
+
+<anonymous>: no visible binding for global variable 'z' (:2)
+\end_layout
+
+\begin_layout Plain Layout
+
+   
+\backslash
+end{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Schunk}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that, if the variables x, y, an z exist in the user workspace, they
+ are global and checkUsage will not offer a warning about them.
+ Hence, it is very important to run checkUsage() after cleaning up the workspace.
+ 
+\end_layout
+
+\begin_layout Standard
+checkUsage() will also offer warnings about unused variables.
+ This can be helpful in cleaning up a function's variables.
+\end_layout
+
+\begin_layout Subsection
+Protect your function from user errors.
+\end_layout
+
+\begin_layout Standard
+Beyond insisting that all variables that depend on input from the workspace
+ must be explicitly named, we might be interested to know if the user supplied
+ reasonable arguments.
+ Suppose our plotme function can work well if the user supplies x and y,
+ and we will manufacture z for them if it is not supplied.
+ I've used this approach in the past.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, z){
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (missing(z)) z <- rep(2, length(x))   
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note it would have the same effect to supply that value of z as a default,
+ as in
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, z = rep(2, length(x))){
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Some people prefer this more elaborate declaration.
+ This succeeds because the variables that are declared in the beginning
+ of the list are available for calculations in the later part of the list.
+\end_layout
+
+\begin_layout Standard
+That will often be sufficient, but we have not protected ourselves as well
+ as we might.
+ Suppose the user's code ends up supplying a NULL value for 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+, as in 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plotme(x, y, z = NULL)
+\end_layout
+
+\end_inset
+
+.
+ They would not do that on purpose, but it might be an accident.
+ If 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+ is calculated in their code and something has gone wrong.
+ To protect against that, we find this idiom is used in the R source code
+ quite often:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, z){
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (missing(z) | is.null(z)) z <- rep(2, length(x))   
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+ is either not supplied by the user's command, or if the user's command
+ explicitly sets it to NULL, then we'll fabricate 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Sometimes even more elaborate argument checking will be required.
+ We can explicitly check if z is not of the correct type (integer) or length.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, z){
+\end_layout
+
+\begin_layout Plain Layout
+
+    if (missing(z) | is.null(z)) {
+\end_layout
+
+\begin_layout Plain Layout
+
+        z <- rep(2, length(x))
+\end_layout
+
+\begin_layout Plain Layout
+
+    } else {
+\end_layout
+
+\begin_layout Plain Layout
+
+        if (!is.integer(z) | length(z) != length(x)) stop("z is inappropriate")
+\end_layout
+
+\begin_layout Plain Layout
+
+	}
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After that, an incorrect argument, such as z = 
+\begin_inset Quotes eld
+\end_inset
+
+fred
+\begin_inset Quotes erd
+\end_inset
+
+ or z = c(1, 2, 2), will result in an error (which is what we want).
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+> plotme(x, y, z = "fred")
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in plotme(x, y, z = c(1, 2, 2)) : z is inappropriate
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Soutput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+If possible, design your function so that it runs with a minimum number
+ of arguments.
+\end_layout
+
+\begin_layout Standard
+Take a look at the most commonly used functions in R, such as lm() or plot.defaul
+t().
+ These functions allow a great many arguments, but they will deliver what
+ the users minimally need if the users supply a formula and a data frame.
+\end_layout
+
+\begin_layout Standard
+I have made many mistakes in designing function in rockchalk.
+ From one month to the next, I would learn ways to simplify arguments or
+ eliminate them entirely.
+\end_layout
+
+\begin_layout Standard
+I did not initially understand the flexibility that R allows in the types
+ of arguments passed to a function.
+ Because we can deduce information from the arguments that are passed in,
+ we can eliminate the need for the user to pass in other arguments.
+ We would never need to require both arguments x and xlab in the plot function,
+ for example.
+ xlab is optional because, In particular, I insisted that users supply quoted
+ strings as variable names for the arguments plotx and modx.
+ I insisted on this syntax, as illustrated in the example for plotSlopes:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m7 <- lm(statusquo ~ region * income, data= Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m7, plotx = "income", modx = "region", interval = "conf")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Today, the following syntax works just as well
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m7 <- lm(statusquo ~ region * income, data= Chile)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotSlopes(m7, plotx = income, modx = region, interval = "conf")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is no longer necessary to quote the income and region variable because
+ the function checks the argument and, if necessary, it manufactures the
+ string for the user.
+ This is what I have in the beginning of plotSlopes.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotx <- as.character(substitute(plotx))[1L]
+\end_layout
+
+\begin_layout Plain Layout
+
+if (!missing(modx)) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    modx <- as.character(substitute(modx))[1L]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If plotx and modx are already character strings, then this has no effect.
+ If they are symbols, however, this turns them into character strings.
+\end_layout
+
+\begin_layout Standard
+In the olden days,when I first started using R, it was necessary to explicitly
+ quite many arguments that we do not quite anymore.
+ Today, for example, both library(
+\begin_inset Quotes eld
+\end_inset
+
+rockchalk
+\begin_inset Quotes erd
+\end_inset
+
+) and library(rockchalk) will work.
+ The latter did not work in the beginning, however.
+ If you go looking at old R code, from 1999 or 2000, you will find many
+ more variables are quoted.
+ 
+\end_layout
+
+\begin_layout Standard
+This idiom is widely used in the R source code to eliminate the user tedium
+ of typing quotation marks.
+ Note that today, these commands have the same effect:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+methods(plot)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or this
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+methods(plot)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Why does the latter work, when at one time the former was need? Check the
+ source code of the methods() function
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (!is.character(generic.function)) generic.function <- deparse(substitute(generic.
+function))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+This trick is put to use in the plot.default() function in R, where the user
+ can supply an argument xlab or ylab if desired, but the plot.default will
+ create those values if they are not supplied.
 \end_layout
 
 \begin_layout Section

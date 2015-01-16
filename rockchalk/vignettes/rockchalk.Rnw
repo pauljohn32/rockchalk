@@ -1,6 +1,6 @@
 %% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[american,noae]{article}
+\documentclass[american,noae]{sweavel-article}
 \usepackage{lmodern}
 \renewcommand{\sfdefault}{lmss}
 \renewcommand{\ttdefault}{lmtt}
@@ -9,12 +9,13 @@
 \usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
 \usepackage{url}
 \usepackage[authoryear]{natbib}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
-\usepackage{Sweavel}
 <<echo=F>>=
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 @

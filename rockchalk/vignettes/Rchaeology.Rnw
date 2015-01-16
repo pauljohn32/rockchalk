@@ -3,7 +3,7 @@
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
 \renewcommand{\sfdefault}{lmss}
-\renewcommand{\ttdefault}{cmtt}
+\renewcommand{\ttdefault}{lmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
@@ -28,6 +28,7 @@
 \usepackage{enumitem}		% customizable list environments
 \newlength{\lyxlabelwidth}      % auxiliary length 
 \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\strong}[1]{\textbf{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %\VignetteIndexEntry{Rchaeology}
@@ -195,13 +196,14 @@ also a burgeoning collection of blogs and Web forums, perhaps most
 notably the R section on StackExchange (\url{http://stackoverflow.com/questions/tagged/r}).
 Excellent books have been published. As an Rcheologist, I am drawn
 to the books that are written by the R insiders. \emph{S Programming},
-by William Venables and Brian Ripley (2000), is a classic. Books by
-pioneering developers Robert Gentleman, \emph{R Programming for Bioinformatics}
-(2009), and John Chambers, \emph{Software for Data Analysis} (2009),
-are, well, awesome. In 2012, I started teaching R programming using
-Norman Matloff's, \emph{The Art of R Programming} (2012), which I
-think is great and recommend strongly (even though Professor Matloff
-is not one of the R Core Team members, so far as I know). 
+by William Venables and Brian Ripley \citeyearpar{venables_s_2000},
+is a classic. Books by pioneering developers Robert Gentleman, \emph{R
+Programming for Bioinformatics} (2009), and John Chambers, \emph{Software
+for Data Analysis} \citeyearpar{chambers_software_2008}, are, well,
+awesome. In 2012, I started teaching R programming using Norman Matloff's,
+\emph{The Art of R Programming} (2012), which I think is great and
+recommend strongly (even though Professor Matloff is not one of the
+R Core Team members, so far as I know). 
 
 There are now three types of object-oriented programming in R (S3,
 S4, and reference classes) and the programmer is apparently free to
@@ -454,44 +456,114 @@ for that command.
 
 \subsubsection{eval()}
 
-Where does eval fit into the picture? As far as I can tell, do.call(\textquotedbl{}rbind\textquotedbl{},
-mylist) is basically the same as eval(call(``rbind'', mylist)).
-The call() function manufactures the call object, the eval() function
-tells it to do its work. I think of do.call() as a contraction of
-``eval'' and ``call''. eval() evaluates any valid R expression,
-and a call is a valid expression. I'm leaving the question of ``what
-is an expression'' to a later time.
+Where does eval() fit into the picture? do.call() manufactures a call
+and executes it immediately. It is possible to arrest the process
+mid stream, to capture the call without evaluating it with eval().
+The terminology in the R documentation on this is difficult, mainly
+because there are several different ways to create a piece of not-yet-evaluated
+code. By \strong{not-yet-evaluated code}, I mean an ``unevaluated
+expression'' or a ``call object'', anything that can be handled
+by the eval() function. A not-yet-evaluated object holds some syntax
+that can we need later. I think of do.call() as a contraction of ``eval''
+and ``call''. As far as I can tell, do.call(\textquotedbl{}lm\textquotedbl{},
+list(arguments)) is the same as eval(call(``rbind'', arguments)). 
 
-Here's a quick example that repeats the two regressions exercise that
-was completed with do.call. Now I'll create an expression regargs2.
-Note it is necessary for me to evaluate the expression before the
-lm function can understand it.
+There are many ways to ask R to create the not-yet-evaluated object,
+that's one of the confusing things (in my opinion). Most obviously,
+call() function can be used for that. But functions like quote() and
+expression() can also create not-yet-evaluated code.
+
+Everybody has experienced an error like this:
+
+\inputencoding{latin9}\begin{lstlisting}
+> x1 + x2
+Error: object 'x1' not found
+\end{lstlisting}
+\inputencoding{utf8}
+
+Whenever we use a variable, the R interpreter expects to find it.
+We know those variables are in the data frame dat, but the interpreter
+does not know that's what we mean. But we can ask R to trust us with
+the quote() function, which, basically, means ``here's some code
+we will evaluate later'':
+
+\inputencoding{latin9}\begin{lstlisting}
+> mycall <- quote(x1 + x2)
+\end{lstlisting}
+\inputencoding{utf8}
+
+The object ``mycall'' is an R call object, something that might
+be evaluated in the future. 
+
+When we want to evaluate ``x1 + x2'', we ask R do to so:
+
+\inputencoding{latin9}\begin{lstlisting}
+eval(mycall, dat)
+\end{lstlisting}
+\inputencoding{utf8}The second argument supplies the place where x1 and x2 are to be found.
+R users may never have noticed the eval() function, but most will
+have used the with() function, which is simply a clever re-phrasing
+of the eval function's interface. It does the same thing:\inputencoding{latin9}
+\begin{lstlisting}
+with(dat, x1 + x2)
+\end{lstlisting}
+\inputencoding{utf8}
+
+and so does \inputencoding{latin9}
+\begin{lstlisting}
+with(dat, eval(mycall)).
+\end{lstlisting}
+\inputencoding{utf8}
+
+Now, back to the regression example we were working on before. We
+can create the call object using the call() function, which requires
+the name of a function and a comma-separated list of quoted arguments.
+I quote each of the bits of syntax in the arguments because I don't
+want R to replace ``dat'' with the actual data frame, I only want
+it to remember the name.
 
 <<>>=
-m3 <- lm(y ~ x1*x2, data=dat)
+m3 <- lm(y ~ x1*x2, data = dat)
 coef(m3)
-regargs2 <- expression(y ~ x1*x2, data = dat)
-m4 <- lm(eval(regargs2))
+mycall <- call("lm", quote(y ~ x1*x2), data = quote(dat))
+m4 <- eval(mycall)
 coef(m4)
 @
 
 The main reason for using eval is that we can ``piece together''
 commands and then run them after we have assembled all the pieces.
 The nickname for this seems to be ``computing on the language.''
+There is a discussion of it in the R Language Definition. It is also
+surveyed in Hadley Wickham's new book, \emph{Advanced R} \citeyearpar{Wickham2015}.
 
-We can create a formula object implicitly (without explicitly asking
-for it) by using this code. 
+Did you ever notice that you get an error if you run ``x1 + x2'',
+but if you run ``y $\sim$ x1 + x2'', then there is no error? It
+is as if R is wrapping your code in protective tissue, something like
+quote(). However, the protective wrapper in this case is actually
+the function called formula(). The R interpreter notices the symbol
+$\sim$ in the syntax, and so it assumes you meant to run
+
+\inputencoding{latin9}\begin{lstlisting}
+formula(y ~ x1 + x2)
+\end{lstlisting}
+\inputencoding{utf8}
+
+A formula is another kind of not-yet-evaluated thing. It is something
+that we can fiddle with before evaluating. 
+
+Create a complicated formula. Note that the lm function receives that
+formula object without trouble.
 
 <<>>=
 f1 <- y ~ x1 + x2 + x3 + log(x4)
 class(f1)
 m5 <- lm(f1, data = dat)
+coef(m5)
 @
 
-The object f1 is a formula object because R has created it that way.
-Its not just a text string. R notices the $\sim$ symbol and the whole
-line is interpreted as a formula. Observe it has separate pieces,
-just like newFmla in the example problem that started this section.
+The object f1 is a formula object. Its not just a text string. Observe
+it has separate pieces, just like newFmla in the example problem that
+started this section.
 
 <<>>=
 f1[[1]]
@@ -518,7 +590,7 @@ we have to evaluate it.
 <<>>=
 f1exp <- expression(y ~ x1 + x2 + x3 + log(x4))
 class(f1exp)
-m6 <- lm(eval(f1exp), data=dat)
+m6 <- lm(eval(f1exp), data = dat)
 @
 
 When f1exp is evaluated, what do we have? Here's the answer.
@@ -533,17 +605,25 @@ all.equal(coef(m5), coef(m6), coef(m7))
 
 The point here is that the pieces of an ordinary use command can be
 separated and put back together again before the work of doing calculations
-begins. 
+begins. We can edit the formula. Suppose we replace a part:
+
+<<>>=
+f1[[3]][[2]] <- quote(x1 + log(x2))
+m8 <- lm(f1, data = dat)
+coef(m8)
+@
 
 Now we turn back to the main theme. How is eval() used in functions?
-Some functions take a lot of arguments. They need to pick some arguments,
-and send those to some functions. 
+Some functions take a lot of arguments. We may want to do a lot of
+fine tuning on the arguments, before they are assembled and evaluated.
+Hence, it is very important that we can keep some bits of R that are
+symbolic, rather than calculated, until we need them. 
 
-Let's consider the lm() code in some detail. Suppose a user submits
-a command like ``lm(y \textasciitilde{} x, data = dat, x = TRUE,
-y = TRUE).'' Inside lm(), it is necessary to pick through those arguments
-and then pass them off to other functions in order to build the data
-matrix and so forth. Here are the first lines of the lm() function
+If you are looking for examples of eval() in the R source code, there
+is a nice one in the beginning of the lm() function. Suppose a user
+submits a command like ``lm(y \textasciitilde{} x, data = dat, x
+= TRUE, y = TRUE).'' Inside lm(), the import is re-organized. Here
+are the first lines of the lm() function
 
 \inputencoding{latin9}\begin{lstlisting}[breaklines=true,numbers=left,numberstyle={\footnotesize},tabsize=4]
 lm <- function (formula, data, subset, weights, na.action, method = "qr",
@@ -563,18 +643,19 @@ lm <- function (formula, data, subset, weights, na.action, method = "qr",
 \end{lstlisting}
 \inputencoding{utf8}
 
-Lets consider what those lines do with a command like this.
+Now suppose we turn on the debugger and run a regression in R with
+a command like this.
 
 \inputencoding{latin9}\begin{lstlisting}
+debug(lm)
 m1 <- lm(y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
 \inputencoding{utf8}
 
-The lm function notices that I supply some arguments. In line 8, the
-match.call function is used to grab a copy of the command that I typed.
-If we use R's debugging facility to stop the program at that point,
-we would see that mf is exactly the same as my command, except R has
-named the arguments:
+After that, we are ``in'' the function, stepping through line-by-line.
+In line 8, the match.call() function is used to grab a copy of the
+command that I typed. We can see that mf is exactly the same as my
+command, except R has named the arguments:
 
 \inputencoding{latin9}\begin{lstlisting}
 > mf
@@ -583,14 +664,17 @@ lm(formula = y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \inputencoding{utf8}
 
 That's not just a string of letters, however. It is a call object,
-a list with individual pieces that we can revise. Lines 10 and 11
-check the names of mf for the presence of certain arguments, and throw
-away the rest. It only wants the arguments we would be needed to run
-the function model.frame. Line 12 adds an argument to the list, drop.unused.levels.
+a list with individual pieces that can be revised. Recall that the
+first element in a call object is the name of a function, and the
+following elements are the arguments. Lines 10 and 11 check the names
+of mf for the presence of certain arguments, and throw away the rest.
+It only wants the arguments we would be needed to run the function
+model.frame. Line 12 adds an argument to the list, drop.unused.levels.
 Up to that point, then, we can look at the individual pieces of mf:
 
 \inputencoding{latin9}\begin{lstlisting}
-> names(mf) [1] ""                   "formula"            "data" [4] "drop.unused.levels"
+> names(mf) 
+[1] ""      "formula"       "data" [4] "drop.unused.levels"
 > mf[[1]]
 lm
 > mf[[2]]
@@ -609,7 +693,7 @@ when the revised call ``mf'' is sent to eval. In the end, it is
 \emph{as if} lm had directly submitted the command
 
 \inputencoding{latin9}\begin{lstlisting}
-mf <- model.frame(y ~ x1 * x2, data=dat, drop.unused.levels=TRUE)
+mf <- model.frame(y ~ x1 * x2, data = dat, drop.unused.levels = TRUE)
 \end{lstlisting}
 \inputencoding{utf8}
 
@@ -660,7 +744,7 @@ The plotmath help page points to syntax like this:
 <<fig=T, height=3, width=4>>=
 plot(1:10, seq(1,5, length.out=10), type = "n", main="Illustrating Substitute with plotmath", xlab="x", ylab="y")
 text(5, 4, substitute(gamma + x1mean, list(x1mean = mean(dat$x1))))
-text(5, 2, expression(paste(gamma, " is the mean of x1")))
+text(5, 2, expression(paste(gamma, " plus the mean of x1")))
 @
 
 Run ?substitute and one is brought to a famous piece of Rchaeological
@@ -791,7 +875,7 @@ replacements.
 In the meanCenter() function in rockchalk, some predictors are mean-centered
 and their names are revised. A variable named ``age'' becomes ``agec''
 or ``x1'' becomes ``x1c''. So the user's regression formula that
-uses variables agec or x1 must be revised. This is a function that
+uses variables age or x1 must be revised. This is a function that
 takes a formula ``fmla'' and replaces a symbol xname with newname.
 
 \inputencoding{latin9}\begin{lstlisting}
@@ -820,20 +904,7 @@ If one has a copy of rockchalk 1.6 or newer, the evidence of the success
 of this approach should be evident in the output of the command example(meanCenter). 
 
 
-\section{Function Arguments (Stub). }
-
-While surveying R packages, we see many different styles for handling
-arguments. This section will discuss some pros and cons of various
-styles.
-
-How much argument checking is required? 
-
-Is it better to default arguments to NULL?
-
-myfn <- function(x = NULL, y = NULL)
-
-
-\subsection{Make Re-Usable Tools (Rather than Cutting and Pasting)}
+\section{Make Re-Usable Tools (Rather than Cutting and Pasting)}
 
 We seek concise solutions that are generalizable. It is almost never
 right to cut and paste and then make minor edits in each copy to achieve
@@ -881,7 +952,9 @@ The code had several pages like this:
 Well, that's understandable, but a little bit embarrassing. I asked
 ``why do you declare these separate variables, why not make a vector?''
 and ``can't you see a more succinct way to declare those things?''
-The answer is ``we do it that way in SAS'' or ``this runs''. 
+The answer is ``we do it that way in SAS'' or ``this runs''. One
+might suspect that the author was eager to say, ``my project is based
+on 10,000 lines of R code'' in order to impress a lay audience.
 
 If the mission is to create a vector with a certain number of 1's
 at the beginning, surely either of these functions would be better:
@@ -985,6 +1058,303 @@ Error in biVec1(3.3, 4.4) (from #2) :
 [1] 1 1 1 1 0 0 0
 \end{lstlisting}
 \inputencoding{utf8}
+
+
+\section{Function Arguments.}
+
+While developing functions for the rockchalk package, one of the most
+important learning experiences I've had is in argument management. 
+
+To state the obvious, argument names should be clear, unambiguous,
+convenient, short, and minimally necessary. Some people are gifted
+in the selection of function and argument names, while others have
+to try harder. 
+
+I think these are the most important points.
+\begin{enumerate}
+\item Protect your function's calculations from the user's workspace.
+\item Protect your function from user errors.
+\item If possible, design your function so that it runs with a minimum number
+of arguments.
+\end{enumerate}
+One of the reasons that it is difficult to design functions is that
+there is no ``mandatory manual'' on this. The R framework allows
+programmer creativity, which is a good thing. But it is also a bad
+thing, since every programmer has his/her own opinion about what ought
+to be done. 
+
+Before I consider the 4 main points, I need to mention some R functions
+that are very helpful in dealing with arguments.
+\begin{description}
+\item [{missing()}] Inside a function, we often wonder ``did the user
+supply this argument in their function call?''
+\item [{stop()}] Suppose we want the function to fail if something happens.
+Write 
+
+
+\inputencoding{latin9}\begin{lstlisting}
+if (isTRUE(x)) stop(paste("I'm sorry, you failed to supply the right information. The variable x has value", x, "which is silly, from my point of view.")))
+\end{lstlisting}
+\inputencoding{utf8}
+
+\item [{stopifnot()}] It is so frequent to run ``if(isTRUE(x)) stop()''
+that they created a wrapper, stopifnot(x).
+\item [{warning()}] If you don't want the function to fail, but you need
+to warn the user about a condition that seems dubious, run
+
+
+\inputencoding{latin9}\begin{lstlisting}
+if (isTRUE(x)) warning(paste("Are you sure the value of x ought to be", x, "?"))
+\end{lstlisting}
+\inputencoding{utf8}
+
+\end{description}
+
+\subsection{Protect your function's calculations from the user's workspace.}
+
+If I'm writing a little project for myself, I might be lazy and allow
+R's ``lexical scoping'' process to find variables that are not defined
+inside a function.
+
+\inputencoding{latin9}\begin{lstlisting}
+x <- c(1, 2, 3, 4)
+y <- c(8, 9, 10, 11)
+z <- c(1, 1, 2, 2)
+plotme <- function(x){
+    plot(x, y, col = z)
+}
+plotme(x)
+\end{lstlisting}
+\inputencoding{utf8}
+
+I might write code for myself that lets the function go and find \code{y}
+and \code{z}. This will run, but you have to admit it is pretty risky.
+It depends on R's willingness to reach outside the boundaries of the
+function to find \code{x}, \code{y}, and \code{z}. If I have inadvertently
+altered \code{y}, this will end badly.
+
+If I'm writing a function for somebody else to use, as in a package,
+I believe the function should to NOT rely on variables from the environment.
+In other words, I want to prevent R from filling in the gaps for users.
+The reason is simple. Users may alter variables in their environment
+and the function may behave badly as a result. The best case scenario
+is that \code{y} and \code{z} do not exist in the workspace, so
+the user will receive an error message:
+
+\begin{Sinput}
+> plotme(x)
+\end{Sinput}
+\begin{Schunk}
+   \begin{Soutput}
+Error in xy.coords(x, y, xlabel, ylabel, log) : object 'y' not found
+  \end{Soutput}
+\end{Schunk}
+
+The worst case scenario is that the user has some other variables
+y and z sitting about in the workspace. Those ``found'' variables
+are put to use with a completely unintentional result. 
+
+As a first step toward fixing this, I propose the following idea.
+Every variable put to use inside a function should be named in the
+list of arguments. If we define the function as follows,
+
+\inputencoding{latin9}\begin{lstlisting}
+plotme <- function(x, y, z){
+    plot(x, y, col = z)
+}
+\end{lstlisting}
+\inputencoding{utf8}
+
+the user's use of \code{plotme(x)} will result in the error
+
+\begin{Schunk}
+   \begin{Soutput}
+Error in xy.coords(x, y, xlabel, ylabel, log) :
+    argument "y" is missing, with no default
+   \end{Soutput}
+\end{Schunk}Naming all of the arguments effectively protects the function against
+the accidental importation of data. The major challenge is avoiding
+the user error of accidentally depending on a variable that is in
+the workspace (the global environment). I often make this mistake,
+that's why I'm bringing it to your attention. 
+
+There's a function called checkUsage() in the codetools package that
+can help check functions for reliance on global variables. First,
+we'll make sure the workspace is clean by removing \code{x}, \code{y},
+and \code{z}.
+
+\begin{Schunk}
+   \begin{Soutput}
+> rm(x, y, z)
+> library(codetools) 
+> checkUsage(plotme) 
+<anonymous>: no visible binding for global variable 'y' (:2) 
+<anonymous>: no visible binding for global variable 'z' (:2)
+   \end{Soutput}
+\end{Schunk}
+
+Note that, if the variables x, y, an z exist in the user workspace,
+they are global and checkUsage will not offer a warning about them.
+Hence, it is very important to run checkUsage() after cleaning up
+the workspace. 
+
+checkUsage() will also offer warnings about unused variables. This
+can be helpful in cleaning up a function's variables.
+
+
+\subsection{Protect your function from user errors.}
+
+Beyond insisting that all variables that depend on input from the
+workspace must be explicitly named, we might be interested to know
+if the user supplied reasonable arguments. Suppose our plotme function
+can work well if the user supplies x and y, and we will manufacture
+z for them if it is not supplied. I've used this approach in the past.
+
+<<eval=F>>=
+plotme <- function(x, y, z){
+    if (missing(z)) z <- rep(2, length(x))   
+    plot(x, y, col = z)
+}
+@
+
+Note it would have the same effect to supply that value of z as a
+default, as in
+
+<<eval=F>>=
+plotme <- function(x, y, z = rep(2, length(x))){
+    plot(x, y, col = z)
+}
+@
+
+Some people prefer this more elaborate declaration. This succeeds
+because the variables that are declared in the beginning of the list
+are available for calculations in the later part of the list.
+
+That will often be sufficient, but we have not protected ourselves
+as well as we might. Suppose the user's code ends up supplying a NULL
+value for \code{z}, as in \code{plotme(x, y, z = NULL)}. They would
+not do that on purpose, but it might be an accident. If \code{z}
+is calculated in their code and something has gone wrong. To protect
+against that, we find this idiom is used in the R source code quite
+often:
+
+<<eval=F>>=
+plotme <- function(x, y, z){
+    if (missing(z) | is.null(z)) z <- rep(2, length(x))   
+    plot(x, y, col = z)
+}
+@
+
+If \code{z} is either not supplied by the user's command, or if the
+user's command explicitly sets it to NULL, then we'll fabricate \code{z}.
+
+Sometimes even more elaborate argument checking will be required.
+We can explicitly check if z is not of the correct type (integer)
+or length.
+
+<<eval=F>>=
+plotme <- function(x, y, z){
+    if (missing(z) | is.null(z)) {
+        z <- rep(2, length(x))
+    } else {
+        if (!is.integer(z) | length(z) != length(x)) stop("z is inappropriate")
+	}
+    plot(x, y, col = z)
+}
+@
+
+After that, an incorrect argument, such as z = ``fred'' or z = c(1,
+2, 2), will result in an error (which is what we want).
+
+\begin{Sinput}
+> plotme(x, y, z = "fred")
+\end{Sinput}
+\begin{Soutput}
+Error in plotme(x, y, z = c(1, 2, 2)) : z is inappropriate
+\end{Soutput}
+
+
+\subsection{If possible, design your function so that it runs with a minimum
+number of arguments.}
+
+Take a look at the most commonly used functions in R, such as lm()
+or plot.default(). These functions allow a great many arguments, but
+they will deliver what the users minimally need if the users supply
+a formula and a data frame.
+
+I have made many mistakes in designing function in rockchalk. From
+one month to the next, I would learn ways to simplify arguments or
+eliminate them entirely.
+
+I did not initially understand the flexibility that R allows in the
+types of arguments passed to a function. Because we can deduce information
+from the arguments that are passed in, we can eliminate the need for
+the user to pass in other arguments. We would never need to require
+both arguments x and xlab in the plot function, for example. xlab
+is optional because, In particular, I insisted that users supply quoted
+strings as variable names for the arguments plotx and modx. I insisted
+on this syntax, as illustrated in the example for plotSlopes:
+
+<<include=F>>=
+library(rockchalk)
+@
+
+<<eval=F>>=
+m7 <- lm(statusquo ~ region * income, data= Chile)
+plotSlopes(m7, plotx = "income", modx = "region", interval = "conf")
+@
+
+Today, the following syntax works just as well
+
+<<eval=F>>=
+m7 <- lm(statusquo ~ region * income, data= Chile)
+plotSlopes(m7, plotx = income, modx = region, interval = "conf")
+@
+
+It is no longer necessary to quote the income and region variable
+because the function checks the argument and, if necessary, it manufactures
+the string for the user. This is what I have in the beginning of plotSlopes.
+
+<<eval=F>>=
+plotx <- as.character(substitute(plotx))[1L]
+if (!missing(modx)) {
+    modx <- as.character(substitute(modx))[1L]
+}
+@
+
+If plotx and modx are already character strings, then this has no
+effect. If they are symbols, however, this turns them into character
+strings.
+
+In the olden days,when I first started using R, it was necessary to
+explicitly quite many arguments that we do not quite anymore. Today,
+for example, both library(``rockchalk'') and library(rockchalk)
+will work. The latter did not work in the beginning, however. If you
+go looking at old R code, from 1999 or 2000, you will find many more
+variables are quoted. 
+
+This idiom is widely used in the R source code to eliminate the user
+tedium of typing quotation marks. Note that today, these commands
+have the same effect:
+
+\begin{Sinput}
+methods(plot)
+\end{Sinput}
+
+or this
+
+\begin{Sinput}
+methods(plot)
+\end{Sinput}
+
+Why does the latter work, when at one time the former was need? Check
+the source code of the methods() function
+
+<<eval=F>>=
+if (!is.character(generic.function)) generic.function <- deparse(substitute(generic.function))
+@This trick is put to use in the plot.default() function in R, where
+the user can supply an argument xlab or ylab if desired, but the plot.default
+will create those values if they are not supplied.
 
 
 \section{Do This, Not That (Stub)}
