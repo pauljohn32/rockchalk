@@ -6,12 +6,14 @@
 ##' For that, please see \code{plotCurves}.
 ##'
 ##' @param model Required. A fitted Regression
-##' @param plotx Required. Name of one predictor from the fitted model to be plotted on horizontal axis
-##' @param ... Additional arguments passed to methods. Often
-##' includes arguments that are passed to plot. Any
-##' arguments that customize plot output, such as lwd, cex, and so
-##' forth, may be supplied. These arguments intended for the predict
-##' method will be used: c("type", "se.fit", "dispersion", "terms", "na.action")
+##' @param plotx Required. Name of one predictor from the fitted
+##' model to be plotted on horizontal axis
+##' @param ... Additional arguments passed to methods. Often includes
+##' arguments that are passed to plot. Any arguments that customize
+##' plot output, such as lwd, cex, and so forth, may be
+##' supplied. These arguments intended for the predict method will be
+##' used: c("type", "se.fit", "interval", "level", "dispersion",
+##' "terms", "na.action")
 ##' @export plotSlopes
 ##' @rdname plotSlopes
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -184,7 +186,8 @@ plotSlopes.lm <-
 
     dotargs <- list(...)
     dotnames <- names(dotargs)
-
+    level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
+    
     ## scan dotargs for predict keywords. Remove from dotargs
     ## the ones we only want going to predict. Leave
     ## others.
@@ -199,7 +202,9 @@ plotSlopes.lm <-
         }
     }
 
-    validForPredict <- c("se.fit", "dispersion", "terms", "na.action", "level", "pred.var", "weights")
+    validForPredict <- c("se.fit", "dispersion", "terms", "na.action",
+                         "level", "pred.var", "weights")
+
     dotsForPredict <- dotnames[dotnames %in% validForPredict]
 
     if (length(dotsForPredict) > 0) {
@@ -221,7 +226,7 @@ plotSlopes.lm <-
 
     parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
                   plotx = plotx, modx = modx, modxVals = modxVals,
-                  interval = interval, plotPoints = plotPoints,
+                  interval = interval, level = level, plotPoints = plotPoints,
                   plotLegend = plotLegend, legendTitle = legendTitle,
                   col = col, opacity = opacity, xlim = plotxRange,
                   ylim = plotyRange, ylab = ylab, llwd = llwd)
@@ -262,11 +267,13 @@ plotFancy <-
              plotLegend, legendTitle, col = NULL, llwd = 2, opacity, ...)
 {
     dotargs <- list(...)
-
+    
     ## Damn. Need ylab from dotargs explicitly
     ylab <- "Dependent Variable"
     if (!is.null(dotargs[["ylab"]])) ylab <- dotargs[["ylab"]]
-
+    ## Also need level
+    level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
+    
     modxVar <- olddf$modxVar
     plotxVar <- olddf$plotxVar
     depVar <- olddf$depVar
@@ -327,9 +334,7 @@ plotFancy <-
     ## } else {
     ##     lty <- seq_along(modxVals)
     ## }
-    
     names(lty) <- names(col)
-
 
     parms <- list(x = plotxVar, y = depVar, xlab = plotx, ylab = ylab,
                   type = "n")
@@ -340,9 +345,12 @@ plotFancy <-
     ## iCol: rgb color matrix. Why does rgb insist the columns be
     iCol <- col2rgb(col)
     ### bCol: border color
-    bCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity, maxColorValue = 255)
+
+    bCol <- mapply(rgb, red = iCol[1,], green = iCol[2,],
+                   blue = iCol[3,], alpha = opacity, maxColorValue = 255)
     ### sCol: shade color
-    sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,], blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
+    sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,],
+                    blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
 
 
     if (interval != "none") {
@@ -356,9 +364,11 @@ plotFancy <-
             } else {
                 pdat <- newdf[newdf[ , modx] %in% j, ]
             }
-            parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]), y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[i])
+            parms <- list(x = c(pdat[, plotx], pdat[NROW(pdat):1 , plotx]),
+                          y = c(pdat$lwr, pdat$upr[NROW(pdat):1]), lty = lty[i])
             parms <- modifyList(parms, dotargs)
-            parms <- modifyList(parms, list(border = bCol[i], col = sCol[i], lwd = 0.3* llwd[k]))
+            parms <- modifyList(parms, list(border = bCol[i],
+                                            col = sCol[i], lwd = 0.3* llwd[k]))
             do.call("polygon", parms)
         }
     }
@@ -403,13 +413,12 @@ plotFancy <-
             col <- col[names(modxVals)]
             lty <- lty[names(modxVals)]
             llwd <- llwd[names(modxVals)]
-
         }
         if (missing(modx) || is.null(modx)) {
             titl <-  if(missing(legendTitle)) "Regression analysis"
             legnd <- c("Predicted values")
             if (interval != "none") {
-                legnd[2] <- paste("95%", interval, "interval")
+                legnd[2] <- paste(level, interval, "interval")
                 col <- c(col, 0)
                 lty <- c(lty, 0)
                 llwd <- c(llwd, 0)
