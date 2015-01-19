@@ -1,5 +1,5 @@
 
-##' Creates a cross tabulation with counts and column percents
+##' Creates a cross tabulation with counts and percentages
 ##'
 ##' This function is pronounced "presentable"!
 ##' 
@@ -9,31 +9,49 @@
 ##' to be built into the function. Now, optionally, it will provide
 ##' row percents.
 ##'
-##' Please bear in mind the following. This function creates a list of
+##' The arguments allowed now are different than in the first
+##' draft. This is a generic function.  The primary method that I
+##' suggest most users should use is the formula method. In this
+##' way, using pctable is similar to running a regression with
+##' one predictor. This displays a column percentage table that
+##' I suggest students ought to use
+##'
+##' \code{tab <- pctable(y ~ x, data = dat)}
+##'
+##' There is also a method that will work with characters representing
+##' variable names.
+##' 
+##' \code{tab <- pctable("y", "x", data = dat)}
+##' 
+##' Running the function should write a table in the output console,
+##' but it also creates an object (\code{tab}). That object
+##' can be displayed in a number of ways.
+##' 
+##' Please bear in mind the following. The output object is a list of
 ##' tables of partial information, which are then assembled in various
 ##' ways by the print method that is supplied for objects of type
-##' pctable. Hence, if one were to run
+##' pctable. A lovely table will appear on the screen, but the thing
+##' tab itself has more information and a less beautiful structure. In
+##' order to see the individual pieces, run tab[[1]], or tab[[2]], or
+##' tab[[3]].
 ##'
-##' tab <- pctable(y ~ x, data = dat)
+##' The object tab is of class \code{pctable}. A print method is supplied.
+##' For any pctable object, it is possible to run follow-ups like
 ##'
-##' or
+##' print(tab, rowpct = TRUE, colpct = FALSE)
 ##' 
-##' tab <- pctable("y", "x", data = dat)
+##' The method print.pctable(tab) assembles the object into (my
+##' opinion of) a presentable form. The print method has argumnets
+##' \code{rowpct} and \code{colpct} that determine which percentages
+##' are included in the presentation.
 ##' 
-##' a lovely table will appear on the screen, but the thing
-##' tab itself has more information and a less beautiful structure.
-##' 
-##' In order to see the individual pieces it is necessary to run
-##' tab[[1]], or tab[[2]], or tab[[3]], because if one types simply
-##'
-##' tab
-##'
-##' then the method print.pctable(tab) is called, and that assembles
-##' the object into (my opinion of) a presentable form. The print method
-##' has argumnets \code{rowpct} and \code{colpct} that determine which
-##' percentages are included in the presentation. 
-##' @param rv A row variable name or a two-sided formula.
-##' @param ...
+##' @param rv A row variable name
+##' @param ... Other arguments. So far, the most likely additional
+##' arguments are to be passed along to the table function, such as
+##' "exclude", "useNA", or "dnn" (which will override the rvlab and
+##' cvlab arguments provided by some methods). Some methods will
+##' also pass along these arguments to model.frame, "subset" 
+##' "xlev", "na.action", "drop.unused.levels".
 ##' @export
 ##' @return A list with tables (count, column percent, row percent) as
 ##' well as a copy of the call.
@@ -45,44 +63,52 @@ pctable <- function(rv, ...)
 NULL
 
 
+
+
+##' The calculator that does the work for pctable methods.
+##'
+##' The default method requires the user to supply variables and it
+##' works in a way that is very similar to R's table function, except
+##' that it has the additional arguments rvlab, cvlab, colpct, rowpct,
+##' and rounded.  These additional arguments give the function some
+##' creature comforts.
 ##' 
-##' @param rv row variable name
-##' @param cv col variable name
-##' @param data dataframe
+##' @param cv Column variable
 ##' @param rvlab Optional: row variable label
 ##' @param cvlab Optional: col variable label
 ##' @param colpct Default TRUE: are column percentags desired in the
 ##' presentation of this result?
 ##' @param rowpct Default FALSE: are row percentages desired in the
-##' presentaiton of this result
-##' @param exclude Default NULL, all values displayed (incl missing)
-##' @param rounded Default FALSE, rounds to 10's for privacy purposes
-##' @return list of tables: Counts (with margins), row percent, column
-##' percent. Caution: See details about printing and inspecting the
-##' contents of this returned object.
+##' presentation of this result
+##' @param rounded Default FALSE, rounds to 10's for privacy purposes.
+##' @rdname pctable
+##' @return list of tables
 ##' @author Paul Johnson <pauljohn@@ku.edu>
-##' @examples
-##' dat <- data.frame(x = gl(4, 25),
-##'                   y = sample(c("A", "B", "C", "D", "E"), 100, replace= TRUE))
-##' pctable.default(y, x, dat)
-##' pctable.default("y", "x", dat)
-##' tab <- pctable.default(y, x, dat)
-##' print(tab, rowpct = TRUE, colpct = TRUE)
-##'
-pctable.default <- function(rv, cv, data = parent.frame(),
+##' @method pctable default
+##' @rdname pctable
+##' @export
+pctable.default <- function(rv, cv,
                             rvlab = NULL, cvlab = NULL,
                             colpct = TRUE, rowpct = FALSE,
-                            exclude = c(NA, NaN), rounded = FALSE)
+                            rounded = FALSE, ...)
 {
     rvlabel <- if (!missing(rv)) deparse(substitute(rv))
     cvlabel <- if (!missing(cv)) deparse(substitute(cv))
     rvlab <- if (is.null(rvlab)) rvlabel else rvlab
     cvlab <- if (is.null(cvlab)) cvlabel else cvlab
 
-    rvin <- eval(substitute(rv), envir = data, enclos = parent.frame())
-    cvin <- eval(substitute(cv), envir = data, enclos = parent.frame())
+    dots <- list(...)
+    dotnames <- names(dots)
+    ## altargs <- list()
+   
+    ## if ("dnn" %in% dotnames) altargs$dnn <- dots[["dnn"]]
+    ## if ("deparse.level" %in% dotnames)
+    ##     altargs$deparse.level <- dots[["deparse.level"]]
     
-    t1 <- table(rvin, cvin, dnn = c(rvlab, cvlab), exclude = exclude)
+    tableargs <- list(rv, cv, dnn = c(rvlab, cvlab))
+    newargs <- modifyList(tableargs, dots, keep.null = TRUE)
+
+    t1 <- do.call("table", newargs)
     rownames(t1)[is.na(rownames(t1))] <- "NA" ## symbol to letters
     colnames(t1)[is.na(colnames(t1))] <- "NA"
     if (rounded) t1 <- round(t1, -1)
@@ -91,13 +117,8 @@ pctable.default <- function(rv, cv, data = parent.frame(),
     t1rowpct <- round(100*prop.table(t1, 1), 1)
     t1colpct <- apply(t1colpct, c(1,2), function(x) gsub("NaN", "", x))
     t1rowpct <- apply(t1rowpct, c(1,2), function(x) gsub("NaN", "", x))
-    ## t3 <- t2
-    ## for(j in rownames(t1colpct)){
-    ##     for(k in colnames(t1colpct)){
-    ##         t3[j, k] <- paste0(t2[j, k], "(", t1colpct[j, k], "%)")
-    ##     }
-    ## }
-    res <- list("count" = t2, "colpct" = t1colpct, "rowpct" = t1rowpct, call = match.call())
+    res <- list("count" = t2, "colpct" = t1colpct, "rowpct" = t1rowpct,
+                call = match.call())
     class(res) <- "pctable"
     print(res, colpct = colpct, rowpct = rowpct)
     invisible(res)
@@ -107,59 +128,16 @@ NULL
 
 
 
-
-
-
 ##' Creates a cross tabulation with counts and column percents
 ##'
-##' Pronounced "presentable". The original purpose was to create a
-##' more pleasant user interface to ask for a particular kind of cross
-##' tabulation: counts with column percentages.
-##'
-##' Please bear in mind the following. When the function runs, it
-##' displays one presentation of the inner parts that are created.
-##' The inner parts are also saved to an output object, which can then
-##' be re-printed with various styles.
-##'
-##' The returned object is a list of tables of partial information:
-##' counts, column percents, row percents.  Those bits are then
-##' assembled for presentation in various ways by the print method
-##' that is supplied for objects of type pctable. Hence, if one were
-##' to run
-##'
-##' tab <- pctable(y ~ x, dat)
-##'
-##' the display will be the column percent table I want people to see,
-##' but tab actually has more information inside it. In order to see
-##' the individual pieces it is necessary to run tab[[1]], or
-##' tab[[2]], or tab[[3]].
-##'
-##' Note, to alter the display of this result, the following are allowed
-##'
-##' print(tab, rowpct = TRUE, colpct = FALSE)
-##' print(tab, rowpct = TRUE, colpct = TRUE)
-##'
-##' That is to say, the settings for rowpct and colpct that are used
-##' in the original call to pctable are not "permanent"
-##' characteristics of the table. The print method can override them.
-##'
+##' The formula method is the recommended method for users. It will
+##' be easier to run \code{pctable(myrow ~ mycol, data = dat)}.
+##' 
 ##' @param formula A two sided formula.  
-##' @param data A data frame
-##' @param rvlab Optional character string for row variable label
-##' @param cvlab Optional character string for column variable label
-##' @param colpct Default TRUE: Are column percents desired in the presentation?
-##' @param rowpct Default FALSE: Are row percents desired in the presentation?
-##' @param exclude As in base::table, this is a vector of labels that
-##' are to be excluded from the calculation of counts, row or column
-##' percents. To see all labels, including missings, set exclude = NULL.
-##' @param rounded If TRUE, rounds observed counts to nearest 10 (to
-##' protect privacy).
-##' @param ... Additional arguments that might adjust printout.
-##' @param subset As in many R functions. Should be the format
-##' required by functions like model.frame.
-##' @export
-##' @return A list of tables, one each for counts, column percents,
-##' and row percents.
+##' @param data A data frame.
+##' @return list of tables: Counts (with margins), row percent, column
+##' percent. Caution: See details about printing and inspecting the
+##' contents of this returned object.
 ##' @author Paul Johnson <pauljohn@@ku.edu>>
 ##' @examples
 ##' dat <- data.frame(x = gl(4, 25),
@@ -171,87 +149,99 @@ NULL
 ##' pctable(y ~ x, dat, rowpct = TRUE, colpct = TRUE)
 ##' pctable(y ~ x, dat, rowpct = TRUE, colpct = TRUE, exclude = NULL)
 ##' tab <- pctable(y ~ x, dat, rvlab = "Outcome", cvlab = "Predictor")
-##'
+##' @rdname pctable
+##' @method pctable formula
+##' @export
 pctable.formula <- function(formula, data = NULL,  rvlab = NULL,
                             cvlab = NULL, colpct = TRUE, rowpct = FALSE,
-                            exclude = c(NA, NaN), rounded = FALSE,
-                            ..., subset = NULL)
+                            rounded = FALSE, ...)
     
 {
-    if (missing(data) || !is.data.frame(data)) stop("pctable requires a data frame")
     if (missing(formula) || (length(formula) != 3L))
         stop("pctable requires a two sided formula")
     mt <- terms(formula, data = data)
     if (attr(mt, "response") == 0L) stop("response variable is required")
-    mf <- match.call(expand.dots = FALSE)
-    keepers <- match(c("formula", "data", "subset", "na.action"), names(mf), 0L)
+    mf <- match.call(expand.dots = TRUE)
+    mfnames <- c("formula", "data", "subset", "xlev", "na.action", "drop.unused.levels")
+    keepers <- match(mfnames, names(mf), 0L)
     mf <- mf[c(1L, keepers)]
-    mf$drop.unused.levels <- FALSE
+    ## mf$drop.unused.levels <- FALSE
+   
     mf[[1L]] <- quote(stats::model.frame)
+    dots <- list(...)
+    ## remove used arguments from dots, otherwise errors happen
+    ## when unexpected arguments pass through. Don't know why
+    for (i in c("subset", "xlev", "na.action", "drop.unused.levels")) dots[[i]] <- NULL
+        
     mf <- eval(mf, parent.frame())
+    mfnames <- names(mf)
+    response <- attr(attr(mf, "terms"), "response")
     ## response is column 1
-    rvlab <- if (missing(rvlab)) colnames(mf)[1] else rvlab
-    cvlab <- if (missing(cvlab)) colnames(mf)[2] else cvlab
+    rvname <- mfnames[response]
+    cvname <- mfnames[-response][1] ##just take 2?
+    rvlab <- if (missing(rvlab)) rvname else rvlab
+    cvlab <- if (missing(cvlab)) cvname else cvlab
+
+    arglist <- list(rv = mf[[rvname]], cv = mf[[cvname]],
+                    rvlab = rvlab, cvlab = cvlab,
+                    colpct = colpct, rowpct = rowpct,
+                    rounded = rounded)
+    arglist <- modifyList(arglist, dots, keep.null = TRUE)
+    ##keep.null needed because exclude = NULL can be a valid
+    ## (meaningful) argument to table.
     
-    res <- pctable.default(mf[[1L]], mf[[2L]], data = mf,
-                           rvlab = rvlab, cvlab = cvlab,
-                           colpct = colpct, rowpct = rowpct,
-                           exclude = exclude, rounded = rounded)
+    res <- do.call(pctable.default, arglist)
     invisible(res)
 }
 NULL
 
 
+
+
+
 ##' Method for variable names as character strings 
 ##'
-##' rowvar must be a quoted string. colvar may be a string
-##' or just a variable name (which this method will coerce to a string)
-##' @param rowvar string in quotes!
-##' @param colvar character 
-##' @param data 
-##' @param rvlab 
-##' @param cvlab 
-##' @param colpct 
-##' @param rowpct 
-##' @param exclude 
-##' @param rounded 
-##' @param ... 
-##' @param subset 
-##' @return 
+##' The character method exists only for variety.  It accepts
+##' character strings rather than a formula to define the columns that
+##' should be plotted.  The method used most often for most users should
+##' be the formula method.
+##' 
+##' The row variable rv rowvar must be a quoted string if the user
+##' intends the method pctable.character to be dispatched. The column
+##' variable cv may be a string or just a variable name (which this
+##' method will coerce to a string)
+##' 
+##' @return A list of tables, one each for counts, column percents,
+##' and row percents.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
 ##' dat <- data.frame(x1 = gl(4, 25, labels = c("Good", "Bad", "Ugly", "Indiff")),
-##'                  x2 = gl(5, 20, labels = c("Denver", "Cincy", "Baltimore", "NY", "LA")), 
-##'                  y = sample(c("A", "B", "C", "D", "E"), 100, replace= TRUE))
-##'##' pctable("y", "x1", dat)
+##'                 x2 = gl(5, 20, labels = c("Denver", "Cincy", "Baltimore", "NY", "LA")), 
+##'                 y = sample(c("A", "B", "C", "D", "E"), 100, replace= TRUE))
+##' tab <- pctable(y ~ x1, data = dat, rvlab = "my row label",
+##'     subset = dat$x1 %in% c("Good", "Bad"),
+##'     drop.unused.levels = TRUE)
+##' tab <- pctable(y ~ x1, data = dat, rvlab = "my row label",
+##'     subset = dat$x1 %in% c("Good", "Bad"))
+##' pctable("y", "x1", dat)
 ##' pctable("y", x1, dat)
-##'
-pctable.character <- function(rowvar, colvar, data = NULL, rvlab = NULL,
+##' @rdname pctable
+##' @method pctable character
+##' @export
+pctable.character <- function(rv, cv, data = NULL, rvlab = NULL,
                               cvlab = NULL, colpct = TRUE,
-                              rowpct = FALSE, exclude = c(NA, NaN), rounded = FALSE, 
-                              ..., subset = NULL)
-    
+                              rowpct = FALSE,
+                              rounded = FALSE, ...)
 {
     if (missing(data) || !is.data.frame(data)) stop("pctable requires a data frame")
-    ## colvar <- if (!is.character(colvar)) deparse(substitute(colvar)) else colvar
-    colvar <- as.character(substitute(colvar))[1L]
+    cv <- as.character(substitute(cv))[1L]
     
-    rvlab <- if (missing(rvlab)) rowvar else rvlab
-    cvlab <- if (missing(cvlab)) colvar else cvlab
-    
-    t1 <- with(data, table(data[[rowvar]], data[[colvar]], dnn = c(rvlab, cvlab), exclude = exclude))
-    rownames(t1)[is.na(rownames(t1))] <- "NA" ## symbol to letters
-    colnames(t1)[is.na(colnames(t1))] <- "NA"
-    if (rounded) t1 <- round(t1, -1)
-    t2 <- addmargins(t1, c(1,2))
-    t1colpct <- round(100*prop.table(t1, 2), 1)
-    t1rowpct <- round(100*prop.table(t1, 1), 1)
-    t1colpct <- apply(t1colpct, c(1,2), function(x) gsub("NaN", "", x))
-    t1rowpct <- apply(t1rowpct, c(1,2), function(x) gsub("NaN", "", x))
-   
-    res <- list("count" = t2, "colpct" = t1colpct, "rowpct" = t1rowpct, call = match.call())
-    class(res) <- "pctable"
-    print(res, colpct = colpct, rowpct = rowpct)
+    rvlab <- if (missing(rvlab)) rv else rvlab
+    cvlab <- if (missing(cvlab)) cv else cvlab
+    res <- pctable.formula(formula(paste(rv, " ~ ", cv)), data = data,
+                           rvlab = rvlab, cvlab = cvlab, colpct = colpct,
+                           rowpct = rowpct, rounded = rounded, ...)
+  
     invisible(res)
 }
 NULL
