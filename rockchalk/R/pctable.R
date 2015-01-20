@@ -1,20 +1,17 @@
-
 ##' Creates a cross tabulation with counts and percentages
 ##'
-##' This function is pronounced "presentable"!
-##' 
-##' The original purpose was to create a particular kind of cross
-##' tabulation that I ask for in class: counts with column
-##' percentages. Requests from users have caused a bit more generality
-##' to be built into the function. Now, optionally, it will provide
-##' row percents.
+##' @description
+##' This function is pronounced "presentable"!  The original purpose
+##' was to create a particular kind of cross tabulation that I ask for
+##' in class: counts with column percentages. Requests from users have
+##' caused a bit more generality to be built into the function. Now,
+##' optionally, it will provide row percents. This is a generic function.
+##' Most users will find the formula method most convenient. Use the
+##' colpct and rowpct arguments to indicate if column or row percentages
+##' are desired.
 ##'
-##' The arguments allowed now are different than in the first
-##' draft. This is a generic function.  The primary method that I
-##' suggest most users should use is the formula method. In this
-##' way, using pctable is similar to running a regression with
-##' one predictor. This displays a column percentage table that
-##' I suggest students ought to use
+##' I suggest most users will use the formula method for this. Running
+##' a command like this will, generally, do the right thing:
 ##'
 ##' \code{tab <- pctable(y ~ x, data = dat)}
 ##'
@@ -22,29 +19,32 @@
 ##' variable names.
 ##' 
 ##' \code{tab <- pctable("y", "x", data = dat)}
-##' 
+##'  
 ##' Running the function should write a table in the output console,
 ##' but it also creates an object (\code{tab}). That object
 ##' can be displayed in a number of ways.
-##' 
-##' Please bear in mind the following. The output object is a list of
-##' tables of partial information, which are then assembled in various
-##' ways by the print method that is supplied for objects of type
-##' pctable. A lovely table will appear on the screen, but the thing
-##' tab itself has more information and a less beautiful structure. In
-##' order to see the individual pieces, run tab[[1]], or tab[[2]], or
-##' tab[[3]].
+##'
+##' @details
+##' Please bear in mind the following. The output object is a
+##' list of tables of partial information, which are then assembled in
+##' various ways by the print method (print.pctable). A lovely table
+##' will appear on the screen, but the thing tab itself has more
+##' information and a less beautiful structure. In order to see the
+##' individual pieces, run tab[[1]], or tab[[2]], or tab[[3]].
 ##'
 ##' The object tab is of class \code{pctable}. A print method is supplied.
 ##' For any pctable object, it is possible to run follow-ups like
 ##'
 ##' print(tab, rowpct = TRUE, colpct = FALSE)
 ##' 
-##' The method print.pctable(tab) assembles the object into (my
+##' The method \code{print.pctable(tab)} assembles the object into (my
 ##' opinion of) a presentable form. The print method has argumnets
 ##' \code{rowpct} and \code{colpct} that determine which percentages
 ##' are included in the presentation.
 ##' 
+##' @name pctable
+NULL
+
 ##' @param rv A row variable name
 ##' @param ... Other arguments. So far, the most likely additional
 ##' arguments are to be passed along to the table function, such as
@@ -52,6 +52,7 @@
 ##' cvlab arguments provided by some methods). Some methods will
 ##' also pass along these arguments to model.frame, "subset" 
 ##' "xlev", "na.action", "drop.unused.levels".
+##' @rdname pctable
 ##' @export
 ##' @return A list with tables (count, column percent, row percent) as
 ##' well as a copy of the call.
@@ -65,13 +66,8 @@ NULL
 
 
 
-##' The calculator that does the work for pctable methods.
-##'
-##' The default method requires the user to supply variables and it
-##' works in a way that is very similar to R's table function, except
-##' that it has the additional arguments rvlab, cvlab, colpct, rowpct,
-##' and rounded.  These additional arguments give the function some
-##' creature comforts.
+##' The method pctable.default is the calculator, I don't expect
+##' many users will need to call it directly.
 ##' 
 ##' @param cv Column variable
 ##' @param rvlab Optional: row variable label
@@ -82,8 +78,6 @@ NULL
 ##' presentation of this result
 ##' @param rounded Default FALSE, rounds to 10's for privacy purposes.
 ##' @rdname pctable
-##' @return list of tables
-##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @method pctable default
 ##' @rdname pctable
 ##' @export
@@ -130,15 +124,12 @@ NULL
 
 ##' Creates a cross tabulation with counts and column percents
 ##'
-##' The formula method is the recommended method for users. It will
-##' be easier to run \code{pctable(myrow ~ mycol, data = dat)}.
+##' The formula method is the recommended method for users. Run
+##' \code{pctable(myrow ~ mycol, data = dat)}. In an earlier version,
+##' I gave different advice, so please adjust your usage.
 ##' 
 ##' @param formula A two sided formula.  
 ##' @param data A data frame.
-##' @return list of tables: Counts (with margins), row percent, column
-##' percent. Caution: See details about printing and inspecting the
-##' contents of this returned object.
-##' @author Paul Johnson <pauljohn@@ku.edu>>
 ##' @examples
 ##' dat <- data.frame(x = gl(4, 25),
 ##'                   y = sample(c("A", "B", "C", "D", "E"), 100, replace= TRUE))
@@ -206,14 +197,11 @@ NULL
 ##' should be plotted.  The method used most often for most users should
 ##' be the formula method.
 ##' 
-##' The row variable rv rowvar must be a quoted string if the user
-##' intends the method pctable.character to be dispatched. The column
-##' variable cv may be a string or just a variable name (which this
-##' method will coerce to a string)
-##' 
-##' @return A list of tables, one each for counts, column percents,
-##' and row percents.
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' When using character arguments, the row variable rv rowvar must be
+##' a quoted string if the user intends the method pctable.character
+##' to be dispatched. The column variable cv may be a string or just a
+##' variable name (which this method will coerce to a string).
+##'
 ##' @examples
 ##' dat <- data.frame(x1 = gl(4, 25, labels = c("Good", "Bad", "Ugly", "Indiff")),
 ##'                 x2 = gl(5, 20, labels = c("Denver", "Cincy", "Baltimore", "NY", "LA")), 
@@ -251,11 +239,15 @@ NULL
 
 ##' Display pctable objects
 ##'
-##' This is not very fancy.
+##' This is not very fancy. Note that the saved pctable object
+##' has the information inside it that is required to write both
+##' column and row percentages. The arguments colpct and rowpct
+##' are used to ask for the two types.
+##' 
 ##' @param tab A pctable object
 ##' @param colpct Default TRUE: include column percentages?
 ##' @param rowpct Default FALSE: include row percentages?
-##' @return none
+##' @return A table object for the final printed table.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 print.pctable <- function(tab, colpct = TRUE, rowpct = FALSE){
     count <- tab[["count"]]
@@ -303,6 +295,7 @@ print.pctable <- function(tab, colpct = TRUE, rowpct = FALSE){
                
         cat("Count (row %)\n")
         cat("column %\n")
+        t4 <- as.table(t4)
         print(t4, quote = FALSE)
         return(invisible(t4))
     }
