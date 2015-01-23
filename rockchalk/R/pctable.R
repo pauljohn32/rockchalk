@@ -114,7 +114,7 @@ pctable.default <- function(rv, cv,
     res <- list("count" = t2, "colpct" = t1colpct, "rowpct" = t1rowpct,
                 call = match.call())
     class(res) <- "pctable"
-    print(res, colpct = colpct, rowpct = rowpct)
+    print.pctable(res, colpct = colpct, rowpct = rowpct)
     invisible(res)
 }
 NULL
@@ -213,6 +213,24 @@ NULL
 ##'     subset = dat$x1 %in% c("Good", "Bad"))
 ##' pctable("y", "x1", dat)
 ##' pctable("y", x1, dat)
+##' ## if user has tables package, can push out to latex or html
+##' if (require(tables)){
+##'     tabsumtab <- as.tabular(tabsum)
+##'     html(tabsumtab)
+##'     fn <- tempfile(pattern = "file", tmpdir = tempdir(), 
+##'             fileext = ".html")
+##'     html(tabsumtab, file = fn)
+##'     print(paste("The file saved was named", fn, "go get it."))
+##'     browseURL(fn)
+##'     ## go get the fn file if you want to import it in document
+##'     ## Now LaTeX output
+##'     ## have to escape the percent signs
+##'     tabsumtab <- apply(tabsumtab, 1:2, function(x) {gsub("%", "\\\\%", x) })
+##'     latex(tabsumtab)
+##'     fn2 <- tempfile(pattern = "file", tmpdir = tempdir(), 
+##'                    fileext = ".tex")
+##'     print(paste("The file saved was named", fn2, "go get it."))
+##' }
 ##' @rdname pctable
 ##' @method pctable character
 ##' @export
@@ -235,6 +253,93 @@ pctable.character <- function(rv, cv, data = NULL, rvlab = NULL,
 NULL
 
 
+##' Extract presentation from a pctable object
+##'
+##' Creates a column and/or row percent display of a pctable
+##' result
+##' @param object A pctable object 
+##' @param colpct Default TRUE: should column percents be included
+##' @param rowpct Default FALSE: should row percents be included
+##' @param ... Other arguments, currently unused
+##' @return An object of class pctable.summary
+##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @export
+summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
+{
+    colpct <- if (missing(colpct)) object$call[["colpct"]] else colpct 
+    rowpct <- if (missing(rowpct)) object$call[["rowpct"]] else rowpct
+    
+    count <- object[["count"]]
+   
+    t3 <- count
+    attr(t3, which = "colpct") <- colpct
+    attr(t3, which = "rowpct") <- rowpct
+    class(t3) <- c("pctable.summary", "table")
+    if (colpct && !rowpct) {
+        cpct <- object[["colpct"]]
+        for(j in rownames(cpct)){
+            for(k in colnames(cpct)){
+                t3[j, k] <- paste0(count[j, k], "(", cpct[j, k], "%)")
+            }
+        }
+        return(t3)
+    }
+    
+    ## rowpct == TRUE else would have returned
+    rpct <- object[["rowpct"]]
+    for(j in rownames(rpct)){
+        for(k in colnames(rpct)){
+            t3[j, k] <- paste0(count[j, k], "(", rpct[j, k], "%)")
+        }
+    }
+    
+    if (!colpct) {
+        return(t3)
+    } else {
+        cpct <- object[["colpct"]]
+        t4 <- array("", dim = c(1, 1) + c(2,1)*dim(object$colpct))
+        t4[seq(1, NROW(t4), 2), ] <- t3
+        rownames(t4)[seq(1, NROW(t4), 2)] <- rownames(t3)
+        rownames(t4)[is.na(rownames(t4))] <- "" 
+        colnames(t4) <- colnames(t3)
+        for(j in rownames(object[["colpct"]])) {
+            for(k in colnames(object[["colpct"]])){
+                t4[1 + which(rownames(t4) == j) ,k] <- paste0(object[["colpct"]][j, k], "%")
+            }
+            
+        }
+        t4 <- as.table(t4)
+        names(dimnames(t4)) <- names(dimnames(count))
+        attr(t4, which = "colpct") <- colpct
+        attr(t4, which = "rowpct") <- rowpct
+        class(t4) <- c("pctable.summary", "table")
+        return(t4)
+    }
+}
+
+##' print method for pctable.summary objects 
+##'
+##' prints pctab objects. Needed only to deal properly with quotes
+##' 
+##' @param x a pctable.summary object
+##' @return Nothing is returned
+##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @method print summary.pctable
+##' @export
+print.summary.pctable <- function(x, ...){
+    colpct <- attr(x, "colpct")
+    rowpct <- attr(x, "rowpct")
+    
+    if (colpct && !rowpct) {
+        cat("Count (column %)\n")
+    } else if (!colpct && rowpct) {
+        cat("Count (row %)\n")
+    } else {
+        cat("Count (row %)\n")
+        cat("column %\n")
+    }
+    NextMethod(generic = "print", object = x, quote = FALSE, ...)
+}
 
 
 ##' Display pctable objects
@@ -249,55 +354,12 @@ NULL
 ##' @param rowpct Default FALSE: include row percentages?
 ##' @return A table object for the final printed table.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
-print.pctable <- function(tab, colpct = TRUE, rowpct = FALSE){
-    count <- tab[["count"]]
-   
-    t3 <- count
-    if (colpct && !rowpct) {
-        cpct <- tab[["colpct"]]
-        for(j in rownames(cpct)){
-            for(k in colnames(cpct)){
-                t3[j, k] <- paste0(count[j, k], "(", cpct[j, k], "%)")
-            }
-        }
-        cat("Count (column %)\n")
-        print(t3)
-        return(invisible(t3))
-    }
-
-    ## rowpct == TRUE< else would have returned
-    rpct <- tab[["rowpct"]]
-    for(j in rownames(rpct)){
-        for(k in colnames(rpct)){
-            t3[j, k] <- paste0(count[j, k], "(", rpct[j, k], "%)")
-        }
-    }
-    
-    if (!colpct) {
-        cat("Count (row %)\n")
-        print(t3)
-        return(invisible(t3))
-    } else {
-        cpct <- tab[["colpct"]]
-        t4 <- array("", dim = c(1, 1) + c(2,1)*dim(tab$colpct))
-        t4[seq(1, NROW(t4), 2), ] <- t3
-        rownames(t4)[seq(1, NROW(t4), 2)] <- rownames(t3)
-        rownames(t4)[is.na(rownames(t4))] <- "" 
-        colnames(t4) <- colnames(t3)
-        for(j in rownames(tab[["colpct"]])) {
-            for(k in colnames(tab[["colpct"]])){
-                t4[1 + which(rownames(t4) == j) ,k] <- paste0(tab[["colpct"]][j, k], "%")
-            }
-
-        }
-        
-        names(dimnames(t4)) <- names(dimnames(count))
-               
-        cat("Count (row %)\n")
-        cat("column %\n")
-        t4 <- as.table(t4)
-        print(t4, quote = FALSE)
-        return(invisible(t4))
-    }
+##' @export
+print.pctable <- function(x, colpct = TRUE, rowpct = FALSE, ...){
+    colpct <- if (missing(colpct)) x$call[["colpct"]] else colpct 
+    rowpct <- if (missing(rowpct)) x$call[["rowpct"]] else rowpct
+    tab <- summary(x, colpct = colpct, rowpct = rowpct)
+    print.summary.pctable(tab)
+    invisible(tab)
 }
 NULL
