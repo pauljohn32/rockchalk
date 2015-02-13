@@ -3541,31 +3541,6 @@ While developing functions for the rockchalk package, one of the most important
 \end_layout
 
 \begin_layout Standard
-To state the obvious, argument names should be clear, unambiguous, convenient,
- short, and minimally necessary.
- Some people are gifted in the selection of function and argument names,
- while others have to try harder.
- 
-\end_layout
-
-\begin_layout Standard
-I think these are the most important points.
-\end_layout
-
-\begin_layout Enumerate
-Protect your function's calculations from the user's workspace.
-\end_layout
-
-\begin_layout Enumerate
-Protect your function from user errors.
-\end_layout
-
-\begin_layout Enumerate
-If possible, design your function so that it runs with a minimum number
- of arguments.
-\end_layout
-
-\begin_layout Standard
 One of the reasons that it is difficult to design functions is that there
  is no 
 \begin_inset Quotes eld
@@ -3579,29 +3554,176 @@ mandatory manual
  The R framework allows programmer creativity, which is a good thing.
  But it is also a bad thing, since every programmer has his/her own opinion
  about what ought to be done.
+ To state the obvious, argument names should be clear, unambiguous, convenient,
+ short, and minimally necessary.
  
 \end_layout
 
 \begin_layout Standard
-Before I consider the 4 main points, I need to mention some R functions
- that are very helpful in dealing with arguments.
+Beyond that, what can we say? I urge new R programmers to study the R source
+ code.
+ This is part of the Rchaeological method.
+ Study the most frequently used functions in the R distribution.
+ I've learned the most from the way arguments are handled in the functions
+ 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+hist
+\end_layout
+
+\end_inset
+
+(), 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+lm()
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plot()
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+termplot()
+\end_layout
+
+\end_inset
+
+.
+ These functions have had the most eyes on them and, therefore, they are
+ most likely to use the best approach.
+ I wrote several functions that eventually went into rockchalk before I
+ realized that important fact and I regret it (on a weekly basis).
+\end_layout
+
+\begin_layout Standard
+In this section, I offer this advice.
+\end_layout
+
+\begin_layout Enumerate
+Protect your function's calculations from the user's workspace.
+\end_layout
+
+\begin_layout Enumerate
+Check argument values.
+\end_layout
+
+\begin_layout Enumerate
+Design the function so that it runs with a minimum number of arguments.
+\end_layout
+
+\begin_layout Subsection
+A few tidits about arguments
+\end_layout
+
+\begin_layout Standard
+R includes several functions that are very helpful in dealing with arguments.
 \end_layout
 
 \begin_layout Description
-missing() Inside a function, we often wonder 
-\begin_inset Quotes eld
+missing() Inside a function, such as 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plotme()
+\end_layout
+
 \end_inset
 
-did the user supply this argument in their function call?
-\begin_inset Quotes erd
+ we often need to check if the user supplied a value for an argument, such
+ as 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+col
+\end_layout
+
+\end_inset
+
+.
+ If the user did not supply a value, we might construct one from the other
+ input
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (missing(col)) col <- someTediousCalculation(y, z)
+\end_layout
+
 \end_inset
 
 
 \end_layout
 
+\begin_layout Standard
+This is usually good enough, but there is danger that the user might have
+ called the function like so:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plotme(x, y, z, col = NULL)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This outsmarts missing(col), which will return FALSE.
+ If our goal is to make sure col is something, some non-NULL thing, a more
+ careful argument check would be
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+if (missing(col) | is.null(col)) col <- someTediousCalculation(y, z)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Description
-stop() Suppose we want the function to fail if something happens.
- Write 
+stop() Halts a function and returns a message to the user.
+ Usage example 
 \end_layout
 
 \begin_deeper
@@ -3613,7 +3735,7 @@ status open
 \begin_layout Plain Layout
 
 if (isTRUE(x)) stop(paste("I'm sorry, you failed to supply the right information.
- The variable x has value", x, "which is silly, from my point of view.")))
+")))
 \end_layout
 
 \end_inset
@@ -3627,11 +3749,31 @@ stopifnot() It is so frequent to run
 \begin_inset Quotes eld
 \end_inset
 
+
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
 if(isTRUE(x)) stop()
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
- that they created a wrapper, stopifnot(x).
+ that they created a wrapper, 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+stopifnot(x)
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Description
@@ -3657,21 +3799,1060 @@ if (isTRUE(x)) warning(paste("Are you sure the value of x ought to be",
 \end_layout
 
 \end_deeper
+\begin_layout Description
+deparse(substitute()) Inside a function, it is often important to find out
+ the symbolic value of the argument that the user supplied to the function.
+ I don't mean the 
+\emph on
+value
+\emph default
+, but rather the symbolic name.
+ To see what I mean, run this
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(myx = c(1, 2, 3), myy = c(10, 5, 1))
+\end_layout
+
+\begin_layout Plain Layout
+
+debug(plot.default)
+\end_layout
+
+\begin_layout Plain Layout
+
+plot(dat$myx, dat$myy)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After you hit enter, the R debugger/browser will come open and the prompt
+ will allow you to inspect the situation.
+ First, type 
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+ and hit return.
+ That takes the first step into the calculations.
+ After that, run 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+match.call()
+\end_layout
+
+\end_inset
+
+.
+ The function is somewhat 
+\begin_inset Quotes eld
+\end_inset
+
+self aware
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It knows how it was called.
+ You should see this
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Browse[2]> n 
+\end_layout
+
+\begin_layout Plain Layout
+
+debug: localAxiis <- function(..., col, bg, pch, cex, lty, lwd) Axis(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+Browse[2]> match.call()
+\end_layout
+
+\begin_layout Plain Layout
+
+plot.default(x = dat$myx, y = dat$myy)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You asked for 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plot()
+\end_layout
+
+\end_inset
+
+, R sends the work to 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plot.default()
+\end_layout
+
+\end_inset
+
+.
+ All is well.
+\end_layout
+
+\begin_layout Standard
+Still inside the debugger now, type 
+\begin_inset Quotes eld
+\end_inset
+
+x
+\begin_inset Quotes erd
+\end_inset
+
+ and then 
+\begin_inset Quotes eld
+\end_inset
+
+myx
+\begin_inset Quotes erd
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Browse[2]> x
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] 1 2 3
+\end_layout
+
+\begin_layout Plain Layout
+
+Browse[2]> myx
+\end_layout
+
+\begin_layout Plain Layout
+
+Error: object 'myx' not found
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inside the function, the vector value that we passed in, which was referred
+ to as dat$myx, is now called x.
+ The thing x is a data holder, it is used in the following calculations.
+ 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+ does not remember that its passed-in value was named 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+dat$myx
+\end_layout
+
+\end_inset
+
+ in a previous life.
+ It is as if 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+ is the new identity of the same old data vector.
+ However, we can ask 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+what name were you known by in your previous life?
+\begin_inset Quotes erd
+\end_inset
+
+ with this interesting idiom.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Browse[2]> deparse(substitute(x))
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] "dat$myx"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The substitute() function, as we have already seen, is a way to replace
+ a letter x with a value from somewhere.
+ Maybe it would be more obvious to run this in 2 steps.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+Browse[2]> xsubs <- substitute(x)
+\end_layout
+
+\begin_layout Plain Layout
+
+Browse[2]> xsubs
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$myx
+\end_layout
+
+\begin_layout Plain Layout
+
+Browse[2]> deparse(xsubs)
+\end_layout
+
+\begin_layout Plain Layout
+
+[1] "dat$myx"
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+substitute()
+\end_layout
+
+\end_inset
+
+ grabs the object name from whence 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+ was calculated.
+ We need to convert that back to a character string so that we can know
+ the symbolic name of the thing that eventually became 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+.
+ This is at the outer boundary of my R comprehension, so I better stop here.
+\end_layout
+
+\begin_layout Standard
+Incidentally, you can go exploring in the debugger.
+ Run some standards like 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+ls()
+\end_layout
+
+\end_inset
+
+ to see what's available.
+ If you keep hitting return, the function will run line by line.
+ If you get tired of hitting return, type 
+\begin_inset Quotes eld
+\end_inset
+
+c
+\begin_inset Quotes erd
+\end_inset
+
+ and the function will run to its conclusion.
+ To let R know that you don't want to debug that function any more, run:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> undebug(plot.default)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If you don't do that, then the function browser will pop open every time
+ you try to run plot.
+\end_layout
+
+\end_deeper
+\begin_layout Description
+list(...) The three periods, 
+\begin_inset Quotes eld
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+, are a valid word.
+ (A period is a valid character).
+ R scans user syntax for function arguments and it uses whatever it can
+ understand (formal named arguments, positional matching), and then the
+ other arguments are thrown into a thing called 
+\begin_inset Quotes eld
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+In a simple case, we could just pass those additional arguments to another
+ function, as in
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, ...){
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Often, it is not sufficient to simply pass on the 
+\begin_inset Quotes eld
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+ variables, and we instead need to scan them and sort them for various purposes.
+ Inside the function, we access those variables by turning them into a list:
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+dots <- list(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can still pass on the dots to other functions, but the usual problem
+ is that some of the arguments in dots may be intended for several different
+ functions.
+ Suppose we are writing a plotter for categorical variables.
+ We might need to receive some arguments, then run 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+table()
+\end_layout
+
+\end_inset
+
+, then run 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+layout()
+\end_layout
+
+\end_inset
+
+, then run 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+mosaicplot()
+\end_layout
+
+\end_inset
+
+.
+ The user may have put in arguments intended for those separate functions.
+ There's a chance of an error, or at least a warning, if irrelevant arguments
+ are passed to those arguments.
+ 
+\end_layout
+
+\begin_layout Standard
+The rockchalk functions 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ has examples that do this work.
+ They separate the dot arguments that are needed for the 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+predict()
+\end_layout
+
+\end_inset
+
+ function and the 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plot()
+\end_layout
+
+\end_inset
+
+ function.
+ Because I was learning about arguments when I wrote those functions, I
+ did not take the cleanest or most direct route to do this, but they do
+ stand as working examples that users can review.
+\end_layout
+
+\begin_layout Standard
+A function may set a number of defaults that we want to use when the users
+ do not supply a lot of details.
+ In a case like that, it is useful to remember a very handy function in
+ R called 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+modifyList()
+\end_layout
+
+\end_inset
+
+.
+ The basic idea is that we can build a list of default arguments for a function,
+ and then we can scan the 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+dots
+\end_layout
+
+\end_inset
+
+ list and it will replace the defaults in the first with changes in the
+ second.
+ There's an example in rockchalk's 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+pctable()
+\end_layout
+
+\end_inset
+
+ function.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+dots <- list(...)
+\end_layout
+
+\begin_layout Plain Layout
+
+dotnames <- names(dots)
+\end_layout
+
+\begin_layout Plain Layout
+
+tableargs <- list(rv, cv, dnn = c(rvlab, cvlab))
+\end_layout
+
+\begin_layout Plain Layout
+
+newargs <- modifyList(tableargs, dots, keep.null = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+t1 <- do.call("table", newargs)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+The dots list, by definition, is named arguments, and it is often handy
+ to have a copy of their names for checking whether an argument is included
+ in the list.
+ In the plotSlopes() function, here's what I ended up with:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+validForPredict <- c("se.fit", "dispersion", "terms", "na.action",
+\end_layout
+
+\begin_layout Plain Layout
+
+                     "level", "pred.var", "weights")
+\end_layout
+
+\begin_layout Plain Layout
+
+dotsForPredict <- dotnames[dotnames %in% validForPredict]
+\end_layout
+
+\begin_layout Plain Layout
+
+if (length(dotsForPredict) > 0) {
+\end_layout
+
+\begin_layout Plain Layout
+
+    parms <- modifyList(parms, dotargs[dotsForPredict])
+\end_layout
+
+\begin_layout Plain Layout
+
+    dotargs[[dotsForPredict]] <- NULL
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+np <- do.call("predictCI", parms)
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\end_inset
+
+This scans dotnames for elements in the list of arguments that are valid
+ for the predict method, and after they are put onto the parms list, then
+ those arguments are set to NULL in the dotargs collection.
+ Looking at that now, I see it would have been more clear to use 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+setdiff()
+\end_layout
+
+\end_inset
+
+ on dotargs to clean that up.
+\end_layout
+
+\begin_layout Standard
+The central challenge in that work is to find out the names of the arguments
+ that are intended for one function, then remove them from 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+dots
+\end_layout
+
+\end_inset
+
+ so that they are not passed to a subsequent function that needs them.
+ How can one know what arguments are needed? This requires some experience,
+ but the first step is to read the interface documentation of the function
+ being considered.
+ A shortcut is to run the function 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+formals()
+\end_layout
+
+\end_inset
+
+, which prints out the names of the function being considered.
+ This can sometimes be deceptive for implementations of generic methods.
+ Observe that the return from the generic is not so informative as the return
+ from the method:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+formals(plot)
+\end_layout
+
+\begin_layout Plain Layout
+
+formals(plot.default)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+If a method is not exported, if it does not show as 
+\begin_inset Quotes eld
+\end_inset
+
+visible
+\begin_inset Quotes erd
+\end_inset
+
+ in the output from 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+methods(plot)
+\end_layout
+
+\end_inset
+
+, then a little more fancy footwork is required to see all of the legal
+ arguments.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+formals(graphics:::plot.histogram)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
 \begin_layout Subsection
 Protect your function's calculations from the user's workspace.
 \end_layout
 
 \begin_layout Standard
-If I'm writing a little project for myself, I might be lazy and allow R's
+In the early days of using R, around 2000, it was possible for a user to
+ obliterate base functions.
+ I recall working on a model about Democratic and Republican voters.
+ I created a variable named 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+rep
+\end_layout
+
+\end_inset
+
+ and, after that, the 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+lm()
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+plot()
+\end_layout
+
+\end_inset
+
+ functions would not work.
+ I wrote to r-help about this and learned that my 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+rep
+\end_layout
+
+\end_inset
+
+ had obliterated the built-in function 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+rep()
+\end_layout
+
+\end_inset
+
+, which is vital in many calculations.
+ Shortly after that, R was improved to protect functions from obliteration
+ in that way.
+ Today I tried to cause mischief by re-defining rep in a number of ways
+ and it appears to me the problem is completely solved.
+\end_layout
+
+\begin_layout Standard
+There has also been a problem that users sometime use the variable names
  
-\begin_inset Quotes eld
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
 \end_inset
 
-lexical scoping
-\begin_inset Quotes erd
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+F
+\end_layout
+
 \end_inset
 
- process to find variables that are not defined inside a function.
+.
+ Recall that R allows 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+ as an abbreviation for 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+TRUE
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+F
+\end_layout
+
+\end_inset
+
+ for 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+FALSE
+\end_layout
+
+\end_inset
+
+.
+ R will allow the user to re-define T and F in ways that will break calculations.
+ However, R will not allow the user to re-define TRUE or FALSE.
+ Observe
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+> TRUE <- 2342 
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in TRUE <- 2342 : invalid (do_set) left-hand side to assignment
+\end_layout
+
+\begin_layout Plain Layout
+
+> FALSE <- function(x,y){x + y}
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in FALSE <- function(x, y) { :
+\end_layout
+
+\begin_layout Plain Layout
+
+  invalid (do_set) left-hand side to assignment
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order to protect our function's calculations, we are urged to fully write
+ out the symbols TRUE and FALSE inside functions.
+ This way, users cannot cause damage.
+ 
+\end_layout
+
+\begin_layout Standard
+Another danger we need to be concerned about is that our functions might
+ have undefined variables in them.
+ When R encounters these undefined variables, the lexical scoping process
+ looks outward for values.
+ It may find something we don't expect.
+ Another danger is that a function seems to work right when we practice
+ it in our session, but another user gets an error because something in
+ our workspace is missing from theirs.
+ The lexical scope can be convenient, but it is also dangerous.
+\end_layout
+
+\begin_layout Standard
+Here the example function relies on variables 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+ that are not passed in as arguments.
 \end_layout
 
 \begin_layout Standard
@@ -3720,7 +4901,7 @@ plotme(x)
 \end_layout
 
 \begin_layout Standard
-I might write code for myself that lets the function go and find 
+That lets the function go and find 
 \begin_inset Flex Code
 status collapsed
 
@@ -3741,19 +4922,9 @@ z
 \end_inset
 
 .
- This will run, but you have to admit it is pretty risky.
+ This will run, but it is pretty risky.
  It depends on R's willingness to reach outside the boundaries of the function
  to find 
-\begin_inset Flex Code
-status collapsed
-
-\begin_layout Plain Layout
-x
-\end_layout
-
-\end_inset
-
-, 
 \begin_inset Flex Code
 status collapsed
 
@@ -3784,16 +4955,30 @@ y
 
 \end_inset
 
-, this will end badly.
+ in the workspace, this will end badly.
 \end_layout
 
 \begin_layout Standard
 If I'm writing a function for somebody else to use, as in a package, I believe
  the function should to NOT rely on variables from the environment.
- In other words, I want to prevent R from filling in the gaps for users.
- The reason is simple.
- Users may alter variables in their environment and the function may behave
- badly as a result.
+ I want to prevent R from filling in the gaps for users.
+ We'd rather give the user an error 
+\begin_inset Quotes eld
+\end_inset
+
+variable not found
+\begin_inset Quotes erd
+\end_inset
+
+ than an erroneous calculation that 
+\begin_inset Quotes eld
+\end_inset
+
+seems
+\begin_inset Quotes erd
+\end_inset
+
+ adequate.
  The best case scenario is that 
 \begin_inset Flex Code
 status collapsed
@@ -3818,7 +5003,6 @@ z
 \end_layout
 
 \begin_layout Standard
-
 \begin_inset ERT
 status open
 
@@ -3880,8 +5064,27 @@ end{Schunk}
 \end_layout
 
 \begin_layout Standard
-The worst case scenario is that the user has some other variables y and
- z sitting about in the workspace.
+The worst case scenario is that the user has some other variables 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+ and z
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+ sitting about in the workspace.
  Those 
 \begin_inset Quotes eld
 \end_inset
@@ -3895,10 +5098,16 @@ found
 \end_layout
 
 \begin_layout Standard
-As a first step toward fixing this, I propose the following idea.
- Every variable put to use inside a function should be named in the list
- of arguments.
- If we define the function as follows,
+As a first step toward fixing this, I propose:
+\end_layout
+
+\begin_layout Quote
+Every piece of input upon which we rely should be named in the list of arguments.
+ 
+\end_layout
+
+\begin_layout Standard
+If we define the function as follows,
 \end_layout
 
 \begin_layout Standard
@@ -3941,7 +5150,6 @@ plotme(x)
 \end_layout
 
 \begin_layout Standard
-
 \begin_inset ERT
 status open
 
@@ -3985,19 +5193,33 @@ end{Schunk}
 
 \end_inset
 
-
-\lang american
 Naming all of the arguments effectively protects the function against the
  accidental importation of data.
- The major challenge is avoiding the user error of accidentally depending
- on a variable that is in the workspace (the global environment).
- I often make this mistake, that's why I'm bringing it to your attention.
  
 \end_layout
 
 \begin_layout Standard
-There's a function called checkUsage() in the codetools package that can
- help check functions for reliance on global variables.
+There's a function called 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+checkUsage()
+\end_layout
+
+\end_inset
+
+ in the 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+codetools
+\end_layout
+
+\end_inset
+
+ package that can help check functions for reliance on global variables.
  First, we'll make sure the workspace is clean by removing 
 \begin_inset Flex Code
 status collapsed
@@ -4032,7 +5254,6 @@ z
 \end_layout
 
 \begin_layout Standard
-
 \begin_inset ERT
 status open
 
@@ -4095,28 +5316,149 @@ end{Schunk}
 \end_layout
 
 \begin_layout Standard
-Note that, if the variables x, y, an z exist in the user workspace, they
- are global and checkUsage will not offer a warning about them.
- Hence, it is very important to run checkUsage() after cleaning up the workspace.
+Note that, if the variables 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+x
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+y
+\end_layout
+
+\end_inset
+
+, an 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+ exist in the user workspace, they are global and 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+checkUsage
+\end_layout
+
+\end_inset
+
+ will not offer a warning about them.
+ Hence, it is very important to run 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+checkUsage()
+\end_layout
+
+\end_inset
+
+ after cleaning up the workspace.
  
 \end_layout
 
 \begin_layout Standard
 checkUsage() will also offer warnings about unused variables.
- This can be helpful in cleaning up a function's variables.
+ This can be helpful in cleaning up a function.
 \end_layout
 
 \begin_layout Subsection
-Protect your function from user errors.
+Check argument values.
 \end_layout
 
 \begin_layout Standard
-Beyond insisting that all variables that depend on input from the workspace
- must be explicitly named, we might be interested to know if the user supplied
- reasonable arguments.
- Suppose our plotme function can work well if the user supplies x and y,
- and we will manufacture z for them if it is not supplied.
- I've used this approach in the past.
+We want users to provide input arguments for all information that the calculatio
+ns will rely upon.
+ The next step is to check their inputs to make sure they are reasonable.
+ 
+\end_layout
+
+\begin_layout Standard
+In some cases this is very easy.
+ If we want the user to supply a data.frame, we can stop when the user provides
+ something else.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme <- function(x, y, data, ...){
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(missing(data) | !is.data.frame(data)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+        stop(paste0("plotme: the object you supplied as data: '", 
+\end_layout
+
+\begin_layout Plain Layout
+
+        deparse(substitute(data)) , "' is not a data.frame"))
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(as.formula(paste(y,  "~",  x)), data = data, ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+myx <- rnorm(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+myy <- rnorm(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(myx, myy)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This works properly
 \end_layout
 
 \begin_layout Standard
@@ -4126,6 +5468,114 @@ status open
 \begin_layout Plain Layout
 
 <<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme("myx", "myy", data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, if the user supplies something else where data ought to be, an
+ error is returned.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme("myx", "myy", rnorm(10))
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Sinput}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{Soutput}
+\end_layout
+
+\begin_layout Plain Layout
+
+Error in plotme("myx", "myy", rnorm(10)) :
+\end_layout
+
+\begin_layout Plain Layout
+
+  plotme: the object you supplied as data: 'rnorm(10)' is not a data.frame
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{Soutput}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The main point here is that if we definitely know what we expect the user
+ to supply, then we can add a filter that checks the input's type.
+ That's what is.character, is.vector, is.integer, and so forth are intended
+ for.
+ (In an R session, type 
+\begin_inset Quotes eld
+\end_inset
+
+is
+\begin_inset Quotes erd
+\end_inset
+
+ and then hit the TAB key a couple of times.
+ You'll see all the completions.
+\end_layout
+
+\begin_layout Standard
+The problem is not so easy to manage when we can't be sure what the argument
+ type must be.
+ Sometimes, it appears the best we can do is pass through what the users
+ give us and hope R can make sense out of it.
+ I've wrestled with R's flexibility for the naming of colors.
+ Suppose our plotme() function displays x and y, and we allow the user to
+ specify colors for the points.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -4135,17 +5585,22 @@ plotme <- function(x, y, z){
 
 \begin_layout Plain Layout
 
-    if (missing(z)) z <- rep(2, length(x))   
-\end_layout
-
-\begin_layout Plain Layout
-
     plot(x, y, col = z)
 \end_layout
 
 \begin_layout Plain Layout
 
 }
+\end_layout
+
+\begin_layout Plain Layout
+
+myx <- rnorm(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+myy <- rnorm(10)
 \end_layout
 
 \begin_layout Plain Layout
@@ -4159,8 +5614,9 @@ plotme <- function(x, y, z){
 \end_layout
 
 \begin_layout Standard
-Note it would have the same effect to supply that value of z as a default,
- as in
+R colors can be supplied in many formats, as integers, character strings,
+ or more elaborate HTML-style color designators.
+ Any of these will work.
 \end_layout
 
 \begin_layout Standard
@@ -4174,17 +5630,12 @@ status open
 
 \begin_layout Plain Layout
 
-plotme <- function(x, y, z = rep(2, length(x))){
+mycol <- 1:10
 \end_layout
 
 \begin_layout Plain Layout
 
-    plot(x, y, col = z)
-\end_layout
-
-\begin_layout Plain Layout
-
-}
+plotme(myx, myy, z = mycol)
 \end_layout
 
 \begin_layout Plain Layout
@@ -4198,15 +5649,99 @@ plotme <- function(x, y, z = rep(2, length(x))){
 \end_layout
 
 \begin_layout Standard
-Some people prefer this more elaborate declaration.
- This succeeds because the variables that are declared in the beginning
- of the list are available for calculations in the later part of the list.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycol <- rainbow(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme(myx, myy, z = mycol)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-That will often be sufficient, but we have not protected ourselves as well
- as we might.
- Suppose the user's code ends up supplying a NULL value for 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycol <- gray.colors(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme(myx, myy, z = mycol)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+R does not throw an error if the user runs this, but the result is not what
+ we wanted, probably.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+mycol <- rnorm(10)
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme(myx, myy, z = mycol)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Suppose the user's code ends up supplying a NULL value for 
 \begin_inset Flex Code
 status collapsed
 
@@ -4307,9 +5842,15 @@ z
 .
 \end_layout
 
+\begin_layout Subsection
+Design the function so that it runs with a minimum number of arguments.
+\end_layout
+
 \begin_layout Standard
-Sometimes even more elaborate argument checking will be required.
- We can explicitly check if z is not of the correct type (integer) or length.
+Take a look at the most commonly used functions in R, such as lm() or plot.defaul
+t().
+ These functions allow a great many arguments, but they will deliver what
+ the users minimally need if the they run
 \end_layout
 
 \begin_layout Standard
@@ -4323,32 +5864,52 @@ status open
 
 \begin_layout Plain Layout
 
-plotme <- function(x, y, z){
+m1 <- lm(y ~ x, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-    if (missing(z) | is.null(z)) {
+plot(y ~ x, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-        z <- rep(2, length(x))
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Put the arguments that users will use most often at the front of the argument
+ list, and then design the function so that it will work even if all of
+ the other arguments are not included.
+ There are two elements in making this work.
+\end_layout
+
+\begin_layout Subsubsection
+Specify defaults
+\end_layout
+
+\begin_layout Standard
+A graph can use any color scheme, but we might put in something colorful
+ for users who like a little zest in life.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F>>=
 \end_layout
 
 \begin_layout Plain Layout
 
-    } else {
-\end_layout
-
-\begin_layout Plain Layout
-
-        if (!is.integer(z) | length(z) != length(x)) stop("z is inappropriate")
-\end_layout
-
-\begin_layout Plain Layout
-
-	}
+plotme <- function(x, y, z = rainbow(length(x))){     
 \end_layout
 
 \begin_layout Plain Layout
@@ -4363,115 +5924,7 @@ plotme <- function(x, y, z){
 
 \begin_layout Plain Layout
 
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-After that, an incorrect argument, such as z = 
-\begin_inset Quotes eld
-\end_inset
-
-fred
-\begin_inset Quotes erd
-\end_inset
-
- or z = c(1, 2, 2), will result in an error (which is what we want).
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Sinput}
-\end_layout
-
-\begin_layout Plain Layout
-
-> plotme(x, y, z = "fred")
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Sinput}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Soutput}
-\end_layout
-
-\begin_layout Plain Layout
-
-Error in plotme(x, y, z = c(1, 2, 2)) : z is inappropriate
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Soutput}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-If possible, design your function so that it runs with a minimum number
- of arguments.
-\end_layout
-
-\begin_layout Standard
-Take a look at the most commonly used functions in R, such as lm() or plot.defaul
-t().
- These functions allow a great many arguments, but they will deliver what
- the users minimally need if the users supply a formula and a data frame.
-\end_layout
-
-\begin_layout Standard
-I have made many mistakes in designing function in rockchalk.
- From one month to the next, I would learn ways to simplify arguments or
- eliminate them entirely.
-\end_layout
-
-\begin_layout Standard
-I did not initially understand the flexibility that R allows in the types
- of arguments passed to a function.
- Because we can deduce information from the arguments that are passed in,
- we can eliminate the need for the user to pass in other arguments.
- We would never need to require both arguments x and xlab in the plot function,
- for example.
- xlab is optional because, In particular, I insisted that users supply quoted
- strings as variable names for the arguments plotx and modx.
- I insisted on this syntax, as illustrated in the example for plotSlopes:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<include=F>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-library(rockchalk)
+plotme(x = rnorm(100), y = rnorm(100))
 \end_layout
 
 \begin_layout Plain Layout
@@ -4482,6 +5935,12 @@ library(rockchalk)
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+We could as well have put the rainbow call inside the function if we want
+ to keep a cleaner function declaration.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -4495,86 +5954,17 @@ status open
 
 \begin_layout Plain Layout
 
-m7 <- lm(statusquo ~ region * income, data= Chile)
+plotme <- function(x, y, z){     
 \end_layout
 
 \begin_layout Plain Layout
 
-plotSlopes(m7, plotx = "income", modx = "region", interval = "conf")
+  if(missing(z)) mycol <- rainbow(length(x))
 \end_layout
 
 \begin_layout Plain Layout
 
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Today, the following syntax works just as well
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<eval=F>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-m7 <- lm(statusquo ~ region * income, data= Chile)
-\end_layout
-
-\begin_layout Plain Layout
-
-plotSlopes(m7, plotx = income, modx = region, interval = "conf")
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-It is no longer necessary to quote the income and region variable because
- the function checks the argument and, if necessary, it manufactures the
- string for the user.
- This is what I have in the beginning of plotSlopes.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<eval=F>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-plotx <- as.character(substitute(plotx))[1L]
-\end_layout
-
-\begin_layout Plain Layout
-
-if (!missing(modx)) {
-\end_layout
-
-\begin_layout Plain Layout
-
-    modx <- as.character(substitute(modx))[1L]
+  plot(x, y, col = mycol)
 \end_layout
 
 \begin_layout Plain Layout
@@ -4584,6 +5974,11 @@ if (!missing(modx)) {
 
 \begin_layout Plain Layout
 
+plotme(x = rnorm(100), y = rnorm(100))
+\end_layout
+
+\begin_layout Plain Layout
+
 @
 \end_layout
 
@@ -4593,97 +5988,14 @@ if (!missing(modx)) {
 \end_layout
 
 \begin_layout Standard
-If plotx and modx are already character strings, then this has no effect.
- If they are symbols, however, this turns them into character strings.
+It seems to me that the R source itself tends to have more elaborate specificati
+ons of defaults within the declaration, rather than inside the function.
 \end_layout
 
 \begin_layout Standard
-In the olden days,when I first started using R, it was necessary to explicitly
- quite many arguments that we do not quite anymore.
- Today, for example, both library(
-\begin_inset Quotes eld
-\end_inset
-
-rockchalk
-\begin_inset Quotes erd
-\end_inset
-
-) and library(rockchalk) will work.
- The latter did not work in the beginning, however.
- If you go looking at old R code, from 1999 or 2000, you will find many
- more variables are quoted.
- 
-\end_layout
-
-\begin_layout Standard
-This idiom is widely used in the R source code to eliminate the user tedium
- of typing quotation marks.
- Note that today, these commands have the same effect:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Sinput}
-\end_layout
-
-\begin_layout Plain Layout
-
-methods(plot)
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Sinput}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-or this
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{Sinput}
-\end_layout
-
-\begin_layout Plain Layout
-
-methods(plot)
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-end{Sinput}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Why does the latter work, when at one time the former was need? Check the
- source code of the methods() function
+In the R source code, I noticed a peculiar-looking example in which an argument'
+s default depends on a function that is within the function itself.
+ Observe that this runs fine:
 \end_layout
 
 \begin_layout Standard
@@ -4697,8 +6009,42 @@ status open
 
 \begin_layout Plain Layout
 
-if (!is.character(generic.function)) generic.function <- deparse(substitute(generic.
-function))
+plotme <- function(x, y, z = getAColor(length(x)))
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+    getAColor <- function(n){
+\end_layout
+
+\begin_layout Plain Layout
+
+             gray.colors(n)
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(x, y, col = z, cex = 5)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+plotme(rnorm(20), rnorm(20))
 \end_layout
 
 \begin_layout Plain Layout
@@ -4708,13 +6054,144 @@ function))
 
 \end_inset
 
-This trick is put to use in the plot.default() function in R, where the user
- can supply an argument xlab or ylab if desired, but the plot.default will
- create those values if they are not supplied.
+
+\end_layout
+
+\begin_layout Standard
+That was startling to me because the nested function, 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+getAColor
+\end_layout
+
+\end_inset
+
+, does not exist outside the function, and yet it can be used in the definition
+ of a default.
+ I merely promise that 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+getAColor
+\end_layout
+
+\end_inset
+
+ will exist when the value of 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+z
+\end_layout
+
+\end_inset
+
+ is needed and all is well.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Extract or construct what else is needed from the user input
+\end_layout
+
+\begin_layout Standard
+We can deduce information from the arguments that are passed in, we can
+ eliminate the need for the user to pass in other arguments.
+ We would never need to require both arguments x and xlab in the plot function,
+ for example.
+ xlab is optional because, if the user does not supply it, then deparse(substitu
+te()) can find something to use as a label.
+ The 2010 version of plotSlopes in rockchalk required the user to pass through
+ many parameters that (I've since learned) can be deduced from the other
+ arguments.
+\end_layout
+
+\begin_layout Standard
+A key element in this is getting an understanding of the information that
+ comes in with a standard R object.
+ Quite a few--almost all--functions that generate interesting objects in
+ R provide, as a part of their output, a copy of the call that ran the function.
+ Inside our functions, we can inspect that call argument to see what the
+ users ran, and from that we can often deduce what we need without requiring
+ users to supply a lot of information.
+ 
+\end_layout
+
+\begin_layout Subsection
+Return values versus attributes
+\end_layout
+
+\begin_layout Standard
+If you review the R regression functions, like lm() or glm(), you notice
+ that they build a list of things and pass it back to the user.
+ That is the most obvious way to return information.
+\end_layout
+
+\begin_layout Standard
+There is another way, however, which is a little interesting.
+ One can mark an attribute on a return object.
+ The R usage of attributes comes to mind at this point because, when we
+ are scanning for inputs, we may need to inspect not only their values,
+ but also their attributes.
+ The most commonly inspected attribute, of course, is the class of the argument.
+ So, if we are writing a package and we need to make sure that the objects
+ being passed around among functions are correct for the purpose, then the
+ object attributes are a very useful tool.
+\end_layout
+
+\begin_layout Standard
+I don't want to write a lot about this so as to display my ignorance, but
+ I would point user to 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+pctable()
+\end_layout
+
+\end_inset
+
+ as an example of a rockchalk function that uses both a return list and
+ attributes to get the job done.
+ Maybe I'll fill in this example at a later time, once I figure out the
+ most direct way to explain it.
+\end_layout
+
+\begin_layout Standard
+The only problem I find with attributes is that the printing functions for
+ R objects generally 
+\begin_inset Quotes eld
+\end_inset
+
+splat out
+\begin_inset Quotes erd
+\end_inset
+
+ the attributes when we don't want them.
+ If one puts attributes on an object, then the default printer will show
+ them.
+ I've not learned all of the ins-and-outs of preventing that, but in 2015
+ I became aware of it and learned that one way to deal with it can be found
+ in the R source code for the method 
+\begin_inset Flex Code
+status collapsed
+
+\begin_layout Plain Layout
+print.table()
+\end_layout
+
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Section
-Do This, Not That (Stub)
+Do This, Not That (Stub) 
 \end_layout
 
 \begin_layout Standard

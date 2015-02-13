@@ -2,6 +2,24 @@ rockchalk package NEWS -- history of user-visible changes.
 
 Copyright (C) 2013 Paul E. Johnson.
 
+* version 1.8.91 2015-01-29
+
+** outreg enhancements suggested by Irving Llamosas-Rosas, allow users
+   pass in standard errors and p-values.  Argments Blist, SElist, etc.
+
+** plotSlopes and plotCurves
+   allow level argument to pass on to predict methods. Suggested by
+   Tom Wenseleers.
+
+** New function: pctable for percentage tables.
+
+** Learned how to document several functions in same file, reducing
+   clutter in man directory.
+
+** Re-organize package dependencies, shift some from required to
+   import, when only examples need those packages
+
+
 * version 1.8.1 2013-09-22
 
 This is a minor bugfix update. 

@@ -695,12 +695,12 @@ predictCI <-
         if (is.list(predtry)) {
             if (is.vector(predtry$fit)) {
                 cat(paste("rockchalk:::predCI: model's predict",
-                          "method does not return an interval.",
+                          "method does not return an interval.\n",
                           "We will improvize with a Wald type approximation",
                           "to the confidence interval \n"))
             } else if (is.null(dimnames(predtry[["fit"]]))) {
                 warning(paste("rockchalk:::predCI. The object's predict method",
-                              "did not return a $fit component that has dimnames,",
+                              "did not return a $fit component that has dimnames,\n",
                               "so I'll ignore that output and improvize.\n"))
             } else {
                 if (all(dimnames(predtry[["fit"]])[[2]] == c("fit", "lwr", "upr")))

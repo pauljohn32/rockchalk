@@ -204,6 +204,7 @@ cutBySD <-
 ##' @param ... Other arguments that will be passed to the
 ##' user-specified xvals function.
 ##' @return A vector.
+##' @rdname getFocal
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##'
@@ -217,11 +218,14 @@ NULL
 
 ##' Select focal values from a numeric variable
 ##'
-##' getFocal.default
+##' Many plotting functions need to select "focal" values from
+##' a variable. There is a family of functions that are used
+##' to do that.  User requests can be accepted in a number
+##' of ways. Numeric and character variables will be treated
+##' differently. Please see details.
 ##'
-##' @param x Required. A variable
-##' @param xvals If \code{xvals} is not provided, a default divider
-##' algorithm will be selected ("quantile"). The divider algorithms
+##' If \code{xvals} is not provided, a default divider for numeric
+##' variables will be the algorithm "quantile". The divider algorithms
 ##' provided with rockchalk are c("quantile", "std.dev.", "table",
 ##' "seq").  \code{xvals} can also be the name of a user-supplied
 ##' function, such as R's \code{pretty()}. If the user supplies a
@@ -229,14 +233,28 @@ NULL
 ##' sure all elements are within a slightly expanded range of
 ##' \code{x}. If a value out of range is requested, a warning is
 ##' issued. Maybe that should be an outright error?
+##' 
+##' With factor variables, \code{xvals} is generally not used because
+##' the only implemented divider algorithm is "table" (see
+##' \code{cutByTable}), which selects the \code{n} most frequently
+##' observed values. That is the default algorithm. It is legal to
+##' specify xvals = "table", but there is no point in doing
+##' that. However, xvals may take two other formats. It may be a
+##' user-specified function that can select levels values from
+##' \code{x} or it may be a vector of labels (or, names of
+##' levels). The purpose of the latter is to check that the requested
+##' levels are actually present in the supplied data vector
+##' \code{x}. If the levels specified are not in the observed
+##' variable, then this function stops with an error message.
+##'
+##' @param xvals A function name (either "quantile", "std.dev.",
+##' "table", or "seq") or a user-supplied function that can receive
+##' x and return a selection of values.
 ##' @param n Number of values to be selected.
-##' @param ... Other arguments that will be passed to the
-##' user-specified xvals function.
 ##' @return A named vector of values.
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method getFocal default
-##' @export 
+##' @rdname getFocal
 ##' @examples
 ##' x <- rnorm(100)
 ##' getFocal(x)
@@ -281,32 +299,10 @@ getFocal.default <- function(x, xvals = NULL, n = 3, ...)
 }
 NULL
 
-##' Select focal values from factor variables.
-##'
-##' This is used by predictOMatic and plotSlopes to choose
-##' values of a categorical moderator variable.
-##'
-##' @param x Required. A factor variable
-##' @param n Number of values to be selected.
-##' @param xvals Optional. With factor variables, this argument is
-##' generally not used because the only implemented divider algorithm
-##' is "table" (see \code{cutByTable}), which selects the \code{n}
-##' most frequently observed values. That is the default algorithm. It
-##' is legal to specify xvals = "table", but there is no point in
-##' doing that. However, xvals may take two other formats. It may be a
-##' user-specified function that can to select levels values from
-##' \code{x} or it may be a vector of labels (or, names of
-##' levels). The purpose of the latter is to check that the requested
-##' levels are actually present in the supplied data vector
-##' \code{x}. If the levels specified are not in the observed
-##' variable, then this function stops with an error message.
-##' @param ... Additional arguments passed to user-specified function
-##' in \code{xvals}.
-##' @return A named vector of level names (labels).
+
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @method getFocal factor
-##' @export
+##' @rdname getFocal
 ##' @examples
 ##' x <- factor(c("A","B","A","B","C","D","D","D"))
 ##' getFocal(x)

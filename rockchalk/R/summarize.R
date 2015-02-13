@@ -55,55 +55,6 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
 }
 NULL
 
-##' Tabulates observed values and calculates entropy
-##'
-##' This adapts code from R base summary.factor. It adds
-##' the calculation of entropy as a measure of diversity.
-##'
-##' @param y a factor (non-numeric variable)
-##' @param maxLevels The maximum number of levels that will
-##' be presented in the tabulation.
-##' @param sumstat If TRUE (default), entropy (diversity) estimate and
-##' the number of NAs will be returned.
-##' @return a vector of named elements including the summary
-##' table as well as entropy and normed entropy.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
-summary.factor <-
-    function(y, maxLevels = 5, sumstat = TRUE)
-{
-    ## 5 nested functions to be used later
-
-    divr <- function(p = 0) {
-        ifelse(p > 0 & p < 1, -p * log2(p), 0)
-    }
-    entropy <- function(p) {
-        sum(divr(p))
-    }
-    maximumEntropy <- function(N) -log2(1/N)
-    normedEntropy <- function(x) {
-		xent <- entropy(x)
-	    if(xent == 0) return(0)
-		xent/maximumEntropy(length(x))
-	}
-    nas <- is.na(y)
-    y <- factor(y)
-    ll <- levels(y)
-    tbl <- table(y)
-    tt <- c(tbl)
-    names(tt) <- dimnames(tbl)[[1L]]
-    o <- sort.list(tt, decreasing = TRUE)
-    if (length(ll) > maxLevels) {
-        toExclude <- maxLevels:length(ll)
-        tt <- c(tt[o[-toExclude]], `(All Others)` = sum(tt[o[toExclude]]),
-            `NA's` = sum(nas))
-    } else {
-        tt <- c(tt[o], `NA's` = sum(nas))
-    }
-    if (!sumstat) return(tt)
-    props <- prop.table(tbl)
-    tt <- c(tt, entropy = entropy(props), normedEntropy = normedEntropy(props), N= length(y))
-}
-NULL
 
 ##' Extracts non-numeric variables, calculates summary information,
 ##' including entropy as a diversity indicator.
@@ -169,7 +120,8 @@ NULL
 ##' Theoretic Measure of Robot Group Diversity. Auton. Robots, 8(3),
 ##' 209-238.
 ##'
-##' Shannon, Claude. E. (1949). The Mathematical Theory of Communication. Urbana: University of Illinois Press.
+##' Shannon, Claude. E. (1949). The Mathematical Theory of
+##' Communication. Urbana: University of Illinois Press.
 ##' @examples
 ##' set.seed(21234)
 ##' x <- runif(1000)
@@ -310,5 +262,57 @@ summarize <-
 
     value <- list(numerics = datn, factors = datf)
     value
+}
+NULL
+
+
+
+##' Tabulates observed values and calculates entropy
+##'
+##' This adapts code from R base summary.factor. It adds
+##' the calculation of entropy as a measure of diversity.
+##'
+##' @param y a factor (non-numeric variable)
+##' @param maxLevels The maximum number of levels that will
+##' be presented in the tabulation.
+##' @param sumstat If TRUE (default), entropy (diversity) estimate and
+##' the number of NAs will be returned.
+##' @return a vector of named elements including the summary
+##' table as well as entropy and normed entropy.
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
+summary.factor <-
+    function(y, maxLevels = 5, sumstat = TRUE)
+{
+    ## 5 nested functions to be used later
+
+    divr <- function(p = 0) {
+        ifelse(p > 0 & p < 1, -p * log2(p), 0)
+    }
+    entropy <- function(p) {
+        sum(divr(p))
+    }
+    maximumEntropy <- function(N) -log2(1/N)
+    normedEntropy <- function(x) {
+		xent <- entropy(x)
+	    if(xent == 0) return(0)
+		xent/maximumEntropy(length(x))
+	}
+    nas <- is.na(y)
+    y <- factor(y)
+    ll <- levels(y)
+    tbl <- table(y)
+    tt <- c(tbl)
+    names(tt) <- dimnames(tbl)[[1L]]
+    o <- sort.list(tt, decreasing = TRUE)
+    if (length(ll) > maxLevels) {
+        toExclude <- maxLevels:length(ll)
+        tt <- c(tt[o[-toExclude]], `(All Others)` = sum(tt[o[toExclude]]),
+            `NA's` = sum(nas))
+    } else {
+        tt <- c(tt[o], `NA's` = sum(nas))
+    }
+    if (!sumstat) return(tt)
+    props <- prop.table(tbl)
+    tt <- c(tt, entropy = entropy(props), normedEntropy = normedEntropy(props), N= length(y))
 }
 NULL

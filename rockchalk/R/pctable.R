@@ -24,6 +24,19 @@
 ##' but it also creates an object (\code{tab}). That object
 ##' can be displayed in a number of ways.
 ##'
+##' A summary method is provided, so one could look at different
+##' representations of the same table.
+##'
+##' \code{summary(tab, rowpct = TRUE, colpct = FALSE)}
+##'
+##' or
+##'
+##' \code{summary(tab, rowpct = TRUE, colpct = TRUE)}
+##'
+##' Tables that include only row or column percentages will be
+##' compatible with the html and latex exporters in the
+##' excellent \code{tables} package.
+##' 
 ##' @details
 ##' Please bear in mind the following. The output object is a
 ##' list of tables of partial information, which are then assembled in
@@ -52,6 +65,8 @@ NULL
 ##' cvlab arguments provided by some methods). Some methods will
 ##' also pass along these arguments to model.frame, "subset" 
 ##' "xlev", "na.action", "drop.unused.levels".
+##' @seealso \code{\link[tables]{tabular}} and the CrossTable function
+##' in \code{gmodels} package.
 ##' @rdname pctable
 ##' @export
 ##' @return A list with tables (count, column percent, row percent) as
@@ -150,16 +165,20 @@ pctable.formula <- function(formula, data = NULL,  rvlab = NULL,
 {
     if (missing(formula) || (length(formula) != 3L))
         stop("pctable requires a two sided formula")
+    dots <- list(...)
+    dotnames <- names(dots)
+    
     mt <- terms(formula, data = data)
     if (attr(mt, "response") == 0L) stop("response variable is required")
     mf <- match.call(expand.dots = TRUE)
     mfnames <- c("formula", "data", "subset", "xlev", "na.action", "drop.unused.levels")
     keepers <- match(mfnames, names(mf), 0L)
     mf <- mf[c(1L, keepers)]
+    
     ## mf$drop.unused.levels <- FALSE
-   
+    if (!"na.action" %in% dotnames) mf$na.action <- na.pass
     mf[[1L]] <- quote(stats::model.frame)
-    dots <- list(...)
+
     ## remove used arguments from dots, otherwise errors happen
     ## when unexpected arguments pass through. Don't know why
     for (i in c("subset", "xlev", "na.action", "drop.unused.levels")) dots[[i]] <- NULL
@@ -201,7 +220,7 @@ NULL
 ##' a quoted string if the user intends the method pctable.character
 ##' to be dispatched. The column variable cv may be a string or just a
 ##' variable name (which this method will coerce to a string).
-##'
+##' @import tables
 ##' @examples
 ##' dat <- data.frame(x1 = gl(4, 25, labels = c("Good", "Bad", "Ugly", "Indiff")),
 ##'                 x2 = gl(5, 20, labels = c("Denver", "Cincy", "Baltimore", "NY", "LA")), 
@@ -213,6 +232,9 @@ NULL
 ##'     subset = dat$x1 %in% c("Good", "Bad"))
 ##' pctable("y", "x1", dat)
 ##' pctable("y", x1, dat)
+##' tab <- pctable(y ~ x2, data = dat, rvlab = "A Giant Variable")
+##' summary(tab, rowpct = TRUE, colpct = FALSE)
+##' tabsum <- summary(tab)
 ##' ## if user has tables package, can push out to latex or html
 ##' if (require(tables)){
 ##'     tabsumtab <- as.tabular(tabsum)
@@ -221,7 +243,7 @@ NULL
 ##'             fileext = ".html")
 ##'     html(tabsumtab, file = fn)
 ##'     print(paste("The file saved was named", fn, "go get it."))
-##'     browseURL(fn)
+##'     if (interactive()) browseURL(fn)
 ##'     ## go get the fn file if you want to import it in document
 ##'     ## Now LaTeX output
 ##'     ## have to escape the percent signs
@@ -261,8 +283,9 @@ NULL
 ##' @param colpct Default TRUE: should column percents be included
 ##' @param rowpct Default FALSE: should row percents be included
 ##' @param ... Other arguments, currently unused
-##' @return An object of class pctable.summary
+##' @return An object of class summary.pctable
 ##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @method summary pctable
 ##' @export
 summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
 {
@@ -274,7 +297,7 @@ summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
     t3 <- count
     attr(t3, which = "colpct") <- colpct
     attr(t3, which = "rowpct") <- rowpct
-    class(t3) <- c("pctable.summary", "table")
+    class(t3) <- c("summary.pctable", "table")
     if (colpct && !rowpct) {
         cpct <- object[["colpct"]]
         for(j in rownames(cpct)){
@@ -312,16 +335,17 @@ summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
         names(dimnames(t4)) <- names(dimnames(count))
         attr(t4, which = "colpct") <- colpct
         attr(t4, which = "rowpct") <- rowpct
-        class(t4) <- c("pctable.summary", "table")
+        class(t4) <- c("summary.pctable", "table")
         return(t4)
     }
 }
 
-##' print method for pctable.summary objects 
+##' print method for summary.pctable objects 
 ##'
 ##' prints pctab objects. Needed only to deal properly with quotes
 ##' 
-##' @param x a pctable.summary object
+##' @param x a summary.pctable object
+##' @param ... Other arguments to print method
 ##' @return Nothing is returned
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @method print summary.pctable
@@ -339,6 +363,11 @@ print.summary.pctable <- function(x, ...){
         cat("column %\n")
     }
     NextMethod(generic = "print", object = x, quote = FALSE, ...)
+    ## Error in NextMethod(generic = "print", object = x, quote = FALSE, ...) :
+    ## no calling generic was found: was a method called directly?
+    ## Calls: pctable ... print.pctable -> print.summary.pctable -> NextMethod
+    ## Execution halted
+    ## print.table(x, quote = FALSE, ...)
 }
 
 
@@ -349,17 +378,20 @@ print.summary.pctable <- function(x, ...){
 ##' column and row percentages. The arguments colpct and rowpct
 ##' are used to ask for the two types.
 ##' 
-##' @param tab A pctable object
+##' @param x A pctable object
 ##' @param colpct Default TRUE: include column percentages?
 ##' @param rowpct Default FALSE: include row percentages?
+##' @param ... Other arguments passed through to print method
 ##' @return A table object for the final printed table.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @method print pctable
 ##' @export
-print.pctable <- function(x, colpct = TRUE, rowpct = FALSE, ...){
+print.pctable <- function(x, colpct = TRUE, rowpct = FALSE, ...)
+{
     colpct <- if (missing(colpct)) x$call[["colpct"]] else colpct 
     rowpct <- if (missing(rowpct)) x$call[["rowpct"]] else rowpct
     tab <- summary(x, colpct = colpct, rowpct = rowpct)
-    print.summary.pctable(tab)
+    print(tab, ...)
     invisible(tab)
 }
 NULL

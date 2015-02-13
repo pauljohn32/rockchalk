@@ -1,3 +1,26 @@
+2015-02-05  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/pctable.R (pctable.formula): wrestling with model.frame
+	exclusion of missing cases. Processing dots tricky here
+
+2015-01-28  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/plotSlopes.R (plotFancy): try to silence warnings from plot
+	"level not valid argument" by weeding out dotargs
+
+2015-01-23  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/utils.R (getFocal.factor): Revise getFocal methods so they
+	all go into one documentation file
+
+	* ../R/mcGraph.R (mcGraph1): revised so all 3 functions go into
+	same documentation file (rdname = mcGraph)
+
+2015-01-22  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/pctable.R (summary.pctable): pctable reworked
+	with summary and print.summary methods
+
 2015-01-15  Paul Johnson  <pauljohn@dellap14>
 
 	* ../R/plotCurves.R: level argument passed through as in

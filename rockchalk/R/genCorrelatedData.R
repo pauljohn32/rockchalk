@@ -622,8 +622,6 @@ NULL
 ##'    of positive-definiteness in \code{Sigma}
 ##' @param empirical logical. If true, mu and Sigma specify the empirical
 ##'    not population mean and covariance matrix.
-##' @param EISPACK logical. Set to true to reproduce results from MASS
-##'    versions prior to 3.1-21.
 ##' @export
 ##' @return If \code{n = 1} a vector of the same length as \code{mu}, otherwise an
 ##'  \code{n} by \code{length(mu)} matrix with one sample in each row.
@@ -680,12 +678,11 @@ NULL
 ##' Y1
 ##'
 mvrnorm <-
-    function(n = 1, mu, Sigma, tol=1e-6, empirical = FALSE, EISPACK = FALSE)
+    function(n = 1, mu, Sigma, tol=1e-6, empirical = FALSE)
 {
     p <- length(mu)
     if(!all(dim(Sigma) == c(p,p))) stop("incompatible arguments")
-    if (missing(EISPACK)) EISPACK <- getOption("mvnorm_use_EISPACK", FALSE)
-    eS <- eigen(Sigma, symmetric = TRUE, EISPACK = EISPACK)
+    eS <- eigen(Sigma, symmetric = TRUE)
     ev <- eS$values
     if(!all(ev >= -tol*abs(ev[1L]))) stop("'Sigma' is not positive definite")
     X <- matrix(rnorm(p * n), n, byrow = TRUE)

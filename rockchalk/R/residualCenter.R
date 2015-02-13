@@ -71,7 +71,6 @@ residualCenter.default <- function (model)
         }
     }
 
-
     modelt <- terms(model)
     frmla <- paste(colnames(dat), collapse = " + ")
     frmlanew <- as.formula(paste( modelt[[2L]], "~" , frmla))

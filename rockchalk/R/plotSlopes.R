@@ -80,16 +80,18 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' lines are desired. May be a vector of values or the name of an
 ##' algorithm, "quantile", "std.dev.", or "table".
 ##' @param interval Optional. Intervals provided by the
-##' \code{predict.lm} may be supplied, either "confidence" (95% confidence
-##' interval for the estimated conditional mean) or "prediction" (95%
-##' interval for observed values of y given the rest of the model).
+##' \code{predict.lm} may be supplied, either "confidence" (confidence
+##' interval for the estimated conditional mean) or "prediction"
+##' (interval for observed values of y given the rest of the model).
+##' The level can be specified as an argument (which goes into ...
+##' and then to the predict method)
 ##' @param plotPoints Optional. TRUE or FALSE: Should the plot include
 ##' the scatterplot points along with the lines.
 ##' @param plotLegend Optional. TRUE or FALSE: Include a default
-##' @param legendTitle Optional. You'll get an automatically generated title, such as "Moderator: modx",
-##' but if you don't like that, specify your own string here.
-##' legend. Set to FALSE if user wants to customize a legend after the
-##' plot has been drawn.
+##' @param legendTitle Optional. You'll get an automatically generated
+##' title, such as "Moderator: modx", but if you don't like that,
+##' specify your own string here.  legend. Set to FALSE if user wants
+##' to customize a legend after the plot has been drawn.
 ##' @param col Optional. A color vector for predicted value lines (and
 ##' intervals if requested). If not specified, the R's builtin palette()
 ##' will be used. User may supply a vector of valid color names,
@@ -272,8 +274,12 @@ plotFancy <-
     ylab <- "Dependent Variable"
     if (!is.null(dotargs[["ylab"]])) ylab <- dotargs[["ylab"]]
     ## Also need level
-    level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
-    
+    if (!is.null(dotargs[["level"]])) {
+        level <- dotargs[["level"]]
+        dotargs[["level"]] <- NULL
+    } else {
+        level <- 0.95
+    }
     modxVar <- olddf$modxVar
     plotxVar <- olddf$plotxVar
     depVar <- olddf$depVar

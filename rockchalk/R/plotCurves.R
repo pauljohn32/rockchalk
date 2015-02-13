@@ -175,10 +175,13 @@ plotCurves <-
 
     if ((!is.null(parms[["se.fit"]])) && (parms[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
 
-    plotyRange <- if (is.logical(depVar) || (is.factor(depVar) && length(levels(depVar)) == 2)) {
-        c(0, 1.2)
+    if ("ylim" %in% dotargs) {
+        plotyRange <- dotargs$ylim
+        dotargs$ylim <- NULL
+    } else if (is.logical(depVar) || (is.factor(depVar) && length(levels(depVar)) == 2)) {
+        plotyRange <- c(0, 1.2)
     } else if (is.numeric(depVar)) {
-        magRange(depVar, mult = c(1, 1.2))
+        plotyRange <- magRange(depVar, mult = c(1, 1.2))
     } else {
         stop("plotCurves: The dependent variable is neither numeric nor logical. I don't know what you want me to do. Please be patient, I'll figure it out")
     }
