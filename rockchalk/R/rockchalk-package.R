@@ -1,11 +1,8 @@
-##' Miscellaneous regression functions
+##' rockchalk: regression functions
 ##'
 ##'
-##' \tabular{ll}{ Package: \tab rockchalk\cr Type: \tab Package\cr
-##' Version: \tab 1.4\cr Date: \tab 2012-01-10\cr License: \tab GPL >=
-##' 3\cr LazyLoad: \tab yes\cr } The rockchalk package includes an
-##' ever-growing collection of functions that assist in the
-##' presentation of regression models.  The initial function was
+##' Includes an ever-growing collection of functions that assist in
+##' the presentation of regression models.  The initial function was
 ##' \code{\link{outreg}}, which produces LaTeX tables that summarize
 ##' one or many fitted regression models.  It also offers plotting
 ##' conveniences like \code{\link{plotPlane}} and
@@ -36,11 +33,13 @@
 ##' @docType package
 ##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##'
-##' Maintainer: Paul Johnson \email{<pauljohn@@ku.edu>}
 ##' @references http://pj.freefaculty.org/R
 ##' @keywords regression hplot
-##' @import MASS
 NULL
+
+
+
+
 
 
 ##' Religious beliefs and crime rates
@@ -107,7 +106,8 @@ NULL
 ##' "absviab_candcamp", "absviab_candothercamp",
 ##' "absviab_candcamp_divm", "absviab_candothercamp_divm",
 ##' "viabsq_candcamp", "viabsq_candothercamp", "viab_candcamp",
-##' "viab_candothercamp", "candothercamp_divm", "candcamp_divm", "candcampminusm", "candothercampminusm", "predratiosq", "absviab")
+##' "viab_candothercamp", "candothercamp_divm", "candcamp_divm",
+##' "candcampminusm", "candothercampminusm", "predratiosq", "absviab")
 ##'
 ##' Mean centered variables: constr2 <- c("viab_candcampminusm",
 ##' "viab_candothercampminusm", "viabsq_candothercampminusm",
