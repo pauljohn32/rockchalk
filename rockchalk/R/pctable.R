@@ -220,7 +220,6 @@ NULL
 ##' a quoted string if the user intends the method pctable.character
 ##' to be dispatched. The column variable cv may be a string or just a
 ##' variable name (which this method will coerce to a string).
-##' @import tables
 ##' @examples
 ##' dat <- data.frame(x1 = gl(4, 25, labels = c("Good", "Bad", "Ugly", "Indiff")),
 ##'                 x2 = gl(5, 20, labels = c("Denver", "Cincy", "Baltimore", "NY", "LA")), 
