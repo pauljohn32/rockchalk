@@ -303,7 +303,9 @@ summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
         cpct <- object[["cpct"]]
         for(j in rownames(cpct)){
             for(k in colnames(cpct)){
-                t3[j, k] <- paste0(count[j, k], "(", cpct[j, k], "%)")
+                if(j != "" & k != ""){
+                    t3[j, k] <- paste0(count[j, k], "(", cpct[j, k], "%)")
+                }
             }
         }
         return(t3)
@@ -313,7 +315,7 @@ summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
     rpct <- object[["rpct"]]
     for(j in rownames(rpct)){
         for(k in colnames(rpct)){
-            if (rpct[j, k] != "" & !is.na(rpct[j, k])){
+            if (j != "" & k != ""){
                 t3[j, k] <- paste0(count[j, k], "(", rpct[j, k], "%)")
             }
         }
@@ -330,7 +332,7 @@ summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
         colnames(t4) <- colnames(t3)
         for(j in rownames(object[["cpct"]])) {
             for(k in colnames(object[["cpct"]])){
-                if(cpct[j,k] != "" & !is.na(cpct[j, k])){
+                if(j != "" & k != "") {
                     t4[1 + which(rownames(t4) == j) ,k] <- paste0(cpct[j, k], "%")
                 }
             }
