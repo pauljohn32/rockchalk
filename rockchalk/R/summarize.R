@@ -18,7 +18,7 @@
 ##' original order.
 ##' @param sumstat If TRUE (default), include mean, standard deviation, and count of NAs.
 ##' @param digits integer, used for number formatting output.
-##' @na.rm default TRUE. Should missing data be removed?
+##' @param na.rm default TRUE. Should missing data be removed?
 ##' @export
 ##' @return a matrix with one column per variable and the rows
 ##' representing the quantiles as well as the mean, standard
@@ -48,9 +48,11 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
         sumdat <- rbind(sumdat, mean = apply(datn, 2, mean, na.rm = na.rm))
         sumdat <- rbind(sumdat, sd = apply(datn, 2, sd, na.rm = na.rm))
         sumdat <- rbind(sumdat, var = apply(datn, 2, var, na.rm = na.rm))
+        sumdat <- rbind(sumdat, skewness = apply(datn, 2, skewness, na.rm = na.rm))
+        sumdat <- rbind(sumdat, kurtosis = apply(datn, 2, kurtosis, na.rm = na.rm))
         sumdat <- round(sumdat, digits)
-        sumdat <- rbind(sumdat, `NA's` = apply(datn, 2, function(x) sum(is.na(x))))
-        sumdat <- rbind(sumdat, N = apply(datn, 2, function(x) length(x)))
+        sumdat <- rbind(sumdat, `NA's` = round(apply(datn, 2, function(x) sum(is.na(x))), 0))
+        sumdat <- rbind(sumdat, N = round(apply(datn, 2, function(x) length(x)), 0))
     }
    sumdat
 }
@@ -84,8 +86,8 @@ NULL
 ##' where var(x) is calculated with the denominator N, rather than N-1.
 ##'
 ##' A distribution is said to be leptokurtotic if it is tightly bunched in the center (spiked) and there are long, narrow tails representing extreme values that might occur.
-##' @param x A numeric variable (vector) 
-##' @param na.rm default TRUE, drop NA values in order to calculate means and summaries.
+##' @param x A numeric variable (vector)
+##' @param na.rm default TRUE. Should missing data be removed?
 ##' @param excess default TRUE. If true, function returns excess kurtosis (kurtosis -3). If false, the return is simply kurtosis as defined above.
 ##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
 ##' @return A scalar value or NA
@@ -131,7 +133,8 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##' where sd(x) is calculated with the denominator N, rather than
 ##' N-1. This is the Fisher-Pearson coefficient of skewness, they claim.
 ##'
-##' @param x A numeric variable (vector) 
+##' @param x A numeric variable (vector)
+##' @param na.rm default TRUE. Should missing data be removed?
 ##' @param na.rm default TRUE, drop NA values in order to calculate means and summaries.
 ##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
 ##' @return A scalar value or NA
