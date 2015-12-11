@@ -76,7 +76,7 @@ NULL
 ##' The kurtosis may be calculated with the small-sample bias-corrected
 ##' estimate of the variance.  It appears somewhat controversial
 ##' whether this is necessary, hence the argument unbiased. According to the US NIST,
-##' \link{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
+##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' kurtosis is defined as
 ##'       
 ##'                 mean((x - mean(x))^4)
@@ -122,7 +122,7 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##' estimate of the standard deviation.  It appears somewhat controversial
 ##' whether this is necessary, hence the argument unbiased.
 ##' According to the US NIST,
-##' \link{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
+##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' skewness is defined as the mean of cubed deviations divided by the
 ##' cube of the standard deviation.
 ##'       
@@ -135,7 +135,6 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##'
 ##' @param x A numeric variable (vector)
 ##' @param na.rm default TRUE. Should missing data be removed?
-##' @param na.rm default TRUE, drop NA values in order to calculate means and summaries.
 ##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
 ##' @return A scalar value or NA
 ##' @author Paul Johnson <pauljohn@@ku.edu>
