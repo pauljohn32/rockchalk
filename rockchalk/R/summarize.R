@@ -18,6 +18,7 @@
 ##' original order.
 ##' @param sumstat If TRUE (default), include mean, standard deviation, and count of NAs.
 ##' @param digits integer, used for number formatting output.
+##' @na.rm default TRUE. Should missing data be removed?
 ##' @export
 ##' @return a matrix with one column per variable and the rows
 ##' representing the quantiles as well as the mean, standard
@@ -25,7 +26,7 @@
 ##' @seealso summarize and summarizeFactors
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
-    digits = max(3, getOption("digits") - 3)) {
+    digits = max(3, getOption("digits") - 3), na.rm = TRUE) {
     if (is.atomic(dat)) {
         datname <- deparse(substitute(dat))
         dat <- data.frame(dat)
@@ -41,12 +42,12 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
     datn <- dat[, nums, drop = FALSE]
     if (alphaSort)
         datn <- datn[, sort(colnames(datn)), drop = FALSE]
-    sumdat <- apply(datn, 2, stats::quantile, na.rm = TRUE)
+    sumdat <- apply(datn, 2, stats::quantile, na.rm = na.rm)
     sumdat <- round(sumdat, digits)
     if (sumstat) {
-        sumdat <- rbind(sumdat, mean = apply(datn, 2, mean, na.rm = TRUE))
-        sumdat <- rbind(sumdat, sd = apply(datn, 2, sd, na.rm = TRUE))
-        sumdat <- rbind(sumdat, var = apply(datn, 2, var, na.rm = TRUE))
+        sumdat <- rbind(sumdat, mean = apply(datn, 2, mean, na.rm = na.rm))
+        sumdat <- rbind(sumdat, sd = apply(datn, 2, sd, na.rm = na.rm))
+        sumdat <- rbind(sumdat, var = apply(datn, 2, var, na.rm = na.rm))
         sumdat <- round(sumdat, digits)
         sumdat <- rbind(sumdat, `NA's` = apply(datn, 2, function(x) sum(is.na(x))))
         sumdat <- rbind(sumdat, N = apply(datn, 2, function(x) length(x)))
@@ -54,6 +55,99 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
    sumdat
 }
 NULL
+
+##' Calculate excess kurtosis
+##'
+##' Kurtosis is a summary of the peakedness of a distribution. In a Normal distribution,
+##' the kurtosis is 3.  The term "excess kurtosis" refers to the difference
+##'
+##' kurtosis - 3
+##'
+##' Many researchers use the term kurtosis to refer to "excess
+##' kurtosis" and this function follows suite by returning excess
+##' kurtosis.  The user may avoid this by setting excess = FALSE, in
+##' which case kurtosis is returned.
+##' 
+##' If na.rm = FALSE and there are missing values, the mean and
+##' variance are undefined and this function returns NA.
+##' 
+##' The kurtosis may be calculated with the small-sample bias-corrected
+##' estimate of the variance.  It appears somewhat controversial
+##' whether this is necessary, hence the argument unbiased. According to the US NIST,
+##' \link{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
+##' kurtosis is defined as
+##'       
+##'                 mean((x - mean(x))^4)
+##' kurtosis =    ___________________
+##'                  var(x)^2
+##'
+##' where var(x) is calculated with the denominator N, rather than N-1.
+##'
+##' A distribution is said to be leptokurtotic if it is tightly bunched in the center (spiked) and there are long, narrow tails representing extreme values that might occur.
+##' @param x A numeric variable (vector) 
+##' @param na.rm default TRUE, drop NA values in order to calculate means and summaries.
+##' @param excess default TRUE. If true, function returns excess kurtosis (kurtosis -3). If false, the return is simply kurtosis as defined above.
+##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
+##' @return A scalar value or NA
+##' @author Paul Johnson <pauljohn@@ku.edu>
+kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
+    if (!isTRUE(na.rm) & sum(is.na(x) > 0)) return(NA)
+    x <- x[!is.na(x)]
+    xm <- mean(x)
+    xd <- x - xm
+    var <- mean(xd^2)
+   
+    if (unbiased){
+        kur <- mean(xd^4)/(var(x)^2)
+    } else {
+         kur <- mean(xd^4)/var^2
+    }
+    if (isTRUE(excess)) kur <- kur - 3
+    kur
+}
+
+
+##' Calculate skewness
+##'
+##' Skewness is a summary of the symmetry of a distribution's
+##' probability density function. In a Normal distribution, the
+##' skewness is 0, indicating symmetry about the expected value.
+##'
+##' If na.rm = FALSE and there are missing values, the mean and
+##' variance are undefined and this function returns NA.
+##'
+##' The skewness may be calculated with the small-sample bias-corrected
+##' estimate of the standard deviation.  It appears somewhat controversial
+##' whether this is necessary, hence the argument unbiased.
+##' According to the US NIST,
+##' \link{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
+##' skewness is defined as the mean of cubed deviations divided by the
+##' cube of the standard deviation.
+##'       
+##'                mean((x - mean(x))^3)
+##' skewness =    ___________________
+##'                  sd(x)^3
+##'
+##' where sd(x) is calculated with the denominator N, rather than
+##' N-1. This is the Fisher-Pearson coefficient of skewness, they claim.
+##'
+##' @param x A numeric variable (vector) 
+##' @param na.rm default TRUE, drop NA values in order to calculate means and summaries.
+##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
+##' @return A scalar value or NA
+##' @author Paul Johnson <pauljohn@@ku.edu>
+skewness <- function(x, na.rm = TRUE, unbiased = TRUE){
+    if (!isTRUE(na.rm) & sum(is.na(x) > 0)) return(NA)
+    x <- x[!is.na(x)]
+    xm <- mean(x)
+    if (unbiased){
+        skew <-  mean((x - xm)^3)/var(x)^(3/2)
+    } else {
+        skew <- mean((x - xm)^3)/(mean((x - xm)^2))^(3/2)
+    }
+    skew
+}
+
 
 
 ##' Extracts non-numeric variables, calculates summary information,
