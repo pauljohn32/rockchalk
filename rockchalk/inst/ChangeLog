@@ -1,7 +1,24 @@
+2016-02-07  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/utils.R (cutByTable): 100 * round(x, 2).
+	(getFocal.character): new method corrects error with character predictors
+
+2015-12-14  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/summarize.R (summarize): skewness & kurtosis functions,
+	argument unbiased introduced for summarizeNumerics
+
+2015-11-11  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/pctable.R (summary.pctable): separate argument "rowpct"
+	and "colpct" which are TRUE or FALSE from rpct and cpct,
+	which are the percentage tables. Big confusion results because
+	I used same name both in the interface and inside the functions
+
 2015-11-01  Paul Johnson  <pauljohn@dellap14>
 
 	* plotCurves.R (plotCurves):  nx new argument requested
-	by user. 
+	by user.
 
 2015-02-05  Paul Johnson  <pauljohn@dellap14>
 

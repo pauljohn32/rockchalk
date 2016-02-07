@@ -1,8 +1,8 @@
 ##' Estimate standardized regression coefficients for all variables
 ##'
-##' This is brain-dead standardization of all variables in the design matrix.
-##' It mimics the silly output of SPSS, which standardizes all regressors,
-##' even if they represent categorical variables.
+##' This is brain-dead standardization of all variables in the design
+##' matrix.  It mimics the silly output of SPSS, which standardizes
+##' all regressors, even if they represent categorical variables.
 ##'
 ##' @param model a fitted lm object
 ##' @return an lm fitted with the standardized variables
@@ -166,20 +166,28 @@ NULL
 ##' @title meanCenter
 ##' @param model a fitted regression model (presumably from lm)
 ##' @param centerOnlyInteractors Default TRUE. If FALSE, all numeric
-##' predictors in the regression data frame are centered before the
-##' regression is conducted.
-##' @param centerDV Default FALSE. Should the dependent variable be centered? Do not set this option to TRUE unless the dependent variable is a numeric variable. Otherwise, it is an error.
-##' @param standardize Default FALSE. Instead of simply mean-centering the variables, should they also be "standardized" by first mean-centering and then dividing by the estimated standard deviation.
+##'     predictors in the regression data frame are centered before
+##'     the regression is conducted.
+##' @param centerDV Default FALSE. Should the dependent variable be
+##'     centered? Do not set this option to TRUE unless the dependent
+##'     variable is a numeric variable. Otherwise, it is an error.
+##' @param standardize Default FALSE. Instead of simply mean-centering
+##'     the variables, should they also be "standardized" by first
+##'     mean-centering and then dividing by the estimated standard
+##'     deviation.
 ##' @param terms Optional. A vector of variable names to be
-##' centered. Supplying this argument will stop meanCenter from
-##' searching for interaction terms that might need to be centered.
+##'     centered. Supplying this argument will stop meanCenter from
+##'     searching for interaction terms that might need to be
+##'     centered.
 ##' @export meanCenter
 ##' @rdname meanCenter
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @seealso \code{\link[pequod]{lmres}} \code{\link[rockchalk]{standardize}} \code{\link[rockchalk]{residualCenter}}
-##' @references
-##' Aiken, L. S. and West, S.G. (1991). Multiple Regression: Testing and
-##' Interpreting Interactions. Newbury Park, Calif: Sage Publications.
+##' @seealso
+##'     \code{\link[rockchalk]{standardize}}
+##'     \code{\link[rockchalk]{residualCenter}}
+##' @references Aiken, L. S. and West, S.G. (1991). Multiple
+##'     Regression: Testing and Interpreting Interactions. Newbury
+##'     Park, Calif: Sage Publications.
 ##'
 ##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002). Applied
 ##' Multiple Regression/Correlation Analysis for the Behavioral Sciences
@@ -190,7 +198,8 @@ NULL
 ##' Marketing Science, 26(3), 438-445.
 ##' @example inst/examples/meanCenter-ex.R
 meanCenter <-
-    function(model, centerOnlyInteractors = TRUE, centerDV = FALSE, standardize=FALSE, terms = NULL)
+    function(model, centerOnlyInteractors = TRUE, centerDV = FALSE,
+             standardize=FALSE, terms = NULL)
 {
     UseMethod("meanCenter")
 }
@@ -202,9 +211,9 @@ meanCenter <-
 ##' @method meanCenter default
 ##' @export 
 meanCenter.default <-
-    function(model, centerOnlyInteractors = TRUE, centerDV = FALSE, standardize = FALSE, terms = NULL)
+    function(model, centerOnlyInteractors = TRUE, centerDV = FALSE,
+             standardize = FALSE, terms = NULL)
 {
-
     std <- function(x) {
         if(!is.numeric(x)) stop("can't center a factor variable. No Can Do!")
         xmean <- mean(x, na.rm = TRUE)

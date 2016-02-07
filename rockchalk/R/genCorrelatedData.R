@@ -622,6 +622,7 @@ NULL
 ##'    of positive-definiteness in \code{Sigma}
 ##' @param empirical logical. If true, mu and Sigma specify the empirical
 ##'    not population mean and covariance matrix.
+##' @import MASS
 ##' @export
 ##' @return If \code{n = 1} a vector of the same length as \code{mu}, otherwise an
 ##'  \code{n} by \code{length(mu)} matrix with one sample in each row.

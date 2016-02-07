@@ -67,11 +67,12 @@ NULL
 ##' functions.
 ##' @param x A numeric or character variable
 ##' @param n The maximum number of values that may be returned.
+##' @param pct Default = TRUE. Include percentage of responses within each category
 ##' @return A named vector.
 ##' @export
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 cutByTable <-
-    function(x, n = 5)
+    function(x, n = 5, pct = TRUE)
 {
     table1 <- table(x)
     n <- min(n, length(names(table1)))
@@ -85,8 +86,12 @@ cutByTable <-
     } else {
         tabNames
     }
-    freq <- 100*round(table1cut/sum(table1),1)
-    names(res) <- paste(tabNames," (",freq,"%)", sep="")
+    if (pct) {
+        freq <- 100*round(table1cut/sum(table1), 2)
+        names(res) <- paste(tabNames," (",freq,"%)", sep="")
+    } else {
+        names(res) <- tabNames
+    }
     if (is.factor(x)) res <- factor(res, levels = levels(x))
     res
 }
@@ -251,6 +256,8 @@ NULL
 ##' "table", or "seq") or a user-supplied function that can receive
 ##' x and return a selection of values.
 ##' @param n Number of values to be selected.
+##' @param pct Default TRUE. Include percentage of observed cases
+##' in variable name? (used in legends)
 ##' @return A named vector of values.
 ##' @export
 ##' @method getFocal default
@@ -264,7 +271,7 @@ NULL
 ##' getFocal(x, xvals = "std.dev", n = 5)
 ##' getFocal(x, xvals = c(-1000, 0.2, 0,5))
 ##'
-getFocal.default <- function(x, xvals = NULL, n = 3, ...)
+getFocal.default <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
 {
     xRange <- magRange(range(x, na.rm = TRUE), 1.1)
 
@@ -283,7 +290,7 @@ getFocal.default <- function(x, xvals = NULL, n = 3, ...)
         xvals <- match.arg(tolower(xvals),
                            c("quantile", "std.dev.","table", "seq"))
         xfocal <- switch(xvals,
-                         table = cutByTable(x, n),
+                         table = cutByTable(x, n, pct = pct),
                          quantile = cutByQuantile(x, n),
                          "std.dev." = cutBySD(x, n),
                          seq = plotSeq(x, n),
@@ -308,13 +315,13 @@ NULL
 ##' getFocal(x)
 ##' getFocal(x, n = 2)
 ##'
-getFocal.factor <- function(x, xvals = NULL, n = 3, ...)
+getFocal.factor <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
 {
     if (is.null(xvals)) {
-        xvals <- cutByTable(x, n)
+        xvals <- cutByTable(x, n, pct = pct)
         return(xvals)
     }
-   if (is.vector(xvals)) {
+    if (is.vector(xvals)) {
        x <- factor(x) ## drop unused levels
        if (!all(xvals %in% levels(x))) stop("xvals includes non-observed levels of x")
        return(xvals)
@@ -340,6 +347,37 @@ getFocal.factor <- function(x, xvals = NULL, n = 3, ...)
     stop("getFocal received unexpected input xvals")
 }
 
+
+##' @export
+##' @method getFocal character
+##' @rdname getFocal
+##' @examples
+##' x <- c("A","B","A","B","C","D","D","D")
+##' getFocal(x)
+##' getFocal(x, n = 2)
+##'
+getFocal.character <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
+{
+    if (is.null(xvals)) {
+        xvals <- cutByTable(x, n, pct = pct)
+        return(xvals)
+    }
+    if (is.vector(xvals)) {
+       if (!all(xvals %in% unique(x))) stop("xvals includes non-observed values of x")
+       return(xvals)
+    }
+    if (is.function(xvals)) {
+        xvals <- xvals(x, n, ...)
+        return(xvals)
+    }
+
+    xvals <- match.arg(tolower(xvals),
+                       c("table"))
+    xvals <- switch(xvals,
+                    table = cutByTable(x, n, pct = pct),
+                    stop("Sorry, only known algorithm for character variables is 'table'"))
+    xvals
+}
 
 
 
@@ -403,7 +441,7 @@ checkIntFormat <- function(s) {
 ##' @param showWarnings default TRUE. Show warnings? Will be passed on to dir.create
 ##' @param recursive default TRUE. Will be passed on to dir.create
 ##' @param mode  Default permissions on unix-alike systems. Will be passed on to dir.create
-
+##' @export
 ##' @return a character string with the directory name
 ##' @author Paul E Johnson <pauljohn@@ku.edu>
 dir.create.unique <- function(path, usedate = TRUE,

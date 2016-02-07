@@ -1,4 +1,4 @@
-%% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -6,7 +6,6 @@
 \renewcommand{\ttdefault}{lmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
 \setlength{\parskip}{\smallskipamount}
@@ -119,6 +118,9 @@
 \lstset{tabsize=2, breaklines=true, style=Rstyle}
 
 \makeatother
+
+\usepackage{listings}
+\renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
 
 \begin{document}
 

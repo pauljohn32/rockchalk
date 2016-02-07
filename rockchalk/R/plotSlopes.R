@@ -92,6 +92,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' title, such as "Moderator: modx", but if you don't like that,
 ##' specify your own string here.  legend. Set to FALSE if user wants
 ##' to customize a legend after the plot has been drawn.
+##' @param legendPct Default = TRUE. Variable labels print with sample percentages.
 ##' @param col Optional. A color vector for predicted value lines (and
 ##' intervals if requested). If not specified, the R's builtin palette()
 ##' will be used. User may supply a vector of valid color names,
@@ -122,7 +123,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 plotSlopes.lm <-
     function (model, plotx, modx, n = 3, modxVals = NULL ,
               plotxRange = NULL, interval = c("none", "confidence", "prediction"),
-              plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL, col = NULL,
+              plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL, legendPct = TRUE, col = NULL,
               llwd = 2, opacity = 100, ...)
 {
     if (missing(model))
@@ -168,10 +169,10 @@ plotSlopes.lm <-
         modxVar <- model$model[, modx]
         if (is.factor(modxVar)) { ## modxVar is a factor
             n <- ifelse(missing(n), nlevels(modxVar), n)
-            modxVals <- getFocal(modxVar, xvals = modxVals, n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         } else {
             n <- ifelse(missing(n), 3, n)
-            modxVals <- getFocal(modxVar, xvals = modxVals, n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         }
 
         ## if no interval plot requested, we only need 2 points from plotx

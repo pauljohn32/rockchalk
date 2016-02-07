@@ -34,6 +34,8 @@
 ##' @param plotx Required. String with name of predictor for the x axis
 ##' @param plotxRange Optional. If not specified, the observed
 ##' range of plotx will be used to determine the axis range.
+##' @param nx Number of values of plotx at which to calculate the predicted
+##' value.  Default = 40.
 ##' @param modx Optional. String for moderator variable name. May be
 ##' either numeric or factor.
 ##' @param n Optional.  Number of focal values of \code{modx}, used by
@@ -56,6 +58,7 @@
 ##' @param legendTitle Optional. You'll get an automatically generated
 ##' title, such as "Moderator: modx", but if you don't like that,
 ##' specify your own string here.
+##' @param legendPct Default = TRUE. Variable labels print with sample percentages.
 ##' @param col Optional.  A color vector to differentiate the moderator
 ##' values in the plot. If not specified, the R's builtin palette()
 ##' will be used. User may supply a vector of valid color names,
@@ -81,9 +84,10 @@
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example  inst/examples/plotCurves-ex.R
 plotCurves <-
-    function (model, plotx, modx,  plotxRange = NULL, n, modxVals = NULL,
+    function (model, plotx, nx = 40,  modx,  plotxRange = NULL, n, modxVals = NULL,
               interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
+              legendPct = TRUE, 
               col = NULL, llwd = 2, opacity = 100,
               envir = environment(formula(model)), ...)
 {
@@ -114,7 +118,7 @@ plotCurves <-
 
     ylab <- names(mf)[1]  ## returns transformed DV
     plotxRange <- if(is.null(plotxRange)) range(plotxVar, na.rm = TRUE) else plotxRange
-    plotxVals <- plotSeq(plotxRange, length.out = 40)
+    plotxVals <- plotSeq(plotxRange, length.out = nx)
 
     ##Bug noticed 2013-09-22
     ## focalVals for a nonlinear model needs to be long set,
@@ -134,10 +138,10 @@ plotCurves <-
         modxVar <- emf[ , modx]
         if (is.factor(modxVar)) { ## modxVar is a factor
             n <- ifelse(missing(n), nlevels(modxVar), n)
-            modxVals <- getFocal(modxVar, xvals = modxVals, n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         } else {
             n <- ifelse(missing(n), 3, n)
-            modxVals <- getFocal(modxVar, xvals = modxVals, n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         }
 
         focalVals <- list(modxVals, plotxVals)

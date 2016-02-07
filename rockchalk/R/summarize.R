@@ -19,6 +19,8 @@
 ##' @param sumstat If TRUE (default), include mean, standard deviation, and count of NAs.
 ##' @param digits integer, used for number formatting output.
 ##' @param na.rm default TRUE. Should missing data be removed?
+##' @param unbiased If TRUE (default), skewness and kurtosis are calculated with
+##' biased corrected (N-1) divisor in the standard devation.
 ##' @export
 ##' @return a matrix with one column per variable and the rows
 ##' representing the quantiles as well as the mean, standard
@@ -26,7 +28,7 @@
 ##' @seealso summarize and summarizeFactors
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
-    digits = max(3, getOption("digits") - 3), na.rm = TRUE) {
+    digits = max(3, getOption("digits") - 3), na.rm = TRUE, unbiased = TRUE) {
     if (is.atomic(dat)) {
         datname <- deparse(substitute(dat))
         dat <- data.frame(dat)
@@ -36,6 +38,22 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
             colnames(dat) <- paste0(datname, "_",  seq(1, NCOL(dat)))
         }
     } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+    var2 <- function(x, na.rm, unbiased) {
+        if (unbiased) {
+            var(x, na.rm = na.rm)
+        } else {
+            mean((x - mean(x, na.rm = na.rm))^2)
+        }
+    }
+
+    sd2 <- function(x, na.rm, unbiased) {
+        if (unbiased) {
+            sd(x, na.rm = na.rm)
+        } else {
+            sqrt(mean((x - mean(x, na.rm = na.rm))^2))
+        }
+    }
+    
     
     nums <- sapply(dat, is.numeric)
     if (sum(nums) == 0) return(NULL)
@@ -46,10 +64,10 @@ summarizeNumerics <- function(dat, alphaSort = TRUE, sumstat = TRUE,
     sumdat <- round(sumdat, digits)
     if (sumstat) {
         sumdat <- rbind(sumdat, mean = apply(datn, 2, mean, na.rm = na.rm))
-        sumdat <- rbind(sumdat, sd = apply(datn, 2, sd, na.rm = na.rm))
-        sumdat <- rbind(sumdat, var = apply(datn, 2, var, na.rm = na.rm))
-        sumdat <- rbind(sumdat, skewness = apply(datn, 2, skewness, na.rm = na.rm))
-        sumdat <- rbind(sumdat, kurtosis = apply(datn, 2, kurtosis, na.rm = na.rm))
+        sumdat <- rbind(sumdat, sd = apply(datn, 2, sd2, na.rm = na.rm, unbiased = unbiased))
+        sumdat <- rbind(sumdat, var = apply(datn, 2, var2, na.rm = na.rm, unbiased = unbiased))
+        sumdat <- rbind(sumdat, skewness = apply(datn, 2, skewness, na.rm = na.rm, unbiased = unbiased))
+        sumdat <- rbind(sumdat, kurtosis = apply(datn, 2, kurtosis, na.rm = na.rm, unbiased = unbiased))
         sumdat <- round(sumdat, digits)
         sumdat <- rbind(sumdat, `NA's` = round(apply(datn, 2, function(x) sum(is.na(x))), 0))
         sumdat <- rbind(sumdat, N = round(apply(datn, 2, function(x) length(x)), 0))
@@ -66,16 +84,18 @@ NULL
 ##' kurtosis - 3
 ##'
 ##' Many researchers use the term kurtosis to refer to "excess
-##' kurtosis" and this function follows suite by returning excess
+##' kurtosis" and this function follows suit by returning excess
 ##' kurtosis.  The user may avoid this by setting excess = FALSE, in
 ##' which case kurtosis is returned.
 ##' 
 ##' If na.rm = FALSE and there are missing values, the mean and
 ##' variance are undefined and this function returns NA.
 ##' 
-##' The kurtosis may be calculated with the small-sample bias-corrected
-##' estimate of the variance.  It appears somewhat controversial
-##' whether this is necessary, hence the argument unbiased. According to the US NIST,
+##' The kurtosis may be calculated with the small-sample
+##' bias-corrected estimate of the variance. Set unbiased = FALSE if
+##' this is not desired.  It appears somewhat controversial whether
+##' this is necessary, hence the argument unbiased. According to the
+##' US NIST,
 ##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' kurtosis is defined as
 ##'       
@@ -89,7 +109,8 @@ NULL
 ##' @param x A numeric variable (vector)
 ##' @param na.rm default TRUE. Should missing data be removed?
 ##' @param excess default TRUE. If true, function returns excess kurtosis (kurtosis -3). If false, the return is simply kurtosis as defined above.
-##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
+##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1, rather than N?
+##' @export
 ##' @return A scalar value or NA
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
@@ -120,8 +141,9 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##'
 ##' The skewness may be calculated with the small-sample bias-corrected
 ##' estimate of the standard deviation.  It appears somewhat controversial
-##' whether this is necessary, hence the argument unbiased.
-##' According to the US NIST,
+##' whether this is necessary, hence the argument unbiased is provided.
+##' Set unbiased = FALSE if it is desired to have the one recommended
+##' by NIST, for example. According to the US NIST,
 ##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' skewness is defined as the mean of cubed deviations divided by the
 ##' cube of the standard deviation.
@@ -132,10 +154,13 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##'
 ##' where sd(x) is calculated with the denominator N, rather than
 ##' N-1. This is the Fisher-Pearson coefficient of skewness, they claim.
-##'
+##' The unbiased variant uses the standard deviation divisor (N-1) to
+##' bias-correct the standard deviation. 
+##' 
 ##' @param x A numeric variable (vector)
 ##' @param na.rm default TRUE. Should missing data be removed?
 ##' @param unbiased default TRUE. Should the denominator of the variance estimate be divided by N-1?
+##' @export
 ##' @return A scalar value or NA
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 skewness <- function(x, na.rm = TRUE, unbiased = TRUE){
@@ -228,7 +253,7 @@ skewness <- function(x, na.rm = TRUE, unbiased = TRUE){
 ##' ##see help for summarize for more examples
 summarizeFactors <-
     function (dat = NULL, maxLevels = 5, alphaSort = TRUE,
-              sumstat= TRUE, digits = max(3, getOption("digits") - 3))
+              sumstat = TRUE, digits = max(3, getOption("digits") - 3))
 {
     if (is.atomic(dat)){
         datname <- deparse(substitute(dat))
@@ -315,13 +340,15 @@ NULL
 ##'
 ##' The work is done by the functions \code{summarizeNumerics} and
 ##' \code{summarizeFactors}.  Please see the help pages for those
-##' functions for complete details.
+##' functions for complete details. Named argumes used here must be
+##' spelled fully so they can be sorted and passed to those 2 funcitons.
 ##'
 ##' @param dat A data frame
 ##' @param ... Optional arguments that are passed to summarizeNumerics and summarizeFactors.  These may be used:
-##'  maxLevels The maximum number of levels that will be reported.
-##'  alphaSort If TRUE (default), the columns are re-organized in alphabetical order. If FALSE, they are presented in the original order.
-##'  digits  integer, used for number formatting output.
+##'  1) maxLevels The maximum number of levels that will be reported.
+##'  2) alphaSort If TRUE (default), the columns are re-organized in alphabetical order. If FALSE, they are presented in the original order.
+##'  3) digits  integer, used for number formatting output.
+##'  4) unbiased If TRUE (default), the variance, standard deviation, skewness and kurtosis are based on the (N-1) denominator formula. 
 ##' @return A list with 2 objects, numerics and factors. numerics is a matrix
 ##' of summary information, while factors is a list of factor summaries.
 ##' @export

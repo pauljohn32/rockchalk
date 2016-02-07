@@ -3,15 +3,15 @@
 ##' Given a fitted \code{lm}, this function scans for coefficients
 ##' estimated from "interaction terms" by checking for colon
 ##' symbols. The function then calculates the "residual centered"
-##' estimate of the interaction term and replaces the interaction
-##' term with that residual centered estimate. It works for any
-##' order of interaction, unlike other implementations of the same
-##' approach. See also function \code{lmres} in package pequod.
+##' estimate of the interaction term and replaces the interaction term
+##' with that residual centered estimate. It works for any order of
+##' interaction, unlike other implementations of the same
+##' approach. The function \code{lmres} in the now-archived package
+##' pequod was a similar function.
 ##' @param model A fitted lm object
 ##' @export 
 ##' @rdname residualCenter
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @seealso \code{\link[pequod]{lmres}}
 ##' @references  Little, T. D., Bovaird, J. A.,
 ##' & Widaman, K. F. (2006). On the Merits of Orthogonalizing
 ##' Powered and Product Terms: Implications for Modeling

@@ -1,4 +1,4 @@
-%% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -6,7 +6,6 @@
 \renewcommand{\ttdefault}{cmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
 \setlength{\parskip}{\smallskipamount}
@@ -114,6 +113,9 @@
 
 \makeatother
 
+\usepackage{listings}
+\renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
+
 \begin{document}
 
 \title{R Style. An Rchaeological Commentary. }
@@ -139,31 +141,26 @@ to realize that the readability of code makes a difference. It sometimes
 difficult to know that there is a ``right way'' and a ``wrong way''
 because there are so many examples to study on CRAN.
 
-This note describes R style from an Rchaeological%
-\footnote{Definitions:
+This note describes R style from an Rchaeological\footnote{Definitions:
 \begin{description}
 \item [{Rchaeology:}] The study of R programming by investigation of R
 source code. It is the effort to discern the programming strategies,
 idioms, and style of R programmers in order to better communicate
 with them.
 \item [{Rchaeologist:}] One who practices Rchaeology.\end{description}
-%
 } perspective. By examining the work of the R Core Development Team
 \citep{RCore} and other notable package writers, we are able to discern
 an implicit style guide. However, this note is not ``official''
-or endorsed from R Core.%
-\footnote{Yet :)%
-} With one exception at the end of this note, none of the advice here
-is ``my'' advice. Instead, it is my best description of the standards
-followed by the leading R programmers. 
+or endorsed from R Core.\footnote{Yet :)} With one exception at the
+end of this note, none of the advice here is ``my'' advice. Instead,
+it is my best description of the standards followed by the leading
+R programmers. 
 
-At one point, the only guide was the Google R style guide,%
-\footnote{\url{http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html}%
-} which was used as a policy for R-related ``Google Summer of Code''
+At one point, the only guide was the Google R style guide,\footnote{\url{http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html}}
+which was used as a policy for R-related ``Google Summer of Code''
 projects. There are many excellent suggestions in Hadley Wickham's
-Style Guide.%
-\footnote{\url{https://github.com/hadley/devtools/wiki/Style}%
-} In what follows, I'll try to explain why there are some variations
+Style Guide.\footnote{\url{https://github.com/hadley/devtools/wiki/Style}}
+In what follows, I'll try to explain why there are some variations
 among these projects and offer some advice about how we (the users)
 should sort through their advice.
 
@@ -293,9 +290,8 @@ character.
 
 But there is a larger point in \emph{R Internals}, but novices don't
 recognize the importance of it. R is a GNU project, and there are
-GNU coding standards.%
-\footnote{\url{http://www.gnu.org/prep/standards/standard.html}%
-} The R project's C code follows the standard closely. In the entire
+GNU coding standards.\footnote{\url{http://www.gnu.org/prep/standards/standard.html}}
+The R project's C code follows the standard closely. In the entire
 body of the R source code, we find the GNU thumb print. The importance
 of that fact is missed by untrained readers, who mistake the lack
 of a comprehensive discussion of style for an encouragement to ``do
@@ -753,13 +749,11 @@ to read code like that.
 The danger that user functions might interfere with core functionality
 was at one time very serious. Now it is, for the most part, a historical
 footnote. It is still possible to obliterate a function that is embedded
-within a namespace, but doing so requires a bit of effort and mischief.%
-\footnote{In case you wonder, here's how to cause the worst case scenario.
+within a namespace, but doing so requires a bit of effort and mischief.\footnote{In case you wonder, here's how to cause the worst case scenario.
 \begin{lyxcode}
 nseq~<-~function(x)~print(\textquotedbl{}Hello,~good~to~see~you\textquotedbl{})
 
 assignInNamespace(\textquotedbl{}seq.default\textquotedbl{},~nseq,~\textquotedbl{}base\textquotedbl{})\end{lyxcode}
-%
 }
 
 When we say that a namespace is imported, it means that all of the
@@ -868,8 +862,7 @@ are still living with an awful lot of older counter-examples.
 R variable names must 
 \begin{enumerate}
 \item begin with an alphabetical character
-\item include only letters, numbers and the symbols ``\_'', ``-'', and
-``.''. 
+\item include only letters, numbers and the symbols ``\_'' and ``.''. 
 \end{enumerate}
 They must not include ``{*}'',''?'',''!'',''\&'' or other
 special symbols. They must not include spaces.
@@ -999,11 +992,9 @@ be more cautious to teach new R users about coding style. I intend
 to prevent the accumulation of bad habits that result in code that
 is difficult to read and hard to debug. 
 
-Users who ask for help in the r-help email list %
-\footnote{\url{http://www.r-project.org/mail.html}%
-} or on web forums %
-\footnote{e.g., \url{http://stackoverflow.com/questions/tagged/r}%
-} are well advised to remember the importance of style. Most newcomers
+Users who ask for help in the r-help email list \footnote{\url{http://www.r-project.org/mail.html}}
+or on web forums \footnote{e.g., \url{http://stackoverflow.com/questions/tagged/r}}
+are well advised to remember the importance of style. Most newcomers
 believe that the experts will understand what they write, but that's
 not true. Experts will find it much easier to spot errors in code
 that has the correct indentation and uses a proper naming scheme for

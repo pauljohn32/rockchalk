@@ -1,6 +1,15 @@
 rockchalk package NEWS -- history of user-visible changes.
 
-Copyright (C) 2013 Paul E. Johnson.
+Copyright (C) 2013-5 Paul E. Johnson.
+
+* version 1.8.96 2015-12-15
+
+** skewness and kurtosis added to summary stats for numeric variables.
+
+* version 1.8.94 2015-11-01
+
+** plotCurves. Replace hard coded value 40 for number of points at
+   which to evaluate plotx. Tom Wenseleers suggested.
 
 * version 1.8.91 2015-01-29
 

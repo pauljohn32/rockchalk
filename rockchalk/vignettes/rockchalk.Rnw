@@ -1,4 +1,4 @@
-%% LyX 2.0.8.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -6,7 +6,6 @@
 \renewcommand{\ttdefault}{lmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage{listings}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
 \usepackage{url}
@@ -105,15 +104,16 @@
 \makeatother
 
 \usepackage{babel}
+\usepackage{listings}
+\renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
+
 \begin{document}
 
-\title{Using rockchalk for Regression Analysis%
-\thanks{In case you want to be involved in development, the source code is
+\title{Using rockchalk for Regression Analysis\thanks{In case you want to be involved in development, the source code is
 available on GitHub. Please browse http://github.com/pauljohn32. The
 read-only git archive address is \protect\url{git://github.com/pauljohn32/rockchalk.git}.
 Once you learn how to ``clone'' the repository with a git client,
-then we can discuss ways for you to contribute.%
-}}
+then we can discuss ways for you to contribute.}}
 
 
 \author{Paul E. Johnson}
@@ -672,7 +672,7 @@ y_{i}=b_{0}+b_{plotx}plotx_{i}+b_{modx}modx_{i}+b_{plotx:modx}plotx_{i}\cdot mod
 
 \noindent 
 \begin{equation}
-H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
+H_{0}:0=\hat{b}_{simple\,slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
 \end{equation}
 
 
@@ -689,11 +689,11 @@ a plot of which is presented in Figure \ref{fig:ts10}.
 The method of calculation is outlined in \citet{PreacherCurren2006}.
 The values of $modx$ associated with a statistically significant
 effect of $plotx$ on the outcome is determined from the computation
-of a T statistic for $\hat{b}_{simple\, slope}$. The J-N interval
+of a T statistic for $\hat{b}_{simple\,slope}$. The J-N interval
 is the set of values of $modx$ for which the following (quadratic
 equation) holds:
 \begin{equation}
-\hat{t}=\frac{\hat{b}_{simple\, slope}}{std.err(\hat{b}_{simple\, slope})}=\frac{\hat{b}_{simple\, slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
+\hat{t}=\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}=\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
 \end{equation}
 
 

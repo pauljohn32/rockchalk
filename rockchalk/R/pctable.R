@@ -248,9 +248,9 @@ NULL
 ##'     ## Now LaTeX output
 ##'     ## have to escape the percent signs
 ##'     tabsumtab <- apply(tabsumtab, 1:2, function(x) {gsub("%", "\\\\%", x) })
-##'     Hmisc::latex(tabsumtab)
 ##'     fn2 <- tempfile(pattern = "file", tmpdir = tempdir(), 
 ##'                    fileext = ".tex")
+##'     Hmisc::latex(tabsumtab, file = fn2)
 ##'     print(paste("The file saved was named", fn2, "go get it."))
 ##' }
 ##' }
