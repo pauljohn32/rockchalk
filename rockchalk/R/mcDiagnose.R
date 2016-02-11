@@ -73,6 +73,7 @@ getVIF <- function(rsq){
 ##' coefficient.
 ##'
 ##' @export
+##' @importFrom stats drop1
 ##' @param model a fitted regression model
 ##' @return a vector of estimates of the delta R-squares
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
@@ -110,6 +111,7 @@ NULL
 ##' @return a list of the "auxiliary regressions" that were
 ##' fitted during the analysis
 ##' @export
+##' @importFrom stats model.matrix
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/mcDiagnose-ex.R
 mcDiagnose <- function(model){

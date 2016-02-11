@@ -1,24 +1,25 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.97
-Date: 2016-02-07
+Version: 1.8.99
+Date: 2016-02-09
 Author: Paul E. Johnson <pauljohn@ku.edu>
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for interpretation and presentation
     of regression analysis.  These functions are used
     to produce the statistics lectures in
-    http://pj.freefaculty.org/guides. There functions for regression
+    http://pj.freefaculty.org/guides. Includes regression
     diagnostics, regression tables, and plots of interactions and
     "moderator" variables. The emphasis is on "mean-centered" and
-    "residual-centered" predictors. The vignette "rockchalk" offers a
-    fairly comprehensive overview.  The vignette "Rstyle" has advice
-    about coding in R.  The package title "rockchalk" refers to our
-    school motto, "Rock Chalk Jayhawk, Go K.U.".
+    "residual-centered" predictors. The vignette 'rockchalk' offers a
+    fairly comprehensive overview.  The vignette 'Rstyle' has advice
+    about coding in R.  The package title 'rockchalk' refers to our
+    school motto, 'Rock Chalk Jayhawk, Go K.U.'.
 License: GPL (>= 3.0)
 LazyLoad: yes
 Imports:
     grDevices,
+    methods,
     lme4,
     car,
     MASS

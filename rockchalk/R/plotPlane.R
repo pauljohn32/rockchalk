@@ -66,6 +66,7 @@
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @rdname plotPlane
 ##' @export plotPlane
+##' @importFrom graphics lines
 ##' @seealso \code{\link[graphics]{persp}}, \code{\link[scatterplot3d]{scatterplot3d}}, \code{\link[HH]{regr2.plot}}
 ##' @example inst/examples/plotPlane-ex.R
 

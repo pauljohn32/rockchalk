@@ -15,6 +15,15 @@
 ##' used: c("type", "se.fit", "interval", "level", "dispersion",
 ##' "terms", "na.action")
 ##' @export plotSlopes
+##' @importFrom graphics abline arrows legend lines mtext plot points polygon text
+##' @importFrom methods as
+##' @importFrom stats AIC addmargins as.formula coef cor
+##'             df.residual drop1 family fitted formula lm
+##'             model.frame model.matrix model.response na.omit na.pass
+##'             napredict nobs pchisq pf predict
+##'             predict.lm pt qnorm qt quantile resid
+##'             rnorm sd setNames terms var vcov
+##' @importFrom utils browseURL methods modifyList 
 ##' @rdname plotSlopes
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @seealso \code{\link[rockchalk]{testSlopes}} \code{\link[rockchalk]{plotCurves}}

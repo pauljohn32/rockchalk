@@ -1,5 +1,7 @@
 2016-02-07  Paul Johnson  <pauljohn@dellap14>
 
+	* ../R/plotSlopes.R: pasted in giant chunk of importsFrom
+	directives after Ben Bolker's lme4 check gave profuse warnings.
 	* ../R/utils.R (cutByTable): 100 * round(x, 2).
 	(getFocal.character): new method corrects error with character predictors
 

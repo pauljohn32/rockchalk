@@ -779,7 +779,6 @@ NULL
 ##' ## A new feature in 1.85 is ability to provide vectors of beta estimates
 ##' ## standard errors, and p values if desired. 
 ##' ## Suppose you have robust standard errors!
-##' library(car)
 ##' newSE <- sqrt(diag(car::hccm(m3)))
 ##' ## See 2 versions of m3 in the table?
 ##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, "Model C w Robust SE" = m3),
@@ -847,8 +846,7 @@ NULL
 ##'   gm2 <- glmer(cbind(incidence, size - incidence) ~ period + (1 | herd),
 ##'                    data = cbpp, family = binomial)
 ##'   lm2 <- lm(incidence/size ~ period,  data = cbpp)
-##'   lm2rse <- sqrt(diag(hccm(lm2)))
-##'   library(MASS)
+##'   lm2rse <- sqrt(diag(car::hccm(lm2)))
 ##'   ## Lets see what MASS::rlm objects do? Mostly OK
 ##'   rlm2 <- MASS::rlm(incidence/size ~ period, data = cbpp)
 ##'   \donttest{
@@ -945,7 +943,9 @@ outreg <-
         for(i in seq_along(sl)) {
             sli <- sl[[i]]
             y <- sli[[name]]
-            if (!is.null(y) && name == "fstatistic"){
+            if (is.null(y) || !is.null(y) && is.na(y)) {
+                y <- ""
+            } else if (!is.null(y) && name == "fstatistic"){
                 staty <- paste(format(c(y["value"]), digits = digits),
                                " df(", format(y["numdf"], digits = digits),
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
@@ -954,7 +954,7 @@ outreg <-
                 y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
             } else if (is.numeric(y)) {
                 y <- format(round(y, digits), nsmall = digits)
-            }
+            }                 
             if (!is.null(y)) res[i] <- y else res[i] <- ""
         }
 
@@ -967,7 +967,7 @@ outreg <-
     gofRow <- function(x, xname = "fixme") {
         zline <- c("_BR_", xname, paste(rep(" ",  max(2, (16 - nchar(xname)))), collapse = "" ))
         for (mname in names(x)) {
-            zline <- c(zline, "_SEP_", x[mname], paste(rep(" ", max(2, 6-nchar(x[mname]))), collapse = ""))
+            zline <- c(zline, "_SEP_", x[mname], paste(rep(" ", max(2, 6-nchar(x[mname]), na.rm = TRUE)), collapse = ""))
             if (tight == FALSE) zline <- c(zline, sprintf("%6s", " "), "_SEP_")
         }
         zline <- paste(paste(zline, collapse = ""), "_EOC__EOR__EOL_")
@@ -1283,7 +1283,7 @@ outreg <-
 
     ## The new way
     z <- c(z, gofPrint(summaryList, "sigma"))
-
+   
     ## The new way
     z <- c(z, gofPrint(summaryList, "r.squared"))
 

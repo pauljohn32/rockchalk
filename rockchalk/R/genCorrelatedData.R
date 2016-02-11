@@ -26,6 +26,7 @@
 ##' @param beta beta vector of at most 4 coefficients for intercept,
 ##' slopes, and interaction
 ##' @export genCorrelatedData
+##' @importFrom stats rnorm
 ##' @examples
 ##' ## 1000 observations of uncorrelated x1 and x2 with no
 ##' ## interaction between x1 and x2

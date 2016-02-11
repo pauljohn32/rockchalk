@@ -112,6 +112,7 @@ NULL
 ##' @param n The number of quantile points. See details.
 ##' @return A vector
 ##' @export
+##' @importFrom stats quantile
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 cutByQuantile <-
     function(x, n = 3)
@@ -157,6 +158,7 @@ cutByQuantile <-
 ##' values that divide the data at c(m-sd, m, m+sd) are returned. If n
 ##' > 4, the returned values are c(m-2sd, m-sd, m, m+sd, m+2sd).
 ##' @export
+##' @importFrom stats sd
 ##' @examples
 ##' x <- rnorm(100, m = 100, s = 20)
 ##' cutBySD (x, n = 3)
