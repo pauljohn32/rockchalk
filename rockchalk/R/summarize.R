@@ -78,16 +78,25 @@ NULL
 
 ##' Calculate excess kurtosis
 ##'
-##' Kurtosis is a summary of the peakedness of a distribution. In a Normal distribution,
-##' the kurtosis is 3.  The term "excess kurtosis" refers to the difference
+##' Kurtosis is a summary of the fatness of a distribution's tails,
+##' often (almost always) using the Normal distribution as a
+##' comparison. In a Normal distribution, the kurtosis is 3.  The term
+##' "excess kurtosis" refers to the difference
 ##'
 ##' kurtosis - 3
 ##'
-##' Many researchers use the term kurtosis to refer to "excess
-##' kurtosis" and this function follows suit by returning excess
-##' kurtosis.  The user may avoid this by setting excess = FALSE, in
-##' which case kurtosis is returned.
-##' 
+##' Many researchers use the term kurtosis to refer to
+##' "excess kurtosis" and this function follows suit by returning
+##' excess kurtosis.  The user may avoid this by setting excess =
+##' FALSE, in which case kurtosis is returned.
+##'
+##' If kurtosis is smaller than 3 (or excess kurtosis is negative),
+##' the tails are "fatter" than Normal, the distribution is "spread
+##' wider than the Normal. If kurtosis is greater than 3 (excess kurtosis
+##' positive, then the observations are packed more closely around the
+##' mean than in the normal distribution and few observations are
+##' found in the tails.
+##'
 ##' If na.rm = FALSE and there are missing values, the mean and
 ##' variance are undefined and this function returns NA.
 ##' 
