@@ -59,7 +59,7 @@ NULL
 ##' regression formula.  The result will be a data frame with
 ##' columns named (y, x1, x2, ..., xp).
 ##'
-##' Arguments supplied must have enought information so that an
+##' Arguments supplied must have enough information so that an
 ##' N x P matrix of predictors can be constructed.
 ##' The matrix X is drawn from a multivariate normal
 ##' distribution, the expected value vector (mu vector) is given by
@@ -281,6 +281,147 @@ genCorrelatedData2 <-
 }
 NULL
 
+##' Generate correlated data (predictors) for one unit
+##'
+##' This is used to generate data for one unit. It is a wrapper around
+##' the rockchalk::mvrnorm function, used for convenience to allow
+##' users to supply standard deviations and the correlation matrix
+##' rather than the variance.
+##'
+##' This is part of a multi-level data simulation exercise.
+##'
+##' I've been uncertain if this should return a matrix or a
+##' data.frame. A matrix of numeric values was originally returned,
+##' but after time there were requests to include an Intercept, a row
+##' index variable, and later a unit name, in a character string.  To
+##' avoid returning a character matrix, I'm including the unit name as
+##' an attribute on the returned numeric matrix.  At the end of the
+##' examples, I have example of how to convert the return into a data
+##' frame with a character column for the unit name and re-setting the
+##' variables Intercept and idx as integers.
+##'
+##' If the value given for unit is an integer or number, it will be added
+##' as a column in the returned matrix to save the user the trouble of
+##' extracting the unit name from the attributes of the returned matrix.
+##'
+##' I wouldn't mind making the return value a data.frame. If anybody
+##' uses this, let me know what's preferred.
+##' @param N Number of cases desired
+##' @param means A vector of means for X. It is optional to name them.
+##'     This implicitly sets the dimension of the predictor matrix as
+##'     N x p. If you provide a numeric vector with names, such as
+##'     c("x1" = 7, "x2" = 13, "x3" = 44), we will extract the names
+##'     and use them as the names of your columns in the output
+##'     matrix. This is probably less error prone than using the
+##'     separate colnames argument.
+##' @param sds Values for standard deviations for columns of X. It is
+##'     allowed to supply only one value, or just a few.  If less than
+##'     p values are supplied, they will be recycled.
+##' @param rho Correlation coefficient for X. Several input formats
+##'     are allowed (see \code{lazyCor}). This can be a single number
+##'     (common correlation among all variables), a full matrix of
+##'     correlations among all variables, or a vector that is
+##'     interpreted as the strictly lower triangle (a vech).
+##' @param Sigma P x P variance/covariance matrix.
+##' @param intercept Default = TRUE, do you want a first column filled
+##'     with 1?
+##' @param colnames Default NULL, we will name variables x1, x2, x3,
+##'     ... xp, with Intercept at front of list if intercept =
+##'     TRUE. If you provide colnames, explicitly, rather than as
+##'     names for the means vector, then we need you to provide the
+##'     same number of names as you provided means.
+##' @param unit A character string for the name of the unit being
+##'     simulated. Might be referred to as a "group" or "district" or
+##'     "level 2" membership indicator.
+##' @param idx If set TRUE, a variable idx is created numbering the
+##'     rows from 1:N. If the argument unit is not NULL, then idx is
+##'     set to TRUE automatically. Setting idx to FALSE will override
+##'     that.
+##' @return A numeric matrix with rownames to specify unit and
+##'     individual values, including an attribute "unit" with the
+##'     unit's name.
+##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @examples
+##' X1 <- genX(10, means = c(7, 8), sds = 3, rho = .4)
+##' X2 <- genX(10, means = c(7, 8), sds = 3, rho = .4, unit = "Kansas")
+##' head(X2)
+##' X3 <- genX(10, means = c(7, 8), sds = 3, rho = .4, idx = FALSE, unit = "Iowa")
+##' head(X3)
+##' X4 <- genX(10, means = c("A" = 7, "B" = 8), sds = c(3), rho = .4)
+##' head(X4)
+##' X5 <- genX(10, means = c(7, 3, 7, 5), sds = c(3, 6),
+##'             rho = .5, colnames = c("Fred", "Sally", "Henry", "Barbi"))
+##' head(X5)
+##' Sigma <- lazyCov(Rho = c(.2, .3, .4, .5, .2, .1), Sd = c(2, 3, 1, 4))
+##' X6 <- genX(10, means = c(5, 2, -19, 33), Sigma = Sigma, unit = "Winslow_AZ")
+##' head(X6)
+##' X6df <- data.frame("unit" = attr(X6, "unit"), X6, stringsAsFactors = FALSE)
+##' ## Is there more graceful way to put these back as integers?
+##' ## Should I have made the return a data.frame and done this inside?
+##' X6df$Intercept <- as.integer(X6df$Intercept)
+##' X6df$idx <- as.integer(X6df$idx)
+##'
+genX <-
+    function(N, means, sds, rho, Sigma = NULL,
+             intercept = TRUE, colnames = NULL,
+             unit = NULL, idx = !missing(unit)){
+    d <- length(means)
+    if (!missing(rho) & !is.null(Sigma)) stop ("Please provide rho or Sigma, not both")
+    if (!is.null(Sigma) & !missing(sds))
+        warning(paste("Note, if you provide Sigma we are ignoring",
+                      " your input on the sds argument"))
+    if (d != dim(Sigma)[1])
+        stop (paste("Sigma must have same number of rows",
+                    "& columns as there are means"))
+    if (is.null(Sigma)){
+        R <- lazyCor(rho, d)
+        if (length(sds) < d) sds <- rep(sds, length.out = d)
+        Sigma <- lazyCov(Rho = R, Sd = sds)
+    }
+    if (missing(colnames) && is.null(names(means))) {
+        colnames <- paste0("x", 1:d)
+    } else if (missing(colnames) && !is.null(names(means))){
+        colnames <- names(means)
+    } else {
+        if (length(colnames) != d)
+            stop(paste("If you provide column names, please provide one",
+                       "for each column in the means input"))
+    }
+
+    if (!missing(unit) && !identical(idx, FALSE)) idx <- TRUE
+    
+    ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
+    x.mat <- rockchalk::mvrnorm(N, means, Sigma)
+    if (is.null(unit)) {
+        rownames <- 1:N
+    } else {
+        if (length(unit) > 1) stop("Sorry, just supply 1 unit name")
+        rownames <- paste0(unit, "_", 1:N)
+    }
+    dimnames(x.mat) <- list(rownames, colnames)
+
+    newnames <-  c(if (intercept) "Intercept" else NULL,
+                   if (isTRUE(idx)) "idx" else NULL)
+    
+    if (length(newnames) > 0) {
+        x.left <- matrix(NA, ncol = length(newnames), nrow = N,
+                         dimnames = list(rownames, newnames))
+        if ("Intercept" %in% newnames){
+            x.left[ , "Intercept"] <- 1
+        }
+        if ("unit" %in% newnames){
+            x.left[ , "unit"] <- unit
+        }
+        if ("idx" %in% newnames){
+            x.left[ , "idx"] <- seq(1, N, by = 1)
+        }
+        x.mat <- cbind(x.left, x.mat)
+    }
+    attr(x.mat, "unit") <- unit
+    x.mat
+}
+
+    
 
 ##' Convert the vech (column of strictly lower trianglar values from a matrix) into a correlation matrix.
 ##'

@@ -11,7 +11,7 @@ lmAuxiliary <- function(model){
   ## ivnames <- attr(delete.response(terms(model)), "term.labels")
   ## previous does not work with transforms like poly
   hasIntercept <- attr(terms(model), "intercept")
-  if (hasIntercept) dat <- dat[ , -1] # removes intercept. assumes intercept in column 1
+  if (hasIntercept) dat <- dat[ , -1] # removes intercept. assumes intercept in column 1 
   ivnames <- colnames(dat)
   cat("The following auxiliary models are being estimated and returned in a list:\n")
 

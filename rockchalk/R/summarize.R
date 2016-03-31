@@ -81,10 +81,7 @@ NULL
 ##' Kurtosis is a summary of the fatness of a distribution's tails,
 ##' often (almost always) using the Normal distribution as a
 ##' comparison. In a Normal distribution, the kurtosis is 3.  The term
-##' "excess kurtosis" refers to the difference
-##'
-##' kurtosis - 3
-##'
+##' "excess kurtosis" refers to the difference \eqn{kurtosis - 3}.
 ##' Many researchers use the term kurtosis to refer to
 ##' "excess kurtosis" and this function follows suit by returning
 ##' excess kurtosis.  The user may avoid this by setting excess =
@@ -92,7 +89,7 @@ NULL
 ##'
 ##' If kurtosis is smaller than 3 (or excess kurtosis is negative),
 ##' the tails are "fatter" than Normal, the distribution is "spread
-##' wider than the Normal. If kurtosis is greater than 3 (excess kurtosis
+##' wider" than the Normal. If kurtosis is greater than 3 (excess kurtosis
 ##' positive, then the observations are packed more closely around the
 ##' mean than in the normal distribution and few observations are
 ##' found in the tails.
@@ -107,11 +104,9 @@ NULL
 ##' US NIST,
 ##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' kurtosis is defined as
-##'       
-##'                 mean((x - mean(x))^4)
-##' kurtosis =    ___________________
-##'                  var(x)^2
-##'
+##'                   
+##' \deqn{kurtosis =  ( mean((x - mean(x))^4) )/ var(x)^2}
+##'             
 ##' where var(x) is calculated with the denominator N, rather than N-1.
 ##'
 ##' A distribution is said to be leptokurtotic if it is tightly bunched in the center (spiked) and there are long, narrow tails representing extreme values that might occur.

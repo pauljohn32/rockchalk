@@ -1,3 +1,14 @@
+2016-03-31  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/plotSlopes.R (plotSlopes.lm): clear up stop message explanations
+
+	* ../R/plotCurves.R: Logit model plot correction: re-scale DV as 0
+	and 1 so plot points come out correct.
+
+2016-03-11  Paul Johnson  <pauljohn@dellap14>
+
+	* ../R/mcDiagnose.R (lmAuxiliary): Minor cleanup
+
 2016-02-07  Paul Johnson  <pauljohn@dellap14>
 
 	* ../R/plotSlopes.R: pasted in giant chunk of importsFrom

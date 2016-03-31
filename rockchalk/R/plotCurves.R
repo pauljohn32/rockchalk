@@ -184,10 +184,12 @@ plotCurves <-
         dotargs$ylim <- NULL
     } else if (is.logical(depVar) || (is.factor(depVar) && length(levels(depVar)) == 2)) {
         plotyRange <- c(0, 1.2)
+        ## Rescale depVar as 0 or 1 score
+        depVar <- ifelse(depVar %in% levels(depVar)[1], 0, 1)
     } else if (is.numeric(depVar)) {
         plotyRange <- magRange(depVar, mult = c(1, 1.2))
     } else {
-        stop("plotCurves: The dependent variable is neither numeric nor logical. I don't know what you want me to do. Please be patient, I'll figure it out")
+        stop("plotCurves: The dependent variable is neither numeric nor logical. What kind of model is this?")
     }
     
     parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),

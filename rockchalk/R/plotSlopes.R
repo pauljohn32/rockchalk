@@ -138,7 +138,7 @@ plotSlopes.lm <-
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
     if (missing(plotx))
-        stop("plotSlopes requires the name of the variable to be drawn on the x axis")
+        stop("plotSlopes: use modx argument to give name of the variable on the x axis")
 
     cl <- match.call()
     mm <- model.matrix(model)
@@ -157,7 +157,7 @@ plotSlopes.lm <-
     plotxVar <- model$model[, plotx]
 
     if (!is.numeric(plotxVar))
-        stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable"))
+        stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable. Try plotCurves?"))
     ylab <- colnames(model$model)[1]
 
     plotxRange <- if(is.null(plotxRange)) range(mm[, plotx], na.rm = TRUE) else plotxRange
@@ -231,9 +231,7 @@ plotSlopes.lm <-
     plotyRange <- if(is.numeric(depVar)){
         magRange(depVar, mult = c(1, 1.2))
     } else {
-        stop(paste("plotSlopes: I've not decided yet what
-                   should be done when the dependent variable is not numeric.",
-                   "Please be patient, I'll figure it out"))
+        stop(paste("plotSlopes: use plotCurves if this is a glm (logit, probit, count)"))
     }
 
     parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
