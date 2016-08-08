@@ -1,3 +1,7 @@
+2016-08-08  Paul Johnson  <pauljohn@dellap14>
+
+	* Rchaeology vignette: email from Alexandre Courtiol <alexandre.courtiol@gmail.com>
+
 2016-03-31  Paul Johnson  <pauljohn@dellap14>
 
 	* ../R/plotSlopes.R (plotSlopes.lm): clear up stop message explanations
