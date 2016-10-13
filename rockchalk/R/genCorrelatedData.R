@@ -77,15 +77,15 @@ NULL
 ##' changed by altering the arguments.
 ##'
 ##' The y (output) variable is created according to the
-##' equation
-##'
-##' y = b1 + b2 * x1 + ...+ bk * xk + b[k+1] * x1 * ...interactions.. + e
-##'
-##' For shorthand, I write b1 for beta[1], b2 for beta[2], and so forth.
+##' equation\cr
+##' \deqn{
+##' y = b1 + b2 * x1 + ...+ bk * xk + b[k+1] * x1 * ...interactions.. + e}
+##' \cr
+##' For shorthand, I write b1 for beta[1], b2 for beta[2], and so forth.\cr
 ##'
 ##' The first P+1 arguments in the argument beta are the coefficients
 ##' for the intercept and the columns of the X matrix.  Any additional
-##' elements in beta are the coefficients for nonlinear and interaction terms.
+##' elements in beta are the coefficients for nonlinear and interaction terms.\cr
 ##'
 ##' Those additional values in the beta vector are completely
 ##' optional. Without them, the true model is a linear
@@ -94,26 +94,27 @@ NULL
 ##' (x1 * x2) easily.  This is easier to illustrate than describe.
 ##' Suppose there are 4 columns in X. Then a beta
 ##' vector like beta = c(0, 1, 2, 3, 4, 5, 6, 7, 8) would amount to
-##' asking for
-##'
-##' y = 0 + 1 x1 + 2 x2 + 3 x3 + 4 x4 + 5 *x1^2 + 6 x1 x2 + 7 x1 x3 + 8 x1 x4 + error
-##'
+##' asking for\cr
+##' \deqn{
+##' y = 0 + 1 x1 + 2 x2 + 3 x3 + 4 x4 + 5 x1^2 + 6 x1 x2 + 7 x1 x3 + 8 x1 x4 + error
+##' }
+##' \cr
 ##' If beta supplies more coefficients, they are interpeted as additional
-##' interactions.
+##' interactions.\cr
 ##'
 ##' When there are a many predictors and the beta vector is long, this
 ##' can become confusing. I think of this as a vech for the lower
 ##' triangle of a coefficient matrix. In the example with 4
 ##' predictors, beta[1:5] are used for the intercepts and slopes. The
-##' rest of the  beta elements lay in like so:
+##' rest of the  beta elements lay in like so:\cr
 ##'
-##'    X1   X2  X3  X4
-##' X1 b6   .    .
-##' X2 b7   b10  .
-##' X3 b8   b11  b13
-##' X4 b9   b12  b14 b15
+##'    X1   X2  X3  X4\cr
+##' X1 b6   .    .\cr
+##' X2 b7   b10  .\cr
+##' X3 b8   b11  b13\cr
+##' X4 b9   b12  b14 b15\cr
 ##'
-##' If the user only supplies b6 and b7, the rest are assumed  to  be 0.
+##' If the user only supplies b6 and b7, the rest are assumed  to  be 0.\cr
 ##'
 ##' To make this clear, the formula used to calculate y is printed to
 ##' the console when genCorrelatedData2 is called.
@@ -131,11 +132,13 @@ NULL
 ##' @param stde standard deviation of the error term in the data
 ##' generating equation
 ##' @param beta beta vector of coefficients for intercept, slopes, and
-##' nonlinear-interaction terma.  The first P+1 values are the
+##' interaction terma.  The first P+1 values are the
 ##' intercept and slope coefficients for the predictors. Additional
 ##' elements in beta are interpreted as coefficients for nonlinear and
 ##' interaction coefficients.  I have decided to treat these as a
-##' column (vech) that fills into a lower triangular matrix. See Details.
+##' column (vech) that fills into a lower triangular matrix. It
+##' is easy to see what's going on if you run the examples. There
+##' is also explanation in Details.
 ##' @param verbose TRUE or FALSE. Should information about the data
 ##' generation be reported to the terminal?
 ##' @return A data matrix that has columns c(y, x1, x2, ..., xP)
@@ -224,19 +227,19 @@ NULL
 ##'
 genCorrelatedData2 <-
     function(N = 100, means = c(50,50,50), sds = c(10,10,10),
-             rho = c(0.0, 0.0, 0.0), stde = 100, beta = c(0, 0.15, 0.1, -0.1),
+             rho = c(0.0, 0.0, 0.0), stde = 100,
+             beta = c(0, 0.15, 0.1, -0.1),
              verbose = TRUE)
 {
-    ## if (length(beta)> 4) stop("beta vector can have at most 4 values")
-    ## corr.mat <- matrix(c(1,rho,rho,1), nrow = 2)
-    ## sigma <- diag(sds) %*% corr.mat %*% diag(sds)
     d <- length(means)
-    R <- lazyCor(rho, d)
-    if (length(sds) < d) sds <- rep(sds, length.out = d)
-    Sigma <- lazyCov(Rho = R, Sd = sds)
-    ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
-    x.mat <- rockchalk::mvrnorm(N, means, Sigma)
-    x.names <-  paste("x", 1:d, sep = "")
+    ## R <- lazyCor(rho, d)
+    ## if (length(sds) < d) sds <- rep(sds, length.out = d)
+    ## Sigma <- lazyCov(Rho = R, Sd = sds)
+    ## ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
+    ## x.mat <- rockchalk::mvrnorm(N, means, Sigma)
+    ## x.names <-  paste("x", 1:d, sep = "")
+
+    x.mat <- genX(N, means, sds, rho, intercept = TRUE)
     beta1 <- beta[1:(d+1)]
     beta2 <- beta[-(1:(d+1))]
 
@@ -259,7 +262,7 @@ genCorrelatedData2 <-
 
     intEffects <- do.call("cbind", intEffects)
 
-    y = cbind(1, x.mat) %*% beta1 +  stde*rnorm (N, mean = 0, sd = 1)
+    y = x.mat %*% beta1 +  stde*rnorm (N, mean = 0, sd = 1)
 
     if (!is.null(intEffects)) y = y + rowSums(intEffects)
 
@@ -267,6 +270,7 @@ genCorrelatedData2 <-
     names(dat) <- c("y", paste("x", 1:dim(x.mat)[2] , sep = ""))
 
     if (verbose == TRUE){
+        x.names <- colnames(x.mat)[-1]  
         print("The equation that was calculated was")
         cat("y =",  beta1[1], "+", paste(beta1[2:(d+1)] , c(x.names), collapse = " + ", sep = "*"), "\n" ,
             "+ ")
@@ -337,6 +341,7 @@ NULL
 ##'     rows from 1:N. If the argument unit is not NULL, then idx is
 ##'     set to TRUE automatically. Setting idx to FALSE will override
 ##'     that.
+##' @export
 ##' @return A numeric matrix with rownames to specify unit and
 ##'     individual values, including an attribute "unit" with the
 ##'     unit's name.
@@ -362,15 +367,15 @@ NULL
 ##' X6df$idx <- as.integer(X6df$idx)
 ##'
 genX <-
-    function(N, means, sds, rho, Sigma = NULL,
-             intercept = TRUE, colnames = NULL,
-             unit = NULL, idx = !missing(unit)){
+    function(N, means, sds, rho, Sigma = NULL, intercept = TRUE,
+             colnames = NULL, unit = NULL, idx = !missing(unit))
+{
     d <- length(means)
     if (!missing(rho) & !is.null(Sigma)) stop ("Please provide rho or Sigma, not both")
     if (!is.null(Sigma) & !missing(sds))
         warning(paste("Note, if you provide Sigma we are ignoring",
                       " your input on the sds argument"))
-    if (d != dim(Sigma)[1])
+    if ((!is.null(Sigma)) && (d != dim(Sigma)[1]))
         stop (paste("Sigma must have same number of rows",
                     "& columns as there are means"))
     if (is.null(Sigma)){
@@ -436,10 +441,12 @@ genX <-
 ##' into a covariance matrix.
 ##'
 ##' @export
-##' @seealso Similar functions exist in many packages, see  \code{vec2sm} in corpcor, \code{xpnd} in MCMCpack
+##' @seealso Similar functions exist in many packages, see
+##'     \code{vec2sm} in corpcor, \code{xpnd} in MCMCpack
 ##' @param vech A vector of values for the strictly lower triangle of
-##' a matrix. All values must be in the [0,1] interval (because they
-##' are correlations) and the matrix formed must be positive definite.
+##'     a matrix. All values must be in the [0,1] interval (because
+##'     they are correlations) and the matrix formed must be positive
+##'     definite.
 ##' @return A symmetric correlation matrix, with 1's on the diagonal.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @examples
@@ -455,7 +462,9 @@ vech2Corr <-
     if (!as.integer(n) == n) stop(deparse(substitute(vech)),
                        " must have the correct number of elements to fill",
                        "in a strictly lower triangle in a square matrix.")
-    if(any(vech > 1 | vech < -1)) stop("All values in ", deparse(substitute(vech)), " must be in the interval [-1,1]")
+    if(any(vech > 1 | vech < -1)) {
+        stop(paste("All values in ", deparse(substitute(vech)),
+                   " must be in the interval [-1,1]"))
     X <- matrix(NA, nrow = n, ncol = n)
     X[lower.tri(X, diag = FALSE)] <- vech
     X[upper.tri(X)] <- t(X)[upper.tri(X)]
