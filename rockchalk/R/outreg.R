@@ -1160,7 +1160,7 @@ outreg <-
                 vcnames <- c("Residual", vcnames)
         }}
         
-        VCmat <- matrix("    ", nrow = length(vcnames), ncol =
+        VCmat <- matrix("   ", nrow = length(vcnames), ncol =
                         length(modelList), dimnames = list(vcnames, modelLabels))
         for (i in seq_along(VCs)) {
             vc <- VCs[[i]]
@@ -1178,7 +1178,7 @@ outreg <-
         if (tight) hereSep <- " _SEP_ " else hereSep <-  " _SEP_     _SEP_ "
  
         bline1 <- paste0("_BR__NBSP_", paste0(rownames(VCmat)))
-        bline2 <- paste(rep(" ", max(2, (14 - nchar(rownames(VCmat))))), collapse = "")
+        bline2 <- paste(rep(" ", max(2, (5 - nchar(rownames(VCmat))))), collapse = "")
         bline3 <- paste(apply(VCmat, 1, paste, collapse = hereSep), "_EOC__EOR__EOL_")
         bline <- paste(bline1, bline2, "_SEP_",  bline3)
         c(aline, bline)
@@ -1209,7 +1209,7 @@ outreg <-
  
     ## Put model labels on top of each model column, if modelLabels were given
     if (!is.null(modelLabels)){
-        aline <- paste("_BR_",  sprintf("%14s", " "), "_EOC_", collapse = "")
+        aline <- paste("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
                 aline <- c(aline, paste0("_BOC_", modelLabel, "_EOC_"))
@@ -1223,13 +1223,13 @@ outreg <-
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste("_BR_", sprintf("%14s", " "), paste(rep (" _SEP_Estimate", nmodels), collapse = " "), "_EOR__EOL_", collapse = "") 
+        aline <- paste("_BR_", sprintf("%2s", " "), paste(rep (" _SEP_Estimate", nmodels), collapse = " "), "_EOR__EOL_", collapse = "") 
         z <- c(z, paste(aline, collapse = ""))
 
-        aline <- c("_BRU_", sprintf("%14s", " "), paste(rep (" _SEPU_(S.E.) ", nmodels, collapse = " ")), "_EOR__EOL_")
+        aline <- c("_BRU_", sprintf("%2s", " "), paste(rep (" _SEPU_(S.E.) ", nmodels, collapse = " ")), "_EOR__EOL_")
         z <- c(z, paste(aline, collapse = ""))
     } else {
-        aline1 <- paste("_BRU_", sprintf("%14s", " "))
+        aline1 <- paste("_BRU_", sprintf("%2s", " "))
         aline2 <- paste(rep (" _SEPU_Estimate _SEPU_(S.E.) ", nmodels), collapse = " ")
         aline3 <- paste("_EOR__EOL_")
         z <- c(z, paste(aline1, aline2, aline3, collapse = ""))
@@ -1239,7 +1239,7 @@ outreg <-
    
     ## Here come the regression coefficients
     for (regname in parmnames){
-        aline <- paste(paste("_BR_ ", displayNames[regname], paste(rep(" ", max(2, (14 - nchar(displayNames[regname])))), collapse = "" ) ) , collapse = "")
+        aline <- paste(paste("_BR_ ", displayNames[regname], paste(rep(" ", max(2, (6 - nchar(displayNames[regname])))), collapse = "" ) ) , collapse = "")
         for (model in modelLabels) {
             est <- B[regname, model]
             se <- SE[regname, model]
@@ -1257,11 +1257,11 @@ outreg <-
         z <- c(z, paste(aline, collapse = ""))
 
         if (tight == TRUE){
-            aline <- paste("_BR_", paste(rep(" ", 14), sep = "", collapse = ""))
+            aline <- paste("_BR_", paste(rep(" ", 2), sep = "", collapse = ""))
             for (model in modelLabels) {
                 est <- B[regname, model]
                 se <- SE[regname, model]
-                aline2 <- if (!is.na(est)) c("_SEP_", se, rep(" ", max(2, 6 - nchar(se)), collapse=""))  else c("_SEP_  ", sprintf("%6s", " "))
+                aline2 <- if (!is.na(est)) c("_SEP_", se, rep(" ", max(2, 6 - nchar(se)), collapse=""))  else c("_SEP_  ", sprintf("%2s", " "))
                 aline <- c(aline, paste(aline2, collapse = ""))
             }
             aline <- c(aline, "_EOR__EOL_")
@@ -1274,11 +1274,11 @@ outreg <-
 
 
     ## Print a row for the number of cases
-    aline <- c("_BR_", "N", sprintf("%16s", " "))
+    aline <- c("_BR_", "N", sprintf("%2s", " "))
     for (model in modelList) {
         myN <- stats::nobs(model)
-        aline <- c(aline, "_SEP_", myN, sprintf("%6s", " "))
-        if (tight == FALSE) aline <- c(aline, "_SEP_ ", rep(" ",6))
+        aline <- c(aline, "_SEP_", myN, sprintf("%2s", " "))
+        if (tight == FALSE) aline <- c(aline, "_SEP_ ", rep(" ",2))
     }
     aline <- c(aline, " _EOR__EOL_")
     z <- c(z, paste(aline, collapse = ""))
