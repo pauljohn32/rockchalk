@@ -1,4 +1,4 @@
-%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.2.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -12,6 +12,7 @@
 \setlength{\parindent}{0pt}
 \usepackage{babel}
 \usepackage{url}
+\usepackage{enumitem}
 \usepackage[authoryear]{natbib}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
@@ -24,7 +25,6 @@
 <<echo=F>>=
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 @
-\usepackage{enumitem}		% customizable list environments
 \newlength{\lyxlabelwidth}      % auxiliary length 
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\strong}[1]{\textbf{#1}}
@@ -126,7 +126,6 @@
 
 \title{Rchaeology: Idioms of R Programming}
 
-
 \author{Paul E. Johnson <pauljohn @ ku.edu>}
 
 \maketitle
@@ -173,7 +172,6 @@ options(useFancyQuotes = FALSE)
 set.seed(12345)
 pdf.options(onefile=F,family="Times",pointsize=12)
 @
-
 
 \section{Introduction: R Idioms.}
 
@@ -245,14 +243,12 @@ A good deal of the advice I have to offer is about the process of
 managing R formula, but I have also accumulated some lessons in argument
 handling. 
 
-
 \section{do.call(), eval(), substitute(), formula().}
 
 If the transitional programmer understands these four functions, she/he
 will be well on the way to escaping the category of novice R programmer.
 The other benefit is that the code written by the experts, including
 the R source code itself, will become much more understandable.
-
 
 \subsection{Rewriting Formulas. My Introductory Puzzle.}
 
@@ -305,7 +301,6 @@ y ~ log(x1) + x3 + x2c + x2:x3
 y ~ log(x1) + x2 + x3 + x1c + x2:x3
 \end{lstlisting}
 \inputencoding{utf8}
-
 I asked the members of r-help for assistance. Lately I've had very
 good luck with r-help. Gabor Grothendieck wrote an answer to r-help
 on May 29, 2012. He said simply, ``Try substitute,'' with this example.
@@ -315,7 +310,6 @@ on May 29, 2012. He said simply, ``Try substitute,'' with this example.
 y ~ log(x1c) + x2 * x3
 \end{lstlisting}
 \inputencoding{utf8}
-
 Problem solved, in a single line. 
 
 That's very clever, I think. It packs together a half-dozen very deep
@@ -325,7 +319,6 @@ formula as a list, and it shows that every command in R is, when it
 comes down to brass tacks, a list. 
 
 I would like to take up these separate pieces in order.
-
 
 \subsection{A Formula Object is a List.}
 
@@ -346,7 +339,6 @@ newFmla[[3]][[2]][[2]]
 
 How could I put that information to use? Read on.
 
-
 \subsection{do.call() and eval()}
 
 In my early work as an Rchaeologist, I had noticed eval() and do.call(),
@@ -356,7 +348,6 @@ separate the ``script writer'' from the ``language programmer.''
 Whenever difficult problems arise in r-help, the answer almost invariably
 involves do.call() or eval(). 
 
-
 \subsubsection{do.call()}
 
 Let's concentrate on do.call first. The syntax is like this
@@ -365,14 +356,12 @@ Let's concentrate on do.call first. The syntax is like this
 do.call("someRFunction", aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
 \inputencoding{utf8}
-
 It is as if we were telling R to run this:
 
 \inputencoding{latin9}\begin{lstlisting}
 someRFunction(aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
 \inputencoding{utf8}
-
 We use do.call() because it is much more flexible than calling someRFunction()
 directly.
 
@@ -409,7 +398,6 @@ for (i in 1:10000){
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 That will call rbind() 10000 times. I had not realized that rbind()
 is time-consuming. It accesses a new chunk of memory each time it
 is run. On the other hand, we could collect those results in a list,
@@ -422,7 +410,6 @@ for (i in 1:10000){
 result <- do.call("rbind", mylist)
 \end{lstlisting}
 \inputencoding{utf8}
-
 It is much faster to run rbind() only once. It would be OK if we typed
 it all out like this:
 
@@ -430,7 +417,6 @@ it all out like this:
 result <- rbind(mylist[[1]], mylist[[2]], mylist[[3]], ..., mylist[[10000])
 \end{lstlisting}
 \inputencoding{utf8}
-
 But who wants to do all of that typing? How tiresome! Thanks to Erik
 Iverson in r-help, I understand that
 
@@ -438,7 +424,6 @@ Iverson in r-help, I understand that
 result <- do.call("rbind", mylist)
 \end{lstlisting}
 \inputencoding{utf8}
-
 is doing the EXACT same thing. ``mylist'' is a list of arguments.
 do.call is \emph{constructing} a function call from the list of arguments.
 It is \emph{as if} I had actually typed rbind with 10000 arguments.
@@ -455,7 +440,6 @@ From all of this (and a peek at ?call), I arrive at an Rchaeological
 eureka! A call object is a quoted command plus a list of arguments
 for that command. 
 
-
 \subsubsection{eval()}
 
 Where does eval() fit into the picture? do.call() manufactures a call
@@ -468,7 +452,7 @@ expression'' or a ``call object'', anything that can be handled
 by the eval() function. A not-yet-evaluated object holds some syntax
 that can we need later. I think of do.call() as a contraction of ``eval''
 and ``call''. As far as I can tell, do.call(\textquotedbl{}lm\textquotedbl{},
-list(arguments)) is the same as eval(call(``rbind'', arguments)). 
+list(arguments)) is the same as eval(call(``lm'', arguments)). 
 
 There are many ways to ask R to create the not-yet-evaluated object,
 that's one of the confusing things (in my opinion). Most obviously,
@@ -482,7 +466,6 @@ Everybody has experienced an error like this:
 Error: object 'x1' not found
 \end{lstlisting}
 \inputencoding{utf8}
-
 Whenever we use a variable, the R interpreter expects to find it.
 We know those variables are in the data frame dat, but the interpreter
 does not know that's what we mean. But we can ask R to trust us with
@@ -493,7 +476,6 @@ we will evaluate later'':
 > mycall <- quote(x1 + x2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 The object ``mycall'' is an R call object, something that might
 be evaluated in the future. 
 
@@ -510,13 +492,11 @@ of the eval function's interface. It does the same thing:\inputencoding{latin9}
 with(dat, x1 + x2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 and so does \inputencoding{latin9}
 \begin{lstlisting}
 with(dat, eval(mycall)).
 \end{lstlisting}
 \inputencoding{utf8}
-
 Now, back to the regression example we were working on before. We
 can create the call object using the call() function, which requires
 the name of a function and a comma-separated list of quoted arguments.
@@ -549,7 +529,6 @@ $\sim$ in the syntax, and so it assumes you meant to run
 formula(y ~ x1 + x2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 A formula is another kind of not-yet-evaluated thing. It is something
 that we can fiddle with before evaluating. 
 
@@ -583,7 +562,6 @@ it cannot include any other regression options.
 Error: unexpected ',' in "f1 <- y ~ x1 + x2 + x3 + log(x4),"
 \end{lstlisting}
 \inputencoding{utf8}
-
 If I declare f1exp as an expression, then R does not re-interpret
 it as a formula (f1exp is an unevaluated expression, the R parser
 has not translated it yet). To use that as a formula in the regression,
@@ -644,7 +622,6 @@ lm <- function (formula, data, subset, weights, na.action, method = "qr",
     mf <- eval(mf, parent.frame())
 \end{lstlisting}
 \inputencoding{utf8}
-
 Now suppose we turn on the debugger and run a regression in R with
 a command like this.
 
@@ -653,7 +630,6 @@ debug(lm)
 m1 <- lm(y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
 \inputencoding{utf8}
-
 After that, we are ``in'' the function, stepping through line-by-line.
 In line 8, the match.call() function is used to grab a copy of the
 command that I typed. We can see that mf is exactly the same as my
@@ -664,7 +640,6 @@ command, except R has named the arguments:
 lm(formula = y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
 \inputencoding{utf8}
-
 That's not just a string of letters, however. It is a call object,
 a list with individual pieces that can be revised. Recall that the
 first element in a call object is the name of a function, and the
@@ -687,7 +662,6 @@ dat
 [1] TRUE
 \end{lstlisting}
 \inputencoding{utf8}
-
 The object mf has separate pieces that can be revised and then evaluated.
 Line 13 replaces the element 1 in mf with the symbol ``model.frame''.
 That's the function that will be called. Line 14 is the coup de grâce,
@@ -698,13 +672,11 @@ when the revised call ``mf'' is sent to eval. In the end, it is
 mf <- model.frame(y ~ x1 * x2, data = dat, drop.unused.levels = TRUE)
 \end{lstlisting}
 \inputencoding{utf8}
-
 It would not do to simply write that into the lm function, however,
 because some people use variables that have names different from y,
 x1, and x2, and their data objects may not be called dat. lm allows
 users to input whatever they want for a formula and data, and then
 lm takes what it needs to build a model frame.
-
 
 \subsection{substitute()}
 
@@ -801,7 +773,6 @@ sublist <- list(x1 = as.name("alphabet"), x2 = as.name("zoology"))
 substitute(expression(x1 + x2 + log(x1) + x3), sublist)
 @
 
-
 \subsection{setNames and names}
 
 Almost every R user has noticed that the elements of R lists can have
@@ -859,7 +830,6 @@ question, there is this idiom
 setNames(list(as.name("x1c")), "x1")))
 \end{lstlisting}
 \inputencoding{utf8}
-
 Consider this from the inside out. 
 \begin{enumerate}
 \item as.name(``x1c'') is an R symbol object,
@@ -870,7 +840,6 @@ that symbol object.
 It is as if we had run the command list(x1 = x1c). The big difference,
 of course, is that this way is much more flexible because we can calculate
 replacements. 
-
 
 \subsection{The Big Finish}
 
@@ -886,7 +855,6 @@ formulaReplace <- function(fmla, xname, newname){
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 This is put to use in meanCenter(). Suppose a vector of variable names
 called nc (stands for ``needs centering'') has already been calculated.
 The function std() creates a centered variable.
@@ -901,10 +869,8 @@ for (i in seq_along(nc)){
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 If one has a copy of rockchalk 1.6 or newer, the evidence of the success
 of this approach should be evident in the output of the command example(meanCenter). 
-
 
 \section{Make Re-Usable Tools (Rather than Cutting and Pasting)}
 
@@ -950,7 +916,6 @@ The code had several pages like this:
     }
 \end{lstlisting}
 \inputencoding{utf8}
-
 Well, that's understandable, but a little bit embarrassing. I asked
 ``why do you declare these separate variables, why not make a vector?''
 and ``can't you see a more succinct way to declare those things?''
@@ -1011,7 +976,6 @@ Error in rep(0, n - n1s) (from #2) : invalid 'times' argument
 [1] 1 1 1 1 1 1 1
 \end{lstlisting}
 \inputencoding{utf8}
-
 Perhaps I prefer biVec1() because it throws an error when there is
 unreasonable input, while biVec2() returns a longer vector than expected
 with no error. 
@@ -1061,7 +1025,6 @@ Error in biVec1(3.3, 4.4) (from #2) :
 \end{lstlisting}
 \inputencoding{utf8}
 
-
 \section{Function Arguments.}
 
 While developing functions for the rockchalk package, one of the most
@@ -1101,58 +1064,45 @@ need to check if the user supplied a value for an argument, such as
 \code{col}. If the user did not supply a value, we might construct
 one from the other input
 
-
 \inputencoding{latin9}\begin{lstlisting}
 if (missing(col)) col <- someTediousCalculation(y, z)
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 This is usually good enough, but there is danger that the user might
 have called the function like so:
-
 
 \inputencoding{latin9}\begin{lstlisting}
 plotme(x, y, z, col = NULL)
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 This outsmarts missing(col), which will return FALSE. If our goal
 is to make sure col is something, some non-NULL thing, a more careful
 argument check would be
-
 
 \inputencoding{latin9}\begin{lstlisting}
 if (missing(col) | is.null(col)) col <- someTediousCalculation(y, z)
 \end{lstlisting}
 \inputencoding{utf8}
-
 \item [{stop()}] Halts a function and returns a message to the user. Usage
 example 
-
 
 \inputencoding{latin9}\begin{lstlisting}
 if (isTRUE(x)) stop(paste("I'm sorry, you failed to supply the right information.")))
 \end{lstlisting}
 \inputencoding{utf8}
-
 \item [{stopifnot()}] It is so frequent to run ``\code{if(isTRUE(x)) stop()}''
 that they created a wrapper, \code{stopifnot(x)}.
 \item [{warning()}] If you don't want the function to fail, but you need
 to warn the user about a condition that seems dubious, run
 
-
 \inputencoding{latin9}\begin{lstlisting}
 if (isTRUE(x)) warning(paste("Are you sure the value of x ought to be", x, "?"))
 \end{lstlisting}
 \inputencoding{utf8}
-
 \item [{deparse(substitute())}] Inside a function, it is often important
 to find out the symbolic value of the argument that the user supplied
 to the function. I don't mean the \emph{value}, but rather the symbolic
 name. To see what I mean, run this
-
 
 <<eval=F>>=
 dat <- data.frame(myx = c(1, 2, 3), myy = c(10, 5, 1))
@@ -1160,13 +1110,11 @@ debug(plot.default)
 plot(dat$myx, dat$myy)
 @
 
-
 After you hit enter, the R debugger/browser will come open and the
 prompt will allow you to inspect the situation. First, type ``n''
 and hit return. That takes the first step into the calculations. After
 that, run \code{match.call()}. The function is somewhat ``self aware''.
 It knows how it was called. You should see this
-
 
 \inputencoding{latin9}\begin{lstlisting}
 Browse[2]> n 
@@ -1175,14 +1123,10 @@ Browse[2]> match.call()
 plot.default(x = dat$myx, y = dat$myy)
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 You asked for \code{plot()}, R sends the work to \code{plot.default()}.
 All is well.
 
-
 Still inside the debugger now, type ``x'' and then ``myx'':
-
 
 \inputencoding{latin9}\begin{lstlisting}
 Browse[2]> x
@@ -1191,8 +1135,6 @@ Browse[2]> myx
 Error: object 'myx' not found
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 Inside the function, the vector value that we passed in, which was
 referred to as dat\$myx, is now called x. The thing x is a data holder,
 it is used in the following calculations. \code{x} does not remember
@@ -1201,18 +1143,14 @@ life. It is as if \code{x} is the new identity of the same old data
 vector. However, we can ask \code{x} ``what name were you known
 by in your previous life?'' with this interesting idiom.
 
-
 \inputencoding{latin9}\begin{lstlisting}
 Browse[2]> deparse(substitute(x))
 [1] "dat$myx"
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 The substitute() function, as we have already seen, is a way to replace
 a letter x with a value from somewhere. Maybe it would be more obvious
 to run this in 2 steps.
-
 
 \inputencoding{latin9}\begin{lstlisting}
 Browse[2]> xsubs <- substitute(x)
@@ -1222,14 +1160,11 @@ Browse[2]> deparse(xsubs)
 [1] "dat$myx"
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 \code{substitute()} grabs the object name from whence \code{x} was
 calculated. We need to convert that back to a character string so
 that we can know the symbolic name of the thing that eventually became
 \code{x}. This is at the outer boundary of my R comprehension, so
 I better stop here.
-
 
 Incidentally, you can go exploring in the debugger. Run some standards
 like \code{ls()} to see what's available. If you keep hitting return,
@@ -1237,26 +1172,20 @@ the function will run line by line. If you get tired of hitting return,
 type ``c'' and the function will run to its conclusion. To let R
 know that you don't want to debug that function any more, run:
 
-
 \inputencoding{latin9}\begin{lstlisting}
 > undebug(plot.default)
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 If you don't do that, then the function browser will pop open every
 time you try to run plot.
-
 \item [{list(...)}] The three periods, ``...'', are a valid word. (A
 period is a valid character). R scans user syntax for function arguments
 and it uses whatever it can understand (formal named arguments, positional
 matching), and then the other arguments are thrown into a thing called
 ``...''.
 
-
 In a simple case, we could just pass those additional arguments to
 another function, as in
-
 
 \inputencoding{latin9}\begin{lstlisting}
 plotme <- function(x, y, ...){
@@ -1264,18 +1193,14 @@ plotme <- function(x, y, ...){
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 Often, it is not sufficient to simply pass on the ``...'' variables,
 and we instead need to scan them and sort them for various purposes.
 Inside the function, we access those variables by turning them into
 a list: 
 
-
 \begin{Sinput}
 dots <- list(...)
 \end{Sinput}
-
 
 We can still pass on the dots to other functions, but the usual problem
 is that some of the arguments in dots may be intended for several
@@ -1286,14 +1211,12 @@ may have put in arguments intended for those separate functions. There's
 a chance of an error, or at least a warning, if irrelevant arguments
 are passed to those arguments. 
 
-
 The rockchalk functions \code{plotSlopes()} has examples that do
 this work. They separate the dot arguments that are needed for the
 \code{predict()} function and the \code{plot()} function. Because
 I was learning about arguments when I wrote those functions, I did
 not take the cleanest or most direct route to do this, but they do
 stand as working examples that users can review.
-
 
 A function may set a number of defaults that we want to use when the
 users do not supply a lot of details. In a case like that, it is useful
@@ -1302,7 +1225,6 @@ The basic idea is that we can build a list of default arguments for
 a function, and then we can scan the \code{dots} list and it will
 replace the defaults in the first with changes in the second. There's
 an example in rockchalk's \code{pctable()} function.
-
 
 \begin{Sinput}
 dots <- list(...)
@@ -1314,7 +1236,6 @@ t1 <- do.call("table", newargs)
 handy to have a copy of their names for checking whether an argument
 is included in the list. In the plotSlopes() function, here's what
 I ended up with:
-
 
 \begin{Sinput}
 validForPredict <- c("se.fit", "dispersion", "terms", "na.action",
@@ -1331,7 +1252,6 @@ list, then those arguments are set to NULL in the dotargs collection.
 Looking at that now, I see it would have been more clear to use \code{setdiff()}
 on dotargs to clean that up.
 
-
 The central challenge in that work is to find out the names of the
 arguments that are intended for one function, then remove them from
 \code{dots} so that they are not passed to a subsequent function
@@ -1343,22 +1263,18 @@ function being considered. This can sometimes be deceptive for implementations
 of generic methods. Observe that the return from the generic is not
 so informative as the return from the method:
 
-
 <<>>=
 formals(plot)
 formals(plot.default)
 @
 
-
 If a method is not exported, if it does not show as ``visible''
 in the output from \code{methods(plot)}, then a little more fancy
 footwork is required to see all of the legal arguments.
 
-
 <<>>=
 formals(graphics:::plot.histogram)
 @
-
 \end{description}
 
 \subsection{Protect your function's calculations from the user's workspace.}
@@ -1388,7 +1304,6 @@ Error in FALSE <- function(x, y) { :
   invalid (do_set) left-hand side to assignment
 \end{lstlisting}
 \inputencoding{utf8}
-
 In order to protect our function's calculations, we are urged to fully
 write out the symbols TRUE and FALSE inside functions. This way, users
 cannot cause damage. 
@@ -1414,7 +1329,6 @@ plotme <- function(x){
 plotme(x)
 \end{lstlisting}
 \inputencoding{utf8}
-
 That lets the function go and find \code{y} and \code{z}. This will
 run, but it is pretty risky. It depends on R's willingness to reach
 outside the boundaries of the function to find \code{y}, and \code{z}.
@@ -1455,7 +1369,6 @@ plotme <- function(x, y, z){
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 the user's use of \code{plotme(x)} will result in the error
 
 \begin{Schunk}
@@ -1488,7 +1401,6 @@ not offer a warning about them. Hence, it is very important to run
 
 checkUsage() will also offer warnings about unused variables. This
 can be helpful in cleaning up a function.
-
 
 \subsection{Check argument values.}
 
@@ -1592,7 +1504,6 @@ plotme <- function(x, y, z){
 If \code{z} is either not supplied by the user's command, or if the
 user's command explicitly sets it to NULL, then we'll fabricate \code{z}.
 
-
 \subsection{Design the function so that it runs with a minimum number of arguments.}
 
 Take a look at the most commonly used functions in R, such as lm()
@@ -1608,7 +1519,6 @@ Put the arguments that users will use most often at the front of the
 argument list, and then design the function so that it will work even
 if all of the other arguments are not included. There are two elements
 in making this work.
-
 
 \subsubsection{Specify defaults}
 
@@ -1657,7 +1567,6 @@ does not exist outside the function, and yet it can be used in the
 definition of a default. I merely promise that \code{getAColor} will
 exist when the value of \code{z} is needed and all is well. 
 
-
 \subsubsection{Extract or construct what else is needed from the user input}
 
 We can deduce information from the arguments that are passed in, we
@@ -1670,13 +1579,12 @@ user to pass through many parameters that (I've since learned) can
 be deduced from the other arguments.
 
 A key element in this is getting an understanding of the information
-that comes in with a standard R object. Quite a few--almost all--functions
+that comes in with a standard R object. Quite a few–almost all–functions
 that generate interesting objects in R provide, as a part of their
 output, a copy of the call that ran the function. Inside our functions,
 we can inspect that call argument to see what the users ran, and from
 that we can often deduce what we need without requiring users to supply
 a lot of information. 
-
 
 \subsection{Return values versus attributes}
 
@@ -1706,7 +1614,6 @@ will show them. I've not learned all of the ins-and-outs of preventing
 that, but in 2015 I became aware of it and learned that one way to
 deal with it can be found in the R source code for the method \code{print.table()}. 
 
-
 \section{Do This, Not That (Stub) }
 
 R novices sometimes use Google to search for R advice and they find
@@ -1735,7 +1642,6 @@ performance
 
 Balance time spent optimizing code versus time spent running program.
 
-
 \section{Suggested Chores}
 
 I suggest the would be programmer should take on some basic challenges. 
@@ -1746,13 +1652,13 @@ cause disorientation, that means the reader is a user, not a programmer
 yet. 
 \item Consider developing a routine (or package) for statistical estimation
 or presentation. Find several R packages and compare the R code in
-them. Let me know if you agree with me about these points.\end{enumerate}
+them. Let me know if you agree with me about these points.
+\end{enumerate}
 \begin{itemize}
 \item Good code is compartmentalized. Separate pieces of work are handled
 by separated functions and results are returned in a well organized
 way.
 \item Functions should not be HUGE. 
-
 
 The components of a project should be small enough so that we can
 comprehend them. Generally speaking, if we are reading code and we
@@ -1760,7 +1666,6 @@ come to a line that uses a variable that we cannot find on the screen,
 that's a problem. I used to correspond with a programmer at the University
 of Michigan who said he began to feel uncomfortable when a function
 filled up the entire terminal screen. 
-
 \item People who copy and paste sections over and over in order to handle
 slightly different cases are causing trouble for themselves and others.
 They should think harder on ways to separate that work into re-usable

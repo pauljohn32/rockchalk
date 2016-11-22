@@ -1434,7 +1434,7 @@ outreg <-
     invisible(z)
 }
 
-
+NULL
 
 
 
@@ -1511,8 +1511,3 @@ outreg2HTML <-
         }
     invisible(myz2)
 }
-
-
-
-
-

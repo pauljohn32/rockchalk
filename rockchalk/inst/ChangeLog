@@ -1,3 +1,9 @@
+2016-11-22  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/outreg.R (pline): remove extra "2" in number of columns
+	(BT): delete wide blank spaces that were breaking pandoc output of
+	HTML tables.
+
 2016-08-08  Paul Johnson  <pauljohn@dellap14>
 
 	* Rchaeology vignette: email from Alexandre Courtiol <alexandre.courtiol@gmail.com>

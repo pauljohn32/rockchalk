@@ -1,4 +1,4 @@
-%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.2.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -115,7 +115,6 @@ read-only git archive address is \protect\url{git://github.com/pauljohn32/rockch
 Once you learn how to ``clone'' the repository with a git client,
 then we can discuss ways for you to contribute.}}
 
-
 \author{Paul E. Johnson}
 \maketitle
 \begin{abstract}
@@ -143,7 +142,6 @@ options(device = pdf)
 options(width=80, prompt=" ", continue="  ")
 options(useFancyQuotes = FALSE) 
 @
-
 
 \section{Introduction}
 
@@ -184,9 +182,7 @@ to provide standardized regression coefficients, mean-centered, or
 residual-centered regression coefficients have not changed much, although
 the plots of them are improved. 
 
-
 \section{Facilitating Collection of Summary Information}
-
 
 \subsection{summarize: A replacement for summary}
 
@@ -226,7 +222,6 @@ the mean, while for factor variables, it returns the mode.
 <<echo=T>>=
 centralValues(Chile)
 @
-
 
 \subsection{Easier predictions and newdata objects}
 
@@ -359,7 +354,6 @@ budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family
 predictOMatic(budworm.lg, predVals = c(ldose = "std.dev.", sex = "table"), interval = "confidence")  
 @
 
-
 \section{Better Regression Tables: Some outreg Examples.}
 
 On May 8, 2006, Dave Armstrong, who was a political science PhD student
@@ -422,41 +416,33 @@ dcolumn and make a few obvious changes in the markup that I provide.
 \begin{table}
 \caption{Default Outreg Table\label{tab:Tab1}}
 
-
 <<outreg10, echo = F, results=tex>>=
 outreg(list(m1, m2, m3))
 @
 \end{table}
 
-
 \begin{table}
 \caption{My Spread Out Regressions\label{tab:Tab2}}
-
 
 <<outreg20, results=tex, echo=F>>=
 outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with a Long Title", "Another Model"), alpha = c(0.05, 0.01, 0.001))
 @
 \end{table}
 
-
 \begin{table}
 \caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
-
 
 <<outreg70, results=tex, echo=F>>=
 outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
 @
 \end{table}
 
-
 In rockchalk 1.8, a translator from \LaTeX{} markup to simple HTML
 was introduced. The function outreg2HTML() can write an HTML code
 file that a word processor program such as Libre Office or Microsoft
 Word is able to import without a struggle. 
 
-
 \section{Plotting Regressions with Interactions }
-
 
 \subsection{Interaction in Linear Regression. }
 
@@ -487,7 +473,6 @@ m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval = "conf
 
 \caption{plotSlopes: Linear Model with Confidence Interval\label{fig:ps05}}
 \end{figure}
-
 
 At its most elementary level, plotSlopes() is a ``one step'' regression
 line plotter. If the regression model includes more than one predictor,
@@ -533,7 +518,6 @@ par(mfcol=c(1,1))
 \caption{plotSlopes Illustrated\label{fig:ps10}}
 \end{figure}
 
-
 This is more interesting if we fit a regression with an interaction
 term, such as 
 
@@ -541,7 +525,6 @@ term, such as
 m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 \end{lstlisting}
 \inputencoding{utf8}
-
 \noindent We then ask plotSlopes to draw the predicted values using
 one numeric variable as the horizontal axis and values of another
 variable (a moderator) are set at particular values. Either x1 or
@@ -584,7 +567,6 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Pr
 \caption{plotSlopes with a Categorical Moderator\label{fig:ps20}}
 \end{figure}
 
-
 \noindent 
 \begin{figure}
 <<ps21, fig=T, echo=F>>=
@@ -618,11 +600,10 @@ which is produced by
 In rockchalk version 1.8, I've exerted quite a bit of effort to make
 sure that colors are chosen consistently when users remove or insert
 groups in these plots. The same value of the moderator should always
-be plotted in the same way--the line, points, and interval colors
-should not change. Note, for example, in Figures \ref{fig:ps20} and
-\ref{fig:ps21}, the line for East is black in both plots, while the
-line for West is red in both. 
-
+be plotted in the same way–the line, points, and interval colors should
+not change. Note, for example, in Figures \ref{fig:ps20} and \ref{fig:ps21},
+the line for East is black in both plots, while the line for West
+is red in both. 
 
 \subsection{testSlopes, a companion of plotSlopes}
 
@@ -647,7 +628,6 @@ plot(m4psats)
 \caption{testSlopes for an Interactive Model\label{fig:ts10}}
 \end{figure}
 
-
 \inputencoding{latin9}\begin{lstlisting}
 m4 <- lm(y ~ x1*x2 + x3, data = dat)
 m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous Predictor")
@@ -655,7 +635,6 @@ m4psats <- testSlopes(m4ps)
 plot(m4psats)
 \end{lstlisting}
 \inputencoding{utf8}
-
 \noindent The output from testSlopes will differ, depending on whether
 modx is numeric or a factor. If it is a factor, then the slope of
 the lines and the associated t-test for each will be presented. My
@@ -667,14 +646,12 @@ stated with predictors $plotx_{i}$ and $modx_{i}$as
 y_{i}=b_{0}+b_{plotx}plotx_{i}+b_{modx}modx_{i}+b_{plotx:modx}plotx_{i}\cdot modx_{i}+\ldots+e_{i}
 \end{equation}
 
-
 \noindent the null hypothesis would be
 
 \noindent 
 \begin{equation}
 H_{0}:0=\hat{b}_{simple\,slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
 \end{equation}
-
 
 \noindent If modx is a factor, then we simply calculate the slope
 of each line and the test is straight-forward. If modx is a numeric
@@ -696,7 +673,6 @@ equation) holds:
 \hat{t}=\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}=\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
 \end{equation}
 
-
 \noindent Suppose there are two real roots, $root1$ and $root2$.
 The values of $modx$ for which the slope is statistically significant
 may be a compact interval, $[root1,root2]$, as demonstrated in Figure
@@ -704,7 +680,6 @@ may be a compact interval, $[root1,root2]$, as demonstrated in Figure
 and $[root2,\infty)$. I had expected almost all applications to result
 in that latter case, but the somewhat surprising case illustrated
 in Figure \ref{fig:ts10} is not too infrequently observed. 
-
 
 \subsection{plotCurves for nonlinear predictor formulae}
 
@@ -723,7 +698,6 @@ process.
 y5_{i}=-3x1_{i}+7*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
 \end{equation}
 
-
 <<echo=F,include=F>>=
 dat$y5 <- with(dat, -3*x1 + 15*log(0.1 + x2 - min(x2)) + 1.1*x2 + 8.2 *x1 * x2 + 10*rnorm(100))
 @
@@ -737,14 +711,12 @@ m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 \caption{plotCurves\label{fig:pcps20}}
 \end{figure}
 
-
 We fit a model with an elaborate specification and create the plot
 in Figure \ref{fig:pcps20} with these commands:
 
 <<eval=F>>=
 <<pcps20>>
 @
-
 
 \subsection{plotPlane}
 
@@ -770,7 +742,6 @@ p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80, lcol 
 
 \caption{plotPlane for the Interactive Model m4\label{fig:pp100}}
 \end{figure}
-
 
 Because plotPlane() is a simple convenience wrapper for R's persp()
 function, it responds to the same customizing arguments that perp
@@ -805,9 +776,7 @@ addLines(from = m5pc, to = ppm5, col = m5pc$col)
 \end{figure}
 
 
-
 \section{Standardized, Mean-Centered, and Residual-Centered Regressions }
-
 
 \subsection{Standardized regression}
 
@@ -844,12 +813,10 @@ summary(m4s)
 \begin{table}
 \caption{Comparing Ordinary and Standardized Regression\label{tab:stdreg10}}
 
-
 <<stdreg10, results=tex, echo=F>>=
 outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardized"))
 @
 \end{table}
-
 
 
 \subsection{Mean-centered Interaction Models}
@@ -859,7 +826,6 @@ Sometimes people will fit a model like this
 y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+e_{i}
 \end{equation}
 
-
 \noindent and then wonder, ``is there an interaction between $x1_{i}$
 and $x2_{i}$?'' The natural inclination is to run this model, 
 
@@ -867,14 +833,12 @@ and $x2_{i}$?'' The natural inclination is to run this model,
 m1 <- lm(y ~ x1*x2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 \noindent or its equivalent
 
 \inputencoding{latin9}\begin{lstlisting}
 m2 <- lm(y ~ x1 + x2 + x1:x2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 Researchers have been advised that they should not run the ordinary
 interaction model without ``mean-centering'' the predictors (Aiken
 and West, 1991). They are advised to replace $x1_{i}$ with $(x1_{i}-\overline{x1})$
@@ -883,7 +847,6 @@ will
 \begin{equation}
 y_{i}=b_{o}+b_{1}(x1_{i}-\overline{x1})+b_{2}(x2_{i}-\overline{x2})+b_{3}(x1_{i}-\overline{x1})(x2_{i}-\overline{x2})+e_{i}
 \end{equation}
-
 
 This is a little tedious to do in R, so I provide a function meanCenter()
 that can handle the details. meanCenter() will receive a model, scan
@@ -908,12 +871,10 @@ would be appropriate:
 m4mc <- meanCenter(m4, centerOnlyInteractors = FALSE)
 \end{lstlisting}
 \inputencoding{utf8}
-
 By default, it does not standardize while centering (but the user
 can request standardization with the argument standardize = TRUE.
 The option centerDV causes the dependent variable to be centered as
 well.
-
 
 \subsection{Residual-centered Models}
 
@@ -941,7 +902,6 @@ $c_{j}$, not $b_{j}$ as usual):
 y=c_{0}+c_{1}x1+c_{2}x2+e{}_{i}.\label{eq:rc20}
 \end{equation}
 
-
 \noindent Let's proceed as if those parameter estimates, $\hat{c}_{1}$,
 $\hat{c}_{2}$, are the ``right ones'' for our analytical purpose.
 We'd like to fit an interactive model, but protect the linear parts
@@ -962,7 +922,6 @@ left hand side is the interaction product term:
 (x1_{i}\times x2_{i})=d_{0}+d_{1}x1_{i}+d_{2}x2+u_{i}\label{eq:residCentered}
 \end{equation}
 
-
 \noindent The residuals from that regression are, by definition, orthogonal
 to both $x1$ and $x2$. Call those fitted residuals $\widehat{u_{i}}$.
 The we run the interactive regression, replacing the column of the
@@ -972,7 +931,6 @@ as:
 \begin{equation}
 y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b3\widehat{u_{i}}+e_{i},\label{eq:rc10-1}
 \end{equation}
-
 
 \noindent In essence, we have taken the interaction $(x1_{i}\times x2_{i})$,
 and purged it of its parts that are linearly related to $x1_{i}$
@@ -990,7 +948,6 @@ and then their centered values are predictors four term interactions.
 Aspiring R programmers who want to learn about programming with R
 formula objects might benefit from the study of the function residualCenter.R
 in the rockchalk source code. 
-
 
 \section{A Brief Analysis of Mean-Centering}
 
@@ -1050,7 +1007,6 @@ the true data generating mechanism is an interaction like so
 y_{i}=2+0.1x1_{i}+0.1x2_{i}+0.2\cdot(x1_{i}\times x2_{i})+e_{i},
 \end{equation}
 
-
 \noindent where $e_{i}\sim N(0,300^{2})$ and $\rho_{x1,x2}=0.4$. 
 
 A regression analysis that ignores the interaction, 
@@ -1059,7 +1015,6 @@ A regression analysis that ignores the interaction,
 lm(y ~ x1 + x2, data = dat2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 \noindent is reported in the first column of Table \ref{tab:meancenter10-1}.
 I've used outreg's new alpha argument to emphasize the ``really good''
 estimates with more stars. Notice that everything is ``statistically
@@ -1071,7 +1026,6 @@ an interaction between $x1$ and $x2$?'' Run \inputencoding{latin9}
 lm(y ~ x1 * x2, data = dat2)
 \end{lstlisting}
 \inputencoding{utf8}
-
 \noindent The second column in Table \ref{tab:meancenter10-1} summarizes
 that regression. Be prepared for a shock when you scan the estimates.
 Almost everybody I know has said ``what the heck?'' or ``Holy Cow!''
@@ -1090,12 +1044,10 @@ m6rc <- residualCenter(m6int)
 \begin{table}
 \caption{Comparing Regressions\label{tab:meancenter10-1}}
 
-
 <<mcenter10, results=tex, echo=F>>=
 outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
 @
 \end{table}
-
 
 Cohen, et al. claim that the apparent instability of the coefficients
 is a reflection of ``inessential collinearity,'' due to the fact
@@ -1139,7 +1091,6 @@ par(mfcol = c(1, 1))
 \caption{plotSlopes for the centered and non-centered regressions\label{fig:pscentering}}
 \end{figure}
 
-
 Perhaps the 2-D plots are not persuasive. Don't stop yet. In the 3-D
 plots will help quite a bit. We have not yet grasped the most fundamental
 changed caused by the insertion of the interaction term. When we insert
@@ -1170,7 +1121,6 @@ par(op)
 
 \caption{Predicted Planes from Centered and Uncentered Fits Identical\label{fig:mcenter30}}
 \end{figure}
-
 
 The regression coefficient estimates are snapshots, each summarizing
 the curvature at one particular point in a curving surface. It seems
@@ -1216,7 +1166,6 @@ par(op)
 \caption{Predicted Values of Mean and Residual-centered Models\label{fig:rcenter40}}
 \end{figure}
 
-
 The take-away point from this is that there is no free lunch in regression
 analysis. If re-scaling a variable by adding or subtracting a constant
 seems to change a result, one should be cautious and suspect an error. 
@@ -1228,12 +1177,10 @@ and the estimates of the others. The ordinary model is
 y_{i}=b_{0}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}(x1_{i}\times x2_{i})+e1_{i}\label{eq:int}
 \end{equation}
 
-
 The mean-centered model is 
 \begin{equation}
 y_{i}=c_{0}+c_{1}(x1_{i}-\overline{x1})+c_{2}(x2_{i}-\overline{x2})+c_{3}(x1_{i}-\overline{x1})\cdot(x2_{i}-\overline{x2})+e2_{i}\label{eq:mc1}
 \end{equation}
-
 
 In order to compare with equation \ref{eq:int}, we would re-arrange
 like so
@@ -1242,16 +1189,13 @@ like so
 y_{i}=c_{0}+c_{1}(x1_{i})-c_{1}\overline{x1}+c_{2}(x2_{i})-c_{2}\overline{x2}+c_{3}(x1_{i}x2_{i}+\overline{x1}\overline{x2}-\overline{x1}x2_{i}-\overline{x2}x1_{i})+e2_{i}
 \end{equation}
 
-
 \begin{equation}
 y_{i}=c_{0}+c_{1}(x1_{i})-c_{1}\overline{x1}+c_{2}(x2_{i})-c_{2}\overline{x2}+c_{3}(x1_{i}x2_{i})+c_{3}\overline{x1}\overline{x2}-c_{3}\overline{x1}x2_{i}-c_{3}\overline{x2}x1_{i})+e2_{i}
 \end{equation}
 
-
 \begin{equation}
 y_{i}=\{c_{0}-c_{1}\overline{x1}-c_{2}\overline{x2}+c_{3}\overline{x1}\overline{x2}\}+\{c_{1}-c_{3}\overline{x2}\}x1_{i}+\{c_{2}-c_{3}\overline{x1}\}x2_{i}+c_{3}(x1_{i}x2_{i})+e2_{i}\label{eq:mc3}
 \end{equation}
-
 
 One can then compare the parameter estimates from equations \ref{eq:int}
 and \ref{eq:mc3}. Both \ref{eq:int} and \ref{eq:mc3} include a
@@ -1278,19 +1222,16 @@ The residual from this regression model
 \widehat{(x1_{i}\times x2_{i})}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}.
 \end{equation}
 
-
 \noindent is 
 \begin{equation}
 \widehat{u}_{i}=(x1_{i}\times x2_{i})-\widehat{(x1_{i}\times x2_{i})},
 \end{equation}
-
 
 \noindent which is inserted into equation \ref{eq:int}. 
 
 \begin{equation}
 y_{i}=h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\widehat{x1_{i}\times x2_{i}}\}+e3_{i}\label{eq:rc1}
 \end{equation}
-
 
 Replacing $\widehat{x1_{i}\times x2_{i}}$ with $\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}$,
 \ref{eq:rc1} becomes
@@ -1300,7 +1241,6 @@ y_{i} & = & h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}-\hat{d}_{0}
  & = & h_{0}+h_{1}x1_{i}+h_{2}x2_{i}+h_{3}\{x1_{i}\times x2_{i}\}-h_{3}\hat{d}_{0}-h_{3}\hat{d}_{1}x1_{i}-h_{3}\hat{d}_{2}x2_{i}\}+e3_{i}\\
  &  & \{h_{0}-h_{3}\hat{d}_{0}\}+\{h_{1}-h_{3}\hat{d}_{1}\}x1_{i}+\{h_{2}-h_{3}\hat{d}_{2}\}x2_{i}+h_{3}\{x1_{i}\times x2_{i}\}+e3_{i}
 \end{eqnarray}
-
 
 As in the previous comparison, we can translate coefficient estimates
 between the ordinary specification and the residual-centered model.
@@ -1314,10 +1254,8 @@ the coefficients of the other models like so:
 \hat{b}_{2} & =\hat{c}_{2}-\hat{c}_{3}\overline{x1}= & h_{2}-h_{3}\hat{d}_{2}
 \end{eqnarray}
 
-
 From the preceding, it should be clear enough that the three models
 are equivalent.
-
 
 \section{Conclusion}
 

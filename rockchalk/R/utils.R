@@ -272,7 +272,6 @@ NULL
 ##' getFocal(x, xvals = "std.dev")
 ##' getFocal(x, xvals = "std.dev", n = 5)
 ##' getFocal(x, xvals = c(-1000, 0.2, 0,5))
-##'
 getFocal.default <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
 {
     xRange <- magRange(range(x, na.rm = TRUE), 1.1)
@@ -306,8 +305,8 @@ getFocal.default <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
 
     stop("getFocal received unexpected input for xvals")
 }
-NULL
 
+NULL
 
 ##' @export
 ##' @method getFocal factor
@@ -381,7 +380,7 @@ getFocal.character <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
     xvals
 }
 
-
+NULL
 
 ##' Pad with 0's.
 ##'
@@ -404,56 +403,64 @@ getFocal.character <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
 ##' x <- rpois(7, lambda = 11)
 ##' (xpad <- padW0(x))
 ##' x <- c("Alabama", "Iowa", "Washington")
-padW0 <- function(x){
+padW0 <- function(x)
+{
     vtype <- "d"
     if (is.character(x)) vtype <- "s"
     sprintf(paste("%0", max(nchar(as.character(x))), vtype, sep=""), x)
 }
-
+NULL
 
 ##' A way of checking if a string is a valid file name.
 ##'
-##' A copy from R's grDevices:::checkIntFormat because it is not exported there
+##' A copy from R's grDevices:::checkIntFormat because it is not
+##' exported there
 ##' @param s An integer
 ##' @return logical: TRUE or FALSE
 ##' @author R Core Development Team
-checkIntFormat <- function(s) {
+checkIntFormat <- function(s)
+{
     s <- gsub("%%", "", s)
-    if (length(grep("%", s)) == 0L) 
+    if (length(grep("%", s)) == 0L)
         return(TRUE)
     s <- sub("%[#0 ,+-]*[0-9.]*[diouxX]", "", s)
-    length(grep("%", s)) == 0L
+    length(grep("%
+", s)) == 0L
 }
 
-
+NULL
 ##' Create a uniquely named directory. Appends number & optionally date to directory
 ##' name.
 ##' 
-##' Checks if the requested directory exists. If so, will create new directory
-##' name. My favorite method is to have the target directory with a date-based
-##' subdirectory, but set usedate as FALSE if you don't like that. Arguments
-##' showWarnings, recursive, and mode are passed along to R's dir.create, which
-##' does the actual work here.
+##' Checks if the requested directory exists. If so, will create new
+##' directory name. My favorite method is to have the target directory
+##' with a date-based subdirectory, but set usedate as FALSE if you
+##' don't like that. Arguments showWarnings, recursive, and mode are
+##' passed along to R's dir.create, which does the actual work here.
 ##'
-##' Default response to dir = "../output/" fixes the directory name like this,
-##' "../output/20151118-1/" because usedate is assumed TRUE. If usedate = FALSE,
-##' then output names will be like "../output-1/", "../output-2/", and so forth.
+##' Default response to dir = "../output/" fixes the directory name
+##' like this, "../output/20151118-1/" because usedate is assumed
+##' TRUE. If usedate = FALSE, then output names will be like
+##' "../output-1/", "../output-2/", and so forth.
 ##' @param path A character string for the base name of the directory.
 ##' @param usedate TRUE or FALSE: Insert YYYYMMDD information?
-##' @param showWarnings default TRUE. Show warnings? Will be passed on to dir.create
+##' @param showWarnings default TRUE. Show warnings? Will be passed on
+##'     to dir.create
 ##' @param recursive default TRUE. Will be passed on to dir.create
-##' @param mode  Default permissions on unix-alike systems. Will be passed on to dir.create
+##' @param mode Default permissions on unix-alike systems. Will be
+##'     passed on to dir.create
 ##' @export
 ##' @return a character string with the directory name
 ##' @author Paul E Johnson <pauljohn@@ku.edu>
 dir.create.unique <- function(path, usedate = TRUE,
                               showWarnings = TRUE,
                               recursive = TRUE,
-                              mode = "0777"){
+                              mode = "0777")
+{
     dts <- function(name) gsub("/$", "", name)
     if (!file.exists(dts(path))){
         dir.create(path, recursive = recursive, showWarnings = showWarnings, mode = mode)
-        return(path)
+        return(paste0(dts(path)), "/")
     } else {
         today <- format(Sys.time(), "%Y%m%d")
         j <- 1

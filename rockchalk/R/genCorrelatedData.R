@@ -460,11 +460,12 @@ vech2Corr <-
     ##compute number of rows from vech. diag not in the vech!
     n <- (sqrt(1 + 8 * length(vech)) + 1)/2
     if (!as.integer(n) == n) stop(deparse(substitute(vech)),
-                       " must have the correct number of elements to fill",
-                       "in a strictly lower triangle in a square matrix.")
+                                  " must have the correct number of elements to fill",
+                                  "in a strictly lower triangle in a square matrix.")
     if(any(vech > 1 | vech < -1)) {
         stop(paste("All values in ", deparse(substitute(vech)),
                    " must be in the interval [-1,1]"))
+    }
     X <- matrix(NA, nrow = n, ncol = n)
     X[lower.tri(X, diag = FALSE)] <- vech
     X[upper.tri(X)] <- t(X)[upper.tri(X)]
@@ -730,8 +731,8 @@ checkPosDef <-
     res <- if(!all(evalues >= -tol*abs(evalues[1L]))) FALSE else TRUE
     res
 }
+ 
 NULL
-
 
 ##' Minor revision of mvrnorm (from \code{MASS}) to facilitate replication
 ##'
@@ -847,6 +848,7 @@ mvrnorm <-
     nm <- names(mu)
     if(is.null(nm) && !is.null(dn <- dimnames(Sigma))) nm <- dn[[1L]]
     dimnames(X) <- list(nm, NULL)
-    if(n == 1) drop(X) else t(X)
+    if(n == 1)
+        drop(X)
+    else t(X)
 }
-NULL

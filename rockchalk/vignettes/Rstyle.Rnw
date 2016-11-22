@@ -1,4 +1,4 @@
-%% LyX 2.1.4 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.2.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -12,6 +12,7 @@
 \setlength{\parindent}{0pt}
 \usepackage{babel}
 \usepackage{url}
+\usepackage{enumitem}
 \usepackage[authoryear]{natbib}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
@@ -24,7 +25,6 @@
 <<echo=F>>=
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 @
-\usepackage{enumitem}		% customizable list environments
 \newlength{\lyxlabelwidth}      % auxiliary length 
 \newenvironment{lyxcode}
 {\par\begin{list}{}{
@@ -120,9 +120,7 @@
 
 \title{R Style. An Rchaeological Commentary. }
 
-
 \author{Paul E. Johnson <pauljohn @ ku.edu>}
-
 \maketitle
 
 \section{Introduction: Ugly Code that Runs}
@@ -147,7 +145,8 @@ This note describes R style from an Rchaeological\footnote{Definitions:
 source code. It is the effort to discern the programming strategies,
 idioms, and style of R programmers in order to better communicate
 with them.
-\item [{Rchaeologist:}] One who practices Rchaeology.\end{description}
+\item [{Rchaeologist:}] One who practices Rchaeology.
+\end{description}
 } perspective. By examining the work of the R Core Development Team
 \citep{RCore} and other notable package writers, we are able to discern
 an implicit style guide. However, this note is not ``official''
@@ -179,7 +178,6 @@ set.seed(12345)
 pdf.options(onefile=F,family="Times",pointsize=12)
 @
 
-
 \section{Rchaeological Methodology}
 
 I am a student of R as a programming language. I am also student of
@@ -195,7 +193,6 @@ a variety of computer languages. The diversity creates a healthy tension
 that is easy to see in the r-help email list or on Web forums for
 R users. 
 
-
 \subsection{``Use the Source, Luke,'' said Obi-Wan}
 
 What should R code look like? Stop guessing. The implicit style guide
@@ -203,7 +200,7 @@ for R is the R source code itself. If users want to communicate with
 R Core developers, they ought to communicate using the style that
 developers use.
 
-I'm often surprised to find that R users--even experienced ones--have
+I'm often surprised to find that R users–even experienced ones–have
 never looked at the R source code. Before going any further,
 \begin{quote}
 Open the source code for R. I mean, literally, download R-2.15.3.tar.gz
@@ -223,7 +220,6 @@ such as John Fox's car package \citep{fox_r_2011}.
 
 After that, pick a random sample of packages on CRAN. Don't be surprised
 by ugly code in a randomly chosen R package. 
-
 
 \subsection{Notice How R Describes its Own Style}
 
@@ -254,7 +250,6 @@ function (formula, data, subset, weights, na.action, method = "qr",
             method), domain = NA)
 \end{lstlisting}
 \inputencoding{utf8}
-
 That's quite a bit like the code in the file lm.R, but it is not exactly
 the same. Even if the code in lm.R were an ugly, horrible mess, its
 output in the terminal would be indented and spaced just right. That
@@ -279,7 +274,6 @@ can parse it and structure it according to the internal dictates of
 the R runtime system, and when we ask to see the function, we get
 a nice looking result.
 
-
 \subsection{Formulate SEA estimates.}
 
 As already noted, there is no mandatory style for R code. The \emph{R
@@ -290,7 +284,7 @@ character.
 
 But there is a larger point in \emph{R Internals}, but novices don't
 recognize the importance of it. R is a GNU project, and there are
-GNU coding standards.\footnote{\url{http://www.gnu.org/prep/standards/standard.html}}
+GNU coding standards.\footnote{\url{http://www.gnu.org/prep/standards/standards.html}}
 The R project's C code follows the standard closely. In the entire
 body of the R source code, we find the GNU thumb print. The importance
 of that fact is missed by untrained readers, who mistake the lack
@@ -307,9 +301,7 @@ myself. It has recently been suggested to me that these recommendations
 are not descriptions of the Rchaeological community I'm studying,
 they are rather my personal litmus test for admirable R programmers. 
 
-
 \section{Nearly Universally accepted standards.}
-
 
 \subsection{(SEA 1.0) Indentation of code sections is required. }
 
@@ -318,7 +310,6 @@ This is explicitly spelled out in the R documentation. No tabs! Insert
 default in Emacs. But I'm changing my code to use 4 spaces. If you
 find my code with 2 spaces, please accept this apology and believe
 that it is an oversight. 
-
 
 \subsection{(SEA .95). Use ``<-'', not ``='', for assignments. }
 
@@ -336,7 +327,6 @@ equal sign for assignments do not cause runtime errors. Not all possible
 problems were eliminated, however. Thus the equal sign is not recommended,
 it is tolerated. Nevertheless, A horrible profusion of textbooks and
 packages ensued using the equal sign for assignment. 
-
 
 \subsection{(SEA .98) Blank spaces around symbols are required. }
 
@@ -379,38 +369,28 @@ and something rebarbative for `for`(....).
 Besides, both constructs are harder to read without the spaces. (r-devel,
 April 18, 2013)
 \end{quote}
-
 For me, that settles the question. For R code, as in C, ``if'' and
 ``for'' should be treated as keywords, and there would be a space
 after them, as in ``\inputencoding{latin9}\lstinline!if (x < 7)!\inputencoding{utf8}''.
-
 \item Do not insert ``extra spaces'' inside parentheses. 
-
 
 Programmers who have written in the BASH scripting language may recall
 that a space inside brackets is required. That training causes me
 to think that R code is a little bit ``jammed together.'' This is
 pleasant to my eye:
 
-
 \inputencoding{latin9}\begin{lstlisting}
 if ( (x == 1) & (y == 2) ) {
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 but, from an Rchaeological point of view, more the correct style is:
-
 
 \inputencoding{latin9}\begin{lstlisting}
 if((x == 1) & (y == 2)) {
 \end{lstlisting}
 \inputencoding{utf8}
-
-
 The insertion of the interior parentheses for the smaller conditions
 inside the if statement is consistent with the GNU standard for C.
-
 \end{enumerate}
 
 \subsubsection*{Is there an ``argument exception'' to the space rule for equal
@@ -424,20 +404,17 @@ find no spaces, as in
 plot(x, y, lwd=4, col=green, main="My Title")
 \end{lstlisting}
 \inputencoding{utf8}
-
 It would surely be more correct like so:
 
 \inputencoding{latin9}\begin{lstlisting}
 plot(x, y, lwd = 4, col = green, main = "My Title")
 \end{lstlisting}
 \inputencoding{utf8}
-
 Spaces may sometimes be omitted in an effort to keep code on one line.
 Especially where publishers are concerned about the use of scarce
 paper, the omission of spaces around equal signs is not uncommon.
 Please note, however, that it is NEVER acceptable to omit the spaces
 after commas!
-
 
 \subsubsection*{What about indentation of long function declarations?}
 
@@ -452,7 +429,6 @@ lm <- function (formula, data, subset, weights, na.action,
                 offset, ...)
 \end{lstlisting}
 \inputencoding{utf8}
-
 Note that lines 2-4 are indented under the letter ``f'' in formula.
 If the function's name were longer, it would push all of that indented
 code to the right, probably causing line wraps. The solution is to
@@ -476,12 +452,10 @@ function (x, which = c(1L:3L,5L), ## was which = 1L:4L,
 {
 \end{lstlisting}
 \inputencoding{utf8}
-
 The continuation is indented to be below the first argument. The benefit
 of this ``declaration by itself'' approach is that the additional
 lines are always re-formatted with consistent indentation and we are
 not creating a huge empty white space due to indentation.
-
 
 \subsubsection*{Try formatR::tidy.source()}
 
@@ -509,7 +483,6 @@ function(x) {
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 The tidy.source() function can get rid of equals sign assignments
 if we ask it to. (In my opinion, it should do that by default.)
 
@@ -525,7 +498,6 @@ function(x) {
 } 
 \end{lstlisting}
 \inputencoding{utf8}
-
 The tidy.source() function can receive input as files or whole directories.
 
 There are two reasons why tidy.source() is not a panacea. First, by
@@ -548,10 +520,8 @@ Error in base::parse(text = text, srcfile = NULL) :
                                                                                            ^
 \end{lstlisting}
 \inputencoding{utf8}
-
 I would estimate that tidy.source() fails on about one-third of the
 R code I randomly select from CRAN.
-
 
 \subsection{(SEA .70) The ``\} else \{'' policy. }
 
@@ -574,7 +544,6 @@ Why? Try this at the command line.
 Error: unexpected 'else' in "else"
 \end{lstlisting}
 \inputencoding{utf8}
-
 R does not realize that it is not yet finished with the if keyword's
 work. The keyword else appears to begin a new thought, which is illegal.
 The if's help page (run \inputencoding{latin9}\lstinline!help("if")!\inputencoding{utf8}
@@ -602,7 +571,6 @@ if (x < 7) print("so far, so good") else
 print("this is else")
 \end{lstlisting}
 \inputencoding{utf8}
-
 But it invites a coding error like so:
 
 \inputencoding{latin9}\begin{lstlisting}
@@ -611,7 +579,6 @@ print("this is else")
 print("and we want this also to be with else, but it is not")
 \end{lstlisting}
 \inputencoding{utf8}
-
 To be perfectly clear, and to protect ourselves against editing errors
 in the future, we could follow the ``somewhat extreme'' advice and
 write this:
@@ -626,7 +593,6 @@ if (x < 7) {
 \end{lstlisting}
 \inputencoding{utf8}
 
-
 \subsubsection*{Counter-argument based on the R source code}
 
 This would be a completely closed case if not for the fact that the
@@ -640,7 +606,6 @@ finds:
   else
 \end{lstlisting}
 \inputencoding{utf8}
-
 A naked else! This is frustrating for writers of style guides. It
 ignores the advice in the ``if'' help page. We cannot run this code
 line-by-line. 
@@ -661,7 +626,6 @@ command line:
 [1] "hello"
 \end{lstlisting}
 \inputencoding{utf8}
-
 I don't think I'm going to have any luck persuading the R Core Development
 Team that their naked elses need to be fixed. The best I can do is
 to urge code writers to use ``\inputencoding{latin9}\lstinline!} else {!\inputencoding{utf8}''
@@ -683,7 +647,6 @@ nobs.logLik <- function(object, ...) {
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 and we also find the vertically aligned squiggly braces approach:
 
 \inputencoding{latin9}\begin{lstlisting}
@@ -695,11 +658,9 @@ print.logLik <- function(x, digits = getOption("digits"), ...)
 }
 \end{lstlisting}
 \inputencoding{utf8}
-
 I am at a loss to explain these stylistic variations, so I conclude
 that R users can follow either style, while keeping in mind the ``\inputencoding{latin9}\lstinline!} else {!\inputencoding{utf8}''
 policy, which strongly pushes us toward the K\&R style.
-
 
 \section{How to name functions.}
 
@@ -707,7 +668,6 @@ Now we begin to consider some issues that are more subjective. Many
 styles are legal, but some are more easily understood. R syntax has
 changed over the years, and some things that were illegal are now
 allowed. And some styles that were standard might now be discouraged. 
-
 
 \subsection{(.98 SEA) Avoid using names that are already in use by R, especially
 common ones.}
@@ -735,7 +695,6 @@ Coefficients:
     0.02688      0.01796
 \end{lstlisting}
 \inputencoding{utf8}
-
 As long as we remember that \inputencoding{latin9}\lstinline!lm()!\inputencoding{utf8}
 is in the namespace stats, we can find it. 
 
@@ -753,7 +712,8 @@ within a namespace, but doing so requires a bit of effort and mischief.\footnote
 \begin{lyxcode}
 nseq~<-~function(x)~print(\textquotedbl{}Hello,~good~to~see~you\textquotedbl{})
 
-assignInNamespace(\textquotedbl{}seq.default\textquotedbl{},~nseq,~\textquotedbl{}base\textquotedbl{})\end{lyxcode}
+assignInNamespace(\textquotedbl{}seq.default\textquotedbl{},~nseq,~\textquotedbl{}base\textquotedbl{})
+\end{lyxcode}
 }
 
 When we say that a namespace is imported, it means that all of the
@@ -767,7 +727,6 @@ strive for clarity by using syntax that includes the namespace name.
 In the source code for many R examples, one will find syntax like
 \inputencoding{latin9}\lstinline!graphics::par()!\inputencoding{utf8}
 where, until recently, that would have simply been \inputencoding{latin9}\lstinline!par()!\inputencoding{utf8}.
-
 
 \subsection{(.65 SEA)Use periods to indicate classes, otherwise don't use periods
 in function names. }
@@ -792,8 +751,8 @@ will not convey the wrong meaning.
 If we were starting with a clean slate, I believe many R functions
 would be re-named for the purposes of consistency. Since we do not
 have a clean slate, we live with an accumulation of function names
-from olde S and R. Changes in computer science--the growth of object-oriented
-programming--cause new naming conventions. Consider some of the traditional
+from olde S and R. Changes in computer science–the growth of object-oriented
+programming–cause new naming conventions. Consider some of the traditional
 S function names that are still used in R, like \inputencoding{latin9}\lstinline!read.table!\inputencoding{utf8}
 and \inputencoding{latin9}\lstinline!read.csv!\inputencoding{utf8}.
 Those are not method implementations of a generic function read().
@@ -809,7 +768,6 @@ call read.table(x). But it does not:
 Error: could not find function "read" 
 \end{lstlisting}
 \inputencoding{utf8}
-
 I believe that, if these functions were being created today, they
 would be named \inputencoding{latin9}\lstinline!readTable()!\inputencoding{utf8}
 and \inputencoding{latin9}\lstinline!readCSV()!\inputencoding{utf8}. 
@@ -853,9 +811,7 @@ Considering recent additions to R, I believe that the chance of finding
 a decorative period in a new function name is almost zero. But we
 are still living with an awful lot of older counter-examples.
 
-
 \section{How to name variables (and objects).}
-
 
 \subsection{(1.0 SEA) Follow the ``letters and numbers'' rule.}
 
@@ -874,7 +830,6 @@ allow the argument ``...'', most users don't realize it literally
 is a word. When that is listed as a function argument, then any argument
 that the user includes is gobbled up by ``...''. 
 
-
 \subsection{(1.0 SEA) Never name a variable T or F. }
 
 Almost everybody (99.999\%) will agree with this. These are too easily
@@ -891,9 +846,7 @@ or FALSE:
 Error in TRUE <- 7 : invalid (do_set) left-hand side to assignment
 \end{lstlisting}
 \inputencoding{utf8}
-
 But R will not prevent the usage of T and R for variable names.
-
 
 \subsection{(.75 SEA) Avoid declaring variables that have the same names as widely
 used functions.}
@@ -910,7 +863,6 @@ variables cannot ``step on'' R system functions. Nevertheless, it
 is disconcerting to me (probably others) when users create variables
 with names like ``lm'', ``rep'', ``seq'', and so forth. 
 
-
 \subsection{(0.50 SEA) Use long names for infrequently used variables. }
 
 And use short names for variables that will be used very often.
@@ -920,7 +872,6 @@ about it. ``xlog'' is better than ``xl'', if we are only writing
 it a few times. If we are going to use a name 50 times in a 5 line
 program, we should choose a short one. For abbreviations, include
 a comment to remind the reader what the thing stands for.
-
 
 \subsection{(0.10 SEA) Suggested naming scheme: keep related objects in an alphabetically
 sorted scheme.}
@@ -981,7 +932,6 @@ m1ips <- plotSlopes(m1i, plotx = "x1", modx = "x2")
 m1imc <- meanCenter(m1i)
 m1irc <- residualCenter(m1i)	
 @
-
 
 \section{Conclusion}
 
