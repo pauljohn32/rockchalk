@@ -1388,7 +1388,7 @@ outreg <-
             aline <- paste0("\\multicolumn{", nColumns, "}{c}{", aline, "_EOMC__EOR__EOL_")
         } else {
             aline <- paste0("<tr>\n",
-                           "<td colspan=\"", nColumns, "2\">")
+                           "<td colspan=\"", nColumns, "\">")
             for ( i in seq_along(alpha)){
                 aline <- paste0(aline,  paste0(rep("*", i), collapse = ""), " <it>p</it> &#8804;", alpha[i], sep = "")
             }
