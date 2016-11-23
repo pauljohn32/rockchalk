@@ -242,6 +242,9 @@ genCorrelatedData2 <-
     ## x.names <-  paste("x", 1:d, sep = "")
 
     x.mat <- genX(N, means, sds, rho, intercept = TRUE)
+    ## Get rid of Intercept if it is in there
+    x.mat.noint <- x.mat[ , -grep("Intercept", colnames(x.mat))]
+    
     beta1 <- beta[1:(d+1)]
     beta2 <- beta[-(1:(d+1))]
 
@@ -259,7 +262,7 @@ genCorrelatedData2 <-
         if(!any( Bmat2[ ,j] != 0)) {
             return()
         }
-        intEff <-  (x.mat * x.mat[ , j]) %*% Bmat2[ , j]
+        intEff <-  (x.mat.noint * x.mat.noint[ , j]) %*% Bmat2[ , j]
     })
 
     intEffects <- do.call("cbind", intEffects)
@@ -268,12 +271,14 @@ genCorrelatedData2 <-
 
     if (!is.null(intEffects)) y = y + rowSums(intEffects)
 
-    ## Get rid of Intercept if not wanted
-    if (!intercept) x.mat <- x.mat <- x.mat[ , -grep("Intercept", colnames(x.mat))]
-    dat <- data.frame(y, x.mat)
+    dat <- if (!intercept){
+               data.frame(y, x.mat.noint)
+           } else {
+               data.frame(y, x.mat)
+           }
     
     if (verbose == TRUE){
-        x.names <- colnames(x.mat)[-1]  
+        x.names <- colnames(x.mat.noint)  
         print("The equation that was calculated was")
         cat("y =",  beta1[1], "+", paste(beta1[2:(d+1)] , c(x.names), collapse = " + ", sep = "*"), "\n" ,
             "+ ")
