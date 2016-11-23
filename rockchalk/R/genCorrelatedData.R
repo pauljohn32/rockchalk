@@ -139,6 +139,8 @@ NULL
 ##' column (vech) that fills into a lower triangular matrix. It
 ##' is easy to see what's going on if you run the examples. There
 ##' is also explanation in Details.
+##' @param intercept Default FALSE. Should the predictors include an
+##' intercept?
 ##' @param verbose TRUE or FALSE. Should information about the data
 ##' generation be reported to the terminal?
 ##' @return A data matrix that has columns c(y, x1, x2, ..., xP)
@@ -228,7 +230,7 @@ NULL
 genCorrelatedData2 <-
     function(N = 100, means = c(50,50,50), sds = c(10,10,10),
              rho = c(0.0, 0.0, 0.0), stde = 100,
-             beta = c(0, 0.15, 0.1, -0.1),
+             beta = c(0, 0.15, 0.1, -0.1), intercept = FALSE, 
              verbose = TRUE)
 {
     d <- length(means)
@@ -266,9 +268,10 @@ genCorrelatedData2 <-
 
     if (!is.null(intEffects)) y = y + rowSums(intEffects)
 
+    ## Get rid of Intercept if not wanted
+    if (!intercept) x.mat <- x.mat <- x.mat[ , -grep("Intercept", colnames(x.mat))]
     dat <- data.frame(y, x.mat)
-    names(dat) <- c("y", paste("x", 1:dim(x.mat)[2] , sep = ""))
-
+    
     if (verbose == TRUE){
         x.names <- colnames(x.mat)[-1]  
         print("The equation that was calculated was")
