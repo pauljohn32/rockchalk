@@ -1,3 +1,9 @@
+2016-11-23  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/genCorrelatedData.R (genCorrelatedData2): insert argument
+	"intercept" FALSE by default, then prune "Intercept" from x.mat
+	before returning.
+
 2016-11-22  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/outreg.R (pline): remove extra "2" in number of columns

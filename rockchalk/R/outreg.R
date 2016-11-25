@@ -933,35 +933,32 @@ outreg <-
         names(res) <- names(sl)
         
         for(i in seq_along(sl)) {
-            sli <- sl[[i]]
-            y <- sli[[name]]
-            if(length(y) > 1) {
-                messg <- paste0("outreg: ", "the following value ",
-                              "was asked for: ", paste0("\"", name,"\"."),
-                              "The regression object it did not ",
-                              "return just one value. ", "Received instead was: \n ",
-                              paste(y, collapse = " "), "\n",  
-                              "Just the first returned value is used for ", name)
-                warning(messg)
-                y <- y[1]
-            }
+            y <- sl[[i]][[name]]
+            
             if (is.null(y) || !is.null(y) && is.na(y)) {
                 y <- ""
-            } else if (!is.null(y) && name == "fstatistic"){
+            } else if (name == "fstatistic"){
                 staty <- paste(format(c(y["value"]), digits = digits),
                                " df(", format(y["numdf"], digits = digits),
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
 
-                nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"] , lower.tail = FALSE) < alpha)
+                nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"], lower.tail = FALSE) < alpha)
                 y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
             } else if (is.numeric(y)) {
+                if (length(y) > 1){
+                    messg <- paste0("outreg: ", 
+                                    "asked for: ", paste0("\"", name,"\"."),
+                                    "These values were received: \n ",
+                                    paste(y, collapse = " "), "\n",  
+                                    "Just the first returned value is used for ", name)
+                    warning(messg)
+                    y <- y[1]
+                }
                 y <- format(round(y, digits), nsmall = digits)
-            }
-           
+            } 
             if (!is.null(y) & !is.na(y) & !identical(y, "")) res[i] <- y else res[i] <- ""
         }
         if (any(res != "")) nonNull <- TRUE else nonNull <- FALSE
-        ##names(res) <- names(sl)
         attr(res, "nonNull") <- nonNull
         res
     }
