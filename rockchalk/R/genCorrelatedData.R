@@ -234,14 +234,7 @@ genCorrelatedData2 <-
              verbose = TRUE)
 {
     d <- length(means)
-    ## R <- lazyCor(rho, d)
-    ## if (length(sds) < d) sds <- rep(sds, length.out = d)
-    ## Sigma <- lazyCov(Rho = R, Sd = sds)
-    ## ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
-    ## x.mat <- rockchalk::mvrnorm(N, means, Sigma)
-    ## x.names <-  paste("x", 1:d, sep = "")
-
-    x.mat <- genX(N, means, sds, rho, intercept = TRUE)
+    x.mat <- as.matrix(genX(N, means, sds, rho, intercept = TRUE))
     ## Get rid of Intercept if it is in there
     x.mat.noint <- x.mat[ , -grep("Intercept", colnames(x.mat))]
     
@@ -295,62 +288,56 @@ NULL
 
 ##' Generate correlated data (predictors) for one unit
 ##'
-##' This is used to generate data for one unit. It is a wrapper around
-##' the rockchalk::mvrnorm function, used for convenience to allow
-##' users to supply standard deviations and the correlation matrix
-##' rather than the variance.
+##' This is used to generate data for one unit. It is recently
+##' re-designed to serve as a building block in a multi-level data
+##' simulation exercise.  The new arguments "unit" and "idx" can be
+##' set as NULL to remove the multi-level unit and row naming
+##' features.  This function uses the rockchalk::mvrnorm function, but
+##' introduces a convenience layer by allowing users to supply
+##' standard deviations and the correlation matrix rather than the
+##' variance.
 ##'
-##' This is part of a multi-level data simulation exercise.
+##' Today I've decided to make the return object a data frame.  This
+##' allows the possibility of including a character variable "unit"
+##' within the result.  For multi-level models, that will help.  If
+##' unit is not NULL, its value will be added as a column in the data
+##' frame. If unit is not null, the rownames will be constructed by
+##' pasting "unit" name and idx. If unit is not null, then idx will
+##' be included as another column, unless the user explicitly sets
+##' idx = FALSE. 
 ##'
-##' I've been uncertain if this should return a matrix or a
-##' data.frame. A matrix of numeric values was originally returned,
-##' but after time there were requests to include an Intercept, a row
-##' index variable, and later a unit name, in a character string.  To
-##' avoid returning a character matrix, I'm including the unit name as
-##' an attribute on the returned numeric matrix.  At the end of the
-##' examples, I have example of how to convert the return into a data
-##' frame with a character column for the unit name and re-setting the
-##' variables Intercept and idx as integers.
-##'
-##' If the value given for unit is an integer or number, it will be added
-##' as a column in the returned matrix to save the user the trouble of
-##' extracting the unit name from the attributes of the returned matrix.
-##'
-##' I wouldn't mind making the return value a data.frame. If anybody
-##' uses this, let me know what's preferred.
 ##' @param N Number of cases desired
-##' @param means A vector of means for X. It is optional to name them.
-##'     This implicitly sets the dimension of the predictor matrix as
-##'     N x p. If you provide a numeric vector with names, such as
-##'     c("x1" = 7, "x2" = 13, "x3" = 44), we will extract the names
-##'     and use them as the names of your columns in the output
-##'     matrix. This is probably less error prone than using the
-##'     separate colnames argument.
-##' @param sds Values for standard deviations for columns of X. It is
-##'     allowed to supply only one value, or just a few.  If less than
-##'     p values are supplied, they will be recycled.
-##' @param rho Correlation coefficient for X. Several input formats
-##'     are allowed (see \code{lazyCor}). This can be a single number
-##'     (common correlation among all variables), a full matrix of
-##'     correlations among all variables, or a vector that is
+##' @param means A vector of means for p variables. It is optional to
+##'     name them.  This implicitly sets the dimension of the
+##'     predictor matrix as N x p. If no names are supplied, the
+##'     automatic variable names will be "x1", "x2", and so forth. If
+##'     means is named, such as c("myx1" = 7, "myx2" = 13, "myx3" =
+##'     44), those names will be come column names in the output
+##'     matrix.
+##' @param sds Standard deviations for the variables.  If less than p
+##'     values are supplied, they will be recycled.
+##' @param rho Correlation coefficient for p variables. Several input
+##'     formats are allowed (see \code{lazyCor}). This can be a single
+##'     number (common correlation among all variables), a full matrix
+##'     of correlations among all variables, or a vector that is
 ##'     interpreted as the strictly lower triangle (a vech).
 ##' @param Sigma P x P variance/covariance matrix.
 ##' @param intercept Default = TRUE, do you want a first column filled
 ##'     with 1?
-##' @param colnames Default NULL, we will name variables x1, x2, x3,
+##' @param colnames Names supplied here will override column names
+##'     supplied with the means parameter. If no names are supplied
+##'     with means, or here, we will name variables x1, x2, x3,
 ##'     ... xp, with Intercept at front of list if intercept =
-##'     TRUE. If you provide colnames, explicitly, rather than as
-##'     names for the means vector, then we need you to provide the
-##'     same number of names as you provided means.
+##'     TRUE.
 ##' @param unit A character string for the name of the unit being
 ##'     simulated. Might be referred to as a "group" or "district" or
 ##'     "level 2" membership indicator.
-##' @param idx If set TRUE, a variable idx is created numbering the
+##' @param idx If set TRUE, a column "idx" is added, numbering the
 ##'     rows from 1:N. If the argument unit is not NULL, then idx is
-##'     set to TRUE automatically. Setting idx to FALSE will override
-##'     that.
+##'     set to TRUE, but that behavior can be overridded by
+##'     setting idx = FALSE.
 ##' @export
-##' @return A numeric matrix with rownames to specify unit and
+##' @return A data frame with rownames to specify unit and
 ##'     individual values, including an attribute "unit" with the
 ##'     unit's name.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
@@ -368,15 +355,10 @@ NULL
 ##' Sigma <- lazyCov(Rho = c(.2, .3, .4, .5, .2, .1), Sd = c(2, 3, 1, 4))
 ##' X6 <- genX(10, means = c(5, 2, -19, 33), Sigma = Sigma, unit = "Winslow_AZ")
 ##' head(X6)
-##' X6df <- data.frame("unit" = attr(X6, "unit"), X6, stringsAsFactors = FALSE)
-##' ## Is there more graceful way to put these back as integers?
-##' ## Should I have made the return a data.frame and done this inside?
-##' X6df$Intercept <- as.integer(X6df$Intercept)
-##' X6df$idx <- as.integer(X6df$idx)
 ##'
 genX <-
     function(N, means, sds, rho, Sigma = NULL, intercept = TRUE,
-             colnames = NULL, unit = NULL, idx = !missing(unit))
+             colnames = NULL, unit = NULL, idx = FALSE)
 {
     d <- length(means)
     if (!missing(rho) & !is.null(Sigma)) stop ("Please provide rho or Sigma, not both")
@@ -400,36 +382,28 @@ genX <-
             stop(paste("If you provide column names, please provide one",
                        "for each column in the means input"))
     }
+    colnames <- make.names(colnames, unique = TRUE)
 
-    if (!missing(unit) && !identical(idx, FALSE)) idx <- TRUE
-    
-    ##used mvtnorm ## x.mat <-  rmvnorm(n = N, mean = means, sigma = Sigma)
+    ## If unit is meaningful, set idx TRUE. Defending against
+    ## user values like unit = NULL and idx = NULL
+    if (missing(idx) || (!identical(idx, FALSE) && !is.null(idx))){ 
+        if (!missing(unit) & !is.null(unit))
+            idx <- TRUE
+    }
+
     x.mat <- rockchalk::mvrnorm(N, means, Sigma)
     if (is.null(unit)) {
         rownames <- 1:N
     } else {
-        if (length(unit) > 1) stop("Sorry, just supply 1 unit name")
+        if (length(unit) > 1) stop("genX: just supply 1 unit name")
         rownames <- paste0(unit, "_", 1:N)
     }
     dimnames(x.mat) <- list(rownames, colnames)
-
-    newnames <-  c(if (intercept) "Intercept" else NULL,
-                   if (isTRUE(idx)) "idx" else NULL)
+    x.mat <- as.data.frame(x.mat)
+    if (intercept) x.mat <- cbind(Intercept = 1L, x.mat)
     
-    if (length(newnames) > 0) {
-        x.left <- matrix(NA, ncol = length(newnames), nrow = N,
-                         dimnames = list(rownames, newnames))
-        if ("Intercept" %in% newnames){
-            x.left[ , "Intercept"] <- 1
-        }
-        if ("unit" %in% newnames){
-            x.left[ , "unit"] <- unit
-        }
-        if ("idx" %in% newnames){
-            x.left[ , "idx"] <- seq(1, N, by = 1)
-        }
-        x.mat <- cbind(x.left, x.mat)
-    }
+    if (!is.null(unit)) x.mat[ , "unit"] <- rep(unit, N)
+    if (isTRUE(idx)) x.mat[ , "idx"] <- seq(1L, N, by = 1L)
     attr(x.mat, "unit") <- unit
     x.mat
 }
