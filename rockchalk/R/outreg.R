@@ -920,7 +920,7 @@ outreg <-
                   , x)
         x <- gsub("_SEP_", ifelse(LATEX, " &", "</td><td>"), x)
         x <- gsub("_EOT_", ifelse(LATEX, "\\\\end{tabular}", "</table>"), x)
-        x <- gsub("_BOMC2_", ifelse(LATEX, "& \\\\multicolumn{2}{l}{", "<td colspan = '2'>"), x)
+        x <- gsub("_BOMC2_", ifelse(LATEX, "& \\\\multicolumn{2}{c}{", "<td colspan = '2'>"), x)
         x <- gsub("_X2_",  ifelse(LATEX, "$-2LLR (Model \\\\chi^2)$", "&chi;<sup>2</sup>"), x)
         x <- gsub("_R2_",  ifelse(LATEX, "$R^2$", "R<sup>2</sup>"), x)
         x <- gsub("_SIGMA_", ifelse(LATEX, "$\\\\sigma$", "&sigma;"), x)
@@ -1198,7 +1198,7 @@ outreg <-
     nColumns <- ifelse(tight, 1 + nmodels, 1 + 2*nmodels)
 
     BT <- function(n, type = "latex"){
-        if (type == "latex") return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
+        if (type == "latex") return(paste0("\\begin{tabular}{l*{",n-1,"}{S}}\n", SL(n, type)))
         paste("<table>\n", SL(n, type))
     }
 
@@ -1211,7 +1211,7 @@ outreg <-
         aline <- paste("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
-                aline <- c(aline, paste0("_BOC_", modelLabel, "_EOC_"))
+                aline <- c(aline, paste0("_BOC_{", modelLabel, "}_EOC_"))
             } else {
                 aline <- c(aline, paste0("_BOMC2_", modelLabel, "_EOMC_", sep=""))
             }
@@ -1222,14 +1222,14 @@ outreg <-
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste("_BR_", sprintf("%2s", " "), paste(rep (" _SEP_Estimate", nmodels), collapse = " "), "_EOR__EOL_", collapse = "") 
+        aline <- paste("_BR_", sprintf("%2s", " "), paste(rep (" _SEP_{Estimate}", nmodels), collapse = " "), "_EOR__EOL_", collapse = "") 
         z <- c(z, paste(aline, collapse = ""))
 
-        aline <- c("_BRU_", sprintf("%2s", " "), paste(rep (" _SEPU_(S.E.) ", nmodels, collapse = " ")), "_EOR__EOL_")
+        aline <- c("_BRU_", sprintf("%2s", " "), paste(rep (" _SEPU_{(S.E.)} ", nmodels, collapse = " ")), "_EOR__EOL_")
         z <- c(z, paste(aline, collapse = ""))
     } else {
         aline1 <- paste("_BRU_", sprintf("%2s", " "))
-        aline2 <- paste(rep (" _SEPU_Estimate _SEPU_(S.E.) ", nmodels), collapse = " ")
+        aline2 <- paste(rep (" _SEPU_{Estimate} _SEPU_{(S.E.)} ", nmodels), collapse = " ")
         aline3 <- paste("_EOR__EOL_")
         z <- c(z, paste(aline1, aline2, aline3, collapse = ""))
     }
@@ -1248,7 +1248,7 @@ outreg <-
                     aline <- c(aline, paste("  _SEP_  ", se, collapse = " "))
                 }
             } else {
-                aline <- c(aline, "  _SEP_ .     ")
+                aline <- c(aline, "  _SEP_      ")
                 if (tight == FALSE) aline  <- c(aline, "  _SEP_        ")
             }
         }
@@ -1263,7 +1263,7 @@ outreg <-
                 aline2 <- if (!is.na(est)) c("_SEP_", se, rep(" ", max(2, 6 - nchar(se)), collapse=""))  else c("_SEP_  ", sprintf("%2s", " "))
                 aline <- c(aline, paste(aline2, collapse = ""))
             }
-            aline <- c(aline, "_EOR__EOL_")
+            aline <- c(aline, "_EOR_[0.2em]_EOL_")
             z <- c(z, paste(aline, collapse = ""))
         }
     }
@@ -1381,7 +1381,7 @@ outreg <-
         if (type == "latex"){
             for ( i in seq_along(alpha)){
                 if (type == "latex") {
-                    aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$", sep = "")
+                    aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$ ", sep = "")
                 }
             }
             aline <- paste0("\\multicolumn{", nColumns, "}{c}{", aline, "_EOMC__EOR__EOL_")
@@ -1410,7 +1410,21 @@ outreg <-
     matchCall[["type"]] <- "html"
                
     if (type == "latex") {
-        cat(z)
+
+        if (tight==TRUE) {
+            cat("% INCLUDE IN PREAMBLE (uncomment the following two lines):\n")
+            cat("% \\usepackage[detect-all]{siunitx}\n")
+            cat("% \\sisetup{input-symbols=(), table-figures-integer=3, table-figures-decimal=4, table-number-alignment=center, group-digits=false}\n")
+            cat("%\\setlength{\\tabcolsep}{2em}\n")
+            cat(z)
+        } else {
+            cat("% INCLUDE IN PREAMBLE (uncomment the following two lines):\n")
+            cat("% \\usepackage[detect-all]{siunitx}\n")
+            cat("% \\sisetup{input-symbols=(), table-figures-integer=3, table-figures-decimal=4, table-number-alignment=center, group-digits=false}\n")
+            cat("%\\setlength{\\tabcolsep}{1em}\n")
+            cat(z)            
+        }
+        
     } else if (browser) {
         fn <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".html")
         cat(z, file = fn)
