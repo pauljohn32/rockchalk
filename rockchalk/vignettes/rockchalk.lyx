@@ -1,7 +1,9 @@
-#LyX 2.0 created this file. For more info see http://www.lyx.org/
-\lyxformat 413
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass scrartcl
 \begin_preamble
 %\VignetteIndexEntry{Using rockchalk}
@@ -97,16 +99,16 @@ logicalmkup
 \language_package default
 \inputencoding utf8
 \fontencoding global
-\font_roman lmodern
-\font_sans lmss
-\font_typewriter lmtt
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
-
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -117,15 +119,24 @@ logicalmkup
 \use_hyperref false
 \papersize default
 \use_geometry true
-\use_amsmath 1
-\use_esint 1
-\use_mhchem 1
-\use_mathdots 1
-\cite_engine natbib_authoryear
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
 \use_bibtopic false
 \use_indices false
 \paperorientation portrait
 \suppress_date false
+\justification true
 \use_refstyle 1
 \index Index
 \shortcut idx
@@ -602,6 +613,10 @@ divider.
  The name of an algorithm to select among observed values for which predictions
  are to be calculated.
  These are the possibilities.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -714,8 +729,8 @@ mypred3
 
 \begin_layout Plain Layout
 
-mypred4 <- predictOMatic(m1, predVals = list(age = summChile$numerics[2:4,
- "age"], region = c("SA", "C","N")), n = 3)
+mypred4 <- predictOMatic(m1, predVals = list(age = c(18, 30, 45), region
+ = c("SA", "C","N")), n = 3)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1002,8 +1017,10 @@ cat
 \begin_inset Quotes erd
 \end_inset
 
- function from R to write LaTeX markup.
- That gave me the idea to write a LaTeX output scheme that would help create
+ function from R to write \SpecialChar LaTeX
+ markup.
+ That gave me the idea to write a \SpecialChar LaTeX
+ output scheme that would help create
  some nice looking term and research papers.
  I wanted 
 \begin_inset Quotes eld
@@ -1211,8 +1228,9 @@ reference "tab:Combined-OLSGLM"
  There are some warts in this output.
  Because the model labels are not equal in length, the columns are not equally
  sized.
- Because many LaTeX distributions do not include the dcolumns package, I've
- not aligned the coefficient estimates vertically as some users might prefer.
+ Because many \SpecialChar LaTeX
+ distributions do not include the dcolumns package, I've not
+ aligned the coefficient estimates vertically as some users might prefer.
  It seems to me that, if the vertical alignment of estimates along the decimal
  is required, most users will install dcolumn and make a few obvious changes
  in the markup that I provide.
@@ -1225,7 +1243,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Default Outreg Table
@@ -1279,7 +1297,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 My Spread Out Regressions
@@ -1334,7 +1352,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Combined OLS and GLM Estimates
@@ -1382,7 +1400,8 @@ outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
 \end_layout
 
 \begin_layout Standard
-In rockchalk 1.8, a translator from LaTeX markup to simple HTML was introduced.
+In rockchalk 1.8, a translator from \SpecialChar LaTeX
+ markup to simple HTML was introduced.
  The function outreg2HTML() can write an HTML code file that a word processor
  program such as Libre Office or Microsoft Word is able to import without
  a struggle.
@@ -1471,7 +1490,7 @@ includegraphics[height=4in]{rockchalk-ps05}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes: Linear Model with Confidence Interval
@@ -1678,7 +1697,7 @@ par(mfcol=c(1,1))
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes Illustrated
@@ -1871,7 +1890,7 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes with a Categorical Moderator
@@ -1928,7 +1947,7 @@ m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"),
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes: the interval argument
@@ -2073,7 +2092,7 @@ status open
 In rockchalk version 1.8, I've exerted quite a bit of effort to make sure
  that colors are chosen consistently when users remove or insert groups
  in these plots.
- The same value of the moderator should always be plotted in the same way--the
+ The same value of the moderator should always be plotted in the same way–the
  line, points, and interval colors should not change.
  Note, for example, in Figures 
 \begin_inset CommandInset ref
@@ -2173,7 +2192,7 @@ plot(m4psats)
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 testSlopes for an Interactive Model
@@ -2279,7 +2298,7 @@ the null hypothesis would be
 \noindent
 \begin_inset Formula 
 \begin{equation}
-H_{0}:0=\hat{b}_{simple\, slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
+H_{0}:0=\hat{b}_{simple\,slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
 \end{equation}
 
 \end_inset
@@ -2345,7 +2364,7 @@ key "PreacherCurren2006"
 
  on the outcome is determined from the computation of a T statistic for
  
-\begin_inset Formula $\hat{b}_{simple\, slope}$
+\begin_inset Formula $\hat{b}_{simple\,slope}$
 \end_inset
 
 .
@@ -2356,7 +2375,7 @@ key "PreacherCurren2006"
  for which the following (quadratic equation) holds:
 \begin_inset Formula 
 \begin{equation}
-\hat{t}=\frac{\hat{b}_{simple\, slope}}{std.err(\hat{b}_{simple\, slope})}=\frac{\hat{b}_{simple\, slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
+\hat{t}=\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}=\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
 \end{equation}
 
 \end_inset
@@ -2502,7 +2521,7 @@ m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotCurves
@@ -2644,7 +2663,7 @@ p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80,
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotPlane for the Interactive Model m4
@@ -2791,7 +2810,7 @@ addLines(from = m5pc, to = ppm5, col = m5pc$col)
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Making plotSlopes and plotPlane Work Together
@@ -2946,7 +2965,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Comparing Ordinary and Standardized Regression
@@ -3846,7 +3865,7 @@ sideways false
 status open
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Comparing Regressions
@@ -4066,7 +4085,7 @@ includegraphics[height=8in]{rockchalk-pscenter.pdf}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 plotSlopes for the centered and non-centered regressions
@@ -4204,7 +4223,7 @@ par(op)
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Predicted Planes from Centered and Uncentered Fits Identical
@@ -4405,7 +4424,7 @@ includegraphics[width = 6.5in]{rockchalk-rcenter40}
 \end_layout
 
 \begin_layout Plain Layout
-\begin_inset Caption
+\begin_inset Caption Standard
 
 \begin_layout Plain Layout
 Predicted Values of Mean and Residual-centered Models

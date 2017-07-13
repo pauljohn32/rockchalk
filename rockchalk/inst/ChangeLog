@@ -1,3 +1,7 @@
+2017-07-17  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/summarize.R (ncw): rename sumstat -> stats
+
 2016-11-25  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/genCorrelatedData.R (genX): genX now returns a DATA FRAME
