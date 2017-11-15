@@ -519,7 +519,7 @@ summarize <-
     } else {
         datf <- do.call("summarizeFactors", args = origargs)
     }
-    datnfmt <- format.numericSummaries(datn, digits = digits) 
+    datnfmt <- formatNumericSummaries(datn, digits = digits) 
     value <- list(numerics = datn, factors = datf, numericsfmt = datnfmt)
     print.summarize(value, digits = digits)
     invisible(value)
@@ -543,7 +543,7 @@ NULL
 print.summarize <- function(x, digits = 2, ...){
     if(!is.null(x$numerics)){
         cat("Numeric variables\n")
-        print(format.numericSummaries(x$numerics, digits = digits), quote = FALSE, print.gap = 3)
+        print(formatNumericSummaries(x$numerics, digits = digits), quote = FALSE, print.gap = 3)
     }
     if(!is.null(x$factors)){
         cat("\nNonnumeric variables\n")
@@ -564,9 +564,15 @@ print.summarize <- function(x, digits = 2, ...){
 ##' @param ... Other arguments, currently not used
 ##' @return A text matrix to represent the numeric input
 ##' @author Paul Johnson
-##' @method format numericSummaries
 ##' @export
-format.numericSummaries <- function(x, digits = 2, ...){
+##' @examples
+##' set.seed(21234)
+##' X <- matrix(rnorm(10000), ncol = 10)
+##' Xsum <- summarize(X)
+##' Xsum$numerics
+##' formatNumericSummaries(Xsum$numerics)
+##' formatNumericSummaries(Xsum$numerics, digits = 5)
+formatNumericSummaries <- function(x, digits = 2, ...){
     datnfmt <- x
     for (i in colnames(datnfmt)) datnfmt[ , i] <- round(datnfmt[ , i], digits)
     datnfmt <- format(t(datnfmt), trim = FALSE, scientific = 10)

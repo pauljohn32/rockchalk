@@ -23,12 +23,14 @@ summarize(dat,
           probs = c(0, 0.20, 0.50),
           stats = c("mean", "entropy"))
 
-## No stats for numeric variables
+## Only quantile values, no summary stats for numeric variables
+## Discrete variables get entropy
 summarize(dat, 
           probs = c(0, 0.25, 0.50, 0.75, 1.0),
           stats = "entropy", digits = 2)
 
-## No stats for discrete variables
+## Quantiles and the mean for numeric variables.
+## No diversity stats for discrete variables (entropy omitted)
 summarize(dat, 
           probs = c(0, 0.25, 0.50, 0.75, 1.0),
           stats = "mean")
@@ -57,8 +59,8 @@ datsumm <- summarize(dat, stats = c("mean", "sd", "var"), props = TRUE)
 datsumm[["numerics"]]
 ## Beautified versions 1. shows saved version:
 datsumm[["numericsfmt"]]
-## 2. Run format to re-specify digits:
-rockchalk:::format.numericSummaries(datsumm[["numerics"]], digits = 10)
+## 2. Run formatNumericSummaries to re-specify digits:
+formatNumericSummaries(datsumm[["numerics"]], digits = 10)
 
 datsumm[["factors"]]
 
