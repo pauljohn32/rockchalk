@@ -1272,7 +1272,7 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m1, m2, m3))
+or <- outreg(list(m1, m2, m3))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1326,8 +1326,8 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with
- a Long Title", "Another Model"), alpha = c(0.05, 0.01, 0.001))
+or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model"
+ = m3), tight = FALSE, alpha = c(0.05, 0.01, 0.001))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1381,7 +1381,7 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
+or2 <- outreg(list(m1,gm1), modelLabels = c("OLS:y","GLM: Categorized y"))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2994,8 +2994,8 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardize
-d"))
+or10 <- outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Sta
+ndardized"))
 \end_layout
 
 \begin_layout Plain Layout
@@ -3894,8 +3894,8 @@ status open
 
 \begin_layout Plain Layout
 
-outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear",
- "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
+or11 <- outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear
+", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
 \end_layout
 
 \begin_layout Plain Layout
