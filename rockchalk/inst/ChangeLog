@@ -1,3 +1,10 @@
+2017-11-20  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/outreg.R: markup types separated latex, html, csv
+	(outreg): reduce spaces before commas
+
+	* examples/addLines-ex.R: tempdir required in examples that create files.
+
 2017-07-17  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/summarize.R (ncw): rename sumstat -> stats

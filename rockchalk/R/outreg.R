@@ -662,7 +662,7 @@ NULL
 ##' "Her Model" = m2)}.  This is the currently recommended way to
 ##' supply model lables. This is less error prone than the use of the
 ##' modelLabels argument.
-##' @param type Default = "latex". The alternative is "html"
+##' @param type Default = "latex". The alternatives are "html" and "csv"
 ##' @param modelLabels This is allowed, but discouraged. A vector of
 ##' character string variables, one for each element in
 ##' modelList. Will override the names in modelList.
@@ -716,7 +716,7 @@ NULL
 ##' Estimate I don't understand", "deviance" = "Another Mystery")}. The
 ##' words that you might replace are "sigma", "r.squared",
 ##' "deviance", "adj.r.squared", "fstatistic".
-##' @param browser Display the regression model in a browser? Defaults to TRUE if type = "html"
+##' @param browse Display the regression model in a browse? Defaults to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
 ##' @import grDevices  
@@ -739,65 +739,75 @@ NULL
 ##' m2 <- lm(y1 ~ x2, data = dat)
 ##' m3 <- lm(y1 ~ x1 + x2, data = dat)
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
-##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
-##'
-##' outreg(list("Fingers" = m1), tight = FALSE, 
+##' ex1 <- outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
+##' ## Show markup
+##' cat(ex1)
+##' ## Save to file in usual way, e.g.,
+##' ## cat(ex1, file = "ex1.tex")
+##' ex2 <- outreg(list("Fingers" = m1), tight = FALSE, 
 ##'     title = "My Only Spread Out Regressions", float = TRUE,
 ##'     alpha = c(0.05, 0.01, 0.001)) 
-##'
-##' outreg(list("Model A" = m1, "Model B label with Spaces" = m2),
-##'     varLabels = list(x1 = "Billie"),
+##' cat(ex2)
+##' 
+##' ex3 <- outreg(list("Model A" = m1, "Model B label with Spaces" = m2),
+##'     varLabels = list(x1 = "Billie"), 
 ##'     title = "My Two Linear Regressions", request = c(fstatistic = "F"))
-##'
-##' outreg(list("Model A" = m1, "Model B" = m2),
+##' cat(ex3)
+##' 
+##' ex4 <- outreg(list("Model A" = m1, "Model B" = m2),
 ##'     modelLabels = c("Overrides ModelA", "Overrides ModelB"),
 ##'     varLabels = list(x1 = "Billie"),
 ##'     title = "Note modelLabels Overrides model names")
+##' cat(ex4)
 ##'
 ##' ex5 <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, float = TRUE)
-##' ## make a file:
-##' ## cat(ex5, file = "some_name_you_choose.tex")
+##' cat(ex5)
 ##'
 ##' \donttest{
+##' ## Launches HTML browse
 ##' ex5html <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, type = "html")
-##' ## make a file:
-##' ## cat(ex5html, file = "some_name_you_choose.html")
-##' ## Open that in LibreOffice or MS Word
+##' ## Could instead, make a file:
+##' ## fn <- "some_name_you_choose.html"
+##' ## cat(ex5html, file = fn)
+##' ## browseURL(fn)
+##' ## Open that HTML file in LibreOffice or MS Word
 ##' }
 ##' 
-##' outreg(list("Whatever" = m1, "Whatever" =m2),
+##' ex6 <- outreg(list("Whatever" = m1, "Whatever" =m2),
 ##'     title = "Another way to get AIC output",
 ##'     runFuns = c("AIC" = "Akaike IC"))
-##'
-##' outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
-##'     title = "My Three Linear Regressions", float = FALSE)
-##'
+##' cat(ex6)
+##' 
+##' ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
+##'        title = "My Three Linear Regressions", float = FALSE)
+##' cat(ex7)
+##' 
 ##' ## A new feature in 1.85 is ability to provide vectors of beta estimates
 ##' ## standard errors, and p values if desired. 
 ##' ## Suppose you have robust standard errors!
 ##' newSE <- sqrt(diag(car::hccm(m3)))
 ##' ## See 2 versions of m3 in the table?
-##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, "Model C w Robust SE" = m3),
+##' ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, "Model C w Robust SE" = m3),
 ##'         SElist= list("Model C w Robust SE" = newSE))
+##' cat(ex8)
 ##' 
 ##' ## outreg uses a t or normal approximation to calculate p values, but you can
 ##' ## calculate your own.  Let's dial down those std errors but insist they are
 ##' ## not significantly different from zero
 ##' newSE <- 0.3*newSE
 ##' newPvals <- rep(0.1, length(newSE))
-##'
-##' 
 ##' ## Pass in your own SE and P values.
-##' outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3),
+##' ex9 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3),
 ##'        SElist = list("Model C" = newSE), 
 ##'        PVlist = list("Model C" = newPvals), alpha = c(0.05, 0.01, 0.001))
+##' cat(ex9)
 ##' ## It took me a while to realize we might as well allow the user to
 ##' ## pass in a vector of Beta estimates as well. Seems obvious now, though.
-##' if(interactive())outreg(list("Model C" = m3, 
+##' if(interactive()) ex10 <- outreg(list("Model C" = m3, 
 ##'        "Model C Robust SE" = m3, "Model C MLv2" = m3),
 ##'        Blist = list("Model C MLv2" = c("(Intercept)" = 0.222, "x1" = 0.222, "x2" = 0.222)),
 ##'        SElist = list("Model C Robust SE" = newSE, "Model C MLv2" = 1.4*newSE), 
@@ -805,28 +815,32 @@ NULL
 ##'        alpha = c(0.05, 0.01, 0.001), type = "html")
 ##' 
 ##' 
-##' outreg(list("I Love Long Titles" = m1,
-##'        "Prefer Brevity" = m2,
-##'        "Short" = m3), tight = FALSE, float = FALSE)
+##' ex11 <- outreg(list("I Love Long Titles" = m1,
+##'           "Prefer Brevity" = m2,
+##'           "Short" = m3), tight = FALSE, float = FALSE)
+##' cat(ex11)
 ##'
-##' outreg(list("GLM" = gm1), float = TRUE)
+##' ex12 <- outreg(list("GLM" = gm1), float = TRUE)
+##' cat(ex12)
+##' 
+##' ex13 <- outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
+##'         alpha = c(0.05, 0.01))
+##' cat(ex13)
 ##'
-##' outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
-##'     alpha = c(0.05, 0.01))
-##'
-##' outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+##' ex14 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
 ##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
-##'
-##' outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+##' cat(ex14)
+##' 
+##' ex15 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
 ##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
 ##'     digits = 5, alpha = c(0.01))
 ##'
-##' outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+##' ex16 <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
 ##'     request = c(fstatistic = "F"),
 ##'     runFuns = c("BIC" = "BIC", logLik = "ll"),
 ##'     digits = 5, alpha = c(0.05, 0.01, 0.001))
 ##'
-##' outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
+##' ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
 ##'     request = c(fstatistic = "F"),
 ##'     runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC",
 ##'     "nobs" = "N Again?"))
@@ -834,16 +848,18 @@ NULL
 ##' ## Here's a fit example from lme4.
 ##' if (require(lme4)){
 ##'   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
-##'   outreg(fm1)
+##'   ex18 <- outreg(fm1)
+##'   cat(ex18)
 ##'   ## Fit same with lm for comparison
 ##'   lm1 <- lm(Reaction ~ Days, sleepstudy)
 ##'   ## Get robust standard errors
 ##'   lm1rse <- sqrt(diag(car::hccm(lm1)))
 ##' 
-##'   if(interactive())outreg(list("Random Effects" = fm1, 
+##'   if(interactive()){
+##'   ex19 <- outreg(list("Random Effects" = fm1, 
 ##'        "OLS" = lm1, "OLS Robust SE" = lm1),
 ##'        SElist = list("OLS Robust SE" = lm1rse), type = "html")
-##'   
+##'   }
 ##'   ## From the glmer examples
 ##'   gm2 <- glmer(cbind(incidence, size - incidence) ~ period + (1 | herd),
 ##'                    data = cbpp, family = binomial)
@@ -852,8 +868,9 @@ NULL
 ##'   ## Lets see what MASS::rlm objects do? Mostly OK
 ##'   rlm2 <- MASS::rlm(incidence/size ~ period, data = cbpp)
 ##'   \donttest{
-##'   outreg(list("GLMER" = gm2, "lm" = lm2, "lm w/robust se" = lm2, "rlm" = rlm2),
-##'        SElist = list("lm w/robust se" = lm2rse), type = "html")
+##'   ex20 <- outreg(list("GLMER" = gm2, "lm" = lm2, "lm w/robust se" = lm2,
+##'             "rlm" = rlm2), SElist = list("lm w/robust se" = lm2rse),
+##'             type = "html")
 ##'   } 
 ##' }
 outreg <-
@@ -861,7 +878,7 @@ outreg <-
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
              PVlist = NULL,  Blist = NULL, title, label,  gofNames,
-             browser = identical(type, "html") && interactive())
+             browse = identical(type, "html") && interactive())
 {
 
     myGofNames <- c(sigma = "RMSE",
@@ -900,31 +917,76 @@ outreg <-
         errors <- lapply(problematic, checkFunctions, req)
     }
 
+    latex.markup <- c("_EOC_" = "",
+                      "_BOC_" = "& ",
+                      "_EOMC_" = "}",
+                      "_EOR_" = "\\\\tabularnewline",
+                      "_BRU_" = "",
+                      "_BR_" = "", 
+                      "_BT_" = "\begin{tabular}",
+                      "_EOL_" = "\n",
+                      "_HL_" = "\\\\hline",
+                      "_SEPU_" = " &",
+                      "_SEP_" = " &",
+                      "_EOT_" = "\\\\end{tabular}",
+                      "_BOMC2_" = "& \\\\multicolumn{2}{l}{", 
+                      "_X2_" = "$-2LLR (Model \\\\chi^2)$",
+                      "_R2_" = "$R^2$", 
+                      "_SIGMA_" = "$\\\\sigma$",
+                      "_NBSP_" = "\ ")
+
+    html.markup <- c(
+        "_EOC_" = "</td>",
+        "_BOC_" ="<td>",
+        "_EOMC_" = "</td>",
+        "_EOR_" = "</tr>",
+        "_BRU_" = "<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;",
+        "_BR_" =  "<tr><td>",
+        "_BT_" =  "<table>\n",
+        "_EOL_" = "\n",
+        "_HL_" = "",
+        "_SEPU_" = paste("</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"),
+        "_SEP_" = "</td><td>",
+        "_EOT_" = "</table>",
+        "_BOMC2_" = "<td colspan = '2'>",
+        "_X2_" =  "&chi;<sup>2</sup>",
+        "_R2_" =  "R<sup>2</sup>",
+        "_SIGMA_" =  "&sigma;",
+        "_NBSP_" = "&nbsp;")
+
+    csv.markup <- c(
+        "_EOC_" = "",
+        "_BOC_" = ",",
+        "_EOMC_" = "",
+        "_EOR_" = "",
+        "_BRU_" = "",
+        "_BR_" =  "",
+        "_BT_" =  "",
+        "_EOL_" = "\n",
+        "_HL_" = "",
+        "_SEPU_" = ",",
+        "_SEP_" = ",",
+        "_EOT_" = "",
+        "_BOMC2_" = ",",
+        "_X2_" =  "chi2",
+        "_R2_" =  "R2",
+        "_SIGMA_" =  "sigma",
+        "_NBSP_" = " ")
+    
 
     markup <- function(x, type){
-        if (type == "latex") LATEX <- TRUE else LATEX <- FALSE
-        x <- gsub("_EOC_", ifelse(LATEX, "", "</td>"), x)
-        x <- gsub("_BOC_", ifelse(LATEX, "& ", "<td>"), x)
-        x <- gsub("_EOMC_", ifelse(LATEX, "}", "</td>"), x)
-        x <- gsub("_EOR_", ifelse(LATEX, "\\\\tabularnewline", "</tr>"), x)
-        x <- gsub("_BRU_", ifelse(LATEX, "",
-                                  paste("<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;")),
-                  x)
-        ##"
-        x <- gsub("_BR_", ifelse(LATEX, "", "<tr><td>"), x)
-        x <- gsub("_BT_", ifelse(LATEX, "\begin{tabular}", "<table>\n"), x)
-        x <- gsub("_EOL_",  "\n", x)
-        x <- gsub("_HL_", ifelse(LATEX, "\\\\hline", ""), x)
-        x <- gsub("_SEPU_", ifelse(LATEX, " &",
-                                   paste("</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"))
-                  , x)
-        x <- gsub("_SEP_", ifelse(LATEX, " &", "</td><td>"), x)
-        x <- gsub("_EOT_", ifelse(LATEX, "\\\\end{tabular}", "</table>"), x)
-        x <- gsub("_BOMC2_", ifelse(LATEX, "& \\\\multicolumn{2}{l}{", "<td colspan = '2'>"), x)
-        x <- gsub("_X2_",  ifelse(LATEX, "$-2LLR (Model \\\\chi^2)$", "&chi;<sup>2</sup>"), x)
-        x <- gsub("_R2_",  ifelse(LATEX, "$R^2$", "R<sup>2</sup>"), x)
-        x <- gsub("_SIGMA_", ifelse(LATEX, "$\\\\sigma$", "&sigma;"), x)
-        x <- gsub("_NBSP_", ifelse(LATEX, "\ ", "&nbsp;"), x)
+        if (type == "latex"){
+            markup <- latex.markup
+        } else if (type == "html"){
+            markup <- html.markup
+        } else {
+            markup <- csv.markup
+        }
+        
+        for(i in names(markup)){
+            x <- gsub(i, markup[i], x)
+        }
+        x
     }
 
     
@@ -988,14 +1050,16 @@ outreg <-
     ## Insert a horizontal line, or as close as we can get in an html table
     SL <- function(n, type) {
         if (type == "latex") x <- "\\hline\n"
-        else x <- paste0("<tr><td colspan=\'", n, "\'", " style=\"border-bottom:solid thin black;\">&nbsp;</td></tr>\n")
+        else if (type == "latex") x <- paste0("<tr><td colspan=\'", n, "\'", " style=\"border-bottom:solid thin black;\">&nbsp;</td></tr>\n")
+        else x <- "\n"
         x
     }
 
     ## Double line
     DL <- function(n, type) {
         if (type == "latex") x <- "\\hline\n\\hline\n"
-        else x <- paste0("<tr  style=\"height:5px;\"><td colspan=\'", n, "\'", " style=\"border-bottom:double thin black;\">&nbsp;</td></tr>\n")
+        else if (type == "html") x <- paste0("<tr  style=\"height:5px;\"><td colspan=\'", n, "\'", " style=\"border-bottom:double thin black;\">&nbsp;</td></tr>\n")
+        else x <- "\n"
         x
     }
     
@@ -1174,12 +1238,12 @@ outreg <-
     printVC <- function(VCmat){
         if (!any(VCmat != "")) return()
         aline <- paste0("_BR_", "Random Effects (_SIGMA_)", "_EOC__EOR__EOL_")
-        if (tight) hereSep <- " _SEP_ " else hereSep <-  " _SEP_     _SEP_ "
+        if (tight) hereSep <- " _SEP_ " else hereSep <-  "_SEP_ _SEP_ "
  
         bline1 <- paste0("_BR__NBSP_", paste0(rownames(VCmat)))
         bline2 <- paste(rep(" ", max(2, (5 - nchar(rownames(VCmat))))), collapse = "")
         bline3 <- paste(apply(VCmat, 1, paste, collapse = hereSep), "_EOC__EOR__EOL_")
-        bline <- paste(bline1, bline2, "_SEP_",  bline3)
+        bline <- paste(bline1, bline2, "_SEP_ ",  bline3)
         c(aline, bline)
     }
     
@@ -1199,7 +1263,8 @@ outreg <-
 
     BT <- function(n, type = "latex"){
         if (type == "latex") return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
-        paste("<table>\n", SL(n, type))
+        if (type == "html")  return(paste("<table>\n", SL(n, type)))
+        ""
     }
 
    
@@ -1211,25 +1276,25 @@ outreg <-
         aline <- paste("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
-                aline <- c(aline, paste0("_BOC_", modelLabel, "_EOC_"))
+                aline <- c(aline, paste0("_BOC_ ", modelLabel, "_EOC_"))
             } else {
-                aline <- c(aline, paste0("_BOMC2_", modelLabel, "_EOMC_", sep=""))
+                aline <- c(aline, paste0("_BOMC2_ ", modelLabel, "_EOMC_"))
             }
         }
-        aline <- c(aline, "  _EOR__EOL_")
-        z <- c(z, paste(aline, collapse = " "))
+        aline <- c(aline, "_EOR__EOL_")
+        z <- c(z, paste(aline, collapse = ""))
     }
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste("_BR_", sprintf("%2s", " "), paste(rep (" _SEP_Estimate", nmodels), collapse = " "), "_EOR__EOL_", collapse = "") 
+        aline <- paste("_BR_", paste(rep ("_SEP_ Estimate", nmodels), collapse = ""), "_EOR__EOL_", collapse = "") 
         z <- c(z, paste(aline, collapse = ""))
 
-        aline <- c("_BRU_", sprintf("%2s", " "), paste(rep (" _SEPU_(S.E.) ", nmodels, collapse = " ")), "_EOR__EOL_")
+        aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_SEPU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
         z <- c(z, paste(aline, collapse = ""))
     } else {
         aline1 <- paste("_BRU_", sprintf("%2s", " "))
-        aline2 <- paste(rep (" _SEPU_Estimate _SEPU_(S.E.) ", nmodels), collapse = " ")
+        aline2 <- paste(rep ("_SEPU_ Estimate _SEPU_ (S.E.)", nmodels), collapse = "")
         aline3 <- paste("_EOR__EOL_")
         z <- c(z, paste(aline1, aline2, aline3, collapse = ""))
     }
@@ -1238,18 +1303,18 @@ outreg <-
    
     ## Here come the regression coefficients
     for (regname in parmnames){
-        aline <- paste(paste("_BR_ ", displayNames[regname], paste(rep(" ", max(2, (6 - nchar(displayNames[regname])))), collapse = "" ) ) , collapse = "")
+        aline <- paste(paste("_BR_", displayNames[regname], paste(rep(" ", max(2, (6 - nchar(displayNames[regname])))), collapse = "" )), collapse = "")
         for (model in modelLabels) {
             est <- B[regname, model]
             se <- SE[regname, model]
             if (!is.na(est)) {
                 aline <- c(aline, "_SEP_", est)
                 if (tight == FALSE) {
-                    aline <- c(aline, paste("  _SEP_  ", se, collapse = " "))
+                    aline <- c(aline, paste("_SEP_  ", se, collapse = " "))
                 }
             } else {
-                aline <- c(aline, "  _SEP_ .     ")
-                if (tight == FALSE) aline  <- c(aline, "  _SEP_        ")
+                aline <- c(aline, "_SEP_ .     ")
+                if (tight == FALSE) aline  <- c(aline, "_SEP_    ")
             }
         }
         aline <- c(aline, " _EOR__EOL_")
@@ -1260,7 +1325,7 @@ outreg <-
             for (model in modelLabels) {
                 est <- B[regname, model]
                 se <- SE[regname, model]
-                aline2 <- if (!is.na(est)) c("_SEP_", se, rep(" ", max(2, 6 - nchar(se)), collapse=""))  else c("_SEP_  ", sprintf("%2s", " "))
+                aline2 <- if (!is.na(est)) c("_SEP_", rep(" ", max(2, 6 - nchar(se)), collapse=""), se)  else c("  _SEP_", sprintf("%2s", " "))
                 aline <- c(aline, paste(aline2, collapse = ""))
             }
             aline <- c(aline, "_EOR__EOL_")
@@ -1273,11 +1338,11 @@ outreg <-
 
 
     ## Print a row for the number of cases
-    aline <- c("_BR_", "N", sprintf("%2s", " "))
+    aline <- c("_BR_", "N")
     for (model in modelList) {
         myN <- stats::nobs(model)
-        aline <- c(aline, "_SEP_", myN, sprintf("%2s", " "))
-        if (tight == FALSE) aline <- c(aline, "_SEP_ ", rep(" ",2))
+        aline <- c(aline, "_SEP_ ", myN)
+        if (tight == FALSE) aline <- c(aline, "_SEP_ ")
     }
     aline <- c(aline, " _EOR__EOL_")
     z <- c(z, paste(aline, collapse = ""))
@@ -1315,14 +1380,14 @@ outreg <-
         for (model in modelList) {
             if (is.numeric(model$deviance)){
                 n2llr <- model$null.deviance - model$deviance
-                aline <- c(aline, paste("      _SEP_", format(round(n2llr, digits), nsmall = digits)))
+                aline <- c(aline, paste("_SEP_  ", format(round(n2llr, digits), nsmall = digits)))
                 gmdf <- model$df.null - model$df.residual + 1
                 nstars <- sum(pchisq(n2llr, df = gmdf, lower.tail = FALSE) < alpha)
                 aline <-  paste0(paste(aline, collapse = ""), paste0(rep("*", nstars), collapse=""))
             } else {
-                aline <- c(aline, "       _SEP_")
+                aline <- c(aline, "_SEP_ ")
             }
-            if (tight == FALSE) aline <- c(aline, "       _SEP_")
+            if (tight == FALSE) aline <- c(aline, "_SEP_  ")
         }
         aline <- paste(paste(aline, collapse = ""), "_EOR__EOL_")
         z <- c(z, paste(aline))
@@ -1334,10 +1399,10 @@ outreg <-
     if (showAIC == TRUE) {
         aline <- "_BR_AIC"
         for (model in modelList) {
-            aline <- c(aline, paste("    _SEP_", if(is.numeric(AIC(model)))format(round(AIC(model), digits), nsmall = 3)))
-            if (tight == FALSE) aline <- c(aline, "      _SEP_")
+            aline <- paste0(aline, paste("_SEP_", if(is.numeric(AIC(model)))format(round(AIC(model), digits), nsmall = 3)))
+            if (tight == FALSE) aline <- c(aline, "_SEP_")
         }
-        aline <- c(aline, "_EOR__EOL_")
+        aline <- paste0(aline, "_EOR__EOL_")
         z <- c(z, paste(aline))
     }
 
@@ -1380,18 +1445,21 @@ outreg <-
         aline <- ""
         if (type == "latex"){
             for ( i in seq_along(alpha)){
-                if (type == "latex") {
-                    aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$", sep = "")
-                }
+                aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$", sep = "")
             }
             aline <- paste0("\\multicolumn{", nColumns, "}{c}{", aline, "_EOMC__EOR__EOL_")
-        } else {
+        } else if (type == "html"){
             aline <- paste0("<tr>\n",
-                           "<td colspan=\"", nColumns, "\">")
+                            "<td colspan=\"", nColumns, "\">")
             for ( i in seq_along(alpha)){
                 aline <- paste0(aline,  paste0(rep("*", i), collapse = ""), " <it>p</it> &#8804;", alpha[i], sep = "")
             }
             aline <- paste0(aline, "_EOR__EOL_")
+        } else {
+            for ( i in seq_along(alpha)){
+                aline <- paste0(aline,  paste0(rep("*", i), collapse = ""), "p <", alpha[i], sep = ",")
+            }
+            aline <- paste0(aline, "\n")
         }
         aline
     }
@@ -1401,7 +1469,7 @@ outreg <-
 
     aline <- "_EOT__EOL_"
     z <- c(z, aline)
-    if (float == TRUE){
+    if (float == TRUE && type == "latex"){
         aline <- "\\end{table}_EOL_"
         z <- c(z, aline)
     }
@@ -1409,28 +1477,18 @@ outreg <-
     matchCall <- match.call()
     matchCall[["type"]] <- "html"
                
-    if (type == "latex") {
-        cat(z)
-    } else if (browser) {
+    if (type == "latex" || type == "csv") {
+        return(z)
+    } else if (browse) {
         fn <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".html")
         cat(z, file = fn)
-        cat(paste("\n We are launching a browser to view that html file, which we have temporarily \n saved in ", fn, "\n"))
-        cat(paste(" You can copy that temp file, or create \n one of your own with R's cat function.  Like this: \n"))
-        cat("myreg <- \n")
-        print(matchCall)
-        cat(" \n cat(myreg, file = \"reg.html\")\n")
-        cat(" Then open reg.html in a word processor or web browser.\n")
+        cat(paste("\n Temp file: ", fn, "\n"))
         browseURL(fn)
+        return(invisible(z))
     } else {
-        cat(paste("\n You asked for html output, but set browser = FALSE."))
-        cat(paste("As a result, we suspect you know what you are doing."))
-        cat(paste("Inspect the output object, write it to a file with cat, as in:"))
-        cat("myreg <- \n")
-        print(matchCall)
-        cat(" \n cat(myreg, file = \"reg.html\")\n")
-        cat(" Then open reg.html in a word processor or web browser.\n")
+        cat(paste("\n browse = FALSE."))
+        return(z)
     }
-    invisible(z)
 }
 
 NULL

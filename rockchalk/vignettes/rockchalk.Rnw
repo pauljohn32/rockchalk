@@ -417,7 +417,7 @@ dcolumn and make a few obvious changes in the markup that I provide.
 \caption{Default Outreg Table\label{tab:Tab1}}
 
 <<outreg10, echo = F, results=tex>>=
-outreg(list(m1, m2, m3))
+or <- outreg(list(m1, m2, m3))
 @
 \end{table}
 
@@ -425,7 +425,7 @@ outreg(list(m1, m2, m3))
 \caption{My Spread Out Regressions\label{tab:Tab2}}
 
 <<outreg20, results=tex, echo=F>>=
-outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with a Long Title", "Another Model"), alpha = c(0.05, 0.01, 0.001))
+or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model" = m3), tight = FALSE, alpha = c(0.05, 0.01, 0.001))
 @
 \end{table}
 
@@ -433,7 +433,7 @@ outreg(list(m1, m3), tight = FALSE, modelLabels = c("The First Model with a Long
 \caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
 
 <<outreg70, results=tex, echo=F>>=
-outreg(list(m1,gm1), modelLabels=c("OLS:y","GLM: Categorized y"))
+or2 <- outreg(list(m1,gm1), modelLabels = c("OLS:y","GLM: Categorized y"))
 @
 \end{table}
 
@@ -814,7 +814,7 @@ summary(m4s)
 \caption{Comparing Ordinary and Standardized Regression\label{tab:stdreg10}}
 
 <<stdreg10, results=tex, echo=F>>=
-outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardized"))
+or10 <- outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardized"))
 @
 \end{table}
 
@@ -1045,7 +1045,7 @@ m6rc <- residualCenter(m6int)
 \caption{Comparing Regressions\label{tab:meancenter10-1}}
 
 <<mcenter10, results=tex, echo=F>>=
-outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
+or11 <- outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
 @
 \end{table}
 

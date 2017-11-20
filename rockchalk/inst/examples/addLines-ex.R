@@ -14,10 +14,11 @@ dfadd$xcat2 <- cut(rnorm(100), breaks=c(-Inf, 0, 0.4, 0.9, 1, Inf),
 dfadd$y2 <- 0.03 + 0.1*dfadd$x1 + 0.1*dfadd$x2 +
     0.25*dfadd$x1*dfadd$x2 + 0.4*dfadd$x3 - 0.1*dfadd$x4 +
     0.2 * as.numeric(dfadd$xcat1) +
-    contrasts(dfadd$xcat2)[as.numeric(dfadd$xcat2), ] %*% c(-0.1, 0.1, 0.2, 0) +1 * rnorm(100)
+    contrasts(dfadd$xcat2)[as.numeric(dfadd$xcat2), ] %*% c(-0.1, 0.1, 0.2, 0) +
+    1 * rnorm(100)
 
 summarize(dfadd)
-saveRDS(dfadd, file = "/tmp/pj.rds")
+
 ## linear ordinary regression
 m1 <- lm(y ~ x1 + x2 + x3 + x4, data = dfadd)
 summary(m1)
@@ -37,7 +38,8 @@ m1pp <- plotPlane(m1, plotx1 = "x1", plotx2 = "x2",
 
 addLines(from = m1ps, to = m1pp, lty = 1, lwd = 2)
 
-m1pp <- plotPlane(m1, plotx1 = "x1", plotx2 = "x2", ticktype = "detailed", npp = 10)
+m1pp <- plotPlane(m1, plotx1 = "x1", plotx2 = "x2", ticktype = "detailed",
+                  npp = 10)
 addLines(from = m1ps, to = m1pp, lty = 2, lwd = 5, col = "green")
 
 ## Other approach would wrap same into the linesFrom argument in plotPlane
