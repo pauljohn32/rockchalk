@@ -531,64 +531,6 @@ outreg0 <-
 NULL
 
 
-##' formatter for merMod objects copied from lme4
-##'
-##' R packaging started to complain about usage of non-exported
-##' functions from packages. lme4 team said they might export
-##' this function at some time in future. Until then, I need to copy it.
-##' @param varc variance estimates
-##' @param digits digits desired
-##' @param comp what do you want
-##' @param formatter a format function
-##' @param ... other arguments
-##' @return formatted text
-##' @author Doug Bates, Martin Machler, Ben Bolker, Stephen Walker
-formatVC <- function(varc, digits = max(3, getOption("digits") - 2),
-                     comp = "Std.Dev.", formatter = format, ...)
-{
-    c.nms <- c("Groups", "Name", "Variance", "Std.Dev.")
-    avail.c <- c.nms[-(1:2)]
-    if(any(is.na(mcc <- pmatch(comp, avail.c))))
-        stop("Illegal 'comp': ", comp[is.na(mcc)])
-    nc <- length(colnms <- c(c.nms[1:2], (use.c <- avail.c[mcc])))
-    if(length(use.c) == 0)
-        stop("Must *either* show variances or standard deviations")
-    useScale <- attr(varc, "useSc")
-    reStdDev <- c(lapply(varc, attr, "stddev"),
-                  if(useScale) list(Residual = unname(attr(varc, "sc"))))
-    reLens <- vapply(reStdDev, length, 1L)
-    nr <- sum(reLens)
-    reMat <- array('', c(nr, nc), list(rep.int('', nr), colnms))
-    reMat[1+cumsum(reLens)-reLens, "Groups"] <- names(reLens)
-    reMat[,"Name"] <- c(unlist(lapply(varc, colnames)), if(useScale) "")
-    if(any("Variance" == use.c))
-    reMat[,"Variance"] <- formatter(unlist(reStdDev)^2, digits = digits, ...)
-    if(any("Std.Dev." == use.c))
-    reMat[,"Std.Dev."] <- formatter(unlist(reStdDev),   digits = digits, ...)
-    if (any(reLens > 1)) {
-        maxlen <- max(reLens)
-        recorr <- lapply(varc, attr, "correlation")
-        corr <-
-            do.call("rBind",
-                    lapply(recorr,
-                           function(x) {
-                               x <- as(x, "matrix")
-                               dig <- max(2, digits - 2) # use 'digits' !
-                               ## not using formatter() for correlations
-                               cc <- format(round(x, dig), nsmall = dig)
-                               cc[!lower.tri(cc)] <- ""
-                               nr <- nrow(cc)
-                               if (nr >= maxlen) return(cc)
-                               cbind(cc, matrix("", nr, maxlen-nr))
-                           }))[, -maxlen, drop = FALSE]
-        if (nrow(corr) < nrow(reMat))
-            corr <- rbind(corr, matrix("", nrow(reMat) - nrow(corr), ncol(corr)))
-        colnames(corr) <- c("Corr", rep.int("", max(0L, ncol(corr)-1L)))
-        cbind(reMat, corr)
-    } else reMat
-}
-NULL
-
 ##' Creates a publication quality result table for
 ##' regression models. Works with models fitted with lm, glm, as well
 ##' as lme4.
@@ -719,6 +661,7 @@ NULL
 ##' @param browse Display the regression model in a browse? Defaults to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
+##' @importFrom utils getFromNamespace
 ##' @import grDevices  
 ##' @rdname outreg
 ##' @return A character vector, one element per row of the regression table.
@@ -1193,6 +1136,7 @@ outreg <-
     getVC.merMod <- function(modl){
         if(inherits(modl, "merMod")){
             vc <- lme4::VarCorr(modl)
+            formatVC <- getFromNamespace("formatVC", "lme4")
             vcfmt <- formatVC(vc, 3, "Std.Dev.")
             vcfmt[ ,2] <- gsub("\\(Intercept\\)", "", vcfmt[ ,2])
             
