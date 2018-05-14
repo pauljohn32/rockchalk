@@ -1,4 +1,4 @@
-%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -775,7 +775,6 @@ addLines(from = m5pc, to = ppm5, col = m5pc$col)
 \caption{Making plotSlopes and plotPlane Work Together\label{fig:pp110}}
 \end{figure}
 
-
 \section{Standardized, Mean-Centered, and Residual-Centered Regressions }
 
 \subsection{Standardized regression}
@@ -817,7 +816,6 @@ summary(m4s)
 or10 <- outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardized"))
 @
 \end{table}
-
 
 \subsection{Mean-centered Interaction Models}
 

@@ -1,3 +1,8 @@
+2018-05-14  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/outreg.R (getVC.merMod): use getFromNamespace trick to
+	avoid copying lme4
+
 2017-11-20  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/outreg.R: markup types separated latex, html, csv

@@ -1,4 +1,4 @@
-%% LyX 2.2.2 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -26,8 +26,8 @@
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 @
 \newlength{\lyxlabelwidth}      % auxiliary length 
-\newcommand{\code}[1]{\texttt{#1}}
-\newcommand{\strong}[1]{\textbf{#1}}
+\providecommand*{\code}[1]{\texttt{#1}}
+\providecommand*{\strong}[1]{\textbf{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %\VignetteIndexEntry{Rchaeology}
@@ -1024,7 +1024,6 @@ Error in biVec1(3.3, 4.4) (from #2) :
 [1] 1 1 1 1 0 0 0
 \end{lstlisting}
 \inputencoding{utf8}
-
 \section{Function Arguments.}
 
 While developing functions for the rockchalk package, one of the most
@@ -1082,15 +1081,13 @@ argument check would be
 \inputencoding{latin9}\begin{lstlisting}
 if (missing(col) | is.null(col)) col <- someTediousCalculation(y, z)
 \end{lstlisting}
-\inputencoding{utf8}
-\item [{stop()}] Halts a function and returns a message to the user. Usage
+\inputencoding{utf8}\item [{stop()}] Halts a function and returns a message to the user. Usage
 example 
 
 \inputencoding{latin9}\begin{lstlisting}
 if (isTRUE(x)) stop(paste("I'm sorry, you failed to supply the right information.")))
 \end{lstlisting}
-\inputencoding{utf8}
-\item [{stopifnot()}] It is so frequent to run ``\code{if(isTRUE(x)) stop()}''
+\inputencoding{utf8}\item [{stopifnot()}] It is so frequent to run ``\code{if(isTRUE(x)) stop()}''
 that they created a wrapper, \code{stopifnot(x)}.
 \item [{warning()}] If you don't want the function to fail, but you need
 to warn the user about a condition that seems dubious, run
@@ -1098,8 +1095,7 @@ to warn the user about a condition that seems dubious, run
 \inputencoding{latin9}\begin{lstlisting}
 if (isTRUE(x)) warning(paste("Are you sure the value of x ought to be", x, "?"))
 \end{lstlisting}
-\inputencoding{utf8}
-\item [{deparse(substitute())}] Inside a function, it is often important
+\inputencoding{utf8}\item [{deparse(substitute())}] Inside a function, it is often important
 to find out the symbolic value of the argument that the user supplied
 to the function. I don't mean the \emph{value}, but rather the symbolic
 name. To see what I mean, run this
