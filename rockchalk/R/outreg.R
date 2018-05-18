@@ -549,6 +549,12 @@ NULL
 ##' html file itself and automatically re-format it in the native
 ##' table format.
 ##'
+##' In version 1.8.111, an argument \code{print.results} was introduced.
+##' This is TRUE by default, so the marked-up table is printed into
+##' the session, and it is returned as well.  If the function should
+##' run silently (as suggested in the last few versions), include
+##' \code{print.results = TRUE}. 
+##'
 ##' The table includes a minimally sufficient (in my opinion) model
 ##' summary.  It offers parameter estimates, standard errors, and
 ##' minimally sufficient goodness of fit.  My tastes tend toward
@@ -658,6 +664,8 @@ NULL
 ##' Estimate I don't understand", "deviance" = "Another Mystery")}. The
 ##' words that you might replace are "sigma", "r.squared",
 ##' "deviance", "adj.r.squared", "fstatistic".
+##' @param print.results Default TRUE, marked-up table will be displayed in session.
+##' If FALSE, same result is returned as an object.
 ##' @param browse Display the regression model in a browse? Defaults to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
@@ -682,19 +690,21 @@ NULL
 ##' m2 <- lm(y1 ~ x2, data = dat)
 ##' m3 <- lm(y1 ~ x1 + x2, data = dat)
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
-##' ex1 <- outreg(m1, title = "My One Tightly Printed Regression", float = TRUE )
-##' ## Show markup
+##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE)
+##' ex1 <- outreg(m1, title = "My One Tightly Printed Regression",
+##'                float = TRUE, print.results = FALSE)
+##' ## Show markup, Save to file with cat()
 ##' cat(ex1)
-##' ## Save to file in usual way, e.g.,
 ##' ## cat(ex1, file = "ex1.tex")
+##'  
 ##' ex2 <- outreg(list("Fingers" = m1), tight = FALSE, 
 ##'     title = "My Only Spread Out Regressions", float = TRUE,
 ##'     alpha = c(0.05, 0.01, 0.001)) 
-##' cat(ex2)
 ##' 
 ##' ex3 <- outreg(list("Model A" = m1, "Model B label with Spaces" = m2),
 ##'     varLabels = list(x1 = "Billie"), 
-##'     title = "My Two Linear Regressions", request = c(fstatistic = "F"))
+##'     title = "My Two Linear Regressions", request = c(fstatistic = "F"),
+##'     print.results = FALSE)
 ##' cat(ex3)
 ##' 
 ##' ex4 <- outreg(list("Model A" = m1, "Model B" = m2),
@@ -820,7 +830,9 @@ outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
              tight = TRUE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
-             PVlist = NULL,  Blist = NULL, title, label,  gofNames,
+             PVlist = NULL,  Blist = NULL, title, label,
+             gofNames,
+             print.results = TRUE, 
              browse = identical(type, "html") && interactive())
 {
 
@@ -1417,21 +1429,24 @@ outreg <-
         aline <- "\\end{table}_EOL_"
         z <- c(z, aline)
     }
-    z <- markup(z, type = type)
+    
+    zresult <- markup(z, type = type)
     matchCall <- match.call()
     matchCall[["type"]] <- "html"
                
     if (type == "latex" || type == "csv") {
-        return(z)
+        if (print.results) cat(zresult)
+        return(invisible(zresult))
     } else if (browse) {
         fn <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".html")
-        cat(z, file = fn)
-        cat(paste("\n Temp file: ", fn, "\n"))
+        cat(zresult, file = fn)
+        cat(paste("HTML file : ", fn, "\n"))
         browseURL(fn)
-        return(invisible(z))
+        attr(zresult, "file") <- fn
+        return(invisible(zresult))
     } else {
-        cat(paste("\n browse = FALSE."))
-        return(z)
+        if (print.results) cat(zresult)
+        return(invisible(zresult))
     }
 }
 
