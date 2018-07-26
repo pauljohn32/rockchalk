@@ -86,7 +86,7 @@ testSlopes <-
         ## 2013-02-19 Sunthud Pornprasertmanit spots bug here:
         ## Problem: diag doesn't work when argument is a single real number.
         ## Fix by inserting drop=FALSE (wrote a blog post about the "drop gotcha"
-        seslope <- sqrt(V[plotx, plotx, drop = FALSE] +  diag(V[modxContrastNames, modxContrastNames, drop = FALSE]) + 2* V[modxContrastNames, plotx, drop = FALSE])
+        seslope <- sqrt(as.vector(V[plotx, plotx, drop = FALSE]) +  diag(V[modxContrastNames, modxContrastNames, drop = FALSE]) + 2* V[modxContrastNames, plotx, drop = FALSE])
 
         modxContrastNames <- c(plotx, modxContrastNames)
         slope <- c(mcoef[plotx], slope)
