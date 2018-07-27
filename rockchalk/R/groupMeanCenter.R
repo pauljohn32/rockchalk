@@ -28,11 +28,11 @@
 ##' @param fulldataframe Default TRUE. original data frame is returned
 ##'     with new columna added (which I would call "Stata style"). If
 ##'     FALSE, this will return only newly created columns, the
-##'     variables with suffix[1] and suffix[2] appended to names. 
+##'     variables with suffix[1] and suffix[2] appended to names.
 ##'     TRUE is easier (maybe safer), but also wastes memory.
 ##' @return Depending on \code{fulldataframe}, either a new data frame
-##'     or original data frame with "x_mn" and "x_dev" variables
-##'     appended (Stata style)
+##'     with center and deviation columns, or or original data frame
+##'     with "x_mn" and "x_dev" variables appended (Stata style).
 ##' @importFrom plyr join
 ##' @author Paul Johnson
 ##' @examples

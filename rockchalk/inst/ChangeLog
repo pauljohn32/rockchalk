@@ -1,3 +1,12 @@
+2018-07-27  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/groupMeanCenter.R (gmc): add fulldataframe parameter,
+	documentation.
+	(gmc): frustrated that R merge shuffled rows, so adopt
+	plyr::join and safeguard rownames too
+
+	* ../R/waldt.R (waldt): wald "fancy t" test.
+
 2018-05-14  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/outreg.R (getVC.merMod): use getFromNamespace trick to

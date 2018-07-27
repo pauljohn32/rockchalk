@@ -1,6 +1,10 @@
 rockchalk package NEWS -- history of user-visible changes.
 
-Copyright (C) 2013-5 Paul E. Johnson.
+Copyright (C) 2013-8 Paul E. Johnson.
+
+* version 1.8.114
+
+** silence warnings cause by R update
 
 * version 1.8.96 2015-12-15
 
