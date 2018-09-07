@@ -3,47 +3,52 @@
 ##'
 ##' Finds the numeric variables, and ignores the others. (See
 ##' \code{summarizeFactors} for a function that handles non-numeric
-##' variables). It will provide quantiles (which ones are specified by
-##' \code{probs} as well as other summary statistics, as specified by
-##' \code{stats}.  Results are returned in a data frame. The main
-##' benefits from this compared to R's default summary are 1) more
-##' summary information is returned for each variable (dispersion), 2)
-##' the results are returned in a form that is easy to use in further
-##' analysis, 3) the columns in the output may be alphabetized.
+##' variables). It will provide quantiles (specified \code{probs} as
+##' well as other summary statistics, specified \code{stats}.  Results
+##' are returned in a data frame. The main benefits from this compared
+##' to R's default summary are 1) more summary information is returned
+##' for each variable (dispersion), 2) the results are returned in a
+##' form that is easy to use in further analysis, 3) the variables in
+##' the output may be alphabetized.
 ##' @param dat a data frame or a matrix
 ##' @param alphaSort If TRUE, the columns are re-organized in
 ##'     alphabetical order. If FALSE, they are presented in the
 ##'     original order.
-##' @param probs Controls calculation of quantiles. If FALSE, no
-##'     quantile estimates are provided. If TRUE, the quantile
-##'     function is called with \code{probs = c(0, 0.5, 1.0)},
-##'     corresponding to labels which will appear in output,
-##'     \code{c("min", "med", "max")}. Users may specify any vector of
-##'     real values in [0,1]. In output, however, labels will be
-##'     \code{c("min", "med", "max")} or "pctile_dd%" for clarity.
-##' @param stats Can be TRUE/FALSE or a vector including any of these:
-##'     \code{c("mean", "sd", "var", "skewness", "kurtosis", "nobs",
-##'     "nmiss")}. If TRUE (default), results include all except
-##'     variance: \code{c("mean", "sd", "skewness", "kurtosis",
-##'     "nobs", "nmiss")}.  If FALSE, provide none of these. "nobs"
-##'     means number of observations with non-missing, finite scores
-##'     (not NA, NaN, -Inf, or Inf). "nmiss" is the number of cases
-##'     with values of NA.
-##' @param na.rm default TRUE. Should missing data be removed to calculate
-##'     summaries?
+##' @param probs Controls calculation of quantiles (see the R
+##'     \code{quantile} function's \code{probs} argument). If FALSE or
+##'     NULL, no quantile estimates are provided. Default is
+##'     \code{c("min" = 0, "med" = 0.5, "max" = 1.0)}, which will
+##'     appear in output as \code{c("min", "med", "max")}. Other
+##'     values between 0 and 1 are allowed. For example, \code{c(0.3,
+##'     0.7)} will appear in output as "pctile_30%" and "pctile_70%".
+##' @param stats A vector including any of these: \code{c("min",
+##'     "med", "max", "mean", "sd", "var", "skewness", "kurtosis",
+##'     "nobs", "nmiss")}. Default includes all except
+##'     \code{var}.  "nobs" means number of observations with
+##'     non-missing, finite scores (not NA, NaN, -Inf, or
+##'     Inf). "nmiss" is the number of cases with values of NA. If
+##'     FALSE or NULL, provide none of these.
+##' @param na.rm default TRUE. Should missing data be removed to
+##'     calculate summaries?
 ##' @param unbiased If TRUE (default), skewness and kurtosis are
 ##'     calculated with biased corrected (N-1) divisor in the standard
 ##'     deviation.
+##' @param digits Number of digits reported after decimal
+##'     point. Default is 2
 ##' @export
 ##' @return a data.frame with one column per summary element (rows are
 ##'     the variables).
 ##' @seealso summarize and summarizeFactors
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##'
-summarizeNumerics <- function(dat, alphaSort = FALSE, probs = c(0, 0.5, 1.0),
-                              stats = TRUE, na.rm = TRUE, unbiased = TRUE, digits = 2)
+summarizeNumerics <-
+    function(dat, alphaSort = FALSE, probs = c(0, 0.5, 1.0),
+             stats = c("mean", "sd", "skewness",
+                      "kurtosis", "nobs", "nmiss"), na.rm = TRUE,
+             unbiased = TRUE, digits = 2)
 {
-    if (isTRUE(stats)) stats = c("mean", "sd", "skewness",
+    ##:ess-bp-start::browser@nil:##
+if (isTRUE(stats)) stats <- c("mean", "sd", "skewness",
                                      "kurtosis", "nobs", "nmiss")
     if (is.atomic(dat)) {
         datname <- deparse(substitute(dat))
@@ -54,6 +59,7 @@ summarizeNumerics <- function(dat, alphaSort = FALSE, probs = c(0, 0.5, 1.0),
             colnames(dat) <- paste0(datname, "_",  seq(1, NCOL(dat)))
         }
     } else if (!is.data.frame(dat)) dat <- as.data.frame(dat)
+
     var2 <- function(x, na.rm, unbiased) {
         if (unbiased) {
             var(x, na.rm = na.rm)
@@ -79,10 +85,14 @@ summarizeNumerics <- function(dat, alphaSort = FALSE, probs = c(0, 0.5, 1.0),
     qtiles <- NULL
     sumdat <- NULL
 
-    if (!missing(probs) && !is.null(probs)){
+    if (!missing(probs) && !is.null(probs) && !isFALSE(probs)){
+        prob.std <- c("min" = 0.0, "med" = 0.5, "max" = 1.0)
         if(isTRUE(probs)){
-            probs <- c(0.0, 0.5, 1.0)
+            probs <- prob.std
         }
+        ## if stats includes "min" "med" or "max", adjust probs
+        prob.toadd <- names(prob.std)[names(prob.std) %in% stats]
+        probs <- sort(unique(c(probs, prob.std[prob.toadd])))
     }
 
     if (is.numeric(probs)){
@@ -364,17 +374,17 @@ NULL
 ##' almost like R's own summary function, except for the additional
 ##' information that these factor summaries include.
 ##'
-##' @method print summarizedFactors
 ##' @export
 ##' @param x A summarizedFactors object produced by summarizeFactors
 ##' @param ... optional arguments. Only value currently used is digits,
 ##'   which defaults to 2.
 ##' @return A table of formatted output
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @seealso \code{\link[base]{summary}} and
-##' \code{\link{summarize}},
-##' \code{\link{summarizeFactors}}
-print.summarizedFactors <- function(x, ...){
+##' @seealso \code{\link{summarize}}, \code{\link{summarizeFactors}}, \code{\link{formatSummarizedNumerics}}
+##' dat <- data.frame(xcat1 = gl(10, 3), xcat2 = gl(5, 6))
+##' summarizeFactors(dat)
+##' print(formatSummarizedFactors(summarizeFactors(dat)))
+formatSummarizedFactors <- function(x, ...){
     ncw <- function(x) {
         z <- nchar(x, type = "w")
         if (any(na <- is.na(z))) {
@@ -401,14 +411,19 @@ print.summarizedFactors <- function(x, ...){
         maxLevels <- 5
     }
 
+    
     if (!is.null(dots$stats)) {
-        stats = dots$stats
+        stats <- dots$stats
         dots$stats <- NULL
     } else if (!is.null(attr(x, "stats"))){
         stats <- attr(x, "stats")
     } else {
         stats <- c("entropy", "normedEntropy", "nobs", "nmiss")
-    } 
+    }
+    ## Omit stats requests that do not apply to factors
+    stats.for.factors <- c("entropy", "normedEntropy", "nobs", "nmiss")
+    stats <- stats[stats %in% stats.for.factors]
+    
     nv <- length(x)
     ## cycle through variables and reduce them to maxLevels if needed
     ## prune out unwanted elements in stats as well
@@ -421,11 +436,15 @@ print.summarizedFactors <- function(x, ...){
             tt <- c(tt[o[-toExclude]], `(All Others)` = sum(tt[o[toExclude]]))
             x[[i]][["table"]] <- tt
         }
-        ## Otherwise original table stays in x[[i]]
-        stats.est <- x[[i]][["stats"]]
-        if (!is.null(stats.est)){
-            stats.est <- stats.est[names(stats.est) %in% stats]
-            x[[i]][["stats"]] <- stats.est
+        if(length(stats) == 0) {
+            x[[i]][["stats"]] <- NULL
+        } else {
+            ## keep desired stats
+            stats.est <- x[[i]][["stats"]]
+            if (!is.null(stats.est)){
+                stats.est <- stats.est[names(stats.est) %in% stats]
+                x[[i]][["stats"]] <- stats.est
+            }
         }
     }
     
@@ -447,7 +466,7 @@ print.summarizedFactors <- function(x, ...){
         if(is.null(stats.est)){
             lw[i] <- ncw(lbs1[1L])
             reslt[[i]] <- ttnew
-            break()
+            next()
         } else {
             wide1 <- ncw(lbs1[1L])
             lbs2 <- format(names(stats.est))
@@ -469,8 +488,7 @@ print.summarizedFactors <- function(x, ...){
     nm <- paste(substring(blanks, 1, pad), nm, sep = "")
     dimnames(reslt) <- list(rep.int("", nr + nsumlines), nm)
     attr(reslt, "class") <- c("table")
-    print(reslt)
-    invisible(reslt)
+    reslt
 }
 NULL
 
@@ -567,10 +585,10 @@ summarize <-
     argList <- modifyList(fargs, dots[names(dots) %in% fnames])
     datf <- do.call("summarizeFactors", as.list(argList))
 
-    datnfmt <- formatNumericSummaries(datn, digits = digits) 
+    datnfmt <- formatSummarizedNumerics(datn, digits = digits) 
     value <- list(numerics = datn, factors = datf)
     attr(value, "class") <- c("summarize", class(value))
-    attr(value, "numeric.formatted") <- datanfmt
+    attr(value, "numeric.formatted") <- datnfmt
     value
 }
 NULL
@@ -593,12 +611,12 @@ print.summarize <- function(x, digits, ...){
     digits <- if(!missing(digits) && !is.null(digits)) digits else NULL
     if(!is.null(x$numerics)){
         cat("Numeric variables\n")
-        num.frmt <- formatNumericSummaries(x$numerics, digits = digits)
+        num.frmt <- formatSummarizedNumerics(x$numerics, digits = digits)
         print(num.frmt, quote = FALSE, print.gap = 3)
     }
     if(!is.null(x$factors)){
         cat("\nNonnumeric variables\n")
-        fac.frmt <- print.summarizedFactors(x$factors, digits = digits)
+        fac.frmt <- formatSummarizedFactors(x$factors, digits = digits)
         print(fac.frmt)
     }
     invisible(list(numerics = num.frmt, factors = fac.frmt))
@@ -613,8 +631,7 @@ print.summarize <- function(x, digits, ...){
 ##' the information to look more like R summary.
 ##' 
 ##' @param x numeric summaries from summarize function
-##' @param digits Decimal values to display, defaults as 2.
-##' @param ... Other arguments, currently not used
+##' @param ... Other arguments, such as digits
 ##' @return An R \code{table} object
 ##' @author Paul Johnson
 ##' @export
@@ -623,11 +640,21 @@ print.summarize <- function(x, digits, ...){
 ##' X <- matrix(rnorm(10000), ncol = 10, dimnames = list(NULL, paste0("xvar", 1:10)))
 ##' Xsum <- summarize(X)
 ##' Xsum$numerics
-##' formatNumericSummaries(Xsum$numerics)
-##' formatNumericSummaries(Xsum$numerics, digits = 5)
-##' Xsum.fmt <- formatNumericSummaries(Xsum$numerics)
+##' formatSummarizedNumerics(Xsum$numerics)
+##' formatSummarizedNumerics(Xsum$numerics, digits = 5)
+##' Xsum.fmt <- formatSummarizedNumerics(Xsum$numerics)
 ##' str(Xsum.fmt)
-formatNumericSummaries <- function(x, digits = 2, ...){
+formatSummarizedNumerics <- function(x, ...){
+    dots <- list(...)
+    if (!is.null(dots$digits)) {
+        digits = dots$digits
+        dots$digits <- NULL
+    } else if (!is.null(attr(x, "digits"))){
+        digits <- attr(x, "digits")
+    } else {
+        digits <- 2
+    }
+        
     datnfmt <- x
     for (i in colnames(datnfmt)) datnfmt[ , i] <- round(datnfmt[ , i], digits)
     datnfmt <- format(t(datnfmt), trim = FALSE, scientific = 10)
