@@ -343,9 +343,11 @@ summarizeFactors <-
     datf <- dat[, factors, drop = FALSE]
     if (alphaSort)
         datf <- datf[, sort(colnames(datf)), drop = FALSE]
-    z <- lapply(datf, summary.factor,
-                maxLevels = maxLevels, stats = stats, digits = digits)
+    z <- lapply(datf, summary.factor)
     attr(z, "class") <- c("summarizedFactors")
+    attr(z, "maxLevels") <- maxLevels
+    attr(z, "stats") <- stats
+    attr(z, "digits") <- digits
     z
 }
 NULL
@@ -384,45 +386,88 @@ print.summarizedFactors <- function(x, ...){
     if (!is.null(dots$digits)) {
         digits = dots$digits
         dots$digits <- NULL
-    } else digits = 2
+    } else if (!is.null(attr(x, "digits"))){
+        digits <- attr(x, "digits")
+    } else {
+        digits <- 2
+    }
+    
+    if (!is.null(dots$maxLevels)) {
+        maxLevels = dots$maxLevels
+        dots$maxLevels <- NULL
+    } else if (!is.null(attr(x, "maxLevels"))){
+        maxLevels <- attr(x, "maxLevels")
+    } else {
+        maxLevels <- 5
+    }
+
+    if (!is.null(dots$stats)) {
+        stats = dots$stats
+        dots$stats <- NULL
+    } else if (!is.null(attr(x, "stats"))){
+        stats <- attr(x, "stats")
+    } else {
+        stats <- c("entropy", "normedEntropy", "nobs", "nmiss")
+    } 
     nv <- length(x)
+    ## cycle through variables and reduce them to maxLevels if needed
+    ## prune out unwanted elements in stats as well
+    for (i in 1L:nv){
+        tt <- x[[i]][["table"]]
+        if (length(tt) > maxLevels) {
+            ## Only sort.list if to many levels
+            o <- sort.list(tt, decreasing = TRUE)
+            toExclude <- maxLevels:length(tt)
+            tt <- c(tt[o[-toExclude]], `(All Others)` = sum(tt[o[toExclude]]))
+            x[[i]][["table"]] <- tt
+        }
+        ## Otherwise original table stays in x[[i]]
+        stats.est <- x[[i]][["stats"]]
+        if (!is.null(stats.est)){
+            stats.est <- stats.est[names(stats.est) %in% stats]
+            x[[i]][["stats"]] <- stats.est
+        }
+    }
+    
     nm <- names(x)
     lw <- numeric(nv)
+    ## nr maximum number of rows needed for any table
     nr <- max(unlist(lapply(x, function(y) NROW(y[["table"]]))))
     nsumlines <- max(unlist(lapply(x, function(y){
         if(is.null(y[["stats"]])) 0 else length(y[["stats"]])})))
-    nr <- nr + nsumlines
+    ##nr <- nr + nsumlines
     reslt <- list()
     for (i in 1L:nv) {
-        sms <- x[[i]][["table"]]
-        stats <- x[[i]][["stats"]]
-        if(!is.null(stats)){
-            sms <- list(x[[i]][["table"]], x[[i]][["stats"]])
-            lbs <- unlist(lapply(sms, function(yy) format(names(yy))))
-            vals <- unlist(lapply(sms, function(yy) format(yy, digits = digits)))
-            sms <- paste(lbs, ": ", vals, sep = "")
-            lw[i] <- ncw(lbs[1L])
-            length(sms) <- nr
-            reslt[[i]] <- sms
+        tt <- x[[i]][["table"]]
+        stats.est <- x[[i]][["stats"]]
+        lbs1 <- format(names(tt))
+        vals <- as.integer(tt)
+        ttnew <- paste(lbs1, ": ", vals, sep = "")
+        length(ttnew) <- nr
+        if(is.null(stats.est)){
+            lw[i] <- ncw(lbs1[1L])
+            reslt[[i]] <- ttnew
+            break()
         } else {
-            sms <- x[[i]][["table"]]
-            lbs <- format(names(sms))
-            vals <- format(sms, digits = digits)
-            sms <- paste(lbs, ": ", vals, sep = "")
-            lw[i] <- ncw(lbs[1L])
-            length(sms) <- nr
-            reslt[[i]] <- sms
+            wide1 <- ncw(lbs1[1L])
+            lbs2 <- format(names(stats.est))
+            vals <- format(stats.est, digits = digits)
+            stats.est.new <- paste(lbs2, ": ", vals, sep = "")
+            ttnew2 <- c(ttnew, stats.est.new)
+            wide2 <- ncw(lbs2[1L])
+            reslt[[i]] <- ttnew2
+            lw[i] <- max(wide1, wide2) + 5
         }
     }
     reslt <- unlist(reslt, use.names = TRUE)
-    dim(reslt) <- c(nr, nv)
+    dim(reslt) <- c(nr + nsumlines, nv)
     if (any(is.na(lw)))
         warning("probably wrong encoding in names(.) of column ",
                 paste(which(is.na(lw)), collapse = ", "))
     blanks <- paste(character(max(lw, na.rm = TRUE) + 2L), collapse = " ")
     pad <- floor(lw - ncw(nm)/2)
     nm <- paste(substring(blanks, 1, pad), nm, sep = "")
-    dimnames(reslt) <- list(rep.int("", nr), nm)
+    dimnames(reslt) <- list(rep.int("", nr + nsumlines), nm)
     attr(reslt, "class") <- c("table")
     print(reslt)
     invisible(reslt)
@@ -487,8 +532,10 @@ NULL
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/summarize-ex.R
 summarize <-
-    function(dat, alphaSort = FALSE, stats = TRUE, probs = c(0, 0.50, 1.0),
-             digits = 2, ...)
+    function(dat, alphaSort = FALSE,
+             stats = c("mean", "sd", "var", "skewness", "kurtosis", "entropy",
+                       "normedEntropy", "nobs", "nmiss"), probs = c(0, 0.50, 1.0),
+             digits = 3, ...)
 {
     dots <- list(...)
     if (is.atomic(dat)){
@@ -504,11 +551,11 @@ summarize <-
     dotnames <- names(dots)
     ## next should give "alphaSort" "stats" "na.rm" "unbiased"
     nnames <- names(formals(summarizeNumerics))[-1L]
-    ## names that need keeping if in dots
+    ## args for numeric vars: names that need keeping if in dots
+    ## initial argument list
     numargs <- list(dat = quote(dat), alphaSort = alphaSort, probs = probs,
                      stats = stats)
-    keepnames <- dotnames %in% nnames
-    argList <- modifyList(numargs, dots[keepnames])
+    argList <- modifyList(numargs, dots[names(dots) %in% nnames])
     datn <- do.call("summarizeNumerics", as.list(argList))
 
     fnames <- names(formals(summarizeFactors))[-1L]
@@ -523,6 +570,7 @@ summarize <-
     datnfmt <- formatNumericSummaries(datn, digits = digits) 
     value <- list(numerics = datn, factors = datf)
     attr(value, "class") <- c("summarize", class(value))
+    attr(value, "numeric.formatted") <- datanfmt
     value
 }
 NULL
@@ -541,7 +589,8 @@ NULL
 ##' Prints objects created by summarize
 ##' @method print summarize
 ##' @export
-print.summarize <- function(x, digits = 2, ...){
+print.summarize <- function(x, digits, ...){
+    digits <- if(!missing(digits) && !is.null(digits)) digits else NULL
     if(!is.null(x$numerics)){
         cat("Numeric variables\n")
         num.frmt <- formatNumericSummaries(x$numerics, digits = digits)
@@ -601,16 +650,11 @@ formatNumericSummaries <- function(x, digits = 2, ...){
 ##' the calculation of entropy as a measure of diversity.
 ##'
 ##' @param y a factor (non-numeric variable)
-##' @param maxLevels The maximum number of levels that will be
-##'     presented in the tabulation.
-##' @param stats Default is c("entropy", "normedEntropy", "nobs", "nmiss").
-##'     Set as NULL to remove stats from return object.
 ##' @return A list, including the summary table and vector of summary
 ##'     stats if requested.
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 summary.factor <-
-    function(y, maxLevels = 5,
-             stats = c("entropy", "normedEntropy", "nobs", "nmiss"))
+    function(y)
 {
     ## 5 nested functions to be used later
     divr <- function(p = 0) {
@@ -631,20 +675,14 @@ summary.factor <-
     tbl <- table(y)
     tt <- c(tbl)
     names(tt) <- dimnames(tbl)[[1L]]
-    if (length(ll) > maxLevels) {
-        ## Only sort.list if to many levels
-        o <- sort.list(tt, decreasing = TRUE)
-        toExclude <- maxLevels:length(ll)
-        tt <- c(tt[o[-toExclude]], `(All Others)` = sum(tt[o[toExclude]]))
-    } 
-    if (is.null(stats)) return(list(table = tt))
     props <- prop.table(tbl)
     ## Calculate all stats, even if don't ask for them
     stat.est <- c(nobs = sum(tbl),
                   nmiss = nmiss,
                   entropy = entropy(props),
                   normedEntropy = normedEntropy(props))
-    tt <- list(table = tt, stats = stat.est[names(stat.est) %in% stats])
+    ##tt <- list(table = tt, stats = stat.est[names(stat.est) %in% stats])
+    tt <- list(table = tt, stats = stat.est)
     tt
 }
 NULL
