@@ -29,13 +29,16 @@
 ##'            stde = 3, rho = .2,  beta = c(1, 1, -1, 0.5))
 ##' dat1 <- dat
 ##' dat1$xcat1 <- factor(sample(c("a", "b", "c", "d"), N, replace=TRUE))
-##' dat1$xcat2 <- factor(sample(c("M", "F"), N, replace=TRUE), levels = c("M", "F"), labels = c("Male", "Female"))
-##' dat1$y <- dat$y + as.vector(contrasts(dat1$xcat1)[dat1$xcat1, ] %*% c(0.1, 0.2, 0.3))
+##' dat1$xcat2 <- factor(sample(c("M", "F"), N, replace=TRUE),
+##'                     levels = c("M", "F"), labels = c("Male", "Female"))
+##' dat1$y <- dat$y +
+##'           as.vector(contrasts(dat1$xcat1)[dat1$xcat1, ] %*% c(0.1, 0.2, 0.3))
 ##' dat1$xchar1 <- rep(letters[1:26], length.out = N)
 ##' dat2 <- dat
 ##' dat1$x3 <- NULL
 ##' dat2$x2 <- NULL
-##' dat2$xcat2 <- factor(sample(c("M", "F"), N, replace=TRUE), levels = c("M", "F"), labels = c("Male", "Female"))
+##' dat2$xcat2 <- factor(sample(c("M", "F"), N, replace=TRUE),
+##'                      levels = c("M", "F"), labels = c("Male", "Female"))
 ##' dat2$xcat3 <- factor(sample(c("K1", "K2", "K3", "K4"), N, replace=TRUE))
 ##' dat2$xchar1 <- "1"
 ##' dat3 <- dat
@@ -64,7 +67,7 @@
 ##' ## str(stack4)
 ##' ## oops, xcat1 is ordinal with levels A < B < C < D
 ##' ## stack5 <- rbind.fill(dat5, dat6)
-rbind.fill <- function (...) 
+rbind.fill <- function(...) 
 {
     ## small copy removeNULL
     removeNULL <- function (aList){ 
