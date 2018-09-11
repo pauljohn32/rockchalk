@@ -33,7 +33,6 @@
 ##' @return Depending on \code{fulldataframe}, either a new data frame
 ##'     with center and deviation columns, or or original data frame
 ##'     with "x_mn" and "x_dev" variables appended (Stata style).
-##' @importFrom plyr join
 ##' @author Paul Johnson
 ##' @examples
 ##' ## Make a data frame out of the state data collection (see ?state)
@@ -67,7 +66,10 @@ gmc <- function(dframe, x, by, FUN = mean, suffix = c("_mn", "_dev"),
     xmean <- aggregate(dframe[ , x, drop = FALSE],
                        dframe[ , by, drop = FALSE], FUN,
                        na.rm = TRUE)
-    dframe$rownames <- rownames(dframe)
+    dframe.orignrow <- NROW(dframe)
+    dframe.origrownames <- rownames(dframe)
+    dframe$rownames <-  dframe.origrownames
+    dframe$index <- 1:NROW(dframe)
     dframenamez <- setdiff(colnames(dframe), by)
     xmeannamez <- setdiff(colnames(xmean), by)
     xmeannamez_new <- paste0(xmeannamez, suffix[1])
@@ -76,12 +78,17 @@ gmc <- function(dframe, x, by, FUN = mean, suffix = c("_mn", "_dev"),
                                  colnames(xmean), fixed = TRUE)
     }
     
-    df2 <- plyr::join(dframe, xmean, by = by, type = "left")
+    df2 <- merge(dframe, xmean, by = by, all.x = TRUE,  sort = FALSE)
+    ## put rows back in original order!
+    df2 <- dframe[order(dframe$index), ]
     ## Calculate deviations
     for(i in x){
         df2[ , paste0(i, suffix[2])] <- df2[ , i] - df2[ , paste0(i, suffix[1])]
     }
     rownames(df2) <- df2$rownames
+    df2$index <- NULL
+    if (dframe.orignrow != NROW(df2)) stop("wrong data frame row count in gmc")
+    if (rownames(df2) != dframe.origrownames) stop("wrong data frame row names in gmc")
     if(!isTRUE(fulldataframe)){
         df3 <- df2[c(by, colnames(df2)[!colnames(df2) %in% c(by, dframenamez)])]
         attr(df3, "meanby") <- by
