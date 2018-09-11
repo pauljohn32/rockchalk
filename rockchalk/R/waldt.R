@@ -3,10 +3,11 @@
 ##' This is the one the students call the "fancy t test". It is just
 ##' the simplest, most easy to use version of the t test to decide if
 ##' 2 coefficients are equal. It is not as general as other functions
-##' that make the same test. It is just simpler to use for beginners
-##' and the inputs are easier to specify in some cases. The \code{car}
-##' package's function \code{linearHypothesis} is more general, but
-##' gives similar example, as shown in the example.
+##' in other packages. This is simpler to use for beginners.  The
+##' \code{car} package's function \code{linearHypothesis} is more
+##' general, but its documentation is much more difficult to understand.
+##' It gives statistically identical results, albeit phrased as an F
+##' test.
 ##'
 ##' I did this because we have trouble understanding terminology in
 ##' documentation for more abstract functions in other R
@@ -18,13 +19,13 @@
 ##' @param parm1 A parameter name, in quotes!
 ##' @param parm2 Another parameter name, in quotes!
 ##' @param model A fitted regression model
-##' @param model.cov Optional, another covariance matrix to
-##' use while calculating the test. Primarily used for
-##' robust (or otherwise adjusted) standard errors
-##' @return A vector with the difference, std. err., t-stat,
-##' and p value. Prints a formatted output statement.
+##' @param model.cov Optional, another covariance matrix to use while
+##'     calculating the test. Primarily used for robust (or otherwise
+##'     adjusted) standard errors
+##' @return A vector with the difference, std. err., t-stat, and p
+##'     value. Prints a formatted output statement.
 ##' @digits How many digits to print? This affects only the on-screen
-##' printout. The return is numeric, full precision. 
+##'     printout. The return object is numeric, full precision.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
 ##' mdat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
@@ -33,12 +34,16 @@
 ##' m1 <- lm(y ~ x1 + x2, data = mdat)
 ##' waldt("x1", "x2", m1)
 ##' waldt("x1", "x2", m1, digits = 2)
+##' ## Returned object is not "rounded characters". It is still numbers
 ##' stillnumeric <-  waldt("x1", "x2", m1, digits = 2)
 ##' stillnumeric
-##' ## Compare to car package linearHypothesis:
+##' ## Equivalent to car package linearHypothesis:
 ##' if(require(car)){
-##' linearHypothesis(m1, "x1 = x2")
+##'     linearHypothesis(m1, "x1 = x2")
 ##' }
+##' ## recall t = sqrt(F) for a 1 degree of freedom test.
+##' ## If we could understand instructions for car, we probably
+##' ## would not need this function, actually.
 waldt <- function(parm1, parm2, model, model.cov = NULL, digits = getOption("digits")){
     V <- function(mat, parm1, parm2 = NULL) {
         if(is.null(parm2)) return (mat[parm1, parm1])
