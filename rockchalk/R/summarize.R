@@ -20,9 +20,9 @@
 ##'     NULL, no quantile estimates are provided. Default is
 ##'     \code{c("min" = 0, "med" = 0.5, "max" = 1.0)}, which will
 ##'     appear in output as \code{c("min", "med", "max")}. Other
-##'     values between 0 and 1 are allowed. For example, \code{c(0.3,
-##'     0.7)} will appear in output as "\code{pctile_30%}" and
-##'     "\code{pctile_70%}".
+##'     values between 0 and 1 are allowed. For example, \code{c(0.3, 0.7)}
+##'     will appear in output as \code{pctile_30\%} and
+##'     \code{pctile_70\%}.
 ##' @param stats A vector including any of these: \code{c("min",
 ##'     "med", "max", "mean", "sd", "var", "skewness", "kurtosis",
 ##'     "nobs", "nmiss")}. Default includes all except \code{var}.
@@ -623,11 +623,15 @@ print.summarize <- function(x, digits, ...){
         cat("Numeric variables\n")
         num.frmt <- formatSummarizedNumerics(x$numerics, digits = digits, ...)
         print(num.frmt, quote = FALSE, print.gap = 3)
+    } else {
+        num.frmt <- NULL
     }
     if(!is.null(x$factors)){
         cat("\nNonnumeric variables\n")
         fac.frmt <- formatSummarizedFactors(x$factors, digits = digits, ...)
         print(fac.frmt)
+    } else {
+        fac.frmt <- NULL
     }
     invisible(list(numerics = num.frmt, factors = fac.frmt))
 }
