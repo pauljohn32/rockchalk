@@ -1,4 +1,3 @@
-
 ##' Convert a half-vector (vech) into a matrix.
 ##'
 ##' Fills a matrix from a vector that represents the lower triangle.
