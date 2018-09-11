@@ -1,4 +1,25 @@
 
+##' Check a matrix for positive definitness
+##'
+##' Uses eigen to check positive definiteness. Follows example used
+##' in \code{MASS} package by W. N. Venables and Brian D. Ripley
+##'
+##' @param X A matrix
+##' @param tol Tolerance (closeness to 0 required to declare failure)
+##' @return TRUE or FALSE
+##' @author Paul E. Johnson <pauljohn@@ku.edu>
+checkPosDef <-
+    function(X, tol = 1e-6)
+{
+    evalues <- eigen(X, only.values = TRUE)$values
+    res <- if(!all(evalues >= -tol*abs(evalues[1L]))) FALSE else TRUE
+    res
+}
+ 
+NULL
+
+
+
 ##' Minor revision of mvrnorm (from \code{MASS}) to facilitate replication
 ##'
 ##' This is the \code{\link[MASS]{mvrnorm}} function from the MASS
