@@ -34,6 +34,7 @@
 ##'     with center and deviation columns, or or original data frame
 ##'     with "x_mn" and "x_dev" variables appended (Stata style).
 ##' @author Paul Johnson
+##' @export
 ##' @examples
 ##' ## Make a data frame out of the state data collection (see ?state)
 ##' data(state)
@@ -53,7 +54,8 @@
 ##' boxplot(Income ~ region, statenew.gmc1)
 ##' boxplot((Income_mn + Income_dev) ~ region, statenew.gmc1)
 ##' ## Multiple by variables
-##' fakedat <- data.frame(i = 1:200, j = gl(4, 50), k = gl(20, 10), y1 = rnorm(200), y2 = rnorm(200))
+##' fakedat <- data.frame(i = 1:200, j = gl(4, 50), k = gl(20, 10),
+##'                       y1 = rnorm(200), y2 = rnorm(200))
 ##' head(gmc(fakedat, "y1", by = "k"), 20)
 ##' head(gmc(fakedat, "y1", by = c("j", "k"), fulldataframe = FALSE), 40)
 ##' head(gmc(fakedat, c("y1", "y2"), by = c("j", "k"), fulldataframe = FALSE))
@@ -80,7 +82,7 @@ gmc <- function(dframe, x, by, FUN = mean, suffix = c("_mn", "_dev"),
     
     df2 <- merge(dframe, xmean, by = by, all.x = TRUE,  sort = FALSE)
     ## put rows back in original order!
-    df2 <- dframe[order(dframe$index), ]
+    df2 <- df2[order(df2$index), ]
     ## Calculate deviations
     for(i in x){
         df2[ , paste0(i, suffix[2])] <- df2[ , i] - df2[ , paste0(i, suffix[1])]
@@ -88,7 +90,7 @@ gmc <- function(dframe, x, by, FUN = mean, suffix = c("_mn", "_dev"),
     rownames(df2) <- df2$rownames
     df2$index <- NULL
     if (dframe.orignrow != NROW(df2)) stop("wrong data frame row count in gmc")
-    if (rownames(df2) != dframe.origrownames) stop("wrong data frame row names in gmc")
+    if (!all.equal(rownames(df2), dframe.origrownames)) stop("wrong data frame row names in gmc")
     if(!isTRUE(fulldataframe)){
         df3 <- df2[c(by, colnames(df2)[!colnames(df2) %in% c(by, dframenamez)])]
         attr(df3, "meanby") <- by
