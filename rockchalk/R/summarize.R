@@ -10,6 +10,7 @@
 ##' for each variable (dispersion), 2) the results are returned in a
 ##' form that is easy to use in further analysis, 3) the variables in
 ##' the output may be alphabetized.
+##' 
 ##' @param dat a data frame or a matrix
 ##' @param alphaSort If TRUE, the columns are re-organized in
 ##'     alphabetical order. If FALSE, they are presented in the
@@ -20,14 +21,15 @@
 ##'     \code{c("min" = 0, "med" = 0.5, "max" = 1.0)}, which will
 ##'     appear in output as \code{c("min", "med", "max")}. Other
 ##'     values between 0 and 1 are allowed. For example, \code{c(0.3,
-##'     0.7)} will appear in output as "pctile_30%" and "pctile_70%".
+##'     0.7)} will appear in output as "\code{pctile_30%}" and
+##'     "\code{pctile_70%}".
 ##' @param stats A vector including any of these: \code{c("min",
 ##'     "med", "max", "mean", "sd", "var", "skewness", "kurtosis",
-##'     "nobs", "nmiss")}. Default includes all except
-##'     \code{var}.  "nobs" means number of observations with
-##'     non-missing, finite scores (not NA, NaN, -Inf, or
-##'     Inf). "nmiss" is the number of cases with values of NA. If
-##'     FALSE or NULL, provide none of these.
+##'     "nobs", "nmiss")}. Default includes all except \code{var}.
+##'     "nobs" means number of observations with non-missing, finite
+##'     scores (not NA, NaN, -Inf, or Inf). "nmiss" is the number of
+##'     cases with values of NA. If FALSE or NULL, provide none of
+##'     these.
 ##' @param na.rm default TRUE. Should missing data be removed to
 ##'     calculate summaries?
 ##' @param unbiased If TRUE (default), skewness and kurtosis are
@@ -135,14 +137,16 @@ if (isTRUE(stats)) stats <- c("mean", "sd", "skewness",
         reslt <- merge(qtiles, sumdat, by = "row.names", sort = FALSE)
         rownames(reslt) <- reslt$Row.names
         reslt[["Row.names"]] <- NULL
-        return(reslt)
     } else if (is.null(qtiles)){
-        return(sumdat)
+        reslt <- sumdat
     } else if (is.null(sumdat)){
-        return(qtiles)
+        reslt <- qtiles
     }
-    ## Return NULL if we reach this point
-    NULL
+   
+    attr(reslt, "stats") <- stats
+    attr(reslt, "digits") <- digits
+    attr(reslt, "probs") <- probs
+    reslt
 }
 NULL
 
@@ -381,9 +385,10 @@ NULL
 ##' @return A table of formatted output
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @seealso \code{\link{summarize}}, \code{\link{summarizeFactors}}, \code{\link{formatSummarizedNumerics}}
+##' @examples
 ##' dat <- data.frame(xcat1 = gl(10, 3), xcat2 = gl(5, 6))
-##' summarizeFactors(dat)
-##' print(formatSummarizedFactors(summarizeFactors(dat)))
+##' summarizeFactors(dat, maxLevels = 8)
+##' formatSummarizedFactors(summarizeFactors(dat))
 formatSummarizedFactors <- function(x, ...){
     ncw <- function(x) {
         z <- nchar(x, type = "w")
@@ -517,29 +522,30 @@ NULL
 ##'     alphabetical order. If FALSE, they are presented in the
 ##'     original order.
 ##' @param stats A vector of desired summary statistics. Set
-##'     \code{stats = NULL} to omit all stat summaries. The legal
-##'     elements in stats are \code{c("min", "med", "max", "mean",
-##'     "sd", "var", "skewness", "kurtosis", "entropy",
-##'     "normedEntropy", "nobs", "nmiss")}. The statistics
-##'     \code{c("entropy", "normedEntropy")} are available only for
-##'     factor variables, while mean, variance, and so forth will be
-##'     calculated only for numeric variables.  \code{"nobs"} is the
-##'     number of observations with non-missing, finite scores (not
-##'     NA, NaN, -Inf, or Inf). \code{"nmiss"} is the number of cases
-##'     with values of NA.
-##' @param probs For numeric variables, this is an argument that will
-##'     be passed to the \code{quantile} function. The probs argument
-##'     in \code{quantile} has the same meaning here.  The default is
+##'     \code{stats = NULL} to omit all stat summaries. Legal elements
+##'     are \code{c("min", "med", "max", "mean", "sd", "var",
+##'     "skewness", "kurtosis", "entropy", "normedEntropy", "nobs",
+##'     "nmiss")}. The statistics \code{c("entropy", "normedEntropy")}
+##'     are available only for factor variables, while mean, variance,
+##'     and so forth will be calculated only for numeric variables.
+##'     \code{"nobs"} is the number of observations with non-missing,
+##'     finite scores (not NA, NaN, -Inf, or Inf). \code{"nmiss"} is
+##'     the number of cases with values of NA. The default setting for
+##'     \code{probs} will cause \code{c("min", "med", "max")} to be
+##'     included, they need not be requested explicitly. To disable
+##'     them, revise \code{probs}.
+##' @param probs For numeric variables, is used with the
+##'     \code{quantile} function. The default is
 ##'     \code{probs = c(0, .50, 1.0)}, which are labeled in output as
-##'     \code{c("min", "med", and "max")}.
+##'     \code{c("min", "med", and "max")}. Set \code{probs = NULL}
+##'     to prevent these in the output.
 ##' @param digits Decimal values to display, defaults as 2.
 ##' @param ... Optional arguments that are passed to
 ##'     \code{summarizeNumerics} and \code{summarizeFactors}. For
 ##'     numeric variables, one can specify \code{na.rm} and
-##'     \code{unbiased}.  For discrete variables (factors, ordered,
-##'     logical, character), the argument is \code{maxLevels}, which
-##'     determines the number of levels that will be reported in
-##'     tables for discrete variables.
+##'     \code{unbiased}.  For discrete variables, the key argument is
+##'     \code{maxLevels}, which determines the number of levels that
+##'     will be reported in tables for discrete variables.
 ##' @return Return is a list with two objects 1) output from
 ##'     summarizeNumerics: a data frame with variable names on rows
 ##'     and summary stats on columns, 2) output from summarizeFactors:
@@ -551,7 +557,7 @@ NULL
 ##' @example inst/examples/summarize-ex.R
 summarize <-
     function(dat, alphaSort = FALSE,
-             stats = c("mean", "sd", "var", "skewness", "kurtosis", "entropy",
+             stats = c("mean", "sd", "skewness", "kurtosis", "entropy",
                        "normedEntropy", "nobs", "nmiss"), probs = c(0, 0.50, 1.0),
              digits = 3, ...)
 {
@@ -572,7 +578,7 @@ summarize <-
     ## args for numeric vars: names that need keeping if in dots
     ## initial argument list
     numargs <- list(dat = quote(dat), alphaSort = alphaSort, probs = probs,
-                     stats = stats)
+                     stats = stats, digits = digits)
     argList <- modifyList(numargs, dots[names(dots) %in% nnames])
     datn <- do.call("summarizeNumerics", as.list(argList))
 
@@ -584,11 +590,15 @@ summarize <-
     fnames <- "maxLevels"
     argList <- modifyList(fargs, dots[names(dots) %in% fnames])
     datf <- do.call("summarizeFactors", as.list(argList))
-
-    datnfmt <- formatSummarizedNumerics(datn, digits = digits) 
+    
     value <- list(numerics = datn, factors = datf)
     attr(value, "class") <- c("summarize", class(value))
-    attr(value, "numeric.formatted") <- datnfmt
+    if (!is.null(datn)) {
+        attr(value, "numeric.formatted") <- formatSummarizedNumerics(datn, digits = digits)
+    }
+    if (!is.null(datf)) {
+        attr(value, "factor.formatted") <- formatSummarizedFactors(datf, digits = digits)
+    }
     value
 }
 NULL
@@ -611,12 +621,12 @@ print.summarize <- function(x, digits, ...){
     digits <- if(!missing(digits) && !is.null(digits)) digits else NULL
     if(!is.null(x$numerics)){
         cat("Numeric variables\n")
-        num.frmt <- formatSummarizedNumerics(x$numerics, digits = digits)
+        num.frmt <- formatSummarizedNumerics(x$numerics, digits = digits, ...)
         print(num.frmt, quote = FALSE, print.gap = 3)
     }
     if(!is.null(x$factors)){
         cat("\nNonnumeric variables\n")
-        fac.frmt <- formatSummarizedFactors(x$factors, digits = digits)
+        fac.frmt <- formatSummarizedFactors(x$factors, digits = digits, ...)
         print(fac.frmt)
     }
     invisible(list(numerics = num.frmt, factors = fac.frmt))
@@ -646,6 +656,7 @@ print.summarize <- function(x, digits, ...){
 ##' str(Xsum.fmt)
 formatSummarizedNumerics <- function(x, ...){
     dots <- list(...)
+    
     if (!is.null(dots$digits)) {
         digits = dots$digits
         dots$digits <- NULL

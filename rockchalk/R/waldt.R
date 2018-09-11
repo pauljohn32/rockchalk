@@ -22,10 +22,10 @@
 ##' @param model.cov Optional, another covariance matrix to use while
 ##'     calculating the test. Primarily used for robust (or otherwise
 ##'     adjusted) standard errors
+##' @param digits How many digits to print? This affects only the on-screen
+##'     printout. The return object is numeric, full precision.
 ##' @return A vector with the difference, std. err., t-stat, and p
 ##'     value. Prints a formatted output statement.
-##' @digits How many digits to print? This affects only the on-screen
-##'     printout. The return object is numeric, full precision.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
 ##' mdat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
