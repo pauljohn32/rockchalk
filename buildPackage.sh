@@ -36,16 +36,16 @@ R --vanilla -f runRoxygen2.R
 
 R CMD build rockchalk.gitex --resave-data 
 
-
-read -p "Install: OK? (y or n)" result
-if [ $result = "y" ]; then
-R CMD INSTALL ${PACKAGE}_${VERSION}.tar.gz
-fi
-
 read -p "Run check: OK? (y or n)" result
 
 if [ $result = "y" ];  then
 R CMD check --as-cran ${PACKAGE}_${VERSION}.tar.gz
+fi
+
+
+read -p "Install: OK? (y or n)" result
+if [ $result = "y" ]; then
+R CMD INSTALL ${PACKAGE}_${VERSION}.tar.gz
 fi
 
 read -p "Erase git temporary: OK? (y or n)" result

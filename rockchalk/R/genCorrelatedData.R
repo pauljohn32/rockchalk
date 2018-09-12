@@ -590,7 +590,7 @@ NULL
 ##'     genCorrelatedData3("y ~ 1.1 + 2.1 * x1 + 3 * x2 + 3.5 * x3 + 1.1 * x1:x3",
 ##'                        N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3),
 ##'                        sds = 1, rho = 0.4, stde = 5, distrib = rlogis)
-##' lmb <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X1b)
+##' lm1b <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X1b)
 ##' summary(lm1b)
 ##'
 ##' ## t distribution is very sensitive for fractional df between 1 and 2 (recall

@@ -58,7 +58,7 @@ descriptiveTable <- function(object, stats = c("mean", "sd", "min", "max"),
    
     reslt3 <- do.call(rbind, reslt2)
     
-    reslt4 <- rbind.fill(reslt, reslt3)
+    reslt4 <- rbindFill(reslt, reslt3)
     reslt4[is.na(reslt4)] <- ""
     reslt4
 }

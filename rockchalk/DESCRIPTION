@@ -3,8 +3,8 @@ Type: Package
 Title: Regression Estimation and Presentation
 Version: 1.8.117
 Date: 2018-09-12
-Authors@R: c(person("Paul","Johnson",email="pauljohn@ku.edu",role = c("aut", "cre"),
-           c("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"))
+Authors@R: c(person("Paul E.","Johnson",email="pauljohn@ku.edu",role = c("aut", "cre")),
+    person("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"))
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for interpretation and presentation
     of regression analysis.  These functions are used

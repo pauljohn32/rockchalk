@@ -10,7 +10,7 @@
 ##' labeled by their midpoints, rather than cut's usual boundaries.
 ##'
 ##' The dividing points, thought of as "thresholds" or "cutpoints",
-##' can be specified in several ways.  \code{cut.fancy} will
+##' can be specified in several ways.  \code{cutFancy} will
 ##' automatically create equally-sized sets of observations for a
 ##' given number of categories if neither \code{probs} nor
 ##' \code{cutpoints} is specified. The bare minimum input needed is
@@ -81,25 +81,25 @@
 ##' @return an ordinal vector with attributes "cutpoints" and "props"
 ##'     (proportions)
 ##' @importFrom stats embed
-##' @name cut.fancy
-##' @export cut.fancy
+##' @name cutFancy
+##' @export cutFancy
 ##' @examples
 ##' set.seed(234234)
 ##' y <- rnorm(1000, m = 35, sd = 14)
-##' yord <- cut.fancy(y, cutpoints = c(30, 40, 50))
+##' yord <- cutFancy(y, cutpoints = c(30, 40, 50))
 ##' table(yord)
 ##' attr(yord, "props")
 ##' attr(yord, "cutpoints")
-##' yord <- cut.fancy(y, categories = 4L)
+##' yord <- cutFancy(y, categories = 4L)
 ##' table(yord, exclude = NULL)
 ##' attr(yord, "props")
 ##' attr(yord, "cutpoints")
-##' yord <- cut.fancy(y, probs = c(0, .1, .3, .7, .9, 1.0),
+##' yord <- cutFancy(y, probs = c(0, .1, .3, .7, .9, 1.0),
 ##'                   categories = c("A", "B", "C", "D", "E"))
 ##' table(yord, exclude = NULL)
 ##' attr(yord, "props")
 ##' attr(yord, "cutpoints")
-##' yord <- cut.fancy(y, probs = c(0, .1, .3, .7, .9, 1.0))
+##' yord <- cutFancy(y, probs = c(0, .1, .3, .7, .9, 1.0))
 ##' table(yord, exclude = NULL)
 ##' attr(yord, "props")
 ##' attr(yord, "cutpoints")
@@ -115,10 +115,10 @@
 ##'                        sds = 1, rho = 0.4)
 ##' ## Create cutpoints from quantiles
 ##' probs <- c(.3, .6)
-##' X1a$yord <- cut.fancy(X1a$y, probs = probs)
+##' X1a$yord <- cutFancy(X1a$y, probs = probs)
 ##' attributes(X1a$yord)
 ##' table(X1a$yord, exclude = NULL)
-cut.fancy <- function(y, cutpoints = "quantile", probs, categories){
+cutFancy <- function(y, cutpoints = "quantile", probs, categories){
     if(!missing(cutpoints) && !is.null(cutpoints)){
         if(is.numeric(cutpoints)){
             ## Use dividers provided by user

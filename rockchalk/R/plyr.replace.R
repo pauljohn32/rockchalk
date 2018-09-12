@@ -3,7 +3,7 @@
 ##' In the end of the code for plyr::rbind.fill, the author explains
 ##' that is uses an experimental function to build the data.frame.  I
 ##' would rather not put any weight on an experimental function, so I
-##' sat out to create a new rbind.fill. This function uses no
+##' sat out to create a new rbindFill. This function uses no
 ##' experimental functions. It does not rely on any functions from
 ##' packages that are not in base of R, except, of course, for functions
 ##' in this package.
@@ -20,8 +20,8 @@
 ##' @param ... Data frames
 ##' @return A stacked data frame
 ##' @author Paul Johnson
-##' @name rbind.fill
-##' @export rbind.fill
+##' @name rbindFill
+##' @export rbindFill
 ##' @examples
 ##' set.seed(123123)
 ##' N <- 10000
@@ -44,7 +44,7 @@
 ##' dat3 <- dat
 ##' dat3$x1 <- NULL
 ##' dat3$xcat3 <-  factor(sample(c("L1", "L2", "L3", "L4"), N, replace=TRUE)) 
-##' dat.stack <- rbind.fill(dat1, dat2, dat3)
+##' dat.stack <- rbindFill(dat1, dat2, dat3)
 ##' str(dat.stack)
 ##'
 ##' ## Possible BUG alert about base::rbind and plyr::rbind.fill
@@ -67,8 +67,8 @@
 ##' ## stack4 <- plyr::rbind.fill(dat6, dat5)
 ##' ## str(stack4)
 ##' ## oops, xcat1 is ordinal with levels A < B < C < D
-##' ## stack5 <- rbind.fill(dat5, dat6)
-rbind.fill <- function(...) 
+##' ## stack5 <- rbindFill(dat5, dat6)
+rbindFill <- function(...) 
 {
     ## small copy removeNULL
     removeNULL <- function (aList){ 
@@ -88,7 +88,7 @@ rbind.fill <- function(...)
         return(dfs[[1]])
     is_df <- vapply(dfs, is.data.frame, logical(1))
     if (any(!is_df)) {
-        stop("All inputs to rbind.fill must be data.frames", 
+        stop("All inputs to rbindFill must be data.frames", 
             call. = FALSE)
     }
 
