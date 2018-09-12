@@ -1,6 +1,4 @@
 
-
-
 ##' Create covariance matrix from correlation and standard deviation
 ##' information
 ##'
@@ -37,29 +35,33 @@ lazyCov <-
     function(Rho, Sd, d)
 {
     if (missing(Sd)){
-        MESSG <-  paste("lazyCov requires user to specify either a vector",
-                        "or a single common value for all standard deviations.")
+        MESSG <- paste("lazyCov requires user to specify either a vector",
+                       "or a single common value for all standard deviations")
         stop(MESSG)
     }
     if (missing(Rho)){
-        MESSG <- paste("lazyCov requires a symmetric correlation matrix",
-                       "or enough information to create one.",
-                       "It needs either a vech (column of lower triangular values)",
-                       "or a single common correlation value.")
+        MESSG <- paste("lazyCov requires a symmstric correlation matrix",
+                       "or enough information to create one, either a vech",
+                       "of lower triangular values or a single common",
+                       "correlation value")
         stop(MESSG)
     }
     if (!missing(d) && (length(Sd) > 1) && (length(Sd) != d)){
         MESSG <- paste("lazyCov doesn't require a d argument,",
                        "but if you provide one, it must be consistent",
                        "with the length of a supplied Sd vector")
+        stop(MESSG)
+    }
     if (missing(d)){
         if (length(Sd) > 1) d <- length(Sd)
         else if (is.matrix(Rho)) d <- NROW(Rho)
         else if (is.vector(Rho)) {
             d <- (sqrt(1 + 8 * length(Rho)) + 1)/2
             if (!isTRUE(all.equal(as.integer(d)- d, 0))){
-                MESSG <- paste(deparse(substitute(vech)), " must have the correct number of elements",
-                               "to fill in a strictly lower triangle in a square matrix.")
+                MESSG <- paste(deparse(substitute(vech)),
+                               " must have the correct number of elelemnts",
+                               "to fill in a strictly lower triangle in a",
+                               "square matrix.")
                 stop(MESSG)
             }
         }
@@ -77,3 +79,6 @@ lazyCov <-
 }
 
 NULL
+
+
+    

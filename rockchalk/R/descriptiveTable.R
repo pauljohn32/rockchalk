@@ -11,6 +11,9 @@
 ##' @param stats Default is a vector c("mean", "sd", "min", "max"). Other
 ##'      stats reported by rockchalk::summarize should work fine as well
 ##' @param digits 2 decimal points is default
+##' @param probs Probability cut points to be used in the calculation
+##'      of summaries of numeric variables.  Default is c(0, 0.5, 1), meaning
+##'      \code{min, median, max}.
 ##' @param ... Other arguments passed to rockchalk::summarizeNumerics and
 ##'      summarizeFactors.
 ##' @export

@@ -1,4 +1,3 @@
-
 ##' Stack together data frames
 ##' 
 ##' In the end of the code for plyr::rbind.fill, the author explains
@@ -20,8 +19,9 @@
 ##' with an error message to alert the user to the problem.
 ##' @param ... Data frames
 ##' @return A stacked data frame
-##' @export
 ##' @author Paul Johnson
+##' @name rbind.fill
+##' @export rbind.fill
 ##' @examples
 ##' set.seed(123123)
 ##' N <- 10000
@@ -50,9 +50,10 @@
 ##' ## Possible BUG alert about base::rbind and plyr::rbind.fill
 ##' ## Demonstrate the problem of a same-named variable that is factor in one and
 ##' ## an ordered variable in the other
-##' dat5 <- data.frame(ds = "5", x1 = rnorm(N), xcat1 = gl(20, 5, labels = LETTERS[20:1]))
-##' dat6 <- data.frame(ds = "6", x1 = rnorm(N), xcat1 = gl(20, 5, labels = LETTERS[1:20],
-##'                    ordered = TRUE))
+##' dat5 <- data.frame(ds = "5", x1 = rnorm(N),
+##'                    xcat1 = gl(20, 5, labels = LETTERS[20:1]))
+##' dat6 <- data.frame(ds = "6", x1 = rnorm(N),
+##'                    xcat1 = gl(20, 5, labels = LETTERS[1:20], ordered = TRUE))
 ##' ## rbind reduces xcat1 to factor, whether we bind dat5 or dat6 first.
 ##' stack1 <- base::rbind(dat5, dat6)
 ##' str(stack1)
@@ -178,3 +179,4 @@ rbind.fill <- function(...)
     }
     datastack
 }
+NULL

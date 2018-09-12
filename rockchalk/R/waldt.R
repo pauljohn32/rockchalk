@@ -27,6 +27,7 @@
 ##' @return A vector with the difference, std. err., t-stat, and p
 ##'     value. Prints a formatted output statement.
 ##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @export
 ##' @examples
 ##' mdat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
 ##' stde <- 2
@@ -62,3 +63,5 @@ waldt <- function(parm1, parm2, model, model.cov = NULL, digits = getOption("dig
     print(formatC(reslt, digits = digits))
     invisible(reslt)
 }
+
+NULL

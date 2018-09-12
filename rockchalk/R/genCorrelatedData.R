@@ -361,7 +361,8 @@ genX <-
              colnames = NULL, unit = NULL, idx = FALSE)
 {
     d <- length(means)
-    if (!missing(rho) & !is.null(Sigma)) stop ("Please provide rho or Sigma, not both")
+    if (!missing(rho) & !is.null(Sigma))
+        stop ("Please provide rho or Sigma, not both")
     if (!is.null(Sigma) & !missing(sds))
         warning(paste("Note, if you provide Sigma we are ignoring",
                       " your input on the sds argument"))
@@ -410,427 +411,307 @@ genX <-
 
     
 
-##' Convert the vech (column of strictly lower trianglar values from a matrix) into a correlation matrix.
+
+
+##' Generate correlated data for simulations (third edition)
 ##'
-##' vech2Corr is a convenience function for creating correlation matrices
-##' from a vector of the lower triangular values. It checks the arguments
-##' to make sure they are consistent with the requirements of a
-##' correlation matrix. All values must be in [-1, 1], and the number
-##' of values specified must be correct for a lower triangle.
+##' This is a revision of \code{genCorrelatedData2}.  The output is a
+##' data frame that has columns for the predictors along with an error
+##' term, the linear predictor, and the observed value of the outcome
+##' variable.  The new features are in the user interface. It has a
+##' better way to specify beta coefficients. It is also more flexible
+##' in the specification of the names of the predictor columns.
 ##'
-##' Use this in combination with the \code{lazyCov} function to
-##' convert a vector of standard deviations and the correlation matrix
-##' into a covariance matrix.
+##' The enhanced methods for authors to specify a data-generating
+##' process are as follows. Either way will work and the choice
+##' between the methods is driven by the author's convenience.
+##' \itemize{
+##' 
+##' \item 1. Use the formula argument:
+##'  "1 + 2.2 * x1 + 2.3 * x2 + 3.3 * x3 + 1.9 * x1:x2". Insert
+##' ":" for product terms, as we see in R output
 ##'
-##' @export
-##' @seealso Similar functions exist in many packages, see
-##'     \code{vec2sm} in corpcor, \code{xpnd} in MCMCpack
-##' @param vech A vector of values for the strictly lower triangle of
-##'     a matrix. All values must be in the [0,1] interval (because
-##'     they are correlations) and the matrix formed must be positive
-##'     definite.
-##' @return A symmetric correlation matrix, with 1's on the diagonal.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' \item 2. Use the beta
+##' argument, beta = c("Intercept" = 1, x1 = 2.2, x2 = 2.3, x3 = 3.3,
+##' "x1:x2" = 1.9) where the names are the same as the names of the
+##' variables in the formula. Names of the variables in the formula or
+##' the beta vector should be used also in either the means parameter
+##' or the colnames parameter.
+##' }
+##' 
+##' The error distribution can be specified. Default is normal, with
+##' draws provided by R's \code{rnorm}. All error models assume
+##' \eqn{E[e] = 0} and the scale coefficient is the parameter
+##' \code{stde}. Thus, the default setup's error will be drawn from
+##' \code{rnorm(N, 0, stde)}. Any two parameter "location" and "scale"
+##' distribution should work as well, as long as the first coefficient
+##' is location (because we set that as 0 in all cases) and the second
+##' argument is scale. For example, \code{distrib=rlogis}, will lead
+##' to errors drawn from \code{rlogis{N, 0, stde}. Caution: in rlogis,
+##' the scale parameter is not the same as standard deviation.
+##'
+##' The only one parameter distribution currently supported is the T
+##' distribution.  If user specifies \code{distrib=rt}, then the
+##' \code{stde} is passed through to the parameter \code{df}. Note
+##' that if increasing the stde parameter will cause the standard
+##' deviation of \code{rt} to get smaller. \code{df=1} implies sd =
+##' 794.6; \code{df=2} implies sd = 3.27; \code{df=3} implies 1.7773.
+##'
+##' Methods to specify error distributions in a more flexible way need
+##' to be considered.
+##' 
+##' @param formula a text variable, e.g., \code{"y ~ 1 + 2*x1"}. Use
+##'     ":" to create squared and interaction terms,
+##'     \code{"y ~ 1 + 2*x1 + 1.1*x1:x1 + 0.2*x1:x2".} Multi-way
+##'     interactions are allowed, eg
+##'     \code{"y ~ 1 + 2*x1 + .4*x2 + .1*x3 + 1.1*x1:x1 + 0.2*x1:x2:x3".}
+##'     Note author can specify any order of interation.
+##' @param N sample size
+##' @param means averages of predictors, can include names c(x1 = 10,
+##'     x2 = 20) that will be used in the data.frame result.
+##' @param sds standard deviations, 1 (common value for all variables)
+##'     or as many elements as in \code{means}.
+##' @param rho correlations, can be 1 or a vech for a correlation
+##'     matrix
+##' @param stde The scale of the error term. If \code{distrib=rnorm},
+##'     stde is the standard deviation of the error term. If the user
+##'     changes the distribution, this is a scale parameter that may
+##'     not be equal to the standard deviation. For example,
+##'     \code{distrib=rlogist} has a scale parameter such that a value
+##'     of stde implies the error's standard deviation will be
+##'     \eqn{stde * pi / sqrt(3)}.
+##' @param beta slope coefficients, use either this or \code{formula},
+##'     not both. It is easier (less error prone) to use named
+##'     coefficients, but (for backwards compatability with
+##'     \code{genCorrelatedData2}) names are not required. If named,
+##'     use "Intercept" for the intercept coefficient, and use
+##'     variable names that match the \code{xmeans} vector.  Un-named
+##'     coefficients follow same rules as in
+##'     \code{\link{genCorrelatedData2}}. The first (1 + p) values are
+##'     for the intercept and p main effects.  With 3 predictors and
+##'     no squares or interactions, specify four betas corresponding
+##'     to \code{c(Intercept, x1, x2, x3)}. The squared and
+##'     interaction terms may follow.  The largest possible model
+##'     would correspond to \code{c(Intercept, x1, x2, x3, x1:x1,
+##'     x1:x2, x1:x3, x2:x2, x2:x3, x3:x3)}.  Squares and interactions
+##'     fill in a "lower triangle". The unnamed beta vector can be
+##'     terminated with the last non-zero coefficient, the function
+##'     will insert 0's for the coefficients at the end of the vector.
+##' @param intercept TRUE or FALSE. Should the output data set include
+##'     a column of 1's. If beta is an unnamed vector, should the
+##'     first element be treated as an intercept?
+##' @param colnames Can override names in means vector
+##' @param verbose TRUE for diagnostics
+##' @param ... extra arguments, ignored for now. We use that to ignore
+##'     unrecognized parameters.
+##' @param distrib An R random data generating function.  Default is
+##'     \code{rnorm}. Also \code{rlogis} or any other two-parameter
+##'     location/scale distribution will work. Special configuration
+##'     allows \code{rt}. See details.
+##' @return a data frame
+##' @author Paul Johnson <pauljohn@@ku.edu> and Gabor Grothendieck
 ##' @examples
-##' v <- c(0.1, 0.4, -0.5)
-##' vech2Corr(v)
-##' v <- c(0.1, 0.4, -0.4, 0.4, 0.5, 0.1)
-##' vech2Corr(v)
-vech2Corr <-
-    function(vech)
+##' set.seed(123123)
+##' ## note: x4 is an unused variable in formula
+##' X1a <-
+##'     genCorrelatedData3("y ~ 1.1 + 2.1 * x1 + 3 * x2 + 3.5 * x3 + 1.1 * x1:x3",
+##'                        N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3, x4 = 1),
+##'                        sds = 1, rho = 0.4, stde = 5)
+##' lm1a <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X1a)
+##' ## note that normal errors have std.error. close to 5
+##' summary(lm1a)
+##' 
+##' 
+##' ## Demonstrate name beta vector method to provide named arguments
+##' set.seed(123123)
+##' X2 <- genCorrelatedData3(N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3, x4 = 1),
+##'           sds = 1, rho = 0.4, 
+##'           beta = c("Intercept" = 1.1, x1 = 2.1, x2 = 3,
+##'                     x3 = 3.5, "x1:x3" = 1.1),
+##'                     intercept = TRUE, stde = 5)
+##' attr(X2, c("beta"))
+##' attr(X2, c("formula"))
+##' head(X2)
+##' lm2 <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X2)
+##' summary(lm2)
+##'
+##' 
+##' ## Equivalent with unnamed beta vector. Must carefuly count empty
+##' ## spots, fill in 0's when coefficient is not present. This
+##' ## method was in genCorrelated2. Order of coefficents is
+##' ## c(intercept, x1, ..., xp, x1:x1, x1:x2, x1:xp, ..., )
+##' ## filling in a lower triangle. This is very difficult to
+##' ## get right.
+##' set.seed(123123)
+##' X3 <- genCorrelatedData3(N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3, x4 = 1),
+##'           sds = 1, rho = 0.4, 
+##'           beta = c(1.1, 2.1, 3, 3.5, 0, 0, 0, 1.1),
+##'                     intercept = TRUE, stde = 5)
+##' attr(X3, c("beta"))
+##' attr(X3, c("formula"))
+##' head(X3)
+##' lm3 <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X3)
+##' summary(lm3)
+##'
+##' ## Same with more interesting variable names in the means vector
+##' X3 <- genCorrelatedData3(N = 1000,
+##'           means = c(friend = 1, enemy = -1, ally = 3, neutral = 1),
+##'           sds = 1, rho = 0.4, 
+##'           beta = c(1.1, 2.1, 3, 3.5, 0, 0, 0, 1.1),
+##'                     intercept = TRUE, stde = 5)
+##' head(X3)
+##' attr(X3, c("beta"))
+##' 
+##' 
+##' X3 <- genCorrelatedData3(N = 1000, means = c(x1 = 50, x2 = 50, x3 = 50),
+##'           sds = 10, rho = 0.4,
+##'           beta = c("Intercept" = .1, x1 = .01, x2 = .2, x3 = .5,
+##'                    "x1:x3" = .1))
+##' lm3 <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X3)
+##' 
+##' 
+##' ## Names via colnames argument: must match formula
+##' X2 <- genCorrelatedData3("y ~ 1.1 + 2.1 * educ + 3 * hlth + 3 * ses + 1.1 * educ:ses",
+##'          N = 100, means = c(50, 50, 50, 20),
+##'          sds = 10, rho = 0.4, colnames = c("educ", "hlth", "ses", "wght"))
+##' str(X2) 
+##'
+##' X3 <- genCorrelatedData3("y ~ 1.1 + 2.1 * educ + 3 * hlth + 3 * ses + 1.1 * educ:ses",
+##'          N = 100, means = c(50, 50, 50, 20),
+##'          sds = 10, rho = 0.4, colnames = c("educ", "hlth", "ses", "wght"),
+##'          intercept = TRUE)
+##' str(X3)
+##' 
+##' ## note the logistic errors have residual std.error approximately 5 * pi/sqrt(3)
+##' X1b <-
+##'     genCorrelatedData3("y ~ 1.1 + 2.1 * x1 + 3 * x2 + 3.5 * x3 + 1.1 * x1:x3",
+##'                        N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3),
+##'                        sds = 1, rho = 0.4, stde = 5, distrib = rlogis)
+##' lmb <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X1b)
+##' summary(lm1b)
+##'
+##' ## t distribution is very sensitive for fractional df between 1 and 2 (recall
+##' ## stde parameter is passed through to df in rt.
+##' X1c <-
+##'     genCorrelatedData3("y ~ 1.1 + 2.1 * x1 + 3 * x2 + 3.5 * x3 + 1.1 * x1:x3",
+##'                        N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3),
+##'                        sds = 1, rho = 0.4, stde = 1.2, distrib = rt)
+##' lm1c <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X1c)
+##' summary(lm1c)
+##' 
+genCorrelatedData3 <- function (formula, N = 100,
+                                means = c("x1" = 50, "x2" =  50, "x3" = 50),
+                                sds = c(10, 10, 10), rho = c(0, 0, 0),
+                                stde = pi/sqrt(3),
+                                beta = c(0, 0.15, 0.1, -0.1),
+                                intercept = FALSE, colnames,
+                                verbose = FALSE, ..., distrib = rnorm)
 {
-    ##compute number of rows from vech. diag not in the vech!
-    n <- (sqrt(1 + 8 * length(vech)) + 1)/2
-    if (!as.integer(n) == n) stop(deparse(substitute(vech)),
-                                  " must have the correct number of elements to fill",
-                                  "in a strictly lower triangle in a square matrix.")
-    if(any(vech > 1 | vech < -1)) {
-        stop(paste("All values in ", deparse(substitute(vech)),
-                   " must be in the interval [-1,1]"))
-    }
-    X <- matrix(NA, nrow = n, ncol = n)
-    X[lower.tri(X, diag = FALSE)] <- vech
-    X[upper.tri(X)] <- t(X)[upper.tri(X)]
-    diag(X) <- 1
-    stopifnot(checkPosDef(X))
-    X
-}
-NULL
 
-##' Convert a half-vector (vech) into a matrix.
-##'
-##' Fills a matrix from a vector that represents the lower triangle.
-##' If user does not supply a value for diag, then the vech will fill
-##' in the diagonal as well as the strictly lower triangle.  If diag
-##' is provided (either a number or a vector), then vech is for the
-##' strictly lower triangular part.  The default value for lowerOnly
-##' is FALSE, which means that a symmetric matrix will be created. See
-##' examples for a demonstration of how to fill in the lower triangle
-##' and leave the diagonal and the upper triangle empty.
-##'
-##' @param vech A vector
-##' @param diag Optional. A single value or a vector for the
-##' diagonal. A vech is a strictly lower triangluar vech, it
-##' does not include diagonal values. diag can be either a single
-##' value (to replace all elements along the diagonal) or a vector of
-##' the correct length to replace the diagonal.
-##' @param lowerOnly Default = FALSE. 
-##' @seealso Similar functions exist in many packages, see
-##' \code{vec2sm} in corpcor, \code{xpnd} in MCMCpack
-##' @export
-##' @examples
-##' x <- 1:6
-##' vech2mat(x)
-##' vech2mat(x, diag = 7)
-##' vech2mat(x, diag = c(99, 98, 97, 96))
-##' vech2mat(x, diag = 0, lowerOnly = TRUE)
-vech2mat <-
-    function(vech, diag = NULL, lowerOnly = FALSE)
-{
-    ## Must calculate correct number of rows from vech, if
-    ## vech implies a non-square, stop.
-    ## If no diag, then vech provides the diagonal values
-    if (!is.null(diag)){
-        d <- (sqrt(1 + 8 * length(vech)) + 1)/2
-        if (!as.integer(d) == d)
-            stop(deparse(substitute(vech)), " must have the correct number of elements to fill a stricly lower triangle.")
-        X <- matrix(0, nrow = d, ncol = d)
-        X[lower.tri(X, diag = FALSE)] <- vech
-        diag(X) <- makeVec(diag, d)
-        if (!lowerOnly) X[upper.tri(X)] <- t(X)[upper.tri(X)]
-    } else {
-        d <- (sqrt(1 + 8 * length(vech)) - 1)/2
-        if (!as.integer(d) == d)
-            stop(paste("You supplied diag. So ", deparse(substitute(vech)), " must have the correct number of elements to fill in a lower triangle, including the diagonal.."))
-        X <- matrix(0, nrow = d, ncol = d)
-        X[lower.tri(X, diag = TRUE)] <- vech
-        if (!lowerOnly) X[upper.tri(X)] <- t(X)[upper.tri(X)]
-    }
-    X
-}
-NULL
-
-
-
-
-##' Create covariance matrix from correlation and standard deviation
-##' information
-##'
-##' This is a flexible function that allows lazy R programmers to
-##' create covariance matrix. The user may be lazy because the
-##' correlation and standard deviation infomation may be supplied in a
-##' variety of formats.
-##'
-##' @param Rho Required. May be a single value (correlation common
-##' among all variables), a vector of the lower triangular values
-##' (vech) of a correlation matrix, or a symmetric matrix of
-##' correlation coefficients.
-##' @param Sd Required. May be a single value (standard deviation
-##' common among all variables) or a vector of standard deviations,
-##' one for each variable.
-##' @param d Optional. Number of rows or columns. lazyCov may be able
-##' to deduce the required dimension of the final matrix from the
-##' input. However, when the user supplies only a single value for
-##' both Rho and Sd, d is necessary.
-##' @return covariance matrix.
-##' @author <pauljohn@@ku.edu>
-##' @export
-##' @examples
-##' ##correlation 0.8 for all pairs, standard deviation 1.0 of each
-##' lazyCov(Rho = 0.8, Sd = 1.0, d = 3)
-##' ## supply a vech (lower triangular values in a column)
-##' lazyCov(Rho = c(0.1, 0.2, 0.3), Sd = 1.0)
-##' ## supply vech with different standard deviations
-##' lazyCov(Rho = c(0.1, 0.2, 0.3), Sd = c(1.0, 2.2, 3.3))
-##' newRho <- lazyCor(c(0.5, 0.6, 0.7, -0.1, 0.1, 0.2))
-##' lazyCov(Rho = newRho, Sd = 1.0)
-##' lazyCov(Rho = newRho, Sd = c(3, 4, 5, 6))
-lazyCov <-
-    function(Rho, Sd, d)
-{
-    if (missing(Sd)) stop("lazyCov requires user to specify either a vector or a single common value for all standard deviations")
-    if (missing(Rho)) stop("lazyCov requires a symmstric correlation matrix or enough information to create one, either a vech of lower triangular values or a single common correlation value")
-    if (!missing(d) && (length(Sd) > 1) && (length(Sd) != d)) stop("lazyCov doesn't require a d argument, but if you provide one, it must be consistent with the length of a supplied Sd vector")
-    if (missing(d)){
-        if (length(Sd) > 1) d <- length(Sd)
-        else if (is.matrix(Rho)) d <- NROW(Rho)
-        else if (is.vector(Rho)) {
-            d <- (sqrt(1 + 8 * length(Rho)) + 1)/2
-            if (!isTRUE(all.equal(as.integer(d)- d, 0))) stop(deparse(substitute(vech)), " must have the correct number of elelemnts to fill in a strictly lower triangle in a square matrix.")
-        }
-    }
-    if (length(Sd) == 1) Sd <- rep(Sd, d)
-    Rho <- lazyCor(Rho, d)
-
-    covMat <- diag(Sd) %*% Rho %*% diag(Sd)
-    covSVD <- svd(covMat, nu = 0, nv = 0)
-    eS <- eigen(covMat, symmetric = TRUE, only.values = TRUE)
-    ev <- eS$values
-    tol <- 1e-6
-    if(!all(ev >= -tol*abs(ev[1L]))) stop("'covMat' is not positive definite")
-    covMat
-}
-
-NULL
-
-##' Create correlation matrices.
-##'
-##' Use can supply either a single value (the common correlation among
-##' all variables), a column of the lower triangular values for a
-##' correlation matrix, or a candidate matrix. The function will check
-##' X and do the right thing. If X is a matrix, check that it
-##' is a valid correlation matrix. If its a single value, use that
-##' to fill up a matrix. If itis a vector, try to use it as a vech
-##' to fill the lower triangle..
-##'
-##' @param X Required. May be one value, a vech, or a matrix
-##' @param d Optional. The number of rows in the correlation matrix to
-##' be created. lazyCor will deduce the desired size from X if
-##' possible. If X is a single value, d is a required argument.
-##' @return A correlation matrix.
-##' @export
-##' @author Paul Johnson <pauljohn@@ku.edu>
-##' @examples
-##' lazyCor(0.5, 8)
-##' lazyCor(c(0.1, 0.2, 0.3))
-##' lazyCor(c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6))
-lazyCor <-
-    function(X, d)
-{
-    if (is.matrix(X)){
-        stopifnot (isSymmetric(X))
-        if (!dim(X)[1] == d) stop("lazyCor: the dimension of the matrix supplied is inconsistent with the dimension argument d")
-    } else if (length(X) == 1) {
-        if ( X < -1 | X > 1 ) stop(paste("The value of a correlation should be in [-1,1]"))
-        X <- matrix(X, nrow = d, ncol = d)
-        diag(X) <- 1.0
-    } else if (is.vector(X)){
-        X <- vech2Corr(X)
-    } else {
-        stop(paste("lazyCor cannot understand the value supplied for argument", deparse(substitute(X)),".\n That should be either a", d, " x ", d, "symmetric matrix, \n or a vech of the strictly lower triangular part of a matrix, or \n one single value, which we will use to fill up a matrix."))
-    }
-    if (!checkPosDef(X)) stop("'correlation matrix' is not positive definite")
-    X
-}
-NULL
-
-
-
-##' makeVec for checking or creating vectors
-##'
-##' This is a convenience for handling function arguments. If x is a
-##' single value, it makes a vector of length d in which all values
-##' are equal to x. If x is a vector, check that its length is d.
-##'
-##' @param x A single value or a vector
-##' @param d An integer, the desired size of the vector
-##' @return A vector of length d
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
-makeVec <-
-    function(x = NULL, d = NULL)
-{
-    if (length(x) == 1) {
-        x <- rep(x, d) #assign same for all
-    } else if (length(x) != d){
-        msg <- paste(deparse(substitute(x)), "has too", ifelse(length(x) > d, "many","few"), "elements. Please specify", d, "elements.  Or just specify 1, we will use that one value to manufacture a vector for you.")
-        stop(msg)
-    }
-    x
-}
-NULL
-
-##' Create Symmetric Matrices, possibly covariance or correlation matrices, or check a matrix for symmetry and serviceability.
-##'
-##' Check X and do the right thing. If X is a matrix, check that it is
-##' a valid for the intended purpose (symmetric or correlation or
-##' covariance).  If X a single value, use that to fill up a
-##' matrix. If it is a vector, try to use it as a vech to fill the
-##' lower triangle. If d is supplied as an integer, use that as desired size.
-##'
-##' @param X A single value, a vector (a vech), or a matrix
-##' @param d Optional. An integer, the desired number of rows (or columns). Don't specify this argument if X is already a matrix.  Only required if X is an integer and diag is not supplied. Otherwise, the function tries to deduce desired size of output from X (as a vech) and diag.
-##' @param diag Values for the diagonal. This is important because it alters the way X is interpreted.  If diag is not provided, then X is understood to include diagonal elements.
-##' @param corr TRUE or FALSE: Should we construct a correlation matrix
-##' @param cov TRUE or FALSE: Should this be a covariance matrix?
-##' @return A d x d matrix
-##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
-##' @examples
-##' makeSymmetric(X = 3, d = 4)
-##' makeSymmetric(X = 3, d = 4, diag = c(99, 98, 97, 96))
-##' makeSymmetric(c(1,2,3))
-##' makeSymmetric(c(1,2,3), d = 5)
-##' makeSymmetric(c(0.8,0.4, 0.2), cov = TRUE)
-##' makeSymmetric(c(0.8,0.4, 0.2), cov = TRUE, diag = c(44, 55, 66))
-##'
-makeSymmetric <-
-    function(X, d = NULL, diag = NULL, corr = FALSE, cov = FALSE)
-{
-    if (is.matrix(X)) {
-        dims <- dim(X)
-        if (dims[1] != dims[2]) stop("X not square")
-        stopifnot (isSymmetric(X))
-        if (corr | cov) stopifnot(checkPosDef(X))
-    } else if (length(X) == 1) {
-        if (is.null(d) & is.null(diag)) stop("One of diag or d is required if X is singleton")
-        if (corr & (X < -1 | X > 1)) stop(paste("The value of of a correlation should be in [-1,1]"))
-        X <- matrix(X, nrow = d, ncol = d)
-        if (corr == TRUE) diag(X) <- 1.0
-        if (!is.null(diag)) diag(X) <- diag
-    } else if (is.vector(X)) {
-        if (corr == TRUE) {
-            if(!is.null(diag)) stop("If you want a correlation matrix, just provide X as a strictly lower triangle")
-            X <- vech2Corr(X)
-            if(!is.null(d)) {
-                if (dim(X)[1] != d) stop("d parameter inconsisent with size implied by X as a strictly lower triangular vech")
-            }
-        } else if (cov == TRUE) {
-            X <- vech2mat(X, diag)
-            stopifnot(checkPosDef(X))
+    ## From Gabor Grothendieck, r-help August 24, 2018:
+    isChar <- function(e, ch) identical(e, as.symbol(ch))
+    ## From Gabor Grothendieck, r-help August 24, 2018:
+    ## Only works if formula is written out, as in x1 + x2 + x1:x2,
+    ## not if it is abbreviated 
+    Parse <- function(e) {
+        if (length(e) == 1) {
+            if (is.numeric(e)) return(e)
+            else setNames(1, as.character(e))
         } else {
-            X <- vech2mat(X, diag)
+            if (isChar(e[[1]], "*")) {
+                x1 <- Recall(e[[2]])
+                x2 <- Recall(e[[3]])
+                setNames(unname(x1 * x2), paste0(names(x1), names(x2)))
+            } else if (isChar(e[[1]], "+")) c(Recall(e[[2]]), Recall(e[[3]]))
+            else if (isChar(e[[1]], "-")) {
+                if (length(e) == 2) -1 * Recall(e[[2]])
+                else c(Recall(e[[2]]), -Recall(e[[3]]))
+            } else if (isChar(e[[1]], ":")) setNames(1, paste(e[-1], collapse = ":"))
         }
-    }  else {
-        stop(paste("makeSquare cannot understand the value supplied for argument", deparse(substitute(X))))
     }
-    X
-}
-NULL
 
-##' Check a matrix for positive definitness
-##'
-##' Uses eigen to check positive definiteness. Follows example used
-##' in \code{MASS} package by W. N. Venables and Brian D. Ripley
-##'
-##' @param X A matrix
-##' @param tol Tolerance (closeness to 0 required to declare failure)
-##' @return TRUE or FALSE
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
-checkPosDef <-
-    function(X, tol = 1e-6)
-{
-    evalues <- eigen(X, only.values = TRUE)$values
-    res <- if(!all(evalues >= -tol*abs(evalues[1L]))) FALSE else TRUE
-    res
-}
- 
-NULL
-
-##' Minor revision of mvrnorm (from \code{MASS}) to facilitate replication
-##'
-##' This is the \code{\link[MASS]{mvrnorm}} function from the MASS
-##' package (Venables and Ripley, 2002), with one small modification
-##' to facilitate replication of random samples. The aim is to make
-##' sure that, after the seed is reset, the first rows of generated
-##' data are identical no matter what value is chosen for n.  The one
-##' can draw 100 observations, reset the seed, and then draw 110
-##' observations, and the first 100 will match exactly. This is done
-##' to prevent unexpected and peculiar patterns that are observed
-##' when n is altered with MASS package's mvrnorm.
-##'
-##' To assure replication, only a very small change is made. The code
-##' in \code{MASS::mvrnorm} draws a random sample and fills a matrix
-##' by column, and that matrix is then decomposed.  The change
-##' implemented here fills that matrix by row and the problem is
-##' eliminated.
-##'
-##' Some peculiarities are noticed when the covariance matrix changes
-##' from a diagonal matrix to a more general symmetric matrix
-##' (non-zero elements off-diagonal).  When the covariance is strictly
-##' diagonal, then just one column of the simulated multivariate
-##' normal data will be replicated, but the others are not. This has
-##' very troublesome implications for simulations that draw samples of
-##' various sizes and then base calculations on the separate simulated
-##' columns (i.e., some columns are identical, others are completely
-##' uncorrelated).
-##'
-##' @seealso For an alternative multivariate normal generator
-##' function, one which has had this fix applied to it,
-##' consider using the new versions of \code{\link[mvtnorm]{rmvnorm}} in the
-##' package \code{mvtnorm}.
-##' @param n the number of samples ("rows" of data) required.
-##' @param mu a vector giving the means of the variables.
-##' @param Sigma positive-definite symmetric matrix specifying the
-##'    covariance matrix of the variables.
-##' @param tol tolerance (relative to largest variance) for numerical lack
-##'    of positive-definiteness in \code{Sigma}
-##' @param empirical logical. If true, mu and Sigma specify the empirical
-##'    not population mean and covariance matrix.
-##' @import MASS
-##' @export
-##' @return If \code{n = 1} a vector of the same length as \code{mu}, otherwise an
-##'  \code{n} by \code{length(mu)} matrix with one sample in each row.
-##' @author Ripley, B.D. with revision by Paul E. Johnson
-##' @references
-##' Venables, W. N. & Ripley, B. D. (2002) Modern Applied Statistics with
-##' S. Fourth Edition. Springer, New York. ISBN 0-387-95457-0
-##' @examples
-##' library(MASS)
-##' library(rockchalk)
-##'
-##' set.seed(12345)
-##' X0 <- MASS::mvrnorm(n=10, mu = c(0,0,0), Sigma = diag(3))
-##' ## create a smaller data set, starting at same position
-##' set.seed(12345)
-##' X1 <- MASS::mvrnorm(n=5, mu = c(0,0,0), Sigma = diag(3))
-##' ## Create a larger data set
-##' set.seed(12345)
-##' X2 <- MASS::mvrnorm(n=15, mu = c(0,0,0), Sigma = diag(3))
-##' ## The first 5 rows in X0, X1, and X2 are not the same
-##' X0
-##' X1
-##' X2
-##' set.seed(12345)
-##' Y0 <- mvrnorm(n=10, mu = c(0,0,0), Sigma = diag(3))
-##' set.seed(12345)
-##' Y1 <- mvrnorm(n=5, mu = c(0,0,0), Sigma = diag(3))
-##' set.seed(12345)
-##' Y2 <- mvrnorm(n=15, mu = c(0,0,0), Sigma = diag(3))
-##' # note results are the same in the first 5 rows:
-##' Y0
-##' Y1
-##' Y2
-##' identical(Y0[1:5, ], Y1[1:5, ])
-##' identical(Y1[1:5, ], Y2[1:5, ])
-##'
-##' myR <- lazyCor(X = 0.3, d = 5)
-##' mySD <- c(0.5, 0.5, 0.5, 1.5, 1.5)
-##' myCov <- lazyCov(Rho = myR, Sd = mySD)
-##'
-##' set.seed(12345)
-##' X0 <- MASS::mvrnorm(n=10, mu = rep(0, 5), Sigma = myCov)
-##' ## create a smaller data set, starting at same position
-##' set.seed(12345)
-##' X1 <- MASS::mvrnorm(n=5, mu = rep(0, 5), Sigma = myCov)
-##' X0
-##' X1
-##' ##' set.seed(12345)
-##' Y0 <- rockchalk::mvrnorm(n=10, mu = rep(0, 5), Sigma = myCov)
-##' ## create a smaller data set, starting at same position
-##' set.seed(12345)
-##' Y1 <- rockchalk::mvrnorm(n=5, mu = rep(0, 5), Sigma = myCov)
-##' Y0
-##' Y1
-##'
-mvrnorm <-
-    function(n = 1, mu, Sigma, tol=1e-6, empirical = FALSE)
-{
-    p <- length(mu)
-    if(!all(dim(Sigma) == c(p,p))) stop("incompatible arguments")
-    eS <- eigen(Sigma, symmetric = TRUE)
-    ev <- eS$values
-    if(!all(ev >= -tol*abs(ev[1L]))) stop("'Sigma' is not positive definite")
-    X <- matrix(rnorm(p * n), n, byrow = TRUE)
-    if(empirical) {
-        X <- scale(X, TRUE, FALSE) # remove means
-        X <- X %*% svd(X, nu = 0)$v # rotate to PCs
-        X <- scale(X, FALSE, TRUE) # rescale PCs to unit variance
+    ## If colnames does not include all elements of varnames, stop
+    ## varnames comes from names(beta)
+    checkVarnames <- function(colnames, varnames){
+        uniquenames <- unique(unlist(strsplit(varnames, "[:+*]")))
+        if (any(!uniquenames %in% colnames)){
+            MESSG <- paste("formula uses variable not present in matrix:",
+                           paste(uniquenames[!uniquenames %in% colnames], collapse = ","))
+            stop(MESSG)
+        } ## else do nothing
+        TRUE
     }
-    X <- drop(mu) + eS$vectors %*% diag(sqrt(pmax(ev, 0)), p) %*% t(X)
-    nm <- names(mu)
-    if(is.null(nm) && !is.null(dn <- dimnames(Sigma))) nm <- dn[[1L]]
-    dimnames(X) <- list(nm, NULL)
-    if(n == 1)
-        drop(X)
-    else t(X)
+
+    ## creates text (character variable) like a formula, not an R formula
+    betanamestoformula <- function(beta){
+        namefix <- gsub(":", "*", names(beta))
+        namefix <- gsub("^\\s*$", "1", namefix)
+        paste(beta, namefix, collapse = " + ", sep = "*")
+    }
+
+    
+    d <- length(means)
+    if (missing(colnames) && is.null(names(means))) {
+        colnames <- paste0("x", 1:d)
+    }
+    else if (missing(colnames) && !is.null(names(means))) {
+        colnames <- names(means)
+    }
+    else {
+        if (length(colnames) != d)
+            stop(paste("If you provide column names, please provide one",
+                "for each column in the means input"))
+    }
+
+    ldots <- list(...)
+    
+    x.mat <- as.matrix(genX(N, means, sds, rho, intercept = intercept,
+                            colnames = colnames))
+    ## update colnames to match generated data
+    ## may be one more name than colnames, b/c intercept
+    x.mat.colnames <- colnames(x.mat)
+    if(!missing(formula)){
+        if(!missing(beta)) stop("Don't provide both beta and formula arguments")
+        if(!inherits(formula, "formula")) formula <- as.formula(formula)
+        beta <- Parse(formula[[3]])
+        checkVarnames(x.mat.colnames, names(beta)) ## will stop if fail
+    } else {
+        ## using user-provided beta
+        if(!is.null(names(beta))){
+            if(any(names(beta) == "")){
+                MESSG <- "All elements in beta should have variable names if any have names"
+                stop(MESSG)
+            }
+            checkVarnames(x.mat.colnames, names(beta)) ## will stop if fail
+        } else {
+            beta1 <- beta[1:(d + as.integer(intercept))]
+            names(beta1) <- x.mat.colnames
+            beta2 <- beta[-(1:(d + as.integer(intercept)))]
+            beta2 <- c(beta2, rep(0, times = (d * (d + 1)/2) - length(beta2)))
+            intnames.mat <- outer(colnames, colnames, FUN=function(x,y) paste(x, y, sep=":"))
+            beta2.names <- intnames.mat[lower.tri(intnames.mat, diag=TRUE)]
+            names(beta2) <- beta2.names
+            beta <- c(beta1, beta2)
+        }
+    }
+
+    x.mat <- as.data.frame(x.mat)
+    x.mat$error <- if (deparse(substitute(distrib)) == "rt"){
+                       rt(n = N, df = stde)
+                   } else {
+                       distrib(N, 0, stde)
+                   }
+
+    newformula <- betanamestoformula(beta)
+    x.mat$eta <- with(x.mat, eval(parse(text = newformula)))
+    x.mat$y  <-  x.mat$eta + x.mat$error
+    attr(x.mat, "beta") <- beta
+    attr(x.mat, "formula") <- newformula
+    attr(x.mat, "stde") <- stde
+    x.mat
 }
+
+
+
+
+

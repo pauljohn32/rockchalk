@@ -12,6 +12,7 @@
 ##' @param aList A list
 ##' @return Same list with NULL's removed
 ##' @author Paul Johnson
+##' @export removeNULL
 ##' @examples
 ##' ## Note it is non-recursive, NULL remains in e
 ##' x <- list(a = rnorm(5), b = NULL, c = rnorm(5), d = NULL,

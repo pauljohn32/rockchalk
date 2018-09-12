@@ -34,6 +34,7 @@
 ##'     with center and deviation columns, or or original data frame
 ##'     with "x_mn" and "x_dev" variables appended (Stata style).
 ##' @author Paul Johnson
+##' @importFrom stats aggregate
 ##' @export
 ##' @examples
 ##' ## Make a data frame out of the state data collection (see ?state)
