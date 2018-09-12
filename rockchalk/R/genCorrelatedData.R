@@ -2,9 +2,10 @@
 ##'
 ##' The output is a data frame (x1, x2, y) with user-specified
 ##' correlation between x1 and x2. The y (output) variable is created
-##' according to the equation
-##' y = beta1 + beta2 * x1 + beta3 * x2 + beta4 * x1 *
-##' x2 + e.
+##' according to the equation\cr
+##' \deqn{
+##' y = beta1 + beta2 * x1 + beta3 * x2 + beta4 * x1 * x2 + e.
+##' }
 ##' The arguments determine the scales of the X matrix, the random
 ##' error, and the slope coefficients.
 ##'
@@ -324,7 +325,7 @@ NULL
 ##' @param Sigma P x P variance/covariance matrix.
 ##' @param intercept Default = TRUE, do you want a first column filled
 ##'     with 1?
-##' @param colnames Names supplied here will override column names
+##' @param col.names Names supplied here will override column names
 ##'     supplied with the means parameter. If no names are supplied
 ##'     with means, or here, we will name variables x1, x2, x3,
 ##'     ... xp, with Intercept at front of list if intercept =
@@ -350,7 +351,7 @@ NULL
 ##' X4 <- genX(10, means = c("A" = 7, "B" = 8), sds = c(3), rho = .4)
 ##' head(X4)
 ##' X5 <- genX(10, means = c(7, 3, 7, 5), sds = c(3, 6),
-##'             rho = .5, colnames = c("Fred", "Sally", "Henry", "Barbi"))
+##'             rho = .5, col.names = c("Fred", "Sally", "Henry", "Barbi"))
 ##' head(X5)
 ##' Sigma <- lazyCov(Rho = c(.2, .3, .4, .5, .2, .1), Sd = c(2, 3, 1, 4))
 ##' X6 <- genX(10, means = c(5, 2, -19, 33), Sigma = Sigma, unit = "Winslow_AZ")
@@ -358,7 +359,7 @@ NULL
 ##'
 genX <-
     function(N, means, sds, rho, Sigma = NULL, intercept = TRUE,
-             colnames = NULL, unit = NULL, idx = FALSE)
+             col.names = NULL, unit = NULL, idx = FALSE)
 {
     d <- length(means)
     if (!missing(rho) & !is.null(Sigma))
@@ -374,16 +375,16 @@ genX <-
         if (length(sds) < d) sds <- rep(sds, length.out = d)
         Sigma <- lazyCov(Rho = R, Sd = sds)
     }
-    if (missing(colnames) && is.null(names(means))) {
-        colnames <- paste0("x", 1:d)
-    } else if (missing(colnames) && !is.null(names(means))){
-        colnames <- names(means)
+    if (missing(col.names) && is.null(names(means))) {
+        col.names <- paste0("x", 1:d)
+    } else if (missing(col.names) && !is.null(names(means))){
+        col.names <- names(means)
     } else {
-        if (length(colnames) != d)
+        if (length(col.names) != d)
             stop(paste("If you provide column names, please provide one",
                        "for each column in the means input"))
     }
-    colnames <- make.names(colnames, unique = TRUE)
+    col.names <- make.names(col.names, unique = TRUE)
 
     ## If unit is meaningful, set idx TRUE. Defending against
     ## user values like unit = NULL and idx = NULL
@@ -399,7 +400,7 @@ genX <-
         if (length(unit) > 1) stop("genX: just supply 1 unit name")
         rownames <- paste0(unit, "_", 1:N)
     }
-    dimnames(x.mat) <- list(rownames, colnames)
+    dimnames(x.mat) <- list(rownames, col.names)
     x.mat <- as.data.frame(x.mat)
     if (intercept) x.mat <- cbind(Intercept = 1L, x.mat)
     
@@ -408,7 +409,7 @@ genX <-
     attr(x.mat, "unit") <- unit
     x.mat
 }
-
+NULL
     
 
 
@@ -424,19 +425,18 @@ genX <-
 ##'
 ##' The enhanced methods for authors to specify a data-generating
 ##' process are as follows. Either way will work and the choice
-##' between the methods is driven by the author's convenience.
+##' between the methods is driven by the author's convenience.\cr
 ##' \itemize{
-##' 
-##' \item 1. Use the formula argument:
-##'  "1 + 2.2 * x1 + 2.3 * x2 + 3.3 * x3 + 1.9 * x1:x2". Insert
-##' ":" for product terms, as we see in R output
-##'
-##' \item 2. Use the beta
-##' argument, beta = c("Intercept" = 1, x1 = 2.2, x2 = 2.3, x3 = 3.3,
-##' "x1:x2" = 1.9) where the names are the same as the names of the
-##' variables in the formula. Names of the variables in the formula or
-##' the beta vector should be used also in either the means parameter
-##' or the colnames parameter.
+##' \item 1. Use the formula argument as a quoted string:
+##' \code{"1 + 2.2 * x1 + 2.3 * x2 + 3.3 * x3 + 1.9 * x1:x2"}.
+##' The "*" represents multiplication of coefficient times variable,
+##' and the colon ":" has same meaning but it is used for products of variables.
+##' \item 2. Use the beta argument with parameter names, \code{beta =
+##' c("Intercept" = 1, x1 = 2.2, x2 = 2.3, x3 = 3.3, "x1:x2" = 1.9)}
+##' where the names are the same as the names of the variables in the
+##' formula. Names of the variables in the formula or the beta vector
+##' should be used also in either the means parameter or the col.names
+##' parameter.
 ##' }
 ##' 
 ##' The error distribution can be specified. Default is normal, with
@@ -447,7 +447,7 @@ genX <-
 ##' distribution should work as well, as long as the first coefficient
 ##' is location (because we set that as 0 in all cases) and the second
 ##' argument is scale. For example, \code{distrib=rlogis}, will lead
-##' to errors drawn from \code{rlogis{N, 0, stde}. Caution: in rlogis,
+##' to errors drawn from \code{rlogis(N, 0, stde)}. Caution: in rlogis,
 ##' the scale parameter is not the same as standard deviation.
 ##'
 ##' The only one parameter distribution currently supported is the T
@@ -500,7 +500,7 @@ genX <-
 ##' @param intercept TRUE or FALSE. Should the output data set include
 ##'     a column of 1's. If beta is an unnamed vector, should the
 ##'     first element be treated as an intercept?
-##' @param colnames Can override names in means vector
+##' @param col.names Can override names in means vector
 ##' @param verbose TRUE for diagnostics
 ##' @param ... extra arguments, ignored for now. We use that to ignore
 ##'     unrecognized parameters.
@@ -509,6 +509,8 @@ genX <-
 ##'     location/scale distribution will work. Special configuration
 ##'     allows \code{rt}. See details.
 ##' @return a data frame
+##' @name genCorrelatedData3
+##' @export genCorrelatedData3
 ##' @importFrom stats rnorm
 ##' @importFrom stats rt
 ##' @importFrom stats rlogis
@@ -538,13 +540,11 @@ genX <-
 ##' lm2 <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X2)
 ##' summary(lm2)
 ##'
-##' 
-##' ## Equivalent with unnamed beta vector. Must carefuly count empty
+##' ## Equivalent with unnamed beta vector. Must carefully count empty
 ##' ## spots, fill in 0's when coefficient is not present. This
 ##' ## method was in genCorrelated2. Order of coefficents is
-##' ## c(intercept, x1, ..., xp, x1:x1, x1:x2, x1:xp, ..., )
-##' ## filling in a lower triangle. This is very difficult to
-##' ## get right.
+##' ## c(intercept, x1, ..., xp, x1:x1, x1:x2, x1:xp, x2:x2, x2:x3, ..., )
+##' ## filling in a lower triangle.
 ##' set.seed(123123)
 ##' X3 <- genCorrelatedData3(N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3, x4 = 1),
 ##'           sds = 1, rho = 0.4, 
@@ -573,15 +573,15 @@ genX <-
 ##' lm3 <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X3)
 ##' 
 ##' 
-##' ## Names via colnames argument: must match formula
+##' ## Names via col.names argument: must match formula
 ##' X2 <- genCorrelatedData3("y ~ 1.1 + 2.1 * educ + 3 * hlth + 3 * ses + 1.1 * educ:ses",
 ##'          N = 100, means = c(50, 50, 50, 20),
-##'          sds = 10, rho = 0.4, colnames = c("educ", "hlth", "ses", "wght"))
+##'          sds = 10, rho = 0.4, col.names = c("educ", "hlth", "ses", "wght"))
 ##' str(X2) 
 ##'
 ##' X3 <- genCorrelatedData3("y ~ 1.1 + 2.1 * educ + 3 * hlth + 3 * ses + 1.1 * educ:ses",
 ##'          N = 100, means = c(50, 50, 50, 20),
-##'          sds = 10, rho = 0.4, colnames = c("educ", "hlth", "ses", "wght"),
+##'          sds = 10, rho = 0.4, col.names = c("educ", "hlth", "ses", "wght"),
 ##'          intercept = TRUE)
 ##' str(X3)
 ##' 
@@ -604,10 +604,10 @@ genX <-
 ##' 
 genCorrelatedData3 <- function (formula, N = 100,
                                 means = c("x1" = 50, "x2" =  50, "x3" = 50),
-                                sds = c(10, 10, 10), rho = c(0, 0, 0),
-                                stde = pi/sqrt(3),
+                                sds = 10, rho = 0,
+                                stde = 1,
                                 beta = c(0, 0.15, 0.1, -0.1),
-                                intercept = FALSE, colnames,
+                                intercept = FALSE, col.names,
                                 verbose = FALSE, ..., distrib = rnorm)
 {
 
@@ -633,13 +633,15 @@ genCorrelatedData3 <- function (formula, N = 100,
         }
     }
 
-    ## If colnames does not include all elements of varnames, stop
+    ## If col.names does not include all elements of varnames, stop
     ## varnames comes from names(beta)
-    checkVarnames <- function(colnames, varnames){
+    ## Allow "Intercept" exception
+    checkVarnames <- function(col.names, varnames){
         uniquenames <- unique(unlist(strsplit(varnames, "[:+*]")))
-        if (any(!uniquenames %in% colnames)){
+        col.names <- unique(c("Intercept", col.names))
+        if (any(!uniquenames %in% col.names)){
             MESSG <- paste("formula uses variable not present in matrix:",
-                           paste(uniquenames[!uniquenames %in% colnames], collapse = ","))
+                           paste(uniquenames[!uniquenames %in% col.names], collapse = ","))
             stop(MESSG)
         } ## else do nothing
         TRUE
@@ -654,14 +656,14 @@ genCorrelatedData3 <- function (formula, N = 100,
 
     
     d <- length(means)
-    if (missing(colnames) && is.null(names(means))) {
-        colnames <- paste0("x", 1:d)
+    if (missing(col.names) && is.null(names(means))) {
+        col.names <- paste0("x", 1:d)
     }
-    else if (missing(colnames) && !is.null(names(means))) {
-        colnames <- names(means)
+    else if (missing(col.names) && !is.null(names(means))) {
+        col.names <- names(means)
     }
     else {
-        if (length(colnames) != d)
+        if (length(col.names) != d)
             stop(paste("If you provide column names, please provide one",
                 "for each column in the means input"))
     }
@@ -669,15 +671,15 @@ genCorrelatedData3 <- function (formula, N = 100,
     ldots <- list(...)
     
     x.mat <- as.matrix(genX(N, means, sds, rho, intercept = intercept,
-                            colnames = colnames))
-    ## update colnames to match generated data
-    ## may be one more name than colnames, b/c intercept
-    x.mat.colnames <- colnames(x.mat)
+                            colnames = col.names))
+    ## update col.names to match generated data
+    ## may be one more name than col.names, b/c intercept
+    x.mat.col.names <- colnames(x.mat)
     if(!missing(formula)){
         if(!missing(beta)) stop("Don't provide both beta and formula arguments")
         if(!inherits(formula, "formula")) formula <- as.formula(formula)
         beta <- Parse(formula[[3]])
-        checkVarnames(x.mat.colnames, names(beta)) ## will stop if fail
+        checkVarnames(x.mat.col.names, names(beta)) ## will stop if fail
     } else {
         ## using user-provided beta
         if(!is.null(names(beta))){
@@ -685,13 +687,13 @@ genCorrelatedData3 <- function (formula, N = 100,
                 MESSG <- "All elements in beta should have variable names if any have names"
                 stop(MESSG)
             }
-            checkVarnames(x.mat.colnames, names(beta)) ## will stop if fail
+            checkVarnames(x.mat.col.names, names(beta)) ## will stop if fail
         } else {
             beta1 <- beta[1:(d + as.integer(intercept))]
-            names(beta1) <- x.mat.colnames
+            names(beta1) <- x.mat.col.names
             beta2 <- beta[-(1:(d + as.integer(intercept)))]
             beta2 <- c(beta2, rep(0, times = (d * (d + 1)/2) - length(beta2)))
-            intnames.mat <- outer(colnames, colnames, FUN=function(x,y) paste(x, y, sep=":"))
+            intnames.mat <- outer(col.names, col.names, FUN=function(x,y) paste(x, y, sep=":"))
             beta2.names <- intnames.mat[lower.tri(intnames.mat, diag=TRUE)]
             names(beta2) <- beta2.names
             beta <- c(beta1, beta2)
@@ -706,6 +708,8 @@ genCorrelatedData3 <- function (formula, N = 100,
                    }
 
     newformula <- betanamestoformula(beta)
+    ## If "Intercept" appears, change it to 1
+    newformula <- gsub("Intercept", "1", newformula)
     x.mat$eta <- with(x.mat, eval(parse(text = newformula)))
     x.mat$y  <-  x.mat$eta + x.mat$error
     attr(x.mat, "beta") <- beta
