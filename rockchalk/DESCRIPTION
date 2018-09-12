@@ -20,10 +20,11 @@ LazyLoad: yes
 Imports:
     grDevices,
     methods,
-    lme4,
-    car,
-    MASS
+    lme4
 Suggests:
     tables,
-    Hmisc
+    Hmisc,
+    car,
+    carData,
+    MASS    
 RoxygenNote: 6.0.1
