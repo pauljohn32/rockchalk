@@ -509,6 +509,9 @@ genX <-
 ##'     location/scale distribution will work. Special configuration
 ##'     allows \code{rt}. See details.
 ##' @return a data frame
+##' @importFrom stats rnorm
+##' @importFrom stats rt
+##' @importFrom stats rlogis
 ##' @author Paul Johnson <pauljohn@@ku.edu> and Gabor Grothendieck
 ##' @examples
 ##' set.seed(123123)

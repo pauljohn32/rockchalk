@@ -80,6 +80,9 @@
 ##'     from which they are constructed.
 ##' @return an ordinal vector with attributes "cutpoints" and "props"
 ##'     (proportions)
+##' @importFrom stats embed
+##' @name cut.fancy
+##' @export cut.fancy
 ##' @examples
 ##' set.seed(234234)
 ##' y <- rnorm(1000, m = 35, sd = 14)
