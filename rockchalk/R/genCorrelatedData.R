@@ -514,7 +514,7 @@ NULL
 ##' @importFrom stats rnorm
 ##' @importFrom stats rt
 ##' @importFrom stats rlogis
-##' @author Paul Johnson <pauljohn@@ku.edu> and Gabor Grothendieck
+##' @author Paul Johnson <pauljohn@@ku.edu> and Gabor Grothendieck <ggrothendieck@gmail.com>
 ##' @examples
 ##' set.seed(123123)
 ##' ## note: x4 is an unused variable in formula
@@ -525,8 +525,8 @@ NULL
 ##' lm1a <- lm(y ~ x1 + x2 + x3 + x1:x3, data = X1a)
 ##' ## note that normal errors have std.error. close to 5
 ##' summary(lm1a)
-##' 
-##' 
+##' attr(X1a, "beta") 
+##' attr(X1a, "formula")
 ##' ## Demonstrate name beta vector method to provide named arguments
 ##' set.seed(123123)
 ##' X2 <- genCorrelatedData3(N = 1000, means = c(x1 = 1, x2 = -1, x3 = 3, x4 = 1),
@@ -671,7 +671,7 @@ genCorrelatedData3 <- function (formula, N = 100,
     ldots <- list(...)
     
     x.mat <- as.matrix(genX(N, means, sds, rho, intercept = intercept,
-                            colnames = col.names))
+                            col.names = col.names))
     ## update col.names to match generated data
     ## may be one more name than col.names, b/c intercept
     x.mat.col.names <- colnames(x.mat)

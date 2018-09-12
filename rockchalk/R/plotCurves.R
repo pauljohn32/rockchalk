@@ -76,7 +76,7 @@
 ##' are c("type", "se.fit", "dispersion", "interval", "level",
 ##' "terms", "na.action").
 ##' @export
-##' @import car
+##' @import carData
 ##' @return A plot is created as a side effect, a list is returned
 ##' including 1) the call, 2) a newdata object that includes
 ##' information on the curves that were plotted, 3) a vector modxVals,

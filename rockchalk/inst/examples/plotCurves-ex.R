@@ -142,41 +142,39 @@ plotCurves(m5, plotx = "x1", modx = "x2", modxVals = "quantile")
 plotCurves(m5, plotx = "x3", modx = "x2")
 
 
-library(car)
-mc1 <- lm(statusquo ~ income * sex, data = Chile)
-summary(mc1)
-plotCurves(mc1, plotx = "income")
-plotCurves(mc1, modx = "sex", plotx = "income")
-plotCurves(mc1, modx = "sex", plotx = "income", modxVals = "M")
-
-mc2 <- lm(statusquo ~ region * income, data =  Chile)
-summary(mc2)
-plotCurves(mc2, modx = "region", plotx = "income")
-plotCurves(mc2, modx = "region", plotx = "income",
-           modxVals = levels(Chile$region)[c(1,4)])
-plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"))
-plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"),
-           interval = "conf")
-
-plotCurves(mc2, modx = "region", plotx = "income", plotPoints = FALSE)
-
-
-mc3 <- lm(statusquo ~ region * income + sex + age, data =  Chile)
-summary(mc3)
-plotCurves(mc3, modx = "region", plotx = "income")
-
-
-mc4 <- lm(statusquo ~ income * (age + I(age^2)) + education + sex + age, data = Chile)
-summary(mc4)
-plotCurves(mc4, plotx = "age")
-plotCurves(mc4, plotx = "age", interval = "conf")
-
-
-plotCurves(mc4, plotx = "age", modx = "income")
-plotCurves(mc4, plotx = "age", modx = "income", plotPoints = FALSE)
-
-plotCurves(mc4,  plotx = "income", modx = "age")
-plotCurves(mc4,  plotx = "income", modx = "age", n = 8)
-
-plotCurves(mc4,  plotx = "income", modx = "age", modxVals = "std.dev.")
-plotCurves(mc4, modx = "income", plotx = "age", plotPoints = FALSE)
+if(require(carData)){
+    mc1 <- lm(statusquo ~ income * sex, data = Chile)
+    summary(mc1)
+    plotCurves(mc1, plotx = "income")
+    plotCurves(mc1, modx = "sex", plotx = "income")
+    plotCurves(mc1, modx = "sex", plotx = "income", modxVals = "M")
+    
+    mc2 <- lm(statusquo ~ region * income, data =  Chile)
+    summary(mc2)
+    plotCurves(mc2, modx = "region", plotx = "income")
+    plotCurves(mc2, modx = "region", plotx = "income",
+               modxVals = levels(Chile$region)[c(1,4)])
+    plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"))
+    plotCurves(mc2, modx = "region", plotx = "income", modxVals = c("S","M","SA"),
+               interval = "conf")
+    
+    plotCurves(mc2, modx = "region", plotx = "income", plotPoints = FALSE)
+ 
+    mc3 <- lm(statusquo ~ region * income + sex + age, data =  Chile)
+    summary(mc3)
+    plotCurves(mc3, modx = "region", plotx = "income")
+ 
+    mc4 <- lm(statusquo ~ income * (age + I(age^2)) + education + sex + age, data = Chile)
+    summary(mc4)
+    plotCurves(mc4, plotx = "age")
+    plotCurves(mc4, plotx = "age", interval = "conf")
+     
+    plotCurves(mc4, plotx = "age", modx = "income")
+    plotCurves(mc4, plotx = "age", modx = "income", plotPoints = FALSE)
+    
+    plotCurves(mc4,  plotx = "income", modx = "age")
+    plotCurves(mc4,  plotx = "income", modx = "age", n = 8)
+    
+    plotCurves(mc4,  plotx = "income", modx = "age", modxVals = "std.dev.")
+    plotCurves(mc4, modx = "income", plotx = "age", plotPoints = FALSE)
+}

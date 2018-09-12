@@ -17,10 +17,10 @@
 ##' \code{categories=5}, for example, to ask for 5 equally sized
 ##' groups. More user control can be had by specifying either
 ##' \code{cutpoints} or \code{probs}. If \code{cutpoints} is not
-##' specified at all, or if \code{cutpoints="quantile"), then
+##' specified at all, or if \code{cutpoints="quantile"}, then
 ##' \code{probs} can be used to specify the proportions of the data
 ##' points that are to fall within each range. On the other hand, one
-##' can specify \code{cutpoints = "quantile") and then \code{probs} will
+##' can specify \code{cutpoints = "quantile"} and then \code{probs} will
 ##' be used to specify the proportions of the data points that are to
 ##' fall within each range.
 ##' 

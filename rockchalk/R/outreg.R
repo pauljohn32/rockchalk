@@ -742,31 +742,12 @@ NULL
 ##' ## A new feature in 1.85 is ability to provide vectors of beta estimates
 ##' ## standard errors, and p values if desired. 
 ##' ## Suppose you have robust standard errors!
-##' newSE <- sqrt(diag(car::hccm(m3)))
-##' ## See 2 versions of m3 in the table?
-##' ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, "Model C w Robust SE" = m3),
+##' if (require(car)){
+##'    newSE <- sqrt(diag(car::hccm(m3)))
+##'    ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, "Model C w Robust SE" = m3),
 ##'         SElist= list("Model C w Robust SE" = newSE))
-##' cat(ex8)
-##' 
-##' ## outreg uses a t or normal approximation to calculate p values, but you can
-##' ## calculate your own.  Let's dial down those std errors but insist they are
-##' ## not significantly different from zero
-##' newSE <- 0.3*newSE
-##' newPvals <- rep(0.1, length(newSE))
-##' ## Pass in your own SE and P values.
-##' ex9 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3),
-##'        SElist = list("Model C" = newSE), 
-##'        PVlist = list("Model C" = newPvals), alpha = c(0.05, 0.01, 0.001))
-##' cat(ex9)
-##' ## It took me a while to realize we might as well allow the user to
-##' ## pass in a vector of Beta estimates as well. Seems obvious now, though.
-##' if(interactive()) ex10 <- outreg(list("Model C" = m3, 
-##'        "Model C Robust SE" = m3, "Model C MLv2" = m3),
-##'        Blist = list("Model C MLv2" = c("(Intercept)" = 0.222, "x1" = 0.222, "x2" = 0.222)),
-##'        SElist = list("Model C Robust SE" = newSE, "Model C MLv2" = 1.4*newSE), 
-##'        PVlist = list("Model C" = newPvals),
-##'        alpha = c(0.05, 0.01, 0.001), type = "html")
-##' 
+##'    cat(ex8)
+##' }
 ##' 
 ##' ex11 <- outreg(list("I Love Long Titles" = m1,
 ##'           "Prefer Brevity" = m2,
@@ -799,7 +780,7 @@ NULL
 ##'     "nobs" = "N Again?"))
 ##'
 ##' ## Here's a fit example from lme4.
-##' if (require(lme4)){
+##' if (require(lme4) && require(car)){
 ##'   fm1 <- lmer(Reaction ~ Days + (Days | Subject), sleepstudy)
 ##'   ex18 <- outreg(fm1)
 ##'   cat(ex18)

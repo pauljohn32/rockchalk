@@ -38,7 +38,7 @@
 ##' the plotSlopes object, and, for numeric
 ##' modx variables, 3) the Johnson-Neyman (J-N) interval boundaries.
 ##' @export
-##' @import car
+##' @import carData
 ##' @seealso plotSlopes
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @references

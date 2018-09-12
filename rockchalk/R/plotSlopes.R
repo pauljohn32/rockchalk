@@ -116,7 +116,7 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' @export
 ##' @method plotSlopes lm
 ##' @rdname plotSlopes
-##' @import car
+##' @import carData
 ##' @return The return object includes the "newdata" object that was
 ##' used to create the plot, along with the "modxVals" vector, the
 ##' values of the moderator for which lines were drawn, and the color
