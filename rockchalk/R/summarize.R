@@ -87,7 +87,8 @@ if (isTRUE(stats)) stats <- c("mean", "sd", "skewness",
     qtiles <- NULL
     sumdat <- NULL
 
-    if (!missing(probs) && !is.null(probs) && !isFALSE(probs)){
+    if (!missing(probs) && !is.null(probs) && is.logical(probs) &&
+        length(probs) == 1 && !is.na(probs) && probs){
         prob.std <- c("min" = 0.0, "med" = 0.5, "max" = 1.0)
         if(isTRUE(probs)){
             probs <- prob.std
