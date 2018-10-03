@@ -74,6 +74,8 @@ descriptiveTable <- function(object, stats = c("mean", "sd", "min", "max"),
     
     reslt4 <- rbindFill(reslt, reslt3)
     reslt4[is.na(reslt4)] <- ""
-    reslt4$variable <- kutils::mgsub(names(varLabels), varLabels, reslt4$variable)
+    if(!missing(varLabels) && !is.null(varLabels)){
+        reslt4$variable <- kutils::mgsub(names(varLabels), varLabels, reslt4$variable)
+    }
     reslt4
 }
