@@ -1,4 +1,4 @@
-%% LyX 2.2.3 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.3.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -27,15 +27,15 @@
 @
 \newlength{\lyxlabelwidth}      % auxiliary length 
 \newenvironment{lyxcode}
-{\par\begin{list}{}{
-\setlength{\rightmargin}{\leftmargin}
-\setlength{\listparindent}{0pt}% needed for AMS classes
-\raggedright
-\setlength{\itemsep}{0pt}
-\setlength{\parsep}{0pt}
-\normalfont\ttfamily}%
- \item[]}
-{\end{list}}
+	{\par\begin{list}{}{
+		\setlength{\rightmargin}{\leftmargin}
+		\setlength{\listparindent}{0pt}% needed for AMS classes
+		\raggedright
+		\setlength{\itemsep}{0pt}
+		\setlength{\parsep}{0pt}
+		\normalfont\ttfamily}%
+	 \item[]}
+	{\end{list}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %\VignetteIndexEntry{Rstyle}
@@ -200,7 +200,7 @@ for R is the R source code itself. If users want to communicate with
 R Core developers, they ought to communicate using the style that
 developers use.
 
-I'm often surprised to find that R users–even experienced ones–have
+I'm often surprised to find that R users--even experienced ones--have
 never looked at the R source code. Before going any further,
 \begin{quote}
 Open the source code for R. I mean, literally, download R-2.15.3.tar.gz
@@ -592,6 +592,7 @@ if (x < 7) {
 }
 \end{lstlisting}
 \inputencoding{utf8}
+
 \subsubsection*{Counter-argument based on the R source code}
 
 This would be a completely closed case if not for the fact that the
@@ -709,9 +710,9 @@ was at one time very serious. Now it is, for the most part, a historical
 footnote. It is still possible to obliterate a function that is embedded
 within a namespace, but doing so requires a bit of effort and mischief.\footnote{In case you wonder, here's how to cause the worst case scenario.
 \begin{lyxcode}
-nseq~<-~function(x)~print(\textquotedbl{}Hello,~good~to~see~you\textquotedbl{})
+nseq~<-~function(x)~print(\textquotedbl Hello,~good~to~see~you\textquotedbl )
 
-assignInNamespace(\textquotedbl{}seq.default\textquotedbl{},~nseq,~\textquotedbl{}base\textquotedbl{})
+assignInNamespace(\textquotedbl seq.default\textquotedbl ,~nseq,~\textquotedbl base\textquotedbl )
 \end{lyxcode}
 }
 
@@ -750,8 +751,8 @@ will not convey the wrong meaning.
 If we were starting with a clean slate, I believe many R functions
 would be re-named for the purposes of consistency. Since we do not
 have a clean slate, we live with an accumulation of function names
-from olde S and R. Changes in computer science–the growth of object-oriented
-programming–cause new naming conventions. Consider some of the traditional
+from olde S and R. Changes in computer science--the growth of object-oriented
+programming--cause new naming conventions. Consider some of the traditional
 S function names that are still used in R, like \inputencoding{latin9}\lstinline!read.table!\inputencoding{utf8}
 and \inputencoding{latin9}\lstinline!read.csv!\inputencoding{utf8}.
 Those are not method implementations of a generic function read().
