@@ -622,6 +622,8 @@ NULL
 ##' @param tight Table format. If TRUE, parameter estimates and
 ##' standard errors are printed in a single column.  If FALSE,
 ##' parameter estimates and standard errors are printed side by side.
+##' @param dcolumn If TRUE, will use decimal-aligned columns with the LaTeX package
+##'   dcolumn. If FALSE, which is default for historical reasons, 
 ##' @param showAIC This is a legacy argument, before the \code{request} argument was created.
 ##' If TRUE, the AIC estimate is included with the diagnostic values. It has the same effect
 ##' as described by \code{request}.
@@ -704,7 +706,7 @@ NULL
 ##' ex3 <- outreg(list("Model A" = m1, "Model B label with Spaces" = m2),
 ##'     varLabels = list(x1 = "Billie"), 
 ##'     title = "My Two Linear Regressions", request = c(fstatistic = "F"),
-##'     print.results = FALSE)
+##'     print.results = TRUE)
 ##' cat(ex3)
 ##' 
 ##' ex4 <- outreg(list("Model A" = m1, "Model B" = m2),
@@ -809,7 +811,7 @@ NULL
 ##' }
 outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
-             tight = TRUE, showAIC = FALSE, float = FALSE, request,
+             tight = TRUE, dcolumn = FALSE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
              PVlist = NULL,  Blist = NULL, title, label,
              gofNames,
@@ -854,7 +856,7 @@ outreg <-
     }
 
     latex.markup <- c("_EOC_" = "",
-                      "_BOC_" = "& ",
+                      "_BOC_" = "&",
                       "_EOMC_" = "}",
                       "_EOR_" = "\\\\tabularnewline",
                       "_BRU_" = "",
@@ -862,10 +864,12 @@ outreg <-
                       "_BT_" = "\begin{tabular}",
                       "_EOL_" = "\n",
                       "_HL_" = "\\\\hline",
-                      "_SEPU_" = " &",
+                      "_BOCU_" = " &",
                       "_SEP_" = " &",
                       "_EOT_" = "\\\\end{tabular}",
-                      "_BOMC2_" = "& \\\\multicolumn{2}{l}{", 
+                      "_BOMC2_" = "& \\\\multicolumn{2}{l}{",
+                      "_BOMC1C_" = "& \\\\multicolumn{1}{c}{", 
+                      "_BOMC2C_" = "& \\\\multicolumn{2}{c}{", 
                       "_X2_" = "$-2LLR (Model \\\\chi^2)$",
                       "_R2_" = "$R^2$", 
                       "_SIGMA_" = "$\\\\sigma$",
@@ -881,10 +885,12 @@ outreg <-
         "_BT_" =  "<table>\n",
         "_EOL_" = "\n",
         "_HL_" = "",
-        "_SEPU_" = paste("</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"),
+        "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"),
         "_SEP_" = "</td><td>",
         "_EOT_" = "</table>",
         "_BOMC2_" = "<td colspan = '2'>",
+        "_BOMC1C_" = "<td colspan = '2'>", ##20181002 TODO what about centering??
+        "_BOMC2C_" = "<td colspan = '2'>",
         "_X2_" =  "&chi;<sup>2</sup>",
         "_R2_" =  "R<sup>2</sup>",
         "_SIGMA_" =  "&sigma;",
@@ -900,10 +906,12 @@ outreg <-
         "_BT_" =  "",
         "_EOL_" = "\n",
         "_HL_" = "",
-        "_SEPU_" = ",",
+        "_BOCU_" = ",",
         "_SEP_" = ",",
         "_EOT_" = "",
         "_BOMC2_" = ",",
+        "_BOMC1C_" = ",",
+        "_BOMC2C_" = ",",
         "_X2_" =  "chi2",
         "_R2_" =  "R2",
         "_SIGMA_" =  "sigma",
@@ -1201,51 +1209,53 @@ outreg <-
     BT <- function(n, type = "latex"){
         if (type == "latex") {
             if(1){
-                return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
-            } else {
                 return(paste0("\\begin{tabular}{l*{",n-1,"}{D{.}{.}{-1}}}\n", SL(n, type)))
+            } else {
+                return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
             }
         }
         if (type == "html")  return(paste("<table>\n", SL(n, type)))
     }
 
-   
-    aline <- paste(BT(nColumns, type = type))
+    aline <- paste0(BT(nColumns, type = type))
     z <- c(z, aline)
  
     ## Put model labels on top of each model column, if modelLabels were given
     if (!is.null(modelLabels)){
-        aline <- paste("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
+        aline <- paste0("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
             if (tight == TRUE) {
-                aline <- c(aline, paste0("_BOC_ ", modelLabel, "_EOC_"))
+                aline <- c(aline, paste0("_BOMC1C_", modelLabel, "_EOMC_"))
             } else {
-                aline <- c(aline, paste0("_BOMC2_ ", modelLabel, "_EOMC_"))
+                aline <- c(aline, paste0("_BOMC2C_", modelLabel, "_EOMC_"))
             }
         }
         aline <- c(aline, "_EOR__EOL_")
-        z <- c(z, paste(aline, collapse = ""))
+        z <- c(z, paste0(aline, collapse = ""))
     }
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste("_BR_", paste(rep ("_SEP_ Estimate", nmodels), collapse = ""), "_EOR__EOL_", collapse = "") 
-        z <- c(z, paste(aline, collapse = ""))
-
-        aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_SEPU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
-        z <- c(z, paste(aline, collapse = ""))
+        aline <- paste0("_BR_", paste0(rep ("_BOMC1C_Estimate_EOMC_", nmodels), collapse = ""),
+                       "_EOR__EOL_", collapse = "") 
+        z <- c(z, paste0(aline, collapse = ""))
+        ##aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_EOC__BOCU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
+        aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep ("_EOC__BOMC1C_(S.E.)_EOMC_", nmodels, collapse = "")), "_EOR__EOL_")
+        z <- c(z, paste0(aline, collapse = ""))
     } else {
-        aline1 <- paste("_BRU_", sprintf("%2s", " "))
-        aline2 <- paste(rep ("_SEPU_ Estimate _SEPU_ (S.E.)", nmodels), collapse = "")
-        aline3 <- paste("_EOR__EOL_")
-        z <- c(z, paste(aline1, aline2, aline3, collapse = ""))
+        aline1 <- paste0("_BRU_", sprintf("%2s", " "))
+        #aline2 <- paste(rep ("_EOC__BOCU_ Estimate _EOC__BOCU_ (S.E.)", nmodels), collapse = "")
+        aline2 <- paste0(rep ("_EOC__BOMC1C_Estimate_EOMC__EOC__BOMC1C_(S.E.)_EOMC_", nmodels), collapse = "")
+        aline3 <- paste0("_EOR__EOL_")
+        z <- c(z, paste0(aline1, aline2, aline3, collapse = ""))
     }
 
     if (type == "latex") z <- c(z, SL(1, "latex"), SL(1, "latex"))
    
     ## Here come the regression coefficients
     for (regname in parmnames){
-        aline <- paste(paste("_BR_", displayNames[regname], paste(rep(" ", max(2, (6 - nchar(displayNames[regname])))), collapse = "" )), collapse = "")
+        aline <- paste(paste("_BR_", displayNames[regname],
+                             paste(rep(" ", max(2, (6 - nchar(displayNames[regname])))), collapse = "" )), collapse = "")
         for (model in modelLabels) {
             est <- B[regname, model]
             se <- SE[regname, model]
@@ -1337,15 +1347,19 @@ outreg <-
 
     ## Print a row for the model's fit, as -2 LLR
     ## Can't remember why I was multiplying by -2
-
     if (showAIC == TRUE) {
-        aline <- "_BR_AIC"
-        for (model in modelList) {
-            aline <- paste0(aline, paste("_SEP_", if(is.numeric(AIC(model)))format(round(AIC(model), digits), nsmall = 3)))
-            if (tight == FALSE) aline <- c(aline, "_SEP_")
+        aline <- "_BR_AIC    _SEP_"
+        aicv <- lapply(modelList, function(x) {
+            aic.x <- AIC(model)
+            if(is.numeric(aic.x)) format(aic.x, digits=digits, nsmall=3) else ""
+        })
+        if (tight == FALSE){
+            aline <- paste0(aline, paste(aicv, collapse = "_SEP__SEP_"))
+        }else{
+            aline <- paste0(aline, paste(aicv, collapse = "_SEP_"))
         }
         aline <- paste0(aline, "_EOR__EOL_")
-        z <- c(z, paste(aline))
+        z <- c(z, aline)
     }
 
     ## TODO: round the following output
@@ -1389,7 +1403,7 @@ outreg <-
             for ( i in seq_along(alpha)){
                 aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$", sep = "")
             }
-            aline <- paste0("\\multicolumn{", nColumns, "}{c}{", aline, "_EOMC__EOR__EOL_")
+            aline <- paste0("\\multicolumn{", nColumns, "}{l}{", aline, "_EOMC__EOR__EOL_")
         } else if (type == "html"){
             aline <- paste0("<tr>\n",
                             "<td colspan=\"", nColumns, "\">")
