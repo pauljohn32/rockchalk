@@ -1199,9 +1199,14 @@ outreg <-
     nColumns <- ifelse(tight, 1 + nmodels, 1 + 2*nmodels)
 
     BT <- function(n, type = "latex"){
-        if (type == "latex") return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
+        if (type == "latex") {
+            if(1){
+                return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
+            } else {
+                return(paste0("\\begin{tabular}{l*{",n-1,"}{D{.}{.}{-1}}}\n", SL(n, type)))
+            }
+        }
         if (type == "html")  return(paste("<table>\n", SL(n, type)))
-        ""
     }
 
    
