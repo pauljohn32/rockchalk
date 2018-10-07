@@ -836,7 +836,7 @@ outreg <-
                     r.squared = paste("_R2_"),
                     deviance = "Deviance",
                     adj.r.squared = paste("adj", "_R2_"),
-                    fstatistic = "F")
+                    fstatistic = "_Fmarkup_")
  
     if (missing(gofNames)) {
         gofNames <- myGofNames
@@ -884,7 +884,8 @@ outreg <-
                       "_BOMC1C_" = "& \\\\multicolumn{1}{c}{", 
                       "_BOMC2C_" = "& \\\\multicolumn{2}{c}{", 
                       "_X2_" = "$-2LLR (Model \\\\chi^2)$",
-                      "_R2_" = "$R^2$", 
+                      "_R2_" = "$R^2$",
+                      "_Fmarkup_" = "F($df_{num}$,$df_{denom}$)",
                       "_SIGMA_" = "$\\\\sigma$",
                       "_NBSP_" = "\ ")
 
@@ -906,6 +907,7 @@ outreg <-
         "_BOMC2C_" = "<td colspan = '2'>",
         "_X2_" =  "&chi;<sup>2</sup>",
         "_R2_" =  "R<sup>2</sup>",
+        "_Fmarkup_" = "F(df1,df2)",
         "_SIGMA_" =  "&sigma;",
         "_NBSP_" = "&nbsp;")
 
@@ -927,6 +929,7 @@ outreg <-
         "_BOMC2C_" = ",",
         "_X2_" =  "chi2",
         "_R2_" =  "R2",
+        "_Fmarkup_" = "F",
         "_SIGMA_" =  "sigma",
         "_NBSP_" = " ")
     
@@ -960,11 +963,11 @@ outreg <-
                 y <- ""
             } else if (name == "fstatistic"){
                 staty <- paste(format(c(y["value"]), digits = digits),
-                               " df(", format(y["numdf"], digits = digits),
+                               "(", format(y["numdf"], digits = digits),
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
 
                 nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"], lower.tail = FALSE) < alpha)
-                y <- paste(staty, paste(rep("*", nstars), collapse = ""), sep = "")
+                y <- paste0("\\multicolumn{", 2 - tight, "}{c}{", staty, paste(rep("*", nstars), collapse = ""), "}")
             } else if (is.numeric(y)) {
                 if (length(y) > 1){
                     messg <- paste0("outreg: ", 
