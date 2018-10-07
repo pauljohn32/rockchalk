@@ -2,7 +2,7 @@
 ### Encoding: UTF-8
 
 ###################################################
-### code chunk number 1: outreg-test-20181005-uniquebackupstring.Rnw:28-29
+### code chunk number 1: outreg-test-20181005-uniquebackupstring.Rnw:29-30
 ###################################################
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 
@@ -25,7 +25,7 @@ pdf.options(onefile=FALSE,family="Times",pointsize=10)
 
 
 ###################################################
-### code chunk number 4: outreg-test-20181005-uniquebackupstring.Rnw:470-491
+### code chunk number 4: outreg-test-20181005-uniquebackupstring.Rnw:471-492
 ###################################################
 fn1 <- "theme/logoleft.pdf"
 fn2 <- "theme/logo-vert.pdf"
@@ -51,7 +51,7 @@ if(!file.exists(fn2)){
 
 
 ###################################################
-### code chunk number 5: outreg-test-20181005-uniquebackupstring.Rnw:563-567 (eval = FALSE)
+### code chunk number 5: outreg-test-20181005-uniquebackupstring.Rnw:565-569 (eval = FALSE)
 ###################################################
 ## CRAN <- "http://rweb.crmda.ku.edu/cran" 
 ## KRAN <- "http://rweb.crmda.ku.edu/kran"
@@ -60,7 +60,7 @@ if(!file.exists(fn2)){
 
 
 ###################################################
-### code chunk number 6: outreg-test-20181005-uniquebackupstring.Rnw:677-685
+### code chunk number 6: outreg-test-20181005-uniquebackupstring.Rnw:679-687
 ###################################################
     set.seed(2134234)
      dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
@@ -114,7 +114,7 @@ cat(ex1wd)
 
 
 ###################################################
-### code chunk number 11: outreg-test-20181005-uniquebackupstring.Rnw:745-751
+### code chunk number 11: outreg-test-20181005-uniquebackupstring.Rnw:747-753
 ###################################################
 ex2pd <- outreg(list("Fingers" = m1), tight = FALSE, 
          title = "Ability to change p values with decimal-centered columns", 
@@ -125,7 +125,7 @@ ex2pd <- outreg(list("Fingers" = m1), tight = FALSE,
 
 
 ###################################################
-### code chunk number 12: outreg-test-20181005-uniquebackupstring.Rnw:760-766
+### code chunk number 12: outreg-test-20181005-uniquebackupstring.Rnw:762-768
 ###################################################
 ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
          title = "Ability to change p values with decimal-centered columns", 
@@ -136,7 +136,7 @@ ex2p <- outreg(list("Fingers" = m1), tight = FALSE,
 
 
 ###################################################
-### code chunk number 13: outreg-test-20181005-uniquebackupstring.Rnw:784-790
+### code chunk number 13: outreg-test-20181005-uniquebackupstring.Rnw:786-792
 ###################################################
 ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2),
          varLabels = list(x1 = "Billie"), 
@@ -147,7 +147,7 @@ cat(ex3)
 
 
 ###################################################
-### code chunk number 14: outreg-test-20181005-uniquebackupstring.Rnw:800-806
+### code chunk number 14: outreg-test-20181005-uniquebackupstring.Rnw:802-808
 ###################################################
 ex3b <- outreg(list("Model A" = m1, "Model B" = m2),
          modelLabels = c("Overrides ModelA", "Overrides ModelB"),
@@ -175,21 +175,21 @@ cat(ex6d)
 
 
 ###################################################
-### code chunk number 17: outreg-test-20181005-uniquebackupstring.Rnw:863-865
+### code chunk number 17: outreg-test-20181005-uniquebackupstring.Rnw:865-867
 ###################################################
 ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), dcolumn=FALSE,
               title = "My Three Linear Regressions", label="tab:ex7")
 
 
 ###################################################
-### code chunk number 18: outreg-test-20181005-uniquebackupstring.Rnw:871-873
+### code chunk number 18: outreg-test-20181005-uniquebackupstring.Rnw:873-875
 ###################################################
 ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), dcolumn=TRUE,
               title = "My Three Linear Regressions (decimal aligned)", label="tab:ex7d")
 
 
 ###################################################
-### code chunk number 19: outreg-test-20181005-uniquebackupstring.Rnw:886-890
+### code chunk number 19: outreg-test-20181005-uniquebackupstring.Rnw:888-892
 ###################################################
 ex11 <- outreg(list("I Love Long Titles" = m1,
                "Prefer Brevity" = m2,
@@ -198,7 +198,7 @@ ex11 <- outreg(list("I Love Long Titles" = m1,
 
 
 ###################################################
-### code chunk number 20: outreg-test-20181005-uniquebackupstring.Rnw:897-901
+### code chunk number 20: outreg-test-20181005-uniquebackupstring.Rnw:899-903
 ###################################################
 ex1t1 <- outreg(list("I Love Long Titles" = m1,
                "Prefer Brevity" = m2, 
@@ -207,7 +207,7 @@ ex1t1 <- outreg(list("I Love Long Titles" = m1,
 
 
 ###################################################
-### code chunk number 21: outreg-test-20181005-uniquebackupstring.Rnw:920-926
+### code chunk number 21: outreg-test-20181005-uniquebackupstring.Rnw:922-928
 ###################################################
 if (require(car)){
    newSE <- sqrt(diag(car::hccm(m3)))
@@ -218,7 +218,7 @@ if (require(car)){
 
 
 ###################################################
-### code chunk number 22: outreg-test-20181005-uniquebackupstring.Rnw:939-942
+### code chunk number 22: outreg-test-20181005-uniquebackupstring.Rnw:941-944
 ###################################################
 ex13 <- outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
                title = "OLS and Logit in same table (dcolumn)", 
@@ -226,7 +226,7 @@ ex13 <- outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
 
 
 ###################################################
-### code chunk number 23: outreg-test-20181005-uniquebackupstring.Rnw:948-953
+### code chunk number 23: outreg-test-20181005-uniquebackupstring.Rnw:950-955
 ###################################################
 ex14 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
          title = "OLS and Logit with summary report features (dcolumn)",
@@ -236,7 +236,7 @@ ex14 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
 
 
 ###################################################
-### code chunk number 24: outreg-test-20181005-uniquebackupstring.Rnw:959-964
+### code chunk number 24: outreg-test-20181005-uniquebackupstring.Rnw:961-966
 ###################################################
 ex15 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
          title="OLS and GLM with more digits (digits)", 
@@ -246,7 +246,7 @@ ex15 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
 
 
 ###################################################
-### code chunk number 25: outreg-test-20181005-uniquebackupstring.Rnw:971-977
+### code chunk number 25: outreg-test-20181005-uniquebackupstring.Rnw:973-979
 ###################################################
 ex16 <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
            title = "2 OLS and 1 Logit (dcolumn), additional runFuns", 
@@ -257,7 +257,7 @@ ex16 <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
 
 
 ###################################################
-### code chunk number 26: outreg-test-20181005-uniquebackupstring.Rnw:989-993
+### code chunk number 26: outreg-test-20181005-uniquebackupstring.Rnw:991-995
 ###################################################
 ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
          request = c(fstatistic = "F"),

@@ -1130,6 +1130,27 @@ rockchalk
 
 , but right now it is a plea for insight & advice.
  Right now, this essay is not in the package, but it is in the repository:
+ 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/pauljohn32/rockchalk
+\end_layout
+
+\end_inset
+
+, in a folder named 
+\begin_inset Quotes eld
+\end_inset
+
+vignette-test
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
 \end_layout
 
 \begin_layout Abstract
@@ -3666,7 +3687,8 @@ logLik
 \begin_layout Standard
 \begin_inset CommandInset bibtex
 LatexCommand bibtex
-bibfiles "theme/R"
+btprint "btPrintCited"
+bibfiles "theme/rockchalk"
 options "bibtotoc,apalike2"
 
 \end_inset
