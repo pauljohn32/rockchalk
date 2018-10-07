@@ -605,83 +605,96 @@ NULL
 ##' Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
 ##'
 ##' @param modelList A regression model or an R list of regression
-##' models. Default model names will be M1, M2, and so forth. User
-##' specified names are allowed, such as \code{list("My Model" = m1,
-##' "Her Model" = m2)}.  This is the currently recommended way to
-##' supply model lables. This is less error prone than the use of the
-##' modelLabels argument.
-##' @param type Default = "latex". The alternatives are "html" and "csv"
+##'     models. Default model names will be M1, M2, and so forth. User
+##'     specified names are allowed, such as \code{list("My Model" =
+##'     m1, "Her Model" = m2)}.  This is the currently recommended way
+##'     to supply model lables. This is less error prone than the use
+##'     of the modelLabels argument.
+##' @param type Default = "latex". The alternatives are "html" and
+##'     "csv"
 ##' @param modelLabels This is allowed, but discouraged. A vector of
-##' character string variables, one for each element in
-##' modelList. Will override the names in modelList.
+##'     character string variables, one for each element in
+##'     modelList. Will override the names in modelList.
 ##' @param varLabels To beautify the parameter names printed.  Must be
-##' a named vector in the format c(parmname = "displayName", parmname =
-##' "displayName"). Include as many parameters as desired, it is not
-##' necessary to supply new labels for all of the
-##' parameters. 
+##'     a named vector in the format c(parmname = "displayName",
+##'     parmname = "displayName"). Include as many parameters as
+##'     desired, it is not necessary to supply new labels for all of
+##'     the parameters.
 ##' @param tight Table format. If TRUE, parameter estimates and
-##' standard errors are printed in a single column.  If FALSE,
-##' parameter estimates and standard errors are printed side by side.
-##' @param dcolumn If TRUE, will use decimal-aligned columns with the LaTeX package
-##'   dcolumn. If FALSE, which is default for historical reasons, 
-##' @param showAIC This is a legacy argument, before the \code{request} argument was created.
-##' If TRUE, the AIC estimate is included with the diagnostic values. It has the same effect
-##' as described by \code{request}.
-##' @param float Default = FALSE. Include boilerplate for a LaTeX table
-##' float, with the tabular markup inside it. Not relevant if type =
-##' "html".
-##' @param request Extra information to be retrieved from the summary(model)
-##' and displayed. This must be a vector of named arguments, such as
-##' c(adj.r.squared = "adj $R^2$", fstatistic = "F"). The name must be
-##' a valid name of the output object, the value should be the label
-##' the user wants printed in the table. See details.
+##'     standard errors are printed in a single column.  If FALSE,
+##'     parameter estimates and standard errors are printed side by
+##'     side.
+##' @param dcolumn Defult FALSE. If TRUE, will use decimal-aligned
+##'     columns with the LaTeX package dcolumn. If FALSE, which is
+##'     default for historical reasons, the columns are left aligned.
+##' @param showAIC This is a legacy argument, before the
+##'     \code{request} argument was created.  If TRUE, the AIC
+##'     estimate is included with the diagnostic values. It has the
+##'     same effect as described by \code{request}.
+##' @param float Default = FALSE. Include boilerplate for a LaTeX
+##'     table float, with the tabular markup inside it. Not relevant
+##'     if type = "html".
+##' @param request Extra information to be retrieved from the
+##'     summary(model) and displayed. This must be a vector of named
+##'     arguments, such as c(adj.r.squared = "adj $R^2$", fstatistic =
+##'     "F"). The name must be a valid name of the output object, the
+##'     value should be the label the user wants printed in the
+##'     table. See details.
 ##' @param runFuns A list of functions
-##' @param digits Default = 3. How many digits after decimal sign are to be displayed.
-##' @param alpha Default = c(0.05, 0.01, 0.001). I think stars are dumb, but enough
-##' people have asked me for more stars that I'm caving in.
+##' @param digits Default = 3. How many digits after decimal sign are
+##'     to be displayed.
+##' @param alpha Default = c(0.05, 0.01, 0.001). I think stars are
+##'     dumb, but enough people have asked me for more stars that I'm
+##'     caving in.
 ##' @param SElist Optional. Replacement standard errors. Must be a
-##' list of named vectors. \code{outreg} uses the R \code{summary} to
-##' retrieve standard errors, but one might instead want to use robust
-##' or bootstrapped standard errors.  This argument may supply a new
-##' SE vector for each fitted regression model, but it is also allowed
-##' to supply the SE replacement for just one of the models. The
-##' format should be \code{list("A Model Label" = c(0.1, 0.3, 0.4),
-##' "Another Model Label" = c(0.4, 0.2, 0.3)}.  On the left, one must
-##' use the same names that are used in the modelList argument.
-##' @param PVlist Optional. A list of replacement "p values". It must be a list
-##' of named vectors, similar in format to SElist. The which the
-##' elements are the "p values" that the user wants to use for each
-##' model.
-##' @param Blist Optional. This is only needed in the rare case where a model's
-##' parameters cannot be discerned from its summary. List must have names
-##' for models, and vectors slope coefficient. See discussion of SElist and PVlist.
+##'     list of named vectors. \code{outreg} uses the R \code{summary}
+##'     to retrieve standard errors, but one might instead want to use
+##'     robust or bootstrapped standard errors.  This argument may
+##'     supply a new SE vector for each fitted regression model, but
+##'     it is also allowed to supply the SE replacement for just one
+##'     of the models. The format should be \code{list("A Model Label"
+##'     = c(0.1, 0.3, 0.4), "Another Model Label" = c(0.4, 0.2, 0.3)}.
+##'     On the left, one must use the same names that are used in the
+##'     modelList argument.
+##' @param PVlist Optional. A list of replacement "p values". It must
+##'     be a list of named vectors, similar in format to SElist. The
+##'     which the elements are the "p values" that the user wants to
+##'     use for each model.
+##' @param Blist Optional. This is only needed in the rare case where
+##'     a model's parameters cannot be discerned from its
+##'     summary. List must have names for models, and vectors slope
+##'     coefficient. See discussion of SElist and PVlist.
 ##' @param title A LaTeX caption for the table. Not relevant if type =
-##' "html".
-##' @param label A string to be used as a LaTeX label in the table to be
-##' created. Not relevant if type = "html".
+##'     "html".
+##' @param label A string to be used as a LaTeX label in the table to
+##'     be created. Not relevant if type = "html".
 ##' @param gofNames Optional pretty names. R regression summaries use
-##' names like "sigma" or "r.squared" that we might want to revise for
-##' presentation. I prefer to refer to "sigma" as "RMSE", but perhaps
-##' you instead prefer something like \code{gofnames = c("sigma" = "That
-##' Estimate I don't understand", "deviance" = "Another Mystery")}. The
-##' words that you might replace are "sigma", "r.squared",
-##' "deviance", "adj.r.squared", "fstatistic".
-##' @param print.results Default TRUE, marked-up table will be displayed in session.
-##' If FALSE, same result is returned as an object.
-##' @param browse Display the regression model in a browse? Defaults to TRUE if type = "html"
+##'     names like "sigma" or "r.squared" that we might want to revise
+##'     for presentation. I prefer to refer to "sigma" as "RMSE", but
+##'     perhaps you instead prefer something like \code{gofnames =
+##'     c("sigma" = "That Estimate I don't understand", "deviance" =
+##'     "Another Mystery")}. The words that you might replace are
+##'     "sigma", "r.squared", "deviance", "adj.r.squared",
+##'     "fstatistic".
+##' @param print.results Default TRUE, marked-up table will be
+##'     displayed in session.  If FALSE, same result is returned as an
+##'     object.
+##' @param browse Display the regression model in a browse? Defaults
+##'     to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
 ##' @importFrom utils getFromNamespace
-##' @import grDevices  
+##' @import grDevices
 ##' @rdname outreg
-##' @return A character vector, one element per row of the regression table.
+##' @return A character vector, one element per row of the regression
+##'     table.
 ##' @keywords regression
 ##' @note There are many R packages that can be used to create LaTeX
-##' regression tables. memisc, texreg, apsrtable, xtables, and rms are
-##' some. This "outreg" version was in use in our labs before we were
-##' aware that those packages were in development. It is not intended
-##' as a competitor, it is just a slightly different version of the
-##' same that is more suited to our needs.
+##'     regression tables. memisc, texreg, apsrtable, xtables, and rms
+##'     are some. This "outreg" version was in use in our labs before
+##'     we were aware that those packages were in development. It is
+##'     not intended as a competitor, it is just a slightly different
+##'     version of the same that is more suited to our needs.
 ##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
 ##' @examples
 ##' set.seed(2134234)
@@ -1208,7 +1221,7 @@ outreg <-
 
     BT <- function(n, type = "latex"){
         if (type == "latex") {
-            if(1){
+            if(dcolumn){
                 return(paste0("\\begin{tabular}{l*{",n-1,"}{D{.}{.}{-1}}}\n", SL(n, type)))
             } else {
                 return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
