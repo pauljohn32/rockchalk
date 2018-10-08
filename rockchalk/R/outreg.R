@@ -950,8 +950,8 @@ outreg <-
 
     # cs = column start
     # uses environment for tight, defaults as centered
-    bomc <- function(cntr = TRUE){
-        if(cntr) {
+    bomc <- function(ctr = TRUE){
+        if(ctr) {
             return(if(tight)"_BOMC1C_" else "_BOMC2C_")
         } else {
             return(if(tight)"_BOMC1_" else "_BOMC2_")
@@ -1067,7 +1067,9 @@ outreg <-
         if (is.null(best <- tryCatch(Blist[[modLab]], error = function(e) NULL))) {
             if (!is.null(estTable <- coef(summaryList[[modLab]], digits = 11))) {
                 validColNum <-  which(colnames(estTable) %in% c("Estimate", "Value", "Param"))
-                if (length(validColNum) > 1) stop(paste("Model ", modLab, " has a summary table with unusual column names. They are ", colnames(estTable)))
+                if (length(validColNum) > 1) stop(paste("Model ", modLab,
+                      " has a summary table with unusual column names. They are ",
+                      colnames(estTable)))
                 if (length(validColNum) == 0) {
                     warning(paste("Model ", modLab, " summary table does not have a column named Estimate, Value, or Param, so we are guessing on column 1"))
                     validColNum <- 1
@@ -1248,12 +1250,12 @@ outreg <-
     if (!is.null(modelLabels)){
         aline <- paste0("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
-            aline <- c(aline, paste0(bomc(), modelLabel, "EOMC"))
-            ## if (tight == TRUE) {
-            ##     aline <- c(aline, paste0("_BOMC1C_", modelLabel, "_EOMC_"))
-            ## } else {
-            ##     aline <- c(aline, paste0("_BOMC2C_", modelLabel, "_EOMC_"))
-            ## }
+            ##aline <- c(aline, paste0(bomc(ctr = dcolumn), modelLabel, "_EOMC_"))
+            if (tight == TRUE) {
+                 aline <- c(aline, paste0("_BOMC1C_", modelLabel, "_EOMC_"))
+            } else {
+                 aline <- c(aline, paste0("_BOMC2C_", modelLabel, "_EOMC_"))
+            }
         }
         aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
