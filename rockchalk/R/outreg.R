@@ -827,16 +827,15 @@ outreg <-
              tight = TRUE, dcolumn = FALSE, showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
              PVlist = NULL,  Blist = NULL, title, label,
-             gofNames,
-             print.results = TRUE, 
+             gofNames, print.results = TRUE, 
              browse = identical(type, "html") && interactive())
 {
 
     myGofNames <- c(sigma = "RMSE",
                     r.squared = paste("_R2_"),
-                    deviance = "Deviance",
                     adj.r.squared = paste("adj", "_R2_"),
-                    fstatistic = "_Fmarkup_")
+                    fstatistic = "_Fmarkup_",
+                    deviance = "Deviance")
  
     if (missing(gofNames)) {
         gofNames <- myGofNames
@@ -967,7 +966,7 @@ outreg <-
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
 
                 nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"], lower.tail = FALSE) < alpha)
-                y <- paste0("\\multicolumn{", 2 - tight, "}{c}{", staty, paste(rep("*", nstars), collapse = ""), "}")
+                y <- paste0(if(tight)"_BOMC1C_" else "_BOMC2C_", staty, paste(rep("*", nstars), collapse = ""), "_EOMC_")
             } else if (is.numeric(y)) {
                 if (length(y) > 1){
                     messg <- paste0("outreg: ", 
@@ -978,7 +977,7 @@ outreg <-
                     warning(messg)
                     y <- y[1]
                 }
-                y <- format(round(y, digits), nsmall = digits)
+                y <- paste0("_BOC_", format(round(y, digits), nsmall = digits), "_EOC_")
             } 
             if (!is.null(y) & !is.na(y) & !identical(y, "")) res[i] <- y else res[i] <- ""
         }
@@ -990,7 +989,7 @@ outreg <-
     gofRow <- function(x, xname = "fixme") {
         zline <- c("_BR_", xname, paste(rep(" ",  max(2, (16 - nchar(xname)))), collapse = "" ))
         for (mname in names(x)) {
-            zline <- c(zline, "_SEP_", x[mname], paste(rep(" ", max(2, 6-nchar(x[mname]), na.rm = TRUE)), collapse = ""))
+            zline <- c(zline,  x[mname], paste(rep(" ", max(2, 6-nchar(x[mname]), na.rm = TRUE)), collapse = ""))
             if (tight == FALSE) zline <- c(zline, sprintf("%6s", " "), "_SEP_")
         }
         zline <- paste(paste(zline, collapse = ""), "_EOC__EOR__EOL_")
