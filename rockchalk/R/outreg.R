@@ -948,6 +948,15 @@ outreg <-
         x
     }
 
+    # cs = column start
+    # uses environment for tight, defaults as centered
+    bomc <- function(cntr = TRUE){
+        if(cntr) {
+            return(if(tight)"_BOMC1C_" else "_BOMC2C_")
+        } else {
+            return(if(tight)"_BOMC1_" else "_BOMC2_")
+        }
+    }
     
     ## TESTME: grabs param from object by name, rounds, simplifies
     ## returns text. For getting r.square, adj.r.square, fstatistic.
@@ -966,7 +975,7 @@ outreg <-
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
 
                 nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"], lower.tail = FALSE) < alpha)
-                y <- paste0(if(tight)"_BOMC1C_" else "_BOMC2C_", staty, paste(rep("*", nstars), collapse = ""), "_EOMC_")
+                y <- paste0(bomc(), staty, paste(rep("*", nstars), collapse = ""), "_EOMC_")
             } else if (is.numeric(y)) {
                 if (length(y) > 1){
                     messg <- paste0("outreg: ", 
@@ -1239,11 +1248,12 @@ outreg <-
     if (!is.null(modelLabels)){
         aline <- paste0("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
-            if (tight == TRUE) {
-                aline <- c(aline, paste0("_BOMC1C_", modelLabel, "_EOMC_"))
-            } else {
-                aline <- c(aline, paste0("_BOMC2C_", modelLabel, "_EOMC_"))
-            }
+            aline <- c(aline, paste0(bomc(), modelLabel, "EOMC"))
+            ## if (tight == TRUE) {
+            ##     aline <- c(aline, paste0("_BOMC1C_", modelLabel, "_EOMC_"))
+            ## } else {
+            ##     aline <- c(aline, paste0("_BOMC2C_", modelLabel, "_EOMC_"))
+            ## }
         }
         aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
@@ -1308,8 +1318,8 @@ outreg <-
     aline <- c("_BR_", "N")
     for (model in modelList) {
         myN <- stats::nobs(model)
-        aline <- c(aline, "_SEP_ ", myN)
-        if (tight == FALSE) aline <- c(aline, "_SEP_ ")
+        aline <- c(aline, "_BOMC1C_", myN, "_EOMC_", if(tight==FALSE) "_SEP_")
+        ## if (tight == FALSE) aline <- c(aline, "_SEP_ ")
     }
     aline <- c(aline, " _EOR__EOL_")
     z <- c(z, paste(aline, collapse = ""))
@@ -1386,15 +1396,17 @@ outreg <-
             if (myfn == "logLik") {
                 myresult <- lapply(modelList, function(x) {
                     y <- do.call(myfn, list(x))
-                    fstaty <- paste(format(c(y), digits = digits), collapse = ", ",
-                                    " (df=", format(attr(y, "df")), ")", sep = "")
+                    fstaty <- paste(format(y[1], digits = digits), collapse = ", ",
+                                    "(", format(attr(y, "df")), ")", sep = "")
+                    fstaty <- paste0(if(tight)"_BOMC1C_" else "_BOMC2C_", fstaty, "_EOMC_")
                     invisible(fstaty)
                 })
                 elist[[i]] <- myresult
             } else {
                 myresult <- lapply(modelList, function(x){
                     y <- do.call(myfn, list(x))
-                    fstaty <- format(c(y), digits = digits, nsmall = 2 )
+                    fstaty <- format(c(y), digits = digits, nsmall = 2)
+                    fstaty <- paste0(if(tight)"_BOMC1C_" else "_BOCMC2_", fstaty, "_EOMC_")
                 })
                 elist[[i]] <- myresult
             }
