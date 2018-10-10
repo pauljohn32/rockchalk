@@ -604,6 +604,16 @@ NULL
 ##' used in printing. For example, \code{runFuns = c("AIC" = "Akaike
 ##' Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
 ##'
+##' About dcolumn and siunitx. These are efforts to decimal-align
+##' the columns. If dcolumn is TRUE, user must insert in preamble
+##' \code{
+##' \\usepackage\{dcolumn\}
+##' }
+##' and siunitx requires author to put this in prefix:
+##' \code{
+##' \\usepackage\{siunitx\}
+##' } 
+##'
 ##' @param modelList A regression model or an R list of regression
 ##'     models. Default model names will be M1, M2, and so forth. User
 ##'     specified names are allowed, such as \code{list("My Model" =
@@ -624,9 +634,11 @@ NULL
 ##'     standard errors are printed in a single column.  If FALSE,
 ##'     parameter estimates and standard errors are printed side by
 ##'     side.
-##' @param dcolumn Defult FALSE. If TRUE, will use decimal-aligned
+##' @param dcolumn Default FALSE. If TRUE, will use decimal-aligned
 ##'     columns with the LaTeX package dcolumn. If FALSE, which is
 ##'     default for historical reasons, the columns are left aligned.
+##' @param siunitx Default FALSE. If TRUE, use LaTeX siunitx for alignment.
+##'     See details for instructions on changes required in document preamble.
 ##' @param showAIC This is a legacy argument, before the
 ##'     \code{request} argument was created.  If TRUE, the AIC
 ##'     estimate is included with the diagnostic values. It has the
@@ -824,7 +836,8 @@ NULL
 ##' }
 outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
-             tight = TRUE, dcolumn = FALSE, showAIC = FALSE, float = FALSE, request,
+             tight = TRUE, dcolumn = FALSE, siunitx = FALSE,
+             showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
              PVlist = NULL,  Blist = NULL, title, label,
              gofNames, print.results = TRUE, 
@@ -877,8 +890,10 @@ outreg <-
                       "_EOL_" = "\n",
                       "_HL_" = "\\\\hline",
                       "_BOCU_" = " &",
+                      "_DOT_" = if(siunitx) paste0("\\phantom{", paste(rep(0, digits), collapse=""), "}.") else ".",
                       "_SEP_" = " &",
                       "_EOT_" = "\\\\end{tabular}",
+                      "_BOMC1_" = "& \\\\multicolumn{1}{l}{",
                       "_BOMC2_" = "& \\\\multicolumn{2}{l}{",
                       "_BOMC1C_" = "& \\\\multicolumn{1}{c}{", 
                       "_BOMC2C_" = "& \\\\multicolumn{2}{c}{", 
@@ -899,8 +914,10 @@ outreg <-
         "_EOL_" = "\n",
         "_HL_" = "",
         "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"),
+        "_DOT_" = ".",
         "_SEP_" = "</td><td>",
         "_EOT_" = "</table>",
+        "_BOMC1_" = "<td colspan = '1'>",
         "_BOMC2_" = "<td colspan = '2'>",
         "_BOMC1C_" = "<td colspan = '2'>", ##20181002 TODO what about centering??
         "_BOMC2C_" = "<td colspan = '2'>",
@@ -921,8 +938,10 @@ outreg <-
         "_EOL_" = "\n",
         "_HL_" = "",
         "_BOCU_" = ",",
+        "_DOT_" = ".",
         "_SEP_" = ",",
         "_EOT_" = "",
+        "_BOMC1_" = ",",
         "_BOMC2_" = ",",
         "_BOMC1C_" = ",",
         "_BOMC2C_" = ",",
@@ -1231,13 +1250,29 @@ outreg <-
     }
     
     nColumns <- ifelse(tight, 1 + nmodels, 1 + 2*nmodels)
-
+    ## siunitxmarkup
+    ## Smarkup <- paste0("S[table-format=1.", digits, ", table-align-text-post=false]")
+    Smarkup <- paste0("S[table-align-text-post=false,
+                        input-symbols = (),   
+                        group-minimum-digits = 9,   
+                        table-number-alignment = center,   
+                        table-space-text-pre = (, 
+                        table-align-text-pre = false,
+                        table-align-text-post = false,
+                        table-space-text-post = {", paste0(rep("*", length(alpha)), collapse=""),"},   
+                        parse-units = false]")
+    ## Dcolumn treat all columns same with digits, not quite perfect
+    Dmarkup  <- paste0("{D{.}{.} {", digits + length(alpha), "}}")
+    
     BT <- function(n, type = "latex"){
         if (type == "latex") {
             if(dcolumn){
-                return(paste0("\\begin{tabular}{l*{",n-1,"}{D{.}{.}{", digits + length(alpha), "}}}\n", SL(n, type)))
-            } else {
-                return(paste0("\\begin{tabular}{*{",n,"}{l}}\n", SL(n, type)))
+                return(paste0("\\begin{tabular}{l*{",n-1,"}", Dmarkup, "}\n", SL(n, type)))
+            } else if (siunitx){
+                return(paste0("\\begin{tabular}{l*{", n-1,"}", Smarkup, "}\n", SL(n, type)))
+            }
+            else {
+                return(paste0("\\begin{tabular}{l*{",n,"}{l}}\n", SL(n, type)))
             }
         }
         if (type == "html")  return(paste("<table>\n", SL(n, type)))
@@ -1292,7 +1327,7 @@ outreg <-
                     aline <- c(aline, paste("_SEP_  ", se, collapse = " "))
                 }
             } else {
-                aline <- c(aline, "_SEP_ .     ")
+                aline <- c(aline, "_BOMC1__DOT__EOMC_")
                 if (tight == FALSE) aline  <- c(aline, "_SEP_    ")
             }
         }
@@ -1455,7 +1490,7 @@ outreg <-
     aline <- "_EOT__EOL_"
     z <- c(z, aline)
     if (float == TRUE && type == "latex"){
-        aline <- "\\end{table}_EOL_"
+        aline <- "\\end{table}_EOL_\n"
         z <- c(z, aline)
     }
     

@@ -397,6 +397,19 @@ rightside .code:n = {
 \renewcommand{\code}[1]{%
 \Colorbox{light-gray}{#1}%
 }%
+
+
+\usepackage{siunitx}
+\sisetup{
+  input-symbols = (),
+  group-minimum-digits = 9,
+  table-number-alignment = center,
+  table-space-text-pre = (,
+  table-align-text-pre = false,
+  table-align-text-post = false,
+  table-space-text-post = {***},
+  parse-units = false
+}
 \end_preamble
 \use_default_options false
 \begin_modules
@@ -645,7 +658,7 @@ topsep}{0em}}}
 
 
 \backslash
-SweaveOpts{prefix.string=tmpout/t, split=TRUE, ae=FALSE, height=3, width=5}
+SweaveOpts{prefix.string=tmpout/t, split=T, ae=FALSE, height=3, width=5}
 \end_layout
 
 \end_inset
@@ -760,12 +773,22 @@ theme
 
 \begin_layout Plain Layout
 
-if(!file.exists(fn1)){
 \end_layout
 
 \begin_layout Plain Layout
 
-    pdf(file = fn1, width=3, height=3, paper=
+blankpdf <- function(file, height=3, width=3, pointsize=20,      replace
+ = FALSE){
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(file.exists(file) && !replace) return(TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+    pdf(file=file, width=width, height=height, paper=
 \begin_inset Quotes erd
 \end_inset
 
@@ -778,7 +801,7 @@ special
 
 \begin_layout Plain Layout
 
-        onefile=FALSE, pointsize=20)
+        onefile=FALSE, pointsize=pointsize)
 \end_layout
 
 \begin_layout Plain Layout
@@ -817,7 +840,7 @@ n
 
 \begin_layout Plain Layout
 
-    text(1.5, 1.5, 
+    ##text(1.5, 1.5, 
 \begin_inset Quotes eld
 \end_inset
 
@@ -832,7 +855,7 @@ n logo
 
 \begin_layout Plain Layout
 
-    box(which=
+    ##box(which=
 \begin_inset Quotes erd
 \end_inset
 
@@ -850,102 +873,22 @@ plot
 
 \begin_layout Plain Layout
 
-}
-\end_layout
-
-\begin_layout Plain Layout
-
-if(!file.exists(fn2)){
-\end_layout
-
-\begin_layout Plain Layout
-
-    pdf(file = fn2, width=3, height=3, paper=
-\begin_inset Quotes erd
-\end_inset
-
-special
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\end_layout
-
-\begin_layout Plain Layout
-
-        onefile=FALSE, pointsize=20)
-\end_layout
-
-\begin_layout Plain Layout
-
-    par(mar=c(1,1,1,1)) 
-\end_layout
-
-\begin_layout Plain Layout
-
-    plot(1:2, 1:2, type = 
-\begin_inset Quotes eld
-\end_inset
-
-n
-\begin_inset Quotes erd
-\end_inset
-
-, axes=FALSE, xlab=
-\begin_inset Quotes erd
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
-, ylab=
-\begin_inset Quotes erd
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\begin_layout Plain Layout
-
-    text(1.5, 1.5, 
-\begin_inset Quotes eld
-\end_inset
-
-right 
-\backslash
-n logo
-\begin_inset Quotes erd
-\end_inset
-
-, axes=FALSE)
-\end_layout
-
-\begin_layout Plain Layout
-
-    box(which=
-\begin_inset Quotes erd
-\end_inset
-
-plot
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\begin_layout Plain Layout
-
-    dev.off()
+    if(file.exists(file)) TRUE else FALSE
 \end_layout
 
 \begin_layout Plain Layout
 
 }
+\end_layout
+
+\begin_layout Plain Layout
+
+blankpdf(fn1)
+\end_layout
+
+\begin_layout Plain Layout
+
+blankpdf(fn2)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1372,6 +1315,233 @@ dcolumn=TRUE
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{2 Wide (not tight) format with siunitx = TRUE}
+\backslash
+label{tab:ex3}
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+begin{tabular}{@{}l*{2}
+\end_layout
+
+\begin_layout Plain Layout
+
+                    S[table-align-text-post=false,
+\end_layout
+
+\begin_layout Plain Layout
+
+                      input-symbols = (),   
+\end_layout
+
+\begin_layout Plain Layout
+
+                      group-minimum-digits = 9,   
+\end_layout
+
+\begin_layout Plain Layout
+
+                      table-number-alignment = center,   
+\end_layout
+
+\begin_layout Plain Layout
+
+                      table-space-text-pre = (, 
+\end_layout
+
+\begin_layout Plain Layout
+
+                      table-align-text-pre = false,
+\end_layout
+
+\begin_layout Plain Layout
+
+                      table-align-text-post = false,
+\end_layout
+
+\begin_layout Plain Layout
+
+                      table-space-text-post = {***},   
+\end_layout
+
+\begin_layout Plain Layout
+
+                      parse-units = false
+\end_layout
+
+\begin_layout Plain Layout
+
+]}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+   & 
+\backslash
+multicolumn{2}{c}{M1}
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+   & 
+\backslash
+multicolumn{1}{c}{Estimate}& 
+\backslash
+multicolumn{1}{c}{(S.E.)}
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+  (Intercept)    &  5245.245{***} &   (024.618) 
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+  x1      &144.546* &   (044.692) 
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+ N& 
+\backslash
+multicolumn{1}{c}{100} & 
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+ RMSE            &6.121         & 
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+ $R^2$            &0.048         & 
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+multicolumn{3}{l}{${*  p}
+\backslash
+le 0.05$${*
+\backslash
+!
+\backslash
+!*  p}
+\backslash
+le 0.01$${*
+\backslash
+!
+\backslash
+!*
+\backslash
+!
+\backslash
+!*  p}
+\backslash
+le 0.001$}
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+end{tabular}
+\end_layout
+
+\begin_layout Plain Layout
+
+ 
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1877,42 +2047,42 @@ status open
 
 \begin_layout Plain Layout
 
-    set.seed(2134234)
+set.seed(2134234)
 \end_layout
 
 \begin_layout Plain Layout
 
-     dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
+dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
 \end_layout
 
 \begin_layout Plain Layout
 
-     dat$y1 <- 30 + 5 * rnorm(100) + 3 * dat$x1 + 4 * dat$x2
+dat$y1 <- 30 + 5 * rnorm(100) + 3 * dat$x1 + 4 * dat$x2
 \end_layout
 
 \begin_layout Plain Layout
 
-     dat$y2 <- rnorm(100) + 5 * dat$x2
+dat$y2 <- rnorm(100) + 5 * dat$x2
 \end_layout
 
 \begin_layout Plain Layout
 
-     m1 <- lm(y1 ~ x1, data = dat)
+m1 <- lm(y1 ~ x1, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-     m2 <- lm(y1 ~ x2, data = dat)
+m2 <- lm(y1 ~ x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-     m3 <- lm(y1 ~ x1 + x2, data = dat)
+m3 <- lm(y1 ~ x1 + x2, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
 
-     gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
+gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1996,6 +2166,27 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
+vl <- c(
+\begin_inset Quotes eld
+\end_inset
+
+(Intercept)
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+Intercept
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
 ex1 <- outreg(m1, title = "My One Tightly Printed Regression",
 \end_layout
 
@@ -2014,7 +2205,7 @@ tab:ex1
 
 \begin_layout Plain Layout
 
-                    float = TRUE, print.results = FALSE)
+                    float = TRUE, print.results = FALSE, varLabels=vl)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2194,6 +2385,53 @@ status open
 
 \begin_layout Plain Layout
 
+<<ex1s, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+ex2s <- outreg(m1, title = "Tight column with siunitx=TRUE",
+\end_layout
+
+\begin_layout Plain Layout
+
+               label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2s
+\begin_inset Quotes erd
+\end_inset
+
+, siunitx = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               float = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
 <<ex2wd, results=tex>>=
 \end_layout
 
@@ -2228,6 +2466,53 @@ tab:ex2wd
 \begin_layout Plain Layout
 
 cat(ex1wd)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex2ws, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex1ws <- outreg(m1, title = "Wide (not tight) format with siunitx = TRUE",
+\end_layout
+
+\begin_layout Plain Layout
+
+                label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2ws
+\begin_inset Quotes erd
+\end_inset
+
+, tight = FALSE, siunitx = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+                float = TRUE, print.results = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex1ws)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3171,6 +3456,7 @@ ref{tab:ex8}
 
 \begin_layout Standard
 \begin_inset Float table
+placement H
 wide false
 sideways false
 status open
@@ -3226,6 +3512,176 @@ if (require(car)){
 \begin_layout Plain Layout
 
              SElist= list("Model C w Robust SE" = newSE))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Robust Standard Errors (dcolumn)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex8d"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (require(car)){
+\end_layout
+
+\begin_layout Plain Layout
+
+   newSE <- sqrt(diag(car::hccm(m3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Model C w Robust SE" = m3),
+\end_layout
+
+\begin_layout Plain Layout
+
+             SElist= list("Model C w Robust SE" = newSE),
+\end_layout
+
+\begin_layout Plain Layout
+
+             dcolumn = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Robust Standard Errors (siunitx)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex8s"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (require(car)){
+\end_layout
+
+\begin_layout Plain Layout
+
+   newSE <- sqrt(diag(car::hccm(m3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Model C w Robust SE" = m3),
+\end_layout
+
+\begin_layout Plain Layout
+
+             SElist= list("Model C w Robust SE" = newSE),
+\end_layout
+
+\begin_layout Plain Layout
+
+             siunitx = TRUE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3671,6 +4127,156 @@ logLik
 \end_inset
 
 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Additional test on summary stats (siunitx)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex17s"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex17s <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", 
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+ = "ll",
+\end_layout
+
+\begin_layout Plain Layout
+
+         "nobs" = "N Again?"), siunitx=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}{
+\end_layout
+
+\begin_layout Plain Layout
+
+  l
+\end_layout
+
+\begin_layout Plain Layout
+
+  S[table-format=1.3, table-align-text-post=false]
+\end_layout
+
+\begin_layout Plain Layout
+
+  S[table-format=1.3, table-align-text-post=false]
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+hello &1.333 &33.222
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+goodbye &44.1 & 
+\backslash
+multicolumn{1}{c}{.} 
+\backslash
+tabularnewline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+hline
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
 \end_layout
 
 \end_inset
