@@ -661,7 +661,7 @@ topsep}{0em}}}
 
 
 \backslash
-SweaveOpts{prefix.string=tmpout/t, split=T, ae=FALSE, height=3, width=5}
+SweaveOpts{prefix.string=tmpout/t, split=F, ae=FALSE, height=3, width=5}
 \end_layout
 
 \end_inset
@@ -1369,7 +1369,7 @@ lme4
 
 \begin_layout Standard
 \noindent
-The new argument 
+The new arguments are 
 \begin_inset Flex Code
 status open
 
@@ -1380,7 +1380,19 @@ dcolumn
 
 \end_inset
 
- has a default of 
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+.
+ The default is 
 \begin_inset Flex Code
 status open
 
@@ -1391,9 +1403,31 @@ FALSE
 
 \end_inset
 
-, meaning there will be no effect, the outreg table will be the same as
- it always was.
- However, if the outreg command sets the argument 
+, meaning there will be no effect.
+ If FALSE, the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ table will be the same as it always was.
+ However, if the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ function call sets the argument 
 \begin_inset Flex Code
 status open
 
@@ -1404,8 +1438,19 @@ dcolumn=TRUE
 
 \end_inset
 
-, then the LaTeX package dcolumn will be used.
- This will succeed only if the user and inserts 
+ or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx=TRUE
+\end_layout
+
+\end_inset
+
+, then the decimal-centering of columns will be attempted.
+ NOTE: it is necessary for the user to insert either 
 \begin_inset Flex Code
 status open
 
@@ -1418,37 +1463,49 @@ usepackage{dcolumn}
 
 \end_inset
 
- in the preamble.
- I believe this will 
-\begin_inset Quotes eld
-\end_inset
-
-just
-\begin_inset Quotes erd
-\end_inset
-
- work.
- 
-\end_layout
-
-\begin_layout Standard
-In the past, my concern about the dcolumn package was that it turned all
- of the text in columns into math mode italics, so many tables either had
- unexpected style changes or failed to compile altogether.
- The solution is to protect all text from that transformation.
- I do that in a way that does not alter the behavior of outreg tables for
- users that don't want decimal-aligned columns.
- But it also prevents the mathification for users that set 
+ or 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-dcolumn=TRUE
+\noindent
+
+\backslash
+usepackage{siunitx}
 \end_layout
 
 \end_inset
 
-.
+ in the preamble! The aim is for this whole thing to 
+\begin_inset Quotes eld
+\end_inset
+
+just work
+\begin_inset Quotes erd
+\end_inset
+
+ without any more attention than that.
+\end_layout
+
+\begin_layout Standard
+In the past, my concern about the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+dcolumn
+\end_layout
+
+\end_inset
+
+ package was that it turned all of the text in columns into math mode italics,
+ so many tables either had unexpected style changes or failed to compile
+ altogether.
+ It turned out that siunitx had the same impact, so the same solutions were
+ needed to correct the problem.
+ (The solution is to protect all text from that transformation, which is
+ a primary source of errors at the current moment.
+ Tell me what works!)
 \end_layout
 
 \begin_layout Section
@@ -1508,8 +1565,8 @@ rockchalk
 \end_layout
 
 \begin_layout Standard
-I've already noticed a couple of quirks while testing 1.8.120, so by the time
- you try this, maybe you'll get newer.
+I've already noticed a couple of quirks while testing 1.8.125, so by the time
+ you try this, you'll get newer.
 \end_layout
 
 \begin_layout Section
@@ -1517,31 +1574,53 @@ User Interface question for you, the user
 \end_layout
 
 \begin_layout Standard
-Now, I design this so if user does not specify dcolumn or siunitx, then
- the traditional no-decimal alignment table is offered.
- User has choice to insert either
+Currently, there are 2 arguments, TRUE or FALSE.
+ 
 \end_layout
 
 \begin_layout Enumerate
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
 dcolumn=TRUE
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Enumerate
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
 siunitx=TRUE
 \end_layout
 
-\begin_layout Standard
-to change that.
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-Right now, in the middle of the night, I realize maybe this could be re-organize
-d.
- What if there were 1 argument 
+Maybe that's a mistake.
+ I realize maybe I should have 1 argument 
 \begin_inset Quotes eld
 \end_inset
 
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
 centering
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
@@ -1569,7 +1648,9 @@ siunitx
 \begin_inset Quotes erd
 \end_inset
 
-)? Then we'd make some fancy magic so that if a user mistakenly enters 
+).
+ Do you think that's better? Then we'd make some fancy magic so that if
+ a user mistakenly enters 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1589,10 +1670,40 @@ Briefly: outreg
 \end_layout
 
 \begin_layout Standard
-First, run a regression model.
- Second, give that fitted regression object to outreg.
- When outreg runs, it will have 2 effects.
- First, it will write out LaTeX code to the screen (unless print.results=FALSE).
+First, run regression models.
+ Second, give the fitted regression object(s) to 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+outreg
+\end_layout
+
+\end_inset
+
+.
+ When 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+outreg
+\end_layout
+
+\end_inset
+
+ runs, it will have 2 effects.
+ First, it will write out LaTeX code to the screen (unless 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+print.results=FALSE
+\end_layout
+
+\end_inset
+
+).
  A user might 
 \begin_inset Quotes eld
 \end_inset
@@ -1602,100 +1713,35 @@ copy/paste
 \end_inset
 
  that code into a LaTeX document.
- (Or, in an Sweaved document, the chunk parameter results=tex will cause
- the table to be displayed in the document.)
-\end_layout
-
-\begin_layout Subsubsection*
-About examples here and your long-run work flow
-\end_layout
-
-\begin_layout Standard
-I'm using a lot of short cuts to make it easier to produce examples with
- and without centering.
- 
-\end_layout
-
-\begin_layout Standard
-If you are learning how to make tables, I usually suggest doing it in a
- different way.
- I would suggest instead that authors should create an outreg output file,
- with a sequence like this
-\end_layout
-
-\begin_layout Standard
-\begin_inset listings
-inline false
-status open
-
-\begin_layout Plain Layout
-
-lm1 <- lm(...
- regression commands ...)
-\end_layout
-
-\begin_layout Plain Layout
-
-lm1.out <- outreg(lm1, print.results=FALSE, ...parameters like float=FALSE, tight
- = FALSE ...)
-\end_layout
-
-\begin_layout Plain Layout
-
-cat(lm1.out, file = 
-\begin_inset Quotes eld
-\end_inset
-
-lm1.out.tex
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-I'd usually have an output directory where the tex file would be placed,
- but aside from this detail, that's my workflow.
- Then, when I want to use that file in my document, I use the LaTeX code
- 
-\begin_inset Quotes eld
-\end_inset
-
-
-\backslash
-input{lm1.out.tex}
-\begin_inset Quotes erd
-\end_inset
-
-.
- 
-\end_layout
-
-\begin_layout Standard
-One reason for using that 2-step workflow is that the 
-\emph on
-automatically produced outreg table may not be exactly perfect
-\emph default
-.
- Perhaps a variable label does not look right.
- Personally speaking, I wish the automatic table were always perfect.
- Practically, I accept it is not.
- So I leave open the opportunity that it might need to be revised by hand.
- 
+ (Or, write it in a file and import it in the future.
+ (Or, as in the case of this Sweaved document, the output goes directly
+ into the result file.)
 \end_layout
 
 \begin_layout Section
-Briefly: table and tabular
+Briefly: table vs tabular
 \end_layout
 
 \begin_layout Standard
-This is the most confusing thing for beginners.
- Terminology
+This is the most confusing thing for LaTeX beginners.
+ 
+\emph on
+Put bluntly, a 
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+ is not a table
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Terminology
 \end_layout
 
 \begin_layout Description
@@ -1703,7 +1749,17 @@ tabular In LaTeX, a
 \begin_inset Quotes eld
 \end_inset
 
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
 tablular
+\end_layout
+
+\end_inset
+
+
 \begin_inset Quotes erd
 \end_inset
 
@@ -1716,10 +1772,7 @@ spreadsheet
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Description
-table In LaTeX, a 
+ You'd call that a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1727,7 +1780,29 @@ table
 \begin_inset Quotes erd
 \end_inset
 
- is not a grid.
+, I believe.
+\end_layout
+
+\begin_layout Description
+table In LaTeX, a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+table
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ is something else.
  It is a document 
 \begin_inset Quotes eld
 \end_inset
@@ -1746,13 +1821,13 @@ floats
 
  around in the document.
  It is a container.
- A tabular is placed inside a table.
+ A tabular is placed inside one of these table containers.
  Table objects are numbered, can be used in cross references (if they have
  labels)
 \end_layout
 
 \begin_layout Standard
-If we are writing LaTeX code by hand, a tabulr inside a table will look
+If we are writing LaTeX code by hand, a tabular inside a table will look
  like 
 \end_layout
 
@@ -1819,6 +1894,31 @@ end{table}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+The big question is 
+\begin_inset Quotes eld
+\end_inset
+
+should my outreg function write the tabular only, or also the table container
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+I used to think the only reasonable answer was 
+\begin_inset Quotes eld
+\end_inset
+
+tabular only
+\begin_inset Quotes erd
+\end_inset
+
+, but now I see reasons why we might want to do both.
+ So it is an option, as explained next.
 \end_layout
 
 \begin_layout Subsection*
@@ -1945,8 +2045,12 @@ are
 \end_layout
 
 \begin_layout Standard
-If one creates a table (floating container), and then puts the code chunk
- inside, then the code will print out with the table.
+In LyX, there are some cross-referencing tools.
+ It is more desirable to create the table container in LyX, so then cross-refere
+nces work correctly.
+ If one creates a table (floating container), and then puts the tabular-creating
+ code chunk inside, then the code will print out with the table.
+ And cross references succeed using the LyX pull down menus.
  That is demonstrated in Tables 
 \begin_inset ERT
 status open
@@ -2797,7 +2901,7 @@ ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2),
 
 \begin_layout Plain Layout
 
-         title = "My Two Linear Regressions", label = 
+         title = "My Two Linear Regressions (uncentered)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2892,7 +2996,7 @@ ex3b <- outreg(list("Model A" = m1, "Model B" = m2),
 
 \begin_layout Plain Layout
 
-         title = "Note modelLabels Overrides model names",
+         title = "Note modelLabels Overrides model names (uncentered)",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3031,7 +3135,7 @@ ex3bs <- outreg(list("Model A" = m1, "Model B" = m2),
 
 \begin_layout Plain Layout
 
-         title = "Note modelLabels Overrides model names",
+         title = "Note modelLabels Overrides model names (siunitx)",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3122,7 +3226,7 @@ ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2),
 
 \begin_layout Plain Layout
 
-         title = "Still have showAIC argument, as in previous versions",
+         title = "Still have showAIC argument (uncentered)",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3236,7 +3340,7 @@ ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2),
 
 \begin_layout Plain Layout
 
-         title = "Still have showAIC argument, as in previous versions",
+         title = "Still have showAIC argument (siunitx)",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3543,7 +3647,7 @@ status open
 
 
 \backslash
-ref{ex11t}
+ref{tab:ex11t}
 \end_layout
 
 \end_inset
@@ -3561,7 +3665,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Stress test very long titles (float=FALSE) 
+Stress test very long titles (uncentered) 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:ex11"
@@ -3633,7 +3737,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Stress test very long titles (float=FALSE) 
+Stress test very long titles (dcolumn) 
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:ex11t"
@@ -3659,7 +3763,7 @@ status open
 
 \begin_layout Plain Layout
 
-ex1t1 <- outreg(list("I Love Long Titles" = m1,
+ex11td <- outreg(list("I Love Long Titles" = m1,
 \end_layout
 
 \begin_layout Plain Layout
@@ -3678,6 +3782,78 @@ ex1t1 <- outreg(list("I Love Long Titles" = m1,
 \begin_layout Plain Layout
 
                dcolumn = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Stress test very long titles (dcolumn) 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex11ts"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex11ts <- outreg(list("I Love Long Titles" = m1,
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Prefer Brevity" = m2, 
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Captain.
+ Kirk.
+ Named.
+ This" = m3), float = FALSE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               siunitx = TRUE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3744,7 +3920,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Robust Standard Errors (produced with float=FALSE)
+Robust Standard Errors (uncentered)
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:ex8"
@@ -4237,7 +4413,7 @@ ref{tab:ex16d}
 \end_inset
 
 , output shows result when several runFuns are requested.
- Again, I'm very sorry that parameter name is so aweful.
+ Again, I'm very sorry that parameter name is so awful.
  I adjusted the alpha stars as well.
 \end_layout
 
@@ -4334,7 +4510,7 @@ ex16s <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
 \begin_inset Quotes eld
 \end_inset
 
-2 OLS and 1 Logit (dcolumn), additional runFuns
+2 OLS and 1 Logit (siunitx), additional runFuns
 \begin_inset Quotes erd
 \end_inset
 
@@ -4634,6 +4810,89 @@ end{tabular}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+About examples here and your long-run work flow
+\end_layout
+
+\begin_layout Standard
+I'm using a lot of short cuts to make it easier to produce examples with
+ and without centering.
+ 
+\end_layout
+
+\begin_layout Standard
+If you are learning how to make tables, I usually suggest doing it in a
+ different way.
+ I would suggest instead that authors should create an outreg output file,
+ with a sequence like this
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm1 <- lm(...
+ regression commands ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+lm1.out <- outreg(lm1, print.results=FALSE, ...parameters like float=FALSE, tight
+ = FALSE ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(lm1.out, file = 
+\begin_inset Quotes eld
+\end_inset
+
+lm1.out.tex
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I'd usually have an output directory where the tex file would be placed,
+ but aside from this detail, that's my workflow.
+ Then, when I want to use that file in my document, I use the LaTeX code
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\backslash
+input{lm1.out.tex}
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+One reason for using that 2-step workflow is that the 
+\emph on
+automatically produced outreg table may not be exactly perfect
+\emph default
+.
+ Perhaps a variable label does not look right.
+ Personally speaking, I wish the automatic table were always perfect.
+ Practically, I accept it is not.
+ So I leave open the opportunity that it might need to be revised by hand.
+ 
 \end_layout
 
 \begin_layout Standard
