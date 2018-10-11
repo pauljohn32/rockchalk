@@ -890,7 +890,7 @@ outreg <-
                       "_EOL_" = "\n",
                       "_HL_" = "\\\\hline",
                       "_BOCU_" = " &",
-                      "_DOT_" = if(siunitx) paste0("\\phantom{", paste(rep(0, digits), collapse=""), "}.") else ".",
+                      "_DOT_" = if(siunitx) paste0("\\\\phantom{", paste(rep(0, digits), collapse=""), "}.") else ".",
                       "_SEP_" = " &",
                       "_EOT_" = "\\\\end{tabular}",
                       "_BOMC1_" = "& \\\\multicolumn{1}{l}{",
@@ -1253,8 +1253,8 @@ outreg <-
     ## siunitxmarkup
     ## Smarkup <- paste0("S[table-format=1.", digits, ", table-align-text-post=false]")
     Smarkup <- paste0("S[table-align-text-post=false,
-                        input-symbols = (),   
-                        group-minimum-digits = 9,   
+                        input-symbols = ( ),   
+                        group-digits = false,   
                         table-number-alignment = center,   
                         table-space-text-pre = (, 
                         table-align-text-pre = false,
