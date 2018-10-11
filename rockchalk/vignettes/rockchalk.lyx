@@ -1,5 +1,5 @@
-#LyX 2.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 508
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -21,49 +21,28 @@
 \makeatletter
 
 \renewenvironment{figure}[1][]{%
-
  \ifthenelse{\equal{#1}{}}{%
-
    \@float{figure}
-
  }{%
-
    \@float{figure}[#1]%
-
  }%
-
  \centering
-
 }{%
-
  \end@float
-
 }
 
 \renewenvironment{table}[1][]{%
-
  \ifthenelse{\equal{#1}{}}{%
-
    \@float{table}
-
  }{%
-
    \@float{table}[#1]%
-
  }%
-
  \centering
-
 %  \setlength{\@tempdima}{\abovecaptionskip}%
-
 %  \setlength{\abovecaptionskip}{\belowcaptionskip}%
-
 % \setlength{\belowcaptionskip}{\@tempdima}%
-
 }{%
-
  \end@float
-
 }
 
 
@@ -88,6 +67,9 @@
 \def\Sweavesize{\scriptsize} 
 \def\Rcolor{\color{black}} 
 \def\Rbackground{\color[gray]{0.90}}
+
+\usepackage{dcolumn}
+\usepackage{siunitx}
 \end_preamble
 \use_default_options true
 \begin_modules
@@ -109,6 +91,8 @@ logicalmkup
 \font_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures false
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -138,6 +122,7 @@ logicalmkup
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
 \index Index
 \shortcut idx
 \color #008000
@@ -150,7 +135,10 @@ logicalmkup
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -2124,6 +2112,7 @@ The students in psychology and political science are usually interested
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Aiken1991"
+literal "true"
 
 \end_inset
 
@@ -2131,6 +2120,7 @@ key "Aiken1991"
 \begin_inset CommandInset citation
 LatexCommand citealp
 key "Cohen2002"
+literal "true"
 
 \end_inset
 
@@ -2332,6 +2322,7 @@ for which values of the moderator would the effect of the plotx variable
 \begin_inset CommandInset citation
 LatexCommand citeyear
 key "JohnsonNeyman1936"
+literal "true"
 
 \end_inset
 
@@ -2350,6 +2341,7 @@ The method of calculation is outlined in
 \begin_inset CommandInset citation
 LatexCommand citet
 key "PreacherCurren2006"
+literal "true"
 
 \end_inset
 
@@ -2879,6 +2871,7 @@ standardized
 \begin_inset CommandInset citation
 LatexCommand citealp
 key "King1986"
+literal "true"
 
 \end_inset
 
@@ -3208,6 +3201,7 @@ Residual-centering
 \begin_inset CommandInset citation
 LatexCommand citep
 key "LittleBovaird2006"
+literal "true"
 
 \end_inset
 
@@ -3491,6 +3485,7 @@ better
 \begin_inset CommandInset citation
 LatexCommand citet
 key "Aiken1991"
+literal "true"
 
 \end_inset
 
@@ -3503,6 +3498,7 @@ Applied Multiple Regression/Correlation for the Behavioral Sciences
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Cohen2002"
+literal "true"
 
 \end_inset
 
@@ -3531,6 +3527,7 @@ We support the recommendation of Aiken & West (1991) and others that multiple
 \begin_inset CommandInset citation
 LatexCommand citealp
 key "QuinnKeough2002"
+literal "true"
 
 \end_inset
 
@@ -3543,6 +3540,7 @@ Technical rebuttals have been published already (
 \begin_inset CommandInset citation
 LatexCommand citealp
 key "Kromrey1998"
+literal "true"
 
 \end_inset
 
