@@ -1267,12 +1267,12 @@ outreg <-
     BT <- function(n, type = "latex"){
         if (type == "latex") {
             if(dcolumn){
-                return(paste0("\\begin{tabular}{l*{",n-1,"}", Dmarkup, "}\n", SL(n, type)))
+                return(paste0("\\begin{tabular}{@{}l*{",n-1,"}", Dmarkup, "@{}}\n", SL(n, type)))
             } else if (siunitx){
-                return(paste0("\\begin{tabular}{l*{", n-1,"}", Smarkup, "}\n", SL(n, type)))
+                return(paste0("\\begin{tabular}{@{}l*{", n-1,"}", Smarkup, "@{}}\n", SL(n, type)))
             }
             else {
-                return(paste0("\\begin{tabular}{l*{",n,"}{l}}\n", SL(n, type)))
+                return(paste0("\\begin{tabular}{@{}l*{",n,"}{l}@{}}\n", SL(n, type)))
             }
         }
         if (type == "html")  return(paste("<table>\n", SL(n, type)))
