@@ -400,16 +400,19 @@ rightside .code:n = {
 
 
 \usepackage{siunitx}
+%following now in each table
 \sisetup{
-  input-symbols = (),
-  group-minimum-digits = 9,
-  table-number-alignment = center,
-  table-space-text-pre = (,
-  table-align-text-pre = false,
-  table-align-text-post = false,
-  table-space-text-post = {***},
-  parse-units = false
+  input-symbols = ( )
 }
+%,
+%  group-minimum-digits = 9,
+%  table-number-alignment = center,
+%  table-space-text-pre = (,
+%  table-align-text-pre = false,
+%  table-align-text-post = false,
+%  table-space-text-post = {***},
+%  parse-units = false
+%}
 \end_preamble
 \use_default_options false
 \begin_modules
@@ -438,7 +441,7 @@ sweave
 \output_sync 0
 \bibtex_command default
 \index_command default
-\float_placement h
+\float_placement H
 \paperfontsize 11
 \spacing single
 \use_hyperref true
@@ -1028,7 +1031,8 @@ rockchalk
 
 \end_inset
 
- version 1.8.120 introduced decimal-centering of columns in the 
+ version 1.8.120 marked the first effort to introduce decimal-centering of
+ columns in the 
 \begin_inset Flex Code
 status open
 
@@ -1041,11 +1045,18 @@ outreg
 
  table-writer for regression models.
  This has been the most widely requested feature for a while.
- 10 years ago, I declined to do it because I was afraid I would make tables
- that would fail in ordinary documents.
- However, in 2018 I've learned some tricks so I've implemented them and
- I believe it is adequate.
- The tables that were OK are still OK, and the ones with 
+ Years ago, I declined to do it because I was afraid I would make tables
+ that would fail in ordinary user documents.
+ I did not want to impose any complications, especially for novice LaTeX
+ users.
+ There was an explanation of my reticence in the rockchalk vignette.
+\end_layout
+
+\begin_layout Abstract
+\noindent
+However, in 2018 I was persuaded we should try harder on decimal centering.
+ In today's version of rockchalk, 1.8.126, I have working examples of 2 centering
+ methods, 
 \begin_inset Flex Code
 status open
 
@@ -1056,8 +1067,173 @@ dcolumn
 
 \end_inset
 
- mostly work as well.
- I am asking friends and colleagues to explore and test.
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ was the first method attempted.
+ It is much simpler, easier to work with.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ output it is mostly adequate, but it leaves column headers and non-numeric
+ content alignment.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ is a much more massive framework.
+ It required much more alteration of rockchalk itself.
+ There is much more danger of outright failure because of the immensity
+ of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ itself.
+ However, there are hopeful signs it can deal with some very tough examples.
+ See Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16s}
+\end_layout
+
+\end_inset
+
+ I have a solution using 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ for a troublesome table that failed badly with 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ (Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16d}
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Abstract
+\noindent
+I am asking friends and colleagues to explore and test.
+ Run 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ as usual to have my traditional, simple solution that has been good enough
+ for 13 years for most people.
+ Then insert an additional 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ argument to ask for column centering.
+ Try 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn=TRUE
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx=TRUE
+\end_layout
+
+\end_inset
+
+ (NOT both).
 \end_layout
 
 \begin_layout Abstract
@@ -1071,9 +1247,10 @@ rockchalk
 
 \end_inset
 
-, but right now it is a plea for insight & advice.
- Right now, this essay is not in the package, but it is in the repository:
- 
+, but right now it is just a brief explanation and a giant collection of
+ example tables.
+ It is a plea for insight & advice.
+ This essay is not in the package, but it is in the repository: 
 \begin_inset Flex URL
 status open
 
@@ -1098,50 +1275,7 @@ vignette-test
 \end_layout
 
 \begin_layout Abstract
-The problem I see now, where I need your help, is that the 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-dcolumn
-\end_layout
-
-\end_inset
-
- setup is either giving columns that are too wide, or too narrrow (causing
- output to overlap).
- In version 1.8.120 of package, I have the 
-\begin_inset Quotes eld
-\end_inset
-
-too wide
-\begin_inset Quotes erd
-\end_inset
-
- problem so some multi-model tables run off the edge of the page.
- In version 1.8.121, I tighten down columns, but end up with overlapping results.
- You can see that in the PDF you are reading (see the F rows in Table 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-ref{tab:ex16}
-\end_layout
-
-\end_inset
-
-) Because the 
-\begin_inset Quotes eld
-\end_inset
-
-special
-\begin_inset Quotes erd
-\end_inset
-
- F markup we decided on is so wide, it breaks the dcolumn spacing.
+I need stress tests for tables.
  
 \end_layout
 
@@ -1317,233 +1451,6 @@ dcolumn=TRUE
 .
 \end_layout
 
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-begin{table}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-caption{2 Wide (not tight) format with siunitx = TRUE}
-\backslash
-label{tab:ex3}
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-begin{tabular}{@{}l*{2}
-\end_layout
-
-\begin_layout Plain Layout
-
-                    S[table-align-text-post=false,
-\end_layout
-
-\begin_layout Plain Layout
-
-                      input-symbols = (),   
-\end_layout
-
-\begin_layout Plain Layout
-
-                      group-minimum-digits = 9,   
-\end_layout
-
-\begin_layout Plain Layout
-
-                      table-number-alignment = center,   
-\end_layout
-
-\begin_layout Plain Layout
-
-                      table-space-text-pre = (, 
-\end_layout
-
-\begin_layout Plain Layout
-
-                      table-align-text-pre = false,
-\end_layout
-
-\begin_layout Plain Layout
-
-                      table-align-text-post = false,
-\end_layout
-
-\begin_layout Plain Layout
-
-                      table-space-text-post = {***},   
-\end_layout
-
-\begin_layout Plain Layout
-
-                      parse-units = false
-\end_layout
-
-\begin_layout Plain Layout
-
-]}
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
-   & 
-\backslash
-multicolumn{2}{c}{M1}
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
-   & 
-\backslash
-multicolumn{1}{c}{Estimate}& 
-\backslash
-multicolumn{1}{c}{(S.E.)}
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
-  (Intercept)    &  5245.245{***} &   (024.618) 
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
-  x1      &144.546* &   (044.692) 
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
- N& 
-\backslash
-multicolumn{1}{c}{100} & 
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
- RMSE            &6.121         & 
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
- $R^2$            &0.048         & 
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
-
-\backslash
-hline
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-multicolumn{3}{l}{${*  p}
-\backslash
-le 0.05$${*
-\backslash
-!
-\backslash
-!*  p}
-\backslash
-le 0.01$${*
-\backslash
-!
-\backslash
-!*
-\backslash
-!
-\backslash
-!*  p}
-\backslash
-le 0.001$}
-\backslash
-tabularnewline
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-end{tabular}
-\end_layout
-
-\begin_layout Plain Layout
-
- 
-\backslash
-end{table}
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Get the test version
 \end_layout
@@ -1606,6 +1513,78 @@ I've already noticed a couple of quirks while testing 1.8.120, so by the time
 \end_layout
 
 \begin_layout Section
+User Interface question for you, the user
+\end_layout
+
+\begin_layout Standard
+Now, I design this so if user does not specify dcolumn or siunitx, then
+ the traditional no-decimal alignment table is offered.
+ User has choice to insert either
+\end_layout
+
+\begin_layout Enumerate
+dcolumn=TRUE
+\end_layout
+
+\begin_layout Enumerate
+siunitx=TRUE
+\end_layout
+
+\begin_layout Standard
+to change that.
+\end_layout
+
+\begin_layout Standard
+Right now, in the middle of the night, I realize maybe this could be re-organize
+d.
+ What if there were 1 argument 
+\begin_inset Quotes eld
+\end_inset
+
+centering
+\begin_inset Quotes erd
+\end_inset
+
+ with legal values c(
+\begin_inset Quotes eld
+\end_inset
+
+none
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)? Then we'd make some fancy magic so that if a user mistakenly enters 
+\begin_inset Quotes eld
+\end_inset
+
+centering=TRUE
+\begin_inset Quotes erd
+\end_inset
+
+ then we give them siunitx.
+\end_layout
+
+\begin_layout Standard
+What is your thought on that?
+\end_layout
+
+\begin_layout Section
 Briefly: outreg
 \end_layout
 
@@ -1627,9 +1606,21 @@ copy/paste
  the table to be displayed in the document.)
 \end_layout
 
+\begin_layout Subsubsection*
+About examples here and your long-run work flow
+\end_layout
+
 \begin_layout Standard
-Usually, I would suggest instead that authors should create an outreg output
- file, with a sequence like this
+I'm using a lot of short cuts to make it easier to produce examples with
+ and without centering.
+ 
+\end_layout
+
+\begin_layout Standard
+If you are learning how to make tables, I usually suggest doing it in a
+ different way.
+ I would suggest instead that authors should create an outreg output file,
+ with a sequence like this
 \end_layout
 
 \begin_layout Standard
@@ -2187,7 +2178,7 @@ Intercept
 
 \begin_layout Plain Layout
 
-ex1 <- outreg(m1, title = "My One Tightly Printed Regression",
+ex1 <- outreg(m1, title = "My One Tightly Printed Regression (uncentered)",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2256,7 +2247,7 @@ side-by-side
 \begin_inset Quotes erd
 \end_inset
 
- columns",
+ columns (uncentered)",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2538,7 +2529,7 @@ status open
 
 
 \backslash
-ref{tab:ex2pd}
+ref{tab:ex2p}
 \end_layout
 
 \end_inset
@@ -2559,13 +2550,59 @@ status open
 
 \begin_layout Plain Layout
 
+ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Ability to change p values", 
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2p
+\begin_inset Quotes erd
+\end_inset
+
+,  float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+         alpha = c(0.1, 0.05, 0.01)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
 ex2pd <- outreg(list("Fingers" = m1), tight = FALSE, 
 \end_layout
 
 \begin_layout Plain Layout
 
-         title = "Ability to change p values with decimal-centered columns",
- 
+         title = "Ability to change p values (dcolumn)", 
 \end_layout
 
 \begin_layout Plain Layout
@@ -2593,11 +2630,6 @@ tab:ex2pd
 
 \begin_layout Plain Layout
 
-## I didn't put print.results=FALSE, so no need to cat result here
-\end_layout
-
-\begin_layout Plain Layout
-
 @
 \end_layout
 
@@ -2608,9 +2640,7 @@ tab:ex2pd
 
 \begin_layout Standard
 In my first tests, I see some trouble here because the stars are not evenly
- spaced.
- This is, almost surely, a dcolumn side effect.
- Compare Table 
+ spaced in the dcolumn-based Table 
 \begin_inset ERT
 status open
 
@@ -2618,14 +2648,26 @@ status open
 
 {
 \backslash
-ref{tab:ex2p}}
+ref{tab:ex2pd}}
 \end_layout
 
 \end_inset
 
-, and you see without dcolumn, I don't have star trouble.
- This is the kind of ripple effect we need to find and fix.
- Your tests will help on this.
+.
+ However, the siunitx based Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\backslash
+ref{tab:ex2ps}}
+\end_layout
+
+\end_inset
+
+ may be adequate.
 \end_layout
 
 \begin_layout Standard
@@ -2639,13 +2681,12 @@ status open
 
 \begin_layout Plain Layout
 
-ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
+ex2ps <- outreg(list("Fingers" = m1), tight = FALSE, 
 \end_layout
 
 \begin_layout Plain Layout
 
-         title = "Ability to change p values with decimal-centered columns",
- 
+         title = "Ability to change p values (siunitx)", 
 \end_layout
 
 \begin_layout Plain Layout
@@ -2654,26 +2695,16 @@ ex2p <- outreg(list("Fingers" = m1), tight = FALSE,
 \begin_inset Quotes eld
 \end_inset
 
-tab:ex2p
+tab:ex2ps
 \begin_inset Quotes erd
 \end_inset
 
-, dcolumn = FALSE,
-\end_layout
-
-\begin_layout Plain Layout
-
-         float = TRUE,
+, dcolumn = TRUE, float = TRUE,
 \end_layout
 
 \begin_layout Plain Layout
 
          alpha = c(0.1, 0.05, 0.01)) 
-\end_layout
-
-\begin_layout Plain Layout
-
-## I didn't put print.results=FALSE, so no need to cat result here
 \end_layout
 
 \begin_layout Plain Layout
@@ -2892,6 +2923,140 @@ tab:ex3b
 
 \end_layout
 
+\begin_layout Standard
+The column-centered versions are in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex3bd}
+\end_layout
+
+\end_inset
+
+ and Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex3bs}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex3bd <- outreg(list("Model A" = m1, "Model B" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         varLabels = list(x1 = "Billie"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Note modelLabels Overrides model names (dcolumn)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex3bd
+\begin_inset Quotes erd
+\end_inset
+
+, dcolumn=TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex3bs <- outreg(list("Model A" = m1, "Model B" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         varLabels = list(x1 = "Billie"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Note modelLabels Overrides model names",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex3bs
+\begin_inset Quotes erd
+\end_inset
+
+, siunitx = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection*
 Specifying additional summary information
 \end_layout
@@ -2971,6 +3136,120 @@ tab:ex5d
 \end_inset
 
 , showAIC = TRUE, float = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The column-centered versions are in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex5dd}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex5ds}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex5dd, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Still have showAIC argument (dcolumn)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex5dd
+\begin_inset Quotes erd
+\end_inset
+
+, showAIC = TRUE, float = TRUE, dcolumn = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex5ds, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Still have showAIC argument, as in previous versions",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex5ds
+\begin_inset Quotes erd
+\end_inset
+
+, showAIC = TRUE, float = TRUE, siunitx = TRUE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3952,7 +4231,7 @@ status open
 
 
 \backslash
-ref{tab:ex16}
+ref{tab:ex16d}
 \end_layout
 
 \end_inset
@@ -3973,7 +4252,7 @@ status open
 
 \begin_layout Plain Layout
 
-ex16 <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+ex16d <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
 \end_layout
 
 \begin_layout Plain Layout
@@ -3995,7 +4274,7 @@ ex16 <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
 \begin_inset Quotes erd
 \end_inset
 
-tab:ex16
+tab:ex16d
 \begin_inset Quotes erd
 \end_inset
 
@@ -4023,6 +4302,79 @@ logLik
 \begin_layout Plain Layout
 
            digits = 5, alpha = c(0.1, 0.05, 0.01), dcolumn = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex16s <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+           title = 
+\begin_inset Quotes eld
+\end_inset
+
+2 OLS and 1 Logit (dcolumn), additional runFuns
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+           label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex16s
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+           request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+           runFuns = c("BIC" = "BIC", 
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+ = "ll"),
+\end_layout
+
+\begin_layout Plain Layout
+
+           digits = 5, alpha = c(0.1, 0.05, 0.01), siunitx = TRUE)
 \end_layout
 
 \begin_layout Plain Layout
