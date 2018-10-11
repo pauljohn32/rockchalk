@@ -890,7 +890,7 @@ outreg <-
                       "_EOL_" = "\n",
                       "_HL_" = "\\\\hline",
                       "_BOCU_" = " &",
-                      "_DOT_" = if(siunitx) paste0("\\\\phantom{", paste(rep(0, digits), collapse=""), "}.") else ".",
+                      "_DOT_" = if(siunitx) paste0("\\\\_"}.") else ".",
                       "_SEP_" = " &",
                       "_EOT_" = "\\\\end{tabular}",
                       "_BOMC1_" = "& \\\\multicolumn{1}{l}{",
@@ -1252,15 +1252,15 @@ outreg <-
     nColumns <- ifelse(tight, 1 + nmodels, 1 + 2*nmodels)
     ## siunitxmarkup
     ## Smarkup <- paste0("S[table-format=1.", digits, ", table-align-text-post=false]")
-    Smarkup <- paste0("S[table-align-text-post=false,
-                        input-symbols = ( ),   
-                        group-digits = false,   
-                        table-number-alignment = center,   
-                        table-space-text-pre = (, 
-                        table-align-text-pre = false,
-                        table-align-text-post = false,
-                        table-space-text-post = {", paste0(rep("*", length(alpha)), collapse=""),"},   
-                        parse-units = false]")
+    Smarkup <- paste0("{S[
+                         input-symbols = ( ),   
+                         group-digits = false,   
+                         table-number-alignment = center,   
+                         table-space-text-pre = (, 
+                         table-align-text-pre = false,
+                         table-align-text-post = false,
+                         table-space-text-post = {", paste0(rep("*", length(alpha)), collapse=""),"},   
+                         parse-units = false]}")
     ## Dcolumn treat all columns same with digits, not quite perfect
     Dmarkup  <- paste0("{D{.}{.} {", digits + length(alpha), "}}")
     
@@ -1412,7 +1412,7 @@ outreg <-
     if (showAIC == TRUE) {
         aline <- "_BR_AIC    _SEP_"
         aicv <- lapply(modelList, function(x) {
-            aic.x <- AIC(model)
+            aic.x <- AIC(x)
             if(is.numeric(aic.x)) format(aic.x, digits=digits, nsmall=3) else ""
         })
         if (tight == FALSE){
