@@ -743,8 +743,11 @@ NULL
 ##' ex5 <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, float = TRUE)
-##' cat(ex5)
-##'
+##' 
+##' ex5s <- outreg(list("Whichever" = m1, "Whatever" = m2),
+##'     title = "Still have showAIC argument, as in previous versions",
+##'     showAIC = TRUE, float = TRUE, siunitx = TRUE)
+##' 
 ##' \donttest{
 ##' ## Launches HTML browse
 ##' ex5html <- outreg(list("Whichever" = m1, "Whatever" = m2),
@@ -890,7 +893,7 @@ outreg <-
                       "_EOL_" = "\n",
                       "_HL_" = "\\\\hline",
                       "_BOCU_" = " &",
-                      "_DOT_" = if(siunitx) paste0("\\\\_"}.") else ".",
+                      "_DOT_" = if(siunitx) paste0("\\\\_") else ".", 
                       "_SEP_" = " &",
                       "_EOT_" = "\\\\end{tabular}",
                       "_BOMC1_" = "& \\\\multicolumn{1}{l}{",
@@ -914,7 +917,7 @@ outreg <-
         "_EOL_" = "\n",
         "_HL_" = "",
         "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"),
-        "_DOT_" = ".",
+        "_DOT_" = "_",
         "_SEP_" = "</td><td>",
         "_EOT_" = "</table>",
         "_BOMC1_" = "<td colspan = '1'>",
@@ -969,11 +972,12 @@ outreg <-
 
     # cs = column start
     # uses environment for tight, defaults as centered
-    bomc <- function(ctr = TRUE){
+    bomc <- function(ctr = TRUE, n){
+        if(missing(n)) n <- if(tight)1 else 2
         if(ctr) {
-            return(if(tight)"_BOMC1C_" else "_BOMC2C_")
+            return(paste0("_BOMC", n, "C_"))
         } else {
-            return(if(tight)"_BOMC1_" else "_BOMC2_")
+            return(paste0("_BOMC", n, "_"))
         }
     }
     
@@ -1256,13 +1260,14 @@ outreg <-
                          input-symbols = ( ),   
                          group-digits = false,   
                          table-number-alignment = center,   
-                         table-space-text-pre = (, 
+                         %table-space-text-pre = (, 
                          table-align-text-pre = false,
                          table-align-text-post = false,
                          table-space-text-post = {", paste0(rep("*", length(alpha)), collapse=""),"},   
                          parse-units = false]}")
     ## Dcolumn treat all columns same with digits, not quite perfect
-    Dmarkup  <- paste0("{D{.}{.} {", digits + length(alpha), "}}")
+    ## Here we guess on 3.6, seems only way out of bad mis-alignment
+    Dmarkup  <- paste0("{D{.}{.}{3.", digits + length(alpha), "}}")
     
     BT <- function(n, type = "latex"){
         if (type == "latex") {
@@ -1285,12 +1290,7 @@ outreg <-
     if (!is.null(modelLabels)){
         aline <- paste0("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
-            ##aline <- c(aline, paste0(bomc(ctr = dcolumn), modelLabel, "_EOMC_"))
-            if (tight == TRUE) {
-                 aline <- c(aline, paste0("_BOMC1C_", modelLabel, "_EOMC_"))
-            } else {
-                 aline <- c(aline, paste0("_BOMC2C_", modelLabel, "_EOMC_"))
-            }
+                 aline <- c(aline, paste0(bomc(dcolumn || siunitx), modelLabel, "_EOMC_"))
         }
         aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
@@ -1298,11 +1298,11 @@ outreg <-
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste0("_BR_", paste0(rep ("_BOMC1C_Estimate_EOMC_", nmodels), collapse = ""),
+        aline <- paste0("_BR_", paste0(rep(paste0(bomc(siunitx || dcolumn), "Estimate_EOMC_"), nmodels), collapse = ""),
                        "_EOR__EOL_", collapse = "") 
         z <- c(z, paste0(aline, collapse = ""))
         ##aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_EOC__BOCU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
-        aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep ("_EOC__BOMC1C_(S.E.)_EOMC_", nmodels, collapse = "")), "_EOR__EOL_")
+        aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep(paste0("_EOC_", bomc(siunitx||dcolumn), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
     } else {
         aline1 <- paste0("_BRU_", sprintf("%2s", " "))
@@ -1327,7 +1327,7 @@ outreg <-
                     aline <- c(aline, paste("_SEP_  ", se, collapse = " "))
                 }
             } else {
-                aline <- c(aline, "_BOMC1__DOT__EOMC_")
+                aline <- c(aline, paste0(bomc(siunitx || dcolumn, 1), "_DOT__EOMC_"))
                 if (tight == FALSE) aline  <- c(aline, "_SEP_    ")
             }
         }
