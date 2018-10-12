@@ -1,3 +1,8 @@
+2018-10-11  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/outreg.R (BT): showAIC had typo in data gather section. fixed
+	(checkFunctions): change \phantom to "\_"
+
 2018-10-07  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/outreg.R: dcolumn support inserted

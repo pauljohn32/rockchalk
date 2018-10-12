@@ -22,19 +22,19 @@ cd ${PACKAGE}.gitex/vignettes
 
 ## perl -pi.bak  -e 's/bibliography\{0.*rockchalk\}/bibliography{rockchalk}/' rockchalk.Rnw
 
-lyx -f -e pdf2 Rstyle.lyx
-lyx -f -e pdf2 rockchalk.lyx
-lyx -f -e pdf2 Rchaeology.lyx
-mkdir ../inst/doc
-cp -f rockchalk.pdf ../inst/doc
-cp -f Rstyle.pdf ../inst/doc
-cp -f Rchaeology.pdf ../inst/doc
+# lyx -f -e pdf2 Rstyle.lyx
+# lyx -f -e pdf2 rockchalk.lyx
+# lyx -f -e pdf2 Rchaeology.lyx
+#mkdir ../inst/doc
+#cp -f rockchalk.pdf ../inst/doc
+#cp -f Rstyle.pdf ../inst/doc
+#cp -f Rchaeology.pdf ../inst/doc
 cd ../..
 
 R --vanilla -f runRoxygen2.R
 
 
-R CMD build rockchalk.gitex --resave-data --no-build-vignettes 
+R CMD build rockchalk.gitex --resave-data ##--no-build-vignettes 
 
 read -p "Run check: OK? (y or n)" result
 

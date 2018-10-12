@@ -893,7 +893,7 @@ outreg <-
                       "_EOL_" = "\n",
                       "_HL_" = "\\\\hline",
                       "_BOCU_" = " &",
-                      "_DOT_" = if(siunitx) paste0("\\\\_") else ".", 
+                      "_DOT_" = paste0("\\\\_"), 
                       "_SEP_" = " &",
                       "_EOT_" = "\\\\end{tabular}",
                       "_BOMC1_" = "& \\\\multicolumn{1}{l}{",
