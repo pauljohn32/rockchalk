@@ -604,15 +604,15 @@ NULL
 ##' used in printing. For example, \code{runFuns = c("AIC" = "Akaike
 ##' Criterion", "BIC" = "Schwartz Criterion", "logLik" = "LL")}.
 ##'
-##' About dcolumn and siunitx. These are efforts to decimal-align
-##' the columns. If dcolumn is TRUE, user must insert in preamble
-##' \code{
-##' \\usepackage\{dcolumn\}
-##' }
-##' and siunitx requires author to put this in prefix:
-##' \code{
-##' \\usepackage\{siunitx\}
-##' } 
+##' About centering with dcolumn or siunitx. It appears now that
+##' results are better with \code{siunitx} but \code{dcolumn} is more
+##' familiar to users.  The user has the duty to make sure that the
+##' document preamble includes the correct package,
+##' \code{\\usepackage\{dcolumn\}} or \code{\\usepackage\{siunitx\}}.
+##' In this version, I have eliminated the need for the user to
+##' specify document-wide settings for \code{siunitx}. All of the
+##' details are explicitly written in the header of each tabular.
+##' It is done that way to more easily allow user customizations.
 ##'
 ##' @param modelList A regression model or an R list of regression
 ##'     models. Default model names will be M1, M2, and so forth. User
@@ -634,11 +634,15 @@ NULL
 ##'     standard errors are printed in a single column.  If FALSE,
 ##'     parameter estimates and standard errors are printed side by
 ##'     side.
-##' @param dcolumn Default FALSE. If TRUE, will use decimal-aligned
-##'     columns with the LaTeX package dcolumn. If FALSE, which is
-##'     default for historical reasons, the columns are left aligned.
-##' @param siunitx Default FALSE. If TRUE, use LaTeX siunitx for alignment.
-##'     See details for instructions on changes required in document preamble.
+##' @param centering Default is "none", but may be "siunitx" or
+##'     "dcolumn". No centering has been the only way until this
+##'     version. User feedback requested.  Don't forget to insert
+##'     usepackage statment in document preamble for siunitx or
+##'     dcolumn. If user specifies \code{centering=TRUE}, the
+##'     \code{siunitx} method will be used. The \code{dcolumn}
+##'     approach assumes that the values reported in the column use
+##'     fewer than 3 integer places and 3 decimal places. Additional
+##'     room is allocated for the significance stars.
 ##' @param showAIC This is a legacy argument, before the
 ##'     \code{request} argument was created.  If TRUE, the AIC
 ##'     estimate is included with the diagnostic values. It has the
@@ -719,7 +723,7 @@ NULL
 ##' gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
 ##' outreg(m1, title = "My One Tightly Printed Regression", float = TRUE)
 ##' ex1 <- outreg(m1, title = "My One Tightly Printed Regression",
-##'                float = TRUE, print.results = FALSE)
+##'                float = TRUE, print.results = FALSE, centering = "siunitx")
 ##' ## Show markup, Save to file with cat()
 ##' cat(ex1)
 ##' ## cat(ex1, file = "ex1.tex")
@@ -742,11 +746,11 @@ NULL
 ##'
 ##' ex5 <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
-##'     showAIC = TRUE, float = TRUE)
+##'     showAIC = TRUE, float = TRUE, centering = "siunitx")
 ##' 
 ##' ex5s <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
-##'     showAIC = TRUE, float = TRUE, siunitx = TRUE)
+##'     showAIC = TRUE, float = TRUE, centering = "siunitx")
 ##' 
 ##' \donttest{
 ##' ## Launches HTML browse
@@ -839,7 +843,7 @@ NULL
 ##' }
 outreg <-
     function(modelList, type = "latex", modelLabels = NULL,  varLabels = NULL,
-             tight = TRUE, dcolumn = FALSE, siunitx = FALSE,
+             tight = TRUE, centering = c("none", "siunitx", "dcolumn"),
              showAIC = FALSE, float = FALSE, request,
              runFuns, digits = 3, alpha = c(0.05, 0.01, 0.001),  SElist = NULL,
              PVlist = NULL,  Blist = NULL, title, label,
@@ -847,6 +851,12 @@ outreg <-
              browse = identical(type, "html") && interactive())
 {
 
+    if (is.character(centering)) {
+        centering <- match.arg(tolower(centering), c("none", "siunitx", "dcolumn"))
+    } else if (is.logical(centering)){
+        centering <- if(isTRUE(centering)) "siunitx" else "none"
+    }
+    
     myGofNames <- c(sigma = "RMSE",
                     r.squared = paste("_R2_"),
                     adj.r.squared = paste("adj", "_R2_"),
@@ -1271,9 +1281,9 @@ outreg <-
     
     BT <- function(n, type = "latex"){
         if (type == "latex") {
-            if(dcolumn){
+            if(centering == "dcolumn"){
                 return(paste0("\\begin{tabular}{@{}l*{",n-1,"}", Dmarkup, "@{}}\n", SL(n, type)))
-            } else if (siunitx){
+            } else if (centering == "siunitx"){
                 return(paste0("\\begin{tabular}{@{}l*{", n-1,"}", Smarkup, "@{}}\n", SL(n, type)))
             }
             else {
@@ -1290,7 +1300,7 @@ outreg <-
     if (!is.null(modelLabels)){
         aline <- paste0("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
-                 aline <- c(aline, paste0(bomc(dcolumn || siunitx), modelLabel, "_EOMC_"))
+                 aline <- c(aline, paste0(bomc(centering %in% c("dcolumn", "siunitx")), modelLabel, "_EOMC_"))
         }
         aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
@@ -1298,11 +1308,11 @@ outreg <-
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste0("_BR_", paste0(rep(paste0(bomc(siunitx || dcolumn), "Estimate_EOMC_"), nmodels), collapse = ""),
+        aline <- paste0("_BR_", paste0(rep(paste0(bomc(centering %in% c("dcolumn", "siunitx")), "Estimate_EOMC_"), nmodels), collapse = ""),
                        "_EOR__EOL_", collapse = "") 
         z <- c(z, paste0(aline, collapse = ""))
         ##aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_EOC__BOCU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
-        aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep(paste0("_EOC_", bomc(siunitx||dcolumn), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
+        aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep(paste0("_EOC_", bomc(centering %in% c("dcolumn", "siunitx")), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
     } else {
         aline1 <- paste0("_BRU_", sprintf("%2s", " "))
@@ -1327,7 +1337,7 @@ outreg <-
                     aline <- c(aline, paste("_SEP_  ", se, collapse = " "))
                 }
             } else {
-                aline <- c(aline, paste0(bomc(siunitx || dcolumn, 1), "_DOT__EOMC_"))
+                aline <- c(aline, paste0(bomc(centering %in% c("dcolumn", "siunitx"), 1), "_DOT__EOMC_"))
                 if (tight == FALSE) aline  <- c(aline, "_SEP_    ")
             }
         }
