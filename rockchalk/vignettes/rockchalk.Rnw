@@ -8,6 +8,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+\usepackage{float}
 \usepackage{url}
 \usepackage[authoryear]{natbib}
 
@@ -16,6 +17,7 @@
 <<echo=F>>=
   if(exists(".orig.enc")) options(encoding = .orig.enc)
 @
+\providecommand*{\code}[1]{\texttt{#1}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 %\VignetteIndexEntry{Using rockchalk}
@@ -110,10 +112,10 @@ more-than-the-usual amount of emphasis on the analysis of regression
 models that include interaction terms. It includes functions that
 can receive a fitted model and then return standardized, mean-centered,
 and residual-centered regression results. The plotting functions address
-some limitations of R's termplot function. Version 1.8 introduces
-a consistent framework for the creation of ``newdata'' objects and
-the calculation of predicted values so that the marginal effects of
-separate predictors can be easily explored.
+some limitations of R's \code{termplot} function. Version 1.8 introduces
+a consistent framework for the creation of ``\code{newdata}'' objects
+and the calculation of predicted values so that the marginal effects
+of separate predictors can be easily explored.
 \end{abstract}
 % In document Latex options:
 \fvset{listparameters={\setlength{\topsep}{0em}}}
@@ -127,37 +129,44 @@ options(useFancyQuotes = FALSE)
 
 \section{Introduction}
 
-This is the Spring, 2013 update of the rockchalk package. I offer
-a course in regression analysis for social and behavioral scientists
+This is the Fall, 2018 update of the rockchalk package. I offer a
+course in regression analysis for social and behavioral scientists
 every year. As the course goes on, I keep track of the difficulties
 that the students experience with R and I craft functions that facilitate
-their work on particular assignments. In this edition, I offer several
-enhancements in the calculation of predicted values, regression plots,
-and regression tables. 
+their work on particular assignments. The new features in this edition
+are the functions \code{descriptiveTables()} and \code{waldt()}
+(for regression reports), tools for regression simulation, including
+\code{genCorrelatedData3()} and \code{cutFancy()}, some support
+for common recoding support for multi-level modeling. Finally, the
+regression table-writing function the \code{outreg()} can now generate
+decimal-aligned columns. A new vignette demonstrating the \code{outreg()}
+function is introduced with the package.
 
-The core of the effort this time has been development of an internally
-coherent framework that allows students to create ``newdata'' objects
-in a flexible and convenient way. Users are welcome to use the newdata()
-function directly, but I offer a convenience called predictOMatic()
-that allows one to specify a regression model and then receive predicted
-values for a range of various input values. The default output will
-be similar to other regression software tools that provide ``marginal
-effect'' estimates for regression analysis. 
+As in previous versions, a core of the effort is development of an
+internally coherent framework that allows students to estimate regressions
+(usually with lm and glm) and then create useful summary tables and
+diagnostic reports. It is easy to create ``newdata'' objects and
+interact with fitted regressions. The \code{newdata()} function will
+be handy for just about any kind of regression. For the common kinds
+of regression in base R and lme4, there is also a convenience function
+called \code{predictOMatic()} that allows one to specify a regression
+model and then receive predicted values for a range of input values.
+The default output will be similar to other regression software tools
+that provide ``marginal effect'' estimates for regression analysis. 
 
-In this edition of rockchalk, I have exerted a great deal of effort
-to improve the consistency of predicted value plots for regression
-analysis. The plotSlopes() function is a plotter for linear models
-with interaction terms. It draws a plot on the screen, but it also
-creates an output object that can be subjected to a follow-up hypothesis
-test (by the testSlopes() function). In version 1.8, there is a new
-plot method for testSlopes objects that employ interactions of numeric
-predictors. The plots for testSlopes objects will be the most useful
-new feature in this version of the package. 
+I have exerted a great deal of effort to improve the consistency of
+predicted value plots for regression analysis. The \code{plotSlopes()}
+function is a plotter for linear models with interaction terms. It
+draws a plot on the screen, but it also creates an output object that
+can be subjected to a follow-up hypothesis test (by the \code{testSlopes()}
+function). There is a plot method for testSlopes objects to help with
+analysis of interactions. 
 
-For people who want to plot nonlinear regressions, the function plotCurves()
-is a replacement for plotSlopes. It can handle any sort of nonlinearity
-and interaction on the right hand side. Where some regression formula
-can cause R's termplot() function to fail, plotCurves() will succeed.
+For people who want to plot nonlinear regressions, the function \code{plotCurves()}
+is a replacement for \code{plotSlopes()}. It can handle any sort
+of nonlinearity and interaction on the right hand side. Where some
+regression formula can cause R's \code{termplot()} function to fail,
+\code{plotCurves()} will succeed.
 
 The core functionality of many functions has not been altered. Functions
 to provide standardized regression coefficients, mean-centered, or
@@ -276,15 +285,15 @@ function called model.data(). Under the hood, this required some hard
 work, a frustrating chain of trial and error that is discussed in
 the vignette \emph{Rchaeology}, which is distributed with this package).
 
-The predictOMatic() function will work when the regression model provides
-a predict function that can handle the newdata argument. If the regression
-package does not provide such a function, the user should step back
-and use the newdata function to create the examplar predictor data
-frames and then calculate predicted values manually. The newdata()
-function will set all variables to center values and then it will
-create a ``mix and match'' combination of the ones that the user
-asks for. This sequence shows ways to ask for various ``mix and match''
-combinations of values from age and region. 
+The \code{predictOMatic()} function will work when the regression
+model provides a predict function that can handle the newdata argument.
+If the regression package does not provide such a function, the user
+should step back and use the newdata function to create the examplar
+predictor data frames and then calculate predicted values manually.
+The newdata() function will set all variables to center values and
+then it will create a ``mix and match'' combination of the ones
+that the user asks for. This sequence shows ways to ask for various
+``mix and match'' combinations of values from age and region. 
 
 <<echo=T>>=
 mynewdf <- newdata(m1, predVals = c("age","region"), n = 3)
@@ -311,22 +320,23 @@ The function getFocal() is a generic function; it will receive variables
 of different types and ``do the right thing.'' By default, focal
 values of numeric variables are quantile values. For factor values,
 the most frequently observed values are selected. These are customizable,
-as explained in the documentation. The newdata() output can be used
-in a predict() function call as demonstrated above. 
+as explained in the documentation. The \code{newdata()} output can
+be used in a predict() function call as demonstrated above. 
 
 It would be nice if every regression model's predicted values were
-accompanied by 95\% confidence intervals. Models fit by lm() can supply
-confidence intervals, but not glm(). At the current time, there are
-many competing methods that might be used to calculate those intervals;
-predict.glm() in R's stats package avoids the issue entirely by not
-calculating intervals. In rockchalk-1.8, I crafted some code to calculate
-confidence intervals for glm objects using the (admittedly crude)
-Wald-based approximation. In the scale of the linear predictor, we
-calculate a 95\% confidence interval, and then use the inverse link
-function to transform that onto the space of the observed response.
-In this example, I replicate an example that is an R classic, from
-the help page of predict.glm. The reader will note that the output
-includes a warning about the construction of the confidence interval.
+accompanied by 95\% confidence intervals. Models fit by \code{lm()}
+can supply confidence intervals, but not \code{glm()}. At the current
+time, there are many competing methods that might be used to calculate
+those intervals; predict.glm() in R's stats package avoids the issue
+entirely by not calculating intervals. In rockchalk-1.8, I crafted
+some code to calculate confidence intervals for glm objects using
+the (admittedly crude) Wald-based approximation. In the scale of the
+linear predictor, we calculate a 95\% confidence interval, and then
+use the inverse link function to transform that onto the space of
+the observed response. In this example, I replicate an example that
+is an R classic, from the help page of predict.glm. The reader will
+note that the output includes a warning about the construction of
+the confidence interval.
 
 <<echo=T>>=
 df <- data.frame(ldose = rep(0:5, 2), sex = factor(rep(c("M", "F"), c(6, 6))), 
@@ -335,6 +345,33 @@ df$SF.numalive <-  20 - df$SF.numdead
 budworm.lg <- glm(cbind(SF.numdead, SF.numalive) ~ sex*ldose, data = df,  family = binomial)
 predictOMatic(budworm.lg, predVals = c(ldose = "std.dev.", sex = "table"), interval = "confidence")  
 @
+
+\subsection{Descriptive Tables}
+
+In regression-based reports, it is common for authors to present a
+brief summary table to represent the data. The \code{descriptiveTable()}
+function was created to make that process easier and more predictable.
+The aim is to provide the usual summary statistics for the numeric
+predictors and a table of proportions for the categorical predictors.
+See Table \ref{tab:descriptiveTable}. The user can customize the
+requested statistical summaries for numeric predictors.
+
+\begin{table}[H]
+\caption{The descriptiveTable function\label{tab:descriptiveTable}}
+
+<<>>=
+descriptiveTable(m1, digits=6)
+@
+\end{table}
+
+\noindent I my opinion, the output is, well, simple and understandable.
+More importantly, it will be sufficient for a term paper, once it
+is converted into a presentable final format. It can be converted
+into HTML or LaTeX with various R packages, such as xtable. Note that
+because this descriptive table is derived from the fitted regression,
+it summarizes \code{\noindent only the cases} that were actually
+used in the regression analysis. If cases were lost by listwise deletion,
+the deleted cases are not taken into account here.
 
 \section{Better Regression Tables: Some outreg Examples.}
 
@@ -362,8 +399,7 @@ of arbitary size and complexity, allowing for interactions and nonlinearity.
 
 <<createdata1, echo=T>>=
 set.seed(1234)
-dat <- genCorrelatedData2(N = 100, means = c(0, 10, 0), sds = c(1, 2, 1), rho = c(0, 0, 0), 
-  	stde = 10, beta = c(0, -3, 4, 0), verbose = FALSE)
+dat <- genCorrelatedData3(N = 100, means = c(x1 = 0, x2 = 10, x3 = 0), sds = c(1, 2, 1), rho = c(0, 0, 0), stde = 10, beta = c(0, -3, 4, 0), verbose = FALSE)
 @\\
 That creates a new matrix with variables $x1,$ $x2$, $x3$, and
 y. We run some linear regressions and then create a categorical output
@@ -380,8 +416,9 @@ gm1 <- glm(y3 ~ x1 + x2, data = dat)
 @
 
 The outreg examples are offered in Tables \ref{tab:Tab1} through
-\ref{tab:Combined-OLSGLM}. Table \ref{tab:Tab1} is the default output
-for three models, obtained from \inputencoding{latin9}\lstinline!outreg(list(m1, m2, m3))!\inputencoding{utf8}.
+\ref{tab:Combined-OLSGLM}. Table \ref{tab:Tab1} is the ``wide''
+format output (separate columns for estimated parameters and standard
+errors) for three models, obtained from \code{outreg(list(m1, m2, m3), centering=''siunitx'')}.
 On the other hand, users can pack output estimates into a single column
 and ask for more stars, as illustrated in Table \ref{tab:Tab2}. In
 Table \ref{tab:Combined-OLSGLM}, observe that the linear and generalized
@@ -389,17 +426,23 @@ linear model output peacefully co-exist, side-by-side. This output
 is, in my opinion, completely acceptable for inclusion in a presentation
 or conference paper. There are some warts in this output. Because
 the model labels are not equal in length, the columns are not equally
-sized. Because many \LaTeX{} distributions do not include the dcolumns
-package, I've not aligned the coefficient estimates vertically as
-some users might prefer. It seems to me that, if the vertical alignment
-of estimates along the decimal is required, most users will install
-dcolumn and make a few obvious changes in the markup that I provide.
+sized. The default output from \code{outreg} will have left-aligned
+columns. Because users requested decimal-centered columns, the argument
+centering has been introduced. If \code{centering=\textquotedbl siunitx\textquotedbl}
+or \code{centering=TRUE}, the \code{outreg} table will be adjusted
+to use features in the LaTeX package ``\code{siunitx}''. The LaTeX
+package dcolumn is probably more familiar to users, and \code{\textquotedbl dcolumn\textquotedbl}
+is also a legal value for centering, but the results are not quite
+as good. As a \textbf{caution}, I hasten to mention that if a user
+asks for decimal-centered columns, the user has the duty to insert
+into the document preamble either ``\code{\textbackslash usepackage\{siunitx\}}''
+or ``\code{\textbackslash usepackage\{dcolumn\}}''.
 
 \begin{table}
 \caption{Default Outreg Table\label{tab:Tab1}}
 
-<<outreg10, echo = F, results=tex>>=
-or <- outreg(list(m1, m2, m3))
+<<outreg10, echo = F, results=tex>>="
+or <- outreg(list(m1, m2, m3), centering = "siunitx")
 @
 \end{table}
 
