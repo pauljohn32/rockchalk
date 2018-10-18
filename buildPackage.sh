@@ -2,9 +2,10 @@ PACKAGE="rockchalk"
 
 VERSION=$(awk -F": +" '/^Version/ { print $2 }' ${PACKAGE}/DESCRIPTION)
 
-rm -rf ${PACKAGE}.gitex;
 
+rm -rf ${PACKAGE}.gitex;
 mkdir ${PACKAGE}.gitex
+
 cd ${PACKAGE}
 
 cd vignettes
