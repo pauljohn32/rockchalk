@@ -1,3 +1,8 @@
+2018-11-09  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/predictOMatic.R (predictCI): glm predict interval
+	"response" correction
+
 2018-10-11  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/outreg.R (BT): showAIC had typo in data gather section. fixed

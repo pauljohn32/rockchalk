@@ -1334,22 +1334,54 @@ just enough
 
 \begin_layout Standard
 Since 2006, many new R packages have been introduced for the creation of
- regression tables, but I still prefer to maintain outreg.
+ regression tables, but I still prefer to maintain 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+outreg
+\end_layout
+
+\end_inset
+
+.
  I fight to keep this simple, but have added some features in response to
  user requests.
- In rockchalk-1.8, I have compromised with users who want 
+ For me, the biggest question is whether the format should be 
 \begin_inset Quotes eld
 \end_inset
 
-more stars.
+wide
 \begin_inset Quotes erd
 \end_inset
 
- Personally, I think the one-two-three stars for p-values are silly, but
- they are used so widely that I now have incorporated a user option to request
- various alphas.
- I've also made it easier for users to request additional summary statistics
- in the bottom half of the table.
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+tight
+\begin_inset Quotes erd
+\end_inset
+
+.
+ A tight format stacks estimates and standard errors into a single column,
+ while a wide format has them in separate columns.
+ In response to user requests, stars for statistical significance were made
+ customizable.
+ It is now allowed to directly insert vectors of parameter estimates and
+ standard errors.
+ In this version, a new parameter 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+centering
+\end_layout
+
+\end_inset
+
+ is introduced for decimal-centered columns.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -1491,39 +1523,26 @@ reference "tab:Tab1"
 \begin_inset Quotes eld
 \end_inset
 
-wide
-\begin_inset Quotes erd
-\end_inset
-
- format output (separate columns for estimated parameters and standard errors)
- for three models, obtained from 
+tight format output for three models, obtained from 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
-outreg(list(m1, m2, m3), centering=
-\begin_inset Quotes erd
-\end_inset
-
-siunitx
-\begin_inset Quotes erd
-\end_inset
-
-)
+outreg(list(m1, m2, m3), centering="siunitx")
 \end_layout
 
 \end_inset
 
 .
- On the other hand, users can pack output estimates into a single column
- and ask for more stars, as illustrated in Table 
+ On the other hand, as illustrated in Table 
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "tab:Tab2"
 
 \end_inset
 
-.
+, the author can request a wide table (tight = FALSE) and provide more elaborate
+ model labels and adjust the significance stars.
  In Table 
 \begin_inset CommandInset ref
 LatexCommand ref
@@ -1534,11 +1553,13 @@ reference "tab:Combined-OLSGLM"
 , observe that the linear and generalized linear model output peacefully
  co-exist, side-by-side.
  This output is, in my opinion, completely acceptable for inclusion in a
- presentation or conference paper.
+ professional presentation or conference paper.
  There are some warts in this output.
- Because the model labels are not equal in length, the columns are not equally
- sized.
- The default output from 
+ 
+\end_layout
+
+\begin_layout Standard
+The default output from 
 \begin_inset Flex Code
 status open
 
@@ -1669,7 +1690,15 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Default Outreg Table
+Decimal-centered columns in the 
+\begin_inset Quotes eld
+\end_inset
+
+tight
+\begin_inset Quotes erd
+\end_inset
+
+ style
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Tab1"
@@ -1735,7 +1764,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-My Spread Out Regressions
+The wide format obtained with tight = FALSE
 \begin_inset CommandInset label
 LatexCommand label
 name "tab:Tab2"
@@ -1762,7 +1791,15 @@ status open
 \begin_layout Plain Layout
 
 or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model"
- = m3), tight = FALSE, alpha = c(0.05, 0.01, 0.001))
+ = m3), tight = FALSE, alpha = c(0.05, 0.01, 0.001), centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \begin_layout Plain Layout
@@ -1835,12 +1872,27 @@ or2 <- outreg(list(m1,gm1), modelLabels = c("OLS:y","GLM: Categorized y"))
 \end_layout
 
 \begin_layout Standard
-In rockchalk 1.8, a translator from \SpecialChar LaTeX
- markup to simple HTML was introduced.
- The function outreg2HTML() can write an HTML code file that a word processor
- program such as Libre Office or Microsoft Word is able to import without
- a struggle.
- 
+I understand that some authors need to include regression tables in documents
+ that are not prepared with LaTeX.
+ The parameter type = 
+\begin_inset Quotes eld
+\end_inset
+
+HTML
+\begin_inset Quotes erd
+\end_inset
+
+ will change the output format to HTML.
+ An HTML file can be displayed in a web browser and it can be imported in
+ traditional 
+\begin_inset Quotes eld
+\end_inset
+
+word processor
+\begin_inset Quotes erd
+\end_inset
+
+ programs.
 \end_layout
 
 \begin_layout Section
@@ -1858,22 +1910,80 @@ One of the most fundamental skills in regression analysis is the interpretation
  It is much easier for students to understand the effect of an interaction
  if they can create a nice plot to show how the predicted value depends
  on various values of a predictor.
- The plotSlopes() function was introduced in 2010 when I was teaching a
- large first-year graduate course (more than 50 students) and it became
- apparent that about 20 percent of them would not be able to manage the
- R coding required to draw several lines on a single plot.
+ The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ function was introduced in 2010 when I was teaching a large first-year
+ graduate course (more than 50 students) and it became apparent that about
+ 20 percent of them would not be able to manage the R coding required to
+ draw several lines on a single plot.
  Unfortunately, R's termplot() function will not draw regressions involving
  interactions.
 \end_layout
 
 \begin_layout Standard
-The rockchalk package has two functions to help with this, plotSlopes()
- and plotCurves().
- plotCurves() is more general, it can handle any kind of formula that the
- user estimates.
- plotSlopes() is more limited, it is only for lm objects.
- In return for that limitation, plotSlopes() creates an output object which
- can be used to conduct post-hoc hypothesis tests.
+The rockchalk package has two functions to help with this, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotCurves()
+\end_layout
+
+\end_inset
+
+.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotCurves()
+\end_layout
+
+\end_inset
+
+ is more general, it can handle any kind of formula that the user estimates.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ is more limited, it is only for lm objects.
+ In return for that limitation, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ creates an output object which can be used to conduct post-hoc hypothesis
+ tests.
  
 \end_layout
 
@@ -1949,7 +2059,17 @@ name "fig:ps05"
 \end_layout
 
 \begin_layout Standard
-At its most elementary level, plotSlopes() is a 
+At its most elementary level, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ is a 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2017,7 +2137,18 @@ status open
 \noindent
 I've adjusted the color and opacity to illustrate the usage of those arguments.
  The y range is adjusted to make a little extra room for the legend.
- The plotSlopes() function is very flexible.
+ The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+plotSlopes()
+\end_layout
+
+\end_inset
+
+ function is very flexible.
  All of the label, color, and scale arguments of a plot function are also
  available.
  The plotSlopes function also works well if the moderator is a categorical
@@ -2027,8 +2158,28 @@ I've adjusted the color and opacity to illustrate the usage of those arguments.
 
 \begin_layout Standard
 It is important to note that the output object, m1ps, has the information
- necessary to re-create the plotted line in the form of a newdata data frame.
- The first few lines in the newdata object are
+ necessary to re-create the plotted line in the form of a 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+newdata
+\end_layout
+
+\end_inset
+
+ data frame.
+ The first few lines in the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+newdata
+\end_layout
+
+\end_inset
+
+ object are
 \end_layout
 
 \begin_layout Standard
@@ -2177,9 +2328,20 @@ m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 
 \begin_layout Standard
 \noindent
-We then ask plotSlopes to draw the predicted values using one numeric variable
- as the horizontal axis and values of another variable (a moderator) are
- set at particular values.
+We then ask 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+plotSlopes
+\end_layout
+
+\end_inset
+
+ to draw the predicted values using one numeric variable as the horizontal
+ axis and values of another variable (a moderator) are set at particular
+ values.
  Either x1 or x2 can be viewed as the 
 \begin_inset Quotes eld
 \end_inset
@@ -2236,18 +2398,57 @@ status open
 \end_layout
 
 \begin_layout Standard
-When modx is a numeric variable, then some particular values must be selected
- for calculation of predicted value lines.
- The modxVals argument is used to either specify moderator values or an
- algorithm to select focal values.
- By default, three hypothetical values of plotx are selected (the quantiles
- 25%, 50%, and 75%).
+When 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+modx
+\end_layout
+
+\end_inset
+
+ is a numeric variable, then some particular values must be selected for
+ calculation of predicted value lines.
+ The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+modxVals
+\end_layout
+
+\end_inset
+
+ argument is used to either specify moderator values or an algorithm to
+ select focal values.
+ By default, three hypothetical values of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+plotx
+\end_layout
+
+\end_inset
+
+ are selected (the quantiles 25%, 50%, and 75%).
  
 \end_layout
 
 \begin_layout Standard
-If modx is a factor variable, then the most frequently observed scores will
- be selected for consideration.
+If 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+modx
+\end_layout
+
+\end_inset
+
+ is a factor variable, then the most frequently observed scores will be
+ selected for consideration.
  The default display will include the regression line as well as color-coded
  points for the subgroups represented by values of the moderator.
 \end_layout
@@ -2436,7 +2637,18 @@ East
 
 .
  If that variable is used in an interaction in the regression model, then
- the plotSlopes output will include four lines, one for each region.
+ the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+plotSlopes
+\end_layout
+
+\end_inset
+
+ output will include four lines, one for each region.
  For example, consider Figure 
 \begin_inset CommandInset ref
 LatexCommand ref
