@@ -752,8 +752,9 @@ predictCI <-
         ## set se.fit = TRUE always, even if user doesn't want it.
         ## make them have it! Trying to make return structure more understandable.
 
+        ## 20181109 type for lm must be response
         pred <- predict.lm(object, newdata = newdata, se.fit = TRUE, scale = scale,
-                           type = type, interval = "none", na.action = na.action, level = level)
+                           type = "response", interval = "none", na.action = na.action, level = level)
 
         ## pred insides, at least:
         ## pred$fit      on linear predictor (==link) scale
