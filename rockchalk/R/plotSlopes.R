@@ -132,8 +132,8 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 plotSlopes.lm <-
     function (model, plotx, modx, n = 3, modxVals = NULL ,
               plotxRange = NULL, interval = c("none", "confidence", "prediction"),
-              plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL, legendPct = TRUE, col = NULL,
-              llwd = 2, opacity = 100, ...)
+              plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
+              legendPct = TRUE, col = NULL, llwd = 2, opacity = 100, ...)
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
@@ -141,27 +141,74 @@ plotSlopes.lm <-
         stop("plotSlopes: use modx argument to give name of the variable on the x axis")
 
     cl <- match.call()
-    mm <- model.matrix(model)
+    mm <- model.data(model)
+    ## grab name of DV from the terms object
+    ylab <- as.character(terms(model)[[2]])
     interval <- match.arg(interval)
 
-    depVar <- model.response(model.frame(model))
-    
     zzz <- as.character(substitute(plotx))
     plotx <- zzz[1L]
-   
     if (!missing(modx)) {
         zzz <- as.character(substitute(modx))
         modx <- zzz[1L]
     }
     
-    plotxVar <- model$model[, plotx]
+    plotxVar <- mm[, plotx]
+    ##depVar <- model.response(model.frame(model))
 
-    if (!is.numeric(plotxVar))
-        stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable. Try plotCurves?"))
-    ylab <- colnames(model$model)[1]
+    ## gets "raw" untransformed data
+    ## depVar <- model.data[ , ylab]
+    ## try to get the logged or transformed value???
+    ## should be same as model.response(model.frame())??
+    depVar <- with(mm, eval(terms(model)[[2]]))
+    
+    if(is.null(plotxRange)){
+        if (is.numeric(plotxVar)){
+            plotxRange <- range(plotxVar, na.rm = TRUE)
+        }
+    }
+        ## else {
+        ##     xvar.levels <- levels(plotxVar)
+        ##     plotxRange <- range(seq_along(xvar.levels)) + c(-0.5, 0.5)
+        ##     xvar.numeric <- as.numeric(plotxVar)
+        ##     plotxVals <- xvar.levels ## Why repeat this?
+        ## }
+        
+    ## TODO Check what character variable does here!
+    if (is.factor(plotxVar)){
+        plotxVals <- levels(plotxVar)
+    } else {
+        if(interval == "none"){
+            ## plotx is numeric
+            plotxVals <- range(plotxVar, na.rm = TRUE)
+        } else {
+            plotxVals <- plotSeq(plotxRange, length.out = 40)
+        }
+    }
 
-    plotxRange <- if(is.null(plotxRange)) range(mm[, plotx], na.rm = TRUE) else plotxRange
-    plotxVals <- plotSeq(plotxRange, length.out = 40)
+    if((missing(modxVals) || is.null(modxVals)) && !(missing(modx) || is.null(modx))){
+        modxVar <- mm[, modx]
+        if (is.factor(modxVar)) { ## modxVar is a factor
+            n <- ifelse(missing(n), nlevels(modxVar), n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
+        } else {
+            n <- ifelse(missing(n), 3, n)
+            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
+        }
+    }
+
+                                  
+   predVals <- setNames(list(plotxVals, if(is.null(modx) NULL else if (is.null(modxVals) "table"), c(plotx, modx))
+   predictOMatic(model, predVals = setNames(list(plotxVals, "table"), c(plotx, modx)))
+    
+  
+  
+
+    ##if (!is.numeric(plotxVar))
+       ## stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable. Try plotCurves?"))
+    ## ylab <- colnames(model$model)[1]
+
+   
 
     ## Create focalVals object, needed by newdata
     if (missing(modx) || is.null(modx)) {
@@ -196,6 +243,8 @@ plotSlopes.lm <-
 
     newdf <- newdata(model, predVals = focalVals)
 
+
+         
     dotargs <- list(...)
     dotnames <- names(dotargs)
     level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
@@ -203,7 +252,7 @@ plotSlopes.lm <-
     ## scan dotargs for predict keywords. Remove from dotargs
     ## the ones we only want going to predict. Leave
     ## others.
-    parms <- list(model, newdata = newdf, type = "response" , interval = interval)
+    parms <- list(model, newdata = newdf, type = "response", interval = interval)
     predArgs <- list()
 
     ## type requires special handling because it may go to predict or plot
@@ -216,9 +265,7 @@ plotSlopes.lm <-
 
     validForPredict <- c("se.fit", "dispersion", "terms", "na.action",
                          "level", "pred.var", "weights")
-
     dotsForPredict <- dotnames[dotnames %in% validForPredict]
-
     if (length(dotsForPredict) > 0) {
         parms <- modifyList(parms, dotargs[dotsForPredict])
         dotargs[[dotsForPredict]] <- NULL
