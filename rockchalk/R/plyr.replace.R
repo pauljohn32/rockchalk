@@ -93,7 +93,7 @@ rbindFill <- function(...)
     }
 
     allclasses <- lapply(dfs, function(x) lapply(x, class))
-    allnames <- unique(unlist(sapply(allclasses, names)))
+    allnames <- unique(unlist(lapply(allclasses, names)))
 
     ## scan data frames and accumulate the levels of factor variables
     agglevels <- setNames(vector("list", length = length(allnames)), allnames)
