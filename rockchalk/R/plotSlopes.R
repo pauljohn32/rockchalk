@@ -147,11 +147,11 @@ plotSlopes.lm <-
     depVar <- model.response(model.frame(model))
     
     zzz <- as.character(substitute(plotx))
-    plotx <- zzz[1L]
+    if(!is.character(plotx)) plotx <- zzz[1L]
    
     if (!missing(modx)) {
         zzz <- as.character(substitute(modx))
-        modx <- zzz[1L]
+        if(!is.character(modx)) modx <- zzz[1L]
     }
     
     plotxVar <- model$model[, plotx]
