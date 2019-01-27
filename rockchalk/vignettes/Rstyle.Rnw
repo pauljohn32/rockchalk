@@ -1,4 +1,4 @@
-%% LyX 2.3.0 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.3.1 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -18,7 +18,6 @@
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]
  {hyperref}
-\usepackage{breakurl}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
@@ -117,9 +116,7 @@
 \renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
 
 \begin{document}
-
 \title{R Style. An Rchaeological Commentary. }
-
 \author{Paul E. Johnson <pauljohn @ ku.edu>}
 \maketitle
 
