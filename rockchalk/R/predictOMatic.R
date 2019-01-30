@@ -463,7 +463,7 @@ NULL
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##' @example inst/examples/predictOMatic-ex.R
 predictOMatic <-
-    function(model = NULL, predVals = "margins", divider = "quantile", n = 5, ...)
+    function(model = NULL, predVals = "margins", divider = "quantile", n = 5, ..., pct = TRUE)
 {
 
     dots <- list(...)

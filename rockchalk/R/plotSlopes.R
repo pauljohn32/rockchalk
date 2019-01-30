@@ -130,27 +130,32 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' Sciences (Third.). Routledge Academic.
 ##' @example inst/examples/plotSlopes-ex.R
 plotSlopes.lm <-
-    function (model, plotx, modx, n = 3, modxVals = NULL ,
+    function (model, plotx, modx = NULL, n = 3, modxVals = NULL ,
               plotxRange = NULL, interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
-              legendPct = TRUE, col = NULL, llwd = 2, opacity = 100, ...)
+              legendPct = TRUE, col = NULL, llwd = 2, opacity = 100, ...,
+              type = c("response", "link"))
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
     if (missing(plotx))
-        stop("plotSlopes: use modx argument to give name of the variable on the x axis")
+        stop("plotSlopes: plotx argument is required")
 
     cl <- match.call()
+    dotargs <- list(...)
+    dotnames <- names(dotargs)
+    level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
+    
     mm <- model.data(model)
     ## grab name of DV from the terms object
     ylab <- as.character(terms(model)[[2]])
-    interval <- match.arg(interval)
 
-    zzz <- as.character(substitute(plotx))
-    plotx <- zzz[1L]
+    interval <- match.arg(interval)
+    type <- match.arg(type)
+    
     if (!missing(modx)) {
         zzz <- as.character(substitute(modx))
-        modx <- zzz[1L]
+        if(!is.character(modx)) modx <-as.character(substitute(modx))
     }
     
     plotxVar <- mm[, plotx]
@@ -195,14 +200,28 @@ plotSlopes.lm <-
             n <- ifelse(missing(n), 3, n)
             modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         }
-    }
-
-                                  
-   predVals <- setNames(list(plotxVals, if(is.null(modx) NULL else if (is.null(modxVals) "table"), c(plotx, modx))
-   predictOMatic(model, predVals = setNames(list(plotxVals, "table"), c(plotx, modx)))
+    } 
     
-  
-  
+    predVals <- list(plotxVals)
+    names(predVals) <- plotx
+    if(!is.null(modx)) {
+        if(is.null(modxVals)) modxVals <- "table"
+        TEXT <- paste0("predVals[[\"", modx, "\"]] <- modxVals")
+        eval(parse(text = TEXT))
+    }
+    
+    parms.pred <- list(model, predVals = predVals, type = type, interval = interval)
+    validForPredict <- c("se.fit", "dispersion", "terms", "na.action",
+                         "level", "pred.var", "weights")
+    dotsForPredict <- dotnames[dotnames %in% validForPredict]
+    if (length(dotsForPredict) > 0) {
+        parms.pred <- modifyList(parms.pred, dotargs[dotsForPredict])
+        dotargs[[dotsForPredict]] <- NULL
+    }
+    
+    pn <-  do.call("predictOMatic", parms.pred)
+    
+   
 
     ##if (!is.numeric(plotxVar))
        ## stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable. Try plotCurves?"))
@@ -210,87 +229,73 @@ plotSlopes.lm <-
 
    
 
-    ## Create focalVals object, needed by newdata
-    if (missing(modx) || is.null(modx)) {
-        modxVar <- rep(1, nobs(model))
-        if (interval == "none") {
-            focalVals <- list(plotxRange)
-        } else {
-            focalVals <- list(plotxVals)
-        }
-        names(focalVals) <- c(plotx)
-        modxVals <- 1
-        modx <- NULL
-    } else {
-        modxVar <- model$model[, modx]
-        if (is.factor(modxVar)) { ## modxVar is a factor
-            n <- ifelse(missing(n), nlevels(modxVar), n)
-            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
-        } else {
-            n <- ifelse(missing(n), 3, n)
-            modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
-        }
+    ## ## Create focalVals object, needed by newdata
+    ## if (missing(modx) || is.null(modx)) {
+    ##     modxVar <- rep(1, nobs(model))
+    ##     if (interval == "none") {
+    ##         focalVals <- list(plotxRange)
+    ##     } else {
+    ##         focalVals <- list(plotxVals)
+    ##     }
+    ##     names(focalVals) <- c(plotx)
+    ##     modxVals <- 1
+    ##     modx <- NULL
+    ## } else {
+    ##     modxVar <- model$model[, modx]
+    ##     if (is.factor(modxVar)) { ## modxVar is a factor
+    ##         n <- ifelse(missing(n), nlevels(modxVar), n)
+    ##         modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
+    ##     } else {
+    ##         n <- ifelse(missing(n), 3, n)
+    ##         modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
+    ##     }
 
-        ## if no interval plot requested, we only need 2 points from plotx
-        ## to plot lines
-        if (interval == "none") {
-            focalVals <- list(modxVals, plotxRange)
-        } else {
-            focalVals <- list(modxVals, plotxVals)
-        }
-        names(focalVals) <- c(modx, plotx)
-    }
+    ##     ## if no interval plot requested, we only need 2 points from plotx
+    ##     ## to plot lines
+    ##     if (interval == "none") {
+    ##         focalVals <- list(modxVals, plotxRange)
+    ##     } else {
+    ##         focalVals <- list(modxVals, plotxVals)
+    ##     }
+    ##     names(focalVals) <- c(modx, plotx)
+    ## }
 
-    newdf <- newdata(model, predVals = focalVals)
+    ## newdf <- newdata(model, predVals = focalVals)
 
 
          
-    dotargs <- list(...)
-    dotnames <- names(dotargs)
-    level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
     
-    ## scan dotargs for predict keywords. Remove from dotargs
-    ## the ones we only want going to predict. Leave
-    ## others.
-    parms <- list(model, newdata = newdf, type = "response", interval = interval)
-    predArgs <- list()
+    ## ## scan dotargs for predict keywords. Remove from dotargs
+    ## ## the ones we only want going to predict. Leave
+    ## ## others.
+  
+    ## np <- do.call("predictCI", parms.pred)
+    ## newdf <- cbind(newdf, np$fit)
+    ## if ((!is.null(parms.pred[["se.fit"]])) && (parms.pred[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
 
-    ## type requires special handling because it may go to predict or plot
-    if (!is.null(dotargs[["type"]])) {
-        if (dotargs[["type"]] %in% c("response", "link", "none")) {
-            parms[["type"]] <- dotargs[["type"]]
-            dotargs[["type"]] <- NULL
-        }
-    }
-
-    validForPredict <- c("se.fit", "dispersion", "terms", "na.action",
-                         "level", "pred.var", "weights")
-    dotsForPredict <- dotnames[dotnames %in% validForPredict]
-    if (length(dotsForPredict) > 0) {
-        parms <- modifyList(parms, dotargs[dotsForPredict])
-        dotargs[[dotsForPredict]] <- NULL
-    }
-
-    np <- do.call("predictCI", parms)
-    newdf <- cbind(newdf, np$fit)
-    if ((!is.null(parms[["se.fit"]])) && (parms[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
-
+    newdf <- pn
+    
     plotyRange <- if(is.numeric(depVar)){
         magRange(depVar, mult = c(1, 1.2))
     } else {
         stop(paste("plotSlopes: use plotCurves if this is a glm (logit, probit, count)"))
     }
 
-    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
-                  plotx = plotx, modx = modx, modxVals = modxVals,
-                  interval = interval, level = level, plotPoints = plotPoints,
-                  plotLegend = plotLegend, legendTitle = legendTitle,
-                  col = col, opacity = opacity, xlim = plotxRange,
-                  ylim = plotyRange, ylab = ylab, llwd = llwd)
-
-    parms <- modifyList(parms, dotargs)
-    plotArgs <- do.call("plotFancy", parms)
-
+    if(is.numeric(plotxVals)){
+        parms <- list(newdf = newdf, olddf = mm, #data.frame(modxVar, plotxVar, depVar),
+                      plotx = plotx, modx = modx, modxVals = modxVals,
+                      interval = interval, level = level, plotPoints = plotPoints,
+                      plotLegend = plotLegend, legendTitle = legendTitle,
+                      col = col, opacity = opacity, xlim = plotxRange,
+                      ylim = plotyRange, ylab = ylab, llwd = llwd)
+        
+        parms <- modifyList(parms, dotargs)
+        plotArgs <- do.call("plotFancy", parms)
+    } else {
+        plotArgs <- do.call("plotFancyCategories", list(newdf, plotx, modx, xlim=plotxRange,
+                                            xlab = plotx, ylab = ylab, ylim = plotyRange,
+                                            main = "", width = 1, legend.title = legendTitle))
+    }
     z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = plotArgs$col, lty = plotArgs$lty)
     class(z) <- c("plotSlopes", "rockchalk")
 
@@ -335,12 +340,14 @@ plotFancy <-
     } else {
         level <- 0.95
     }
-    modxVar <- olddf$modxVar
-    plotxVar <- olddf$plotxVar
-    depVar <- olddf$depVar
+    
+    modxVar <- if(is.null(modx)) rep(1, NROW(olddf)) else olddf[ , modx]
+    plotxVar <- olddf[ , plotx]
+    depVar <- olddf[ , 1] ## column 1 is observed dv fix me here with name
 
     ## Now begin the plotting work.
     if (missing(modx) || is.null(modx)) {
+        modxVals <- 1
         lmx <- 1
     } else {
         lmx <- length(modxVals)
@@ -496,3 +503,117 @@ plotFancy <-
     }
     invisible(list(col = col, lty = lty, lwd = llwd))
 }
+
+
+
+
+##' Draw standard error bar for discrete variables
+##'
+##' Used with plotSlopes if plotx is discrete
+##' @param x The estimate of the center point
+##' @param lwr The lower confidence interval bound
+##' @param upr The upper confidence interval bound
+##' @param width Thickness of shaded column
+##' @param col Color for a bar
+##' @param opacity 120 is default, that's partial see through.
+##' @return NONE
+##' @author Paul Johnson
+se.bars <- function(x, lwr, upr, width, col = col.se,
+                    opacity = 120) {
+    h <- 0.5 * width #half width
+    iCol <- col2rgb(col)
+    bCol <- mapply(rgb, red = iCol[1,], green = iCol[2,],
+                   blue = iCol[3,], alpha = opacity, maxColorValue = 255)
+    ### sCol: shade color
+    sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,],
+                    blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
+    lCol <- mapply(rgb, red = iCol[1,], green = iCol[2,],
+                   blue = iCol[3,], alpha = min(255, 2*opacity), maxColorValue = 255)
+    polygon(c(x-h, x+h, x+h,  x-h), c(rep(lwr, 2), rep(upr, 2)), col = sCol, border = NA)
+    arrows(x0 = x, y0 = lwr, y1 = upr, code=3, angle=90, length=0.05, col = bCol)
+    arrows(x0 = x, y0 = lwr, y1 = upr, code=3, angle=90, length=0.02, col = lCol, cex=0.5)
+    NULL
+}
+
+
+
+
+
+##' draw display for discrete predictor in plotSlopes
+##'
+##' There's plotFancy for numeric predictor. This is for discrete
+##' @param newdata The new data object, possibly from predictOMatic
+##' @param plotx Name of horizontal axis variable
+##' @param modx 
+##' @param xlab 
+##' @param xlim 
+##' @param ylab 
+##' @param ylim 
+##' @param main 
+##' @param width 
+##' @param legend.title 
+##' @return 
+##' @author Paul Johnson
+plotFancyCategories <- function(newdata, plotx, modx=NULL, xlab, xlim, ylab, ylim, main, width, legend.title)
+{
+    plotxval <- newdata[[plotx]]
+    modxval <- if(!is.null(modx)) newdata[[modx]] else 1
+    plotx.levels <- levels(plotxval)
+    modx.levels <- levels(modxval)
+    if(missing(ylim)){
+        ylim <- magRange(range(c(newdata[["fit"]], if(!is.null(newdata[["lwr"]])) min(newdata[["lwr"]])),
+                                if(!is.null(newdata[["upr"]])) max(newdata[["upr"]])), 1.25)
+    }
+    if(missing(xlim)){
+        xlim <- range(seq_along(plotx.levels)) + c(-0.5, 0.5)
+    }
+    if(missing(xlab)){
+        xlab <- plotx
+    }
+    if(missing(ylab)){
+        ylab <- "name of DV"
+    }
+    if(missing(legend.title)){
+        legend.title <- modx
+    }
+        
+    if(missing(main)){
+        main <- "rockchalk discrete predictor plot"
+    }
+    
+    mylwd <- rep(1, length(modxval))
+    mycol <- rainbow(length(modxval))
+    mywidth <- rep(1, length(modxval))
+    
+    plot(1, 0, type = "n", ## xlab = xlabs[i], ylab = ylabs[i], 
+         xlim = xlim, ylim = ylim, main = main, xaxt = "n",
+         xlab = xlab, ylab = ylab)
+    axis(1, at = seq_along(plotx.levels), labels = plotx.levels) ##, ...)
+    for (jj in seq_along(plotx.levels)) {
+        lwd.term <- mylwd[jj]
+        ## Draw reference lines for group 1
+        for(mm in seq_along(modx.levels)){
+            if(jj > 1) next()
+            col.term <- mycol[mm]
+            newdatasubset <- newdata[newdata[["xcat1"]] == plotx.levels[jj] & newdata[["xcat2"]] == modx.levels[mm], , drop=FALSE]
+            abline(h=newdatasubset[, "fit"], col=col.term, lwd=0.2, lty=5)
+        }    
+        
+        for(mm in seq_along(modx.levels)){
+            col.term <- mycol[mm]
+            jf <- jj + c(-0.3, -0.2) + c(0.1 * mm, 0.1 * mm)
+            newdatasubset <- newdata[newdata[[plotx]] == plotx.levels[jj] & newdata[[modx]] == modx.levels[mm], , drop=FALSE]
+
+            if(!is.null(newdatasubset[["lwr"]])){
+                se.bars(mean(jf), newdatasubset[ , "lwr"], newdatasubset[ , "upr"], col = col.term, width= 0.02*width)
+            }
+            lines(jf, rep(newdatasubset[, "fit"], length(jf)), col = col.term, lwd = lwd.term+1)#, 
+        }
+           
+    }
+    legend("bottomleft", legend = modx.levels, fill = mycol, col = mycol,
+           title = legend.title, border = NA, bty = "n")
+
+    invisible(list(col = mycol, lwd = mylwd))
+}
+ 

@@ -318,6 +318,8 @@ NULL
 ##'
 getFocal.factor <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
 {
+    ## drop unused levels from x
+    x <- droplevels(x)
     if (is.null(xvals)) {
         xvals <- cutByTable(x, n, pct = pct)
         return(xvals)
