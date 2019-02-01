@@ -99,7 +99,7 @@ plotCurves <-
     cl <- match.call()
     interval <- match.arg(interval)
     mf <- model.frame(model)
-    emf <- model.data(model)
+    mm <- model.data(model)
 
     zzz <- as.character(substitute(plotx))
     plotx <- zzz[1L]
@@ -109,12 +109,12 @@ plotCurves <-
         modx <- zzz[1L]
     }
         
-    plotxVar <- emf[ , plotx]
+    plotxVar <- mm[ , plotx]
     if (!is.numeric(plotxVar))
         stop(paste("plotCurves: The variable", plotx, "should be a numeric variable"))
 
     ## Gamble on row names to select which cases are nonmissing
-    depVar <- model.response(mf)[row.names(emf)]
+    depVar <- model.response(mf)[row.names(mm)]
 
     ylab <- names(mf)[1]  ## returns transformed DV
     plotxRange <- if(is.null(plotxRange)) range(plotxVar, na.rm = TRUE) else plotxRange
@@ -135,7 +135,7 @@ plotCurves <-
         modx <- NULL
         modxVals <- 1
     } else {
-        modxVar <- emf[ , modx]
+        modxVar <- mm[ , modx]
         if (is.factor(modxVar)) { ## modxVar is a factor
             n <- ifelse(missing(n), nlevels(modxVar), n)
             modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
@@ -148,7 +148,7 @@ plotCurves <-
         names(focalVals) <- c(modx, plotx)
     }
 
-    newdf <- newdata(model, predVals = focalVals, emf = emf)
+    newdf <- newdata(model, predVals = focalVals, emf = mm)
 
     dotargs <- list(...)
     dotnames <- names(dotargs)
@@ -192,7 +192,7 @@ plotCurves <-
         stop("plotCurves: The dependent variable is neither numeric nor logical. What kind of model is this?")
     }
     
-    parms <- list(newdf = newdf, olddf = data.frame(modxVar, plotxVar, depVar),
+    parms <- list(newdf = newdf, olddf = mm,
                   plotx = plotx, modx = modx, modxVals = modxVals,
                   interval = interval, level = level, plotPoints = plotPoints,
                   plotLegend = plotLegend, legendTitle = legendTitle,
