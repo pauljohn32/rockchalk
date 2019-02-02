@@ -133,21 +133,29 @@ plotSlopes.lm <-
     function (model, plotx, modx = NULL, n = 3, modxVals = NULL ,
               plotxRange = NULL, interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
-              legendPct = TRUE, col = NULL, llwd = 2, opacity = 100, ...,
+              legendPct = TRUE,  llwd = 2, opacity = 100, ...,
+              col = c("black", "blue", "darkgreen", "red", "orange", "purple", "green3"),
               type = c("response", "link"))
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
-    if (missing(plotx))
-        stop("plotSlopes: plotx argument is required")
+    if (missing(plotx)) stop("plotSlopes: plotx argument is required")
+    else if(!is.character(plotx)) plotx <-as.character(substitute(plotx))
 
+    ## Explanation of variable names
+    ## "Vals" means focal values
+    ## "Var"  means observed values
+    ## "plotx" and "modx" will be reduced to character for variable names
+    
     cl <- match.call()
     dotargs <- list(...)
     dotnames <- names(dotargs)
     level <- if (!is.null(dotargs[["level"]])) dotargs[["level"]] else 0.95
     
     mm <- model.data(model)
-    ## grab name of DV from the terms object
+    plotxVar <- mm[, plotx]
+
+    ## ylab is name of dependent variable, 
     ylab <- as.character(terms(model)[[2]])
 
     interval <- match.arg(interval)
@@ -155,11 +163,8 @@ plotSlopes.lm <-
     
     if (!missing(modx)) {
         zzz <- as.character(substitute(modx))
-        if(!is.character(modx)) modx <-as.character(substitute(modx))
+        if(!is.character(modx)) modx <- as.character(substitute(modx))
     }
-    
-    plotxVar <- mm[, plotx]
-    ##depVar <- model.response(model.frame(model))
 
     ## gets "raw" untransformed data
     ## depVar <- model.data[ , ylab]
@@ -172,23 +177,13 @@ plotSlopes.lm <-
             plotxRange <- range(plotxVar, na.rm = TRUE)
         }
     }
-        ## else {
-        ##     xvar.levels <- levels(plotxVar)
-        ##     plotxRange <- range(seq_along(xvar.levels)) + c(-0.5, 0.5)
-        ##     xvar.numeric <- as.numeric(plotxVar)
-        ##     plotxVals <- xvar.levels ## Why repeat this?
-        ## }
-        
+
+    ## We are not allowing user to select categories (yet)
     ## TODO Check what character variable does here!
     if (is.factor(plotxVar)){
-        plotxVals <- levels(plotxVar)
+        plotxVals <- levels(droplevels(plotxVar))
     } else {
-        if(interval == "none"){
-            ## plotx is numeric
-            plotxVals <- range(plotxVar, na.rm = TRUE)
-        } else {
-            plotxVals <- plotSeq(plotxRange, length.out = 40)
-        }
+        plotxVals <- plotSeq(plotxRange, length.out = 40)
     }
 
     if((missing(modxVals) || is.null(modxVals)) && !(missing(modx) || is.null(modx))){
@@ -197,7 +192,6 @@ plotSlopes.lm <-
             n <- ifelse(missing(n), nlevels(modxVar), n)
             modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         } else {
-            n <- ifelse(missing(n), 3, n)
             modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         }
     } 
@@ -219,62 +213,9 @@ plotSlopes.lm <-
         dotargs[[dotsForPredict]] <- NULL
     }
     
-    pn <-  do.call("predictOMatic", parms.pred)
-    
-   
+    newdf <-  do.call("predictOMatic", parms.pred)
 
-    ##if (!is.numeric(plotxVar))
-       ## stop(paste("plotSlopes: The variable", plotx, "should be a numeric variable. Try plotCurves?"))
-    ## ylab <- colnames(model$model)[1]
-
-   
-
-    ## ## Create focalVals object, needed by newdata
-    ## if (missing(modx) || is.null(modx)) {
-    ##     modxVar <- rep(1, nobs(model))
-    ##     if (interval == "none") {
-    ##         focalVals <- list(plotxRange)
-    ##     } else {
-    ##         focalVals <- list(plotxVals)
-    ##     }
-    ##     names(focalVals) <- c(plotx)
-    ##     modxVals <- 1
-    ##     modx <- NULL
-    ## } else {
-    ##     modxVar <- model$model[, modx]
-    ##     if (is.factor(modxVar)) { ## modxVar is a factor
-    ##         n <- ifelse(missing(n), nlevels(modxVar), n)
-    ##         modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
-    ##     } else {
-    ##         n <- ifelse(missing(n), 3, n)
-    ##         modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
-    ##     }
-
-    ##     ## if no interval plot requested, we only need 2 points from plotx
-    ##     ## to plot lines
-    ##     if (interval == "none") {
-    ##         focalVals <- list(modxVals, plotxRange)
-    ##     } else {
-    ##         focalVals <- list(modxVals, plotxVals)
-    ##     }
-    ##     names(focalVals) <- c(modx, plotx)
-    ## }
-
-    ## newdf <- newdata(model, predVals = focalVals)
-
-
-         
-    
-    ## ## scan dotargs for predict keywords. Remove from dotargs
-    ## ## the ones we only want going to predict. Leave
-    ## ## others.
-  
-    ## np <- do.call("predictCI", parms.pred)
-    ## newdf <- cbind(newdf, np$fit)
-    ## if ((!is.null(parms.pred[["se.fit"]])) && (parms.pred[["se.fit"]] == TRUE)) newdf <- cbind(newdf, np$se.fit)
-
-    newdf <- pn
-    
+    ## ignores confidence interval height here. Why?
     plotyRange <- if(is.numeric(depVar)){
         magRange(depVar, mult = c(1, 1.2))
     } else {
@@ -292,10 +233,15 @@ plotSlopes.lm <-
         parms <- modifyList(parms, dotargs)
         plotArgs <- do.call("plotFancy", parms)
     } else {
-        plotArgs <- do.call("plotFancyCategories", list(newdf, plotx, modx, xlim=plotxRange,
-                                            xlab = plotx, ylab = ylab, ylim = plotyRange,
-                                            main = "", width = 1, legend.title = legendTitle))
+        parms <- list(newdf, olddf = mm,  plotx = plotx, modx = modx,
+                      modxVals = modxVals,  xlim = plotxRange,
+                      xlab = plotx, ylab = ylab,
+                      ylim = plotyRange, main = "", col = col,
+                      legend.title = legendTitle)
+        parms <- modifyList(parms, dotargs)
+        plotArgs <- do.call("plotFancyCategories", parms)
     }
+        
     z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = plotArgs$col, lty = plotArgs$lty)
     class(z) <- c("plotSlopes", "rockchalk")
 
@@ -310,7 +256,7 @@ NULL
 ##' @param newdf The new data frame with predictors and fit, lwr, upr variables
 ##' @param olddf A data frame with variables(modxVar, plotxVar, depVar)
 ##' @param plotx Character string for name of variable on horizontal axis
-##' @param modx  Character string for name of moderator variable.
+##' @param modx Character string for name of moderator variable.
 ##' @param modxVals Values of moderator for which lines are desired
 ##' @param interval TRUE or FALSE: want confidence intervals?
 ##' @param plotPoints TRUE or FALSE: want to see observed values in plot?
@@ -340,6 +286,10 @@ plotFancy <-
     } else {
         level <- 0.95
     }
+
+    ## sort rows
+    newdf <- if(is.null(modx)) newdf[order(newdf[[plotx]]), ]
+                   else newdf[order(newdf[[plotx]], newdf[[modx]]), ]
     
     modxVar <- if(is.null(modx)) rep(1, NROW(olddf)) else olddf[ , modx]
     plotxVar <- olddf[ , plotx]
@@ -353,6 +303,8 @@ plotFancy <-
         lmx <- length(modxVals)
     }
 
+
+    if (length(modxLevels) != length(modxVals)) stop("goof")
     ## if modx is a factor's name, we want to use all the levels
     ## to set the color scheme, even if some are not used in this
     ## particular plot.
@@ -372,16 +324,19 @@ plotFancy <-
             names(col) <- names(modxVals)
         }
     } else {
-        if (length(col) == lmx & is.null(names(col))) {
+        if (is.null(names(col))){
+            col <- rep(col, length.out(lmx))
             if (is.factor(modxVar)) names(col) <- modxLevels
             else names(col) <- names(modxVals)
         } else if (length(col) < lmx) {
-            stop("plotFancy: wrong number of colors. please fix the col argument.")
-        } else if (length(col) < length(modxLevels)) {
+            stop("plotFancy: named color vector does not match data.")
+        } else if (length(col) > length(modxLevels)) {
+            col <- rep(col, length.out = length(modxLevels))
             if (is.null(names(col))) {
+                browser()
                 names(col) <- names(modxLevels[1:length(col)])
             }
-            col <- rep(col, length.out = length(modxLevels))
+            
         }
     }
 
@@ -419,7 +374,6 @@ plotFancy <-
     ### sCol: shade color
     sCol <-  mapply(rgb, red = iCol[1,], green = iCol[2,],
                     blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
-
 
     if (interval != "none") {
         for (j in modxVals) {
@@ -504,12 +458,14 @@ plotFancy <-
     invisible(list(col = col, lty = lty, lwd = llwd))
 }
 
+NULL
 
 
 
 ##' Draw standard error bar for discrete variables
 ##'
 ##' Used with plotSlopes if plotx is discrete
+##' 
 ##' @param x The estimate of the center point
 ##' @param lwr The lower confidence interval bound
 ##' @param upr The upper confidence interval bound
@@ -517,7 +473,9 @@ plotFancy <-
 ##' @param col Color for a bar
 ##' @param opacity 120 is default, that's partial see through.
 ##' @return NONE
+##' @export
 ##' @author Paul Johnson
+##' 
 se.bars <- function(x, lwr, upr, width, col = col.se,
                     opacity = 120) {
     h <- 0.5 * width #half width
@@ -529,51 +487,66 @@ se.bars <- function(x, lwr, upr, width, col = col.se,
                     blue = iCol[3,], alpha = opacity/3, maxColorValue = 255)
     lCol <- mapply(rgb, red = iCol[1,], green = iCol[2,],
                    blue = iCol[3,], alpha = min(255, 2*opacity), maxColorValue = 255)
-    polygon(c(x-h, x+h, x+h,  x-h), c(rep(lwr, 2), rep(upr, 2)), col = sCol, border = NA)
-    arrows(x0 = x, y0 = lwr, y1 = upr, code=3, angle=90, length=0.05, col = bCol)
-    arrows(x0 = x, y0 = lwr, y1 = upr, code=3, angle=90, length=0.02, col = lCol, cex=0.5)
+    polygon(c(x-h, x+h, x+h,  x-h), c(rep(lwr, 2), rep(upr, 2)), col = sCol, border = bCol)
+    ## PROBLEM: lwd widths are not linked to lwd parameter.
+    arrows(x0 = x, y0 = lwr, y1 = upr, code=3, angle=90, length=3 * width, col = lCol, cex=0.5, lwd = 2)
     NULL
 }
 
 
+NULL
 
 
-
-##' draw display for discrete predictor in plotSlopes
+##' Draw display for discrete predictor in plotSlopes
 ##'
 ##' There's plotFancy for numeric predictor. This is for discrete
-##' @param newdata The new data object, possibly from predictOMatic
+##' 
+##' @param newdf The new data object, possibly from predictOMatic
+##' @param olddf The model data matrix 
 ##' @param plotx Name of horizontal axis variable
-##' @param modx 
-##' @param xlab 
-##' @param xlim 
-##' @param ylab 
-##' @param ylim 
-##' @param main 
-##' @param width 
-##' @param legend.title 
-##' @return 
-##' @author Paul Johnson
-plotFancyCategories <- function(newdata, plotx, modx=NULL, xlab, xlim, ylab, ylim, main, width, legend.title)
+##' @param modx Name of moderator
+##' @param modxVals values for modx
+##' @param xlab X axis label
+##' @param xlim x axis limits
+##' @param ylab y axis label
+##' @param ylim y axis limits
+##' @param col color pallet for values of moderator variable
+##' @param main main title
+##' @param width width of shaded bar area
+##' @param legend.title Title in legend
+##' @param drawGrid TRUE: draw reference lines for estimates of first group
+##' @param gridlwd line widths for reference lines, default 0.3
+##' @param gridlty line type for reference lines, default 5
+##' @export
+##' @return None
+##' @author Paul Johnson <pauljohn@@ku.edu>
+##' 
+plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL, modxVals, xlab, xlim, ylab, ylim,
+                                col = NULL,   main, width=0.02, legend.title, drawGrid = TRUE,
+                                gridlwd = 0.3, gridlty = 5)
 {
-    plotxval <- newdata[[plotx]]
-    modxval <- if(!is.null(modx)) newdata[[modx]] else 1
+    plotxval <- newdf[[plotx]]
+    if(is.null(modx)) modxVals <-  1
     plotx.levels <- levels(plotxval)
-    modx.levels <- levels(modxval)
+    modx.levels <- levels(modxVals)
+    ## sort rows
+    newdf <- if(is.null(modx)) newdf[order(newdf[[plotx]]), ]
+                   else newdf[order(newdf[[plotx]], newdf[[modx]]), ]
+    
     if(missing(ylim)){
-        ylim <- magRange(range(c(newdata[["fit"]], if(!is.null(newdata[["lwr"]])) min(newdata[["lwr"]])),
-                                if(!is.null(newdata[["upr"]])) max(newdata[["upr"]])), 1.25)
+        ylim <- magRange(range(c(newdf[["fit"]], if(!is.null(newdf[["lwr"]])) min(newdf[["lwr"]])),
+                                if(!is.null(newdf[["upr"]])) max(newdf[["upr"]])), 1.25)
     }
-    if(missing(xlim)){
+    if(missing(xlim) || is.null(xlim)){
         xlim <- range(seq_along(plotx.levels)) + c(-0.5, 0.5)
     }
-    if(missing(xlab)){
+    if(missing(xlab) || is.null(xlab)){
         xlab <- plotx
     }
-    if(missing(ylab)){
-        ylab <- "name of DV"
+    if(missing(ylab) || is.null(ylab)){
+        ylab <- attr(mm, "terms")[[2]]
     }
-    if(missing(legend.title)){
+    if(!is.null(modx) && missing(legend.title)){
         legend.title <- modx
     }
         
@@ -581,39 +554,63 @@ plotFancyCategories <- function(newdata, plotx, modx=NULL, xlab, xlim, ylab, yli
         main <- "rockchalk discrete predictor plot"
     }
     
-    mylwd <- rep(1, length(modxval))
-    mycol <- rainbow(length(modxval))
-    mywidth <- rep(1, length(modxval))
+    lwd <- rep(1, length(modxVals))
+    names(lwd) <- modx.levels
+    
+    col <- if(missing(col) || is.null(col)) mycolors  else col
+    if(length(col) < length(modxVals)) col <- rep(col, length.out = length(modxVals))
+    names(col) <- modx.levels
+    width <- if(length(width) > 0 && length(width) < length(modxVals)) rep(width, length.out = length(modxVals))
+    names(width) <- modx.levels
+    
+    gridlwd <- if(length(gridlwd) < length(modxVals)) rep(gridlwd, length.out = length(modxVals))
+    gridlty <- if(length(gridlty) < length(modxVals)) rep(gridlty, length.out = length(modxVals))        
+
+
+    plotxList <- split(newdf, f = newdf[ , plotx], drop = TRUE)
+    for(i in seq_along(plotxList)) plotxList[[i]][ , "xloc"] <- i
+    for(i in seq_along(plotxList)) plotxList[[i]][ , "modloc"] <- 1:NROW(plotxList[[i]])
+    for(i in seq_along(plotxList)) plotxList[[i]][ , "col"] <- col[plotxList[[i]][[modx]]]
+    for(i in seq_along(plotxList)) plotxList[[i]][ , "width"] <- width[plotxList[[i]][[modx]]]
+    for(i in seq_along(plotxList)) plotxList[[i]][ , "lwd"] <- lwd[plotxList[[i]][[modx]]]
+    for(i in names(plotxList)) rownames(plotxList[[i]]) <- plotxList[[i]][[modx]]
     
     plot(1, 0, type = "n", ## xlab = xlabs[i], ylab = ylabs[i], 
          xlim = xlim, ylim = ylim, main = main, xaxt = "n",
          xlab = xlab, ylab = ylab)
     axis(1, at = seq_along(plotx.levels), labels = plotx.levels) ##, ...)
-    for (jj in seq_along(plotx.levels)) {
-        lwd.term <- mylwd[jj]
+
+    ## For each element in plotxList, place the graphs
+    for(jj in seq_along(plotxList)){
+        newdfsubset <- plotxList[[jj]]
+       
         ## Draw reference lines for group 1
-        for(mm in seq_along(modx.levels)){
-            if(jj > 1) next()
-            col.term <- mycol[mm]
-            newdatasubset <- newdata[newdata[["xcat1"]] == plotx.levels[jj] & newdata[["xcat2"]] == modx.levels[mm], , drop=FALSE]
-            abline(h=newdatasubset[, "fit"], col=col.term, lwd=0.2, lty=5)
+        if(drawGrid && (jj ==1)){
+            abline(h=newdfsubset[ , "fit"], col=newdfsubset[, "col"], lwd=gridlwd, lty=gridlty)
         }    
-        
-        for(mm in seq_along(modx.levels)){
-            col.term <- mycol[mm]
-            jf <- jj + c(-0.3, -0.2) + c(0.1 * mm, 0.1 * mm)
-            newdatasubset <- newdata[newdata[[plotx]] == plotx.levels[jj] & newdata[[modx]] == modx.levels[mm], , drop=FALSE]
+        ## draw predicted values
+        width.mean <- 5*width
+        NROWs <- NROW(newdfsubset)
+        leftedge <- (newdfsubset$xloc - 0.37 + 1/NROWs)
+        totalwidthbarspace <- 2 * (newdfsubset$xloc - leftedge)
+        newdfsubset$barloc <- leftedge + (newdfsubset$modloc - 1) * totalwidthbarspace / (NROWs - 1)
 
-            if(!is.null(newdatasubset[["lwr"]])){
-                se.bars(mean(jf), newdatasubset[ , "lwr"], newdatasubset[ , "upr"], col = col.term, width= 0.02*width)
+        for(mm in 1:NROWs){
+            if(!is.null(newdfsubset[["lwr"]])){
+                se.bars(newdfsubset[mm, "barloc"], newdfsubset[mm , "lwr"], newdfsubset[mm , "upr"],
+                        col = newdfsubset[mm , "col"], width = 1 *newdfsubset[mm , "width"])
             }
-            lines(jf, rep(newdatasubset[, "fit"], length(jf)), col = col.term, lwd = lwd.term+1)#, 
+            ## draw predicted value line
+            lines(newdfsubset[mm, "barloc"] + c(-.05,+.05), rep(newdfsubset[mm, "fit"], 2),
+                  col = newdfsubset[mm , "col"], lwd = newdfsubset[mm , "width"]+1)#, 
         }
-           
     }
-    legend("bottomleft", legend = modx.levels, fill = mycol, col = mycol,
-           title = legend.title, border = NA, bty = "n")
+    if(!(is.null(modx) || missing(modx))){
+        legend("bottomleft", legend = modx.levels, fill = col, col = col,
+               title = legend.title, border = NA, bty = "n")
+    }
 
-    invisible(list(col = mycol, lwd = mylwd))
+    invisible(list(col = col, lwd = lwd))
 }
- 
+
+NULL
