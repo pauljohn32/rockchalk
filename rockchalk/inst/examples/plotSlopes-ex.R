@@ -10,14 +10,13 @@ dat$xcat2 <- cut(rnorm(100), breaks = c(-Inf, 0, 0.4, 0.9, 1, Inf),
                  labels = c("R", "M", "D", "P", "G"))
 ## incorporate effect of categorical predictors
 dat$y <- dat$y + 1.9 * dat$x1 * contrasts(dat$xcat1)[dat$xcat1] +
-           contrasts(dat$xcat2)[dat$xcat2 , ] %*% c(0.1, -0.1, 0, 0.2)
+           contrasts(dat$xcat2)[dat$xcat2 , ] %*% c(0.1, -0.16, 0, 0.2)
 
-m1 <- lm(y ~ x1 * x2 + x3 + x4 + xcat1 + xcat2, data = dat)
+m1 <- lm(y ~ x1 * x2 + x3 + x4 + xcat1* xcat2, data = dat)
 summary(m1)
 
 ## New in rockchalk 1.7.x. No modx required:
-plotSlopes(m1, plotx = "x1")
-
+plotSlopes(m1, plotx = "x1"))
 ## Confidence interval, anybody?
 plotSlopes(m1, plotx = "x1", interval = "conf")
 
@@ -26,7 +25,30 @@ plotSlopes(m1, plotx = "x1", interval = "pred")
 
 ## Now experiment with a moderator variable
 ## let default quantile algorithm do its job
-plotSlopes(m1, plotx = "x1", modx = "x2")
+plotSlopes(m1, plotx = "xcat2", interval = "none")
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "none")
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence",
+           legendArgs = list(title = "xcat2"), ylim = c(-3, 3), lwd = 0.4)
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence",
+           legendArgs = list(title = "xcat2"), ylim = c(-3, 3), lwd = 0.4, width = 0.25)
+m1.ps <- plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "prediction")
+m1.ps <- plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "prediction", space=c(0,2))
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "prediction", gridArgs = "none")
+
+plotSlopes(m1, plotx = "xcat2", modx = "xcat1", interval = "confidence", ylim = c(-3, 3))
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence", 
+           col = c("black", "blue", "green", "red", "orange"), lty = c(1, 4, 6, 3))
+
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence", 
+           col = c("pink", "orange"))
+
+plotSlopes(m1, plotx = "xcat1", interval = "confidence", 
+           col = c("black", "blue", "green", "red", "orange"))
+
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence", 
+           col = c("black", "blue", "green", "red", "orange"),
+           gridlwd = 0.2)
+
 ## previous uses default equivalent to
 ## plotSlopes(m1, plotx = "x1", modx = "x2", modxVals = "quantile")
 ## Want more focal values?

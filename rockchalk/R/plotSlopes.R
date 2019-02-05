@@ -77,52 +77,62 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' in the newdata object that is created as a part of the output from
 ##' this function
 ##'
-##' @param plotxRange Optional. If not specified, the observed
-##' range of plotx will be used to determine the axis range.
+##' @param plotxRange Optional. If not specified, the observed range
+##'     of plotx will be used to determine the axis range.
 ##' @param modx Optional. String for moderator variable name. May be
-##' either numeric or factor. If omitted, a single predicted value line
-##' will be drawn.
-##' @param n Optional. Number of focal values of
-##' \code{modx}, used by algorithms specified by modxVals; will be
-##' ignored if modxVals supplies a vector of focal values.
+##'     either numeric or factor. If omitted, a single predicted value
+##'     line will be drawn.
+##' @param n Optional. Number of focal values of \code{modx}, used by
+##'     algorithms specified by modxVals; will be ignored if modxVals
+##'     supplies a vector of focal values.
 ##' @param modxVals Optional. Focal values of \code{modx} for which
-##' lines are desired. May be a vector of values or the name of an
-##' algorithm, "quantile", "std.dev.", or "table".
+##'     lines are desired. May be a vector of values or the name of an
+##'     algorithm, "quantile", "std.dev.", or "table".
 ##' @param interval Optional. Intervals provided by the
-##' \code{predict.lm} may be supplied, either "confidence" (confidence
-##' interval for the estimated conditional mean) or "prediction"
-##' (interval for observed values of y given the rest of the model).
-##' The level can be specified as an argument (which goes into ...
-##' and then to the predict method)
+##'     \code{predict.lm} may be supplied, either "confidence"
+##'     (confidence interval for the estimated conditional mean) or
+##'     "prediction" (interval for observed values of y given the rest
+##'     of the model).  The level can be specified as an argument
+##'     (which goes into ...  and then to the predict method)
 ##' @param plotPoints Optional. TRUE or FALSE: Should the plot include
-##' the scatterplot points along with the lines.
-##' @param plotLegend Optional. TRUE or FALSE: Include a default
-##' @param legendPct Default = TRUE. Variable labels print with sample percentages.
-##' @param legendArgs Set as NULL if no legend is desired. Otherwise, this
-##' can be a list of named arguments that will override the settings
-##' I have for the legend.
+##'     the scatterplot points along with the lines.
+##' @param legendPct Default = TRUE. Variable labels print with sample
+##'     percentages.
+##' @param legendArgs Set as "none" if no legend is
+##'     desired. Otherwise, this can be a list of named arguments that
+##'     will override the settings I have for the legend.
+
 ##' @param col Optional. A color vector for predicted value lines (and
-##' intervals if requested). If not specified, the R's builtin palette()
-##' will be used. User may supply a vector of valid color names,
-##' either explicitly c("pink","black", "gray70") or implicitly,
-##' rainbow(10) or gray.colors(5). Color names will be recycled if there
-##' are more focal values of \code{modx} than colors provided.
-##' @param llwd Optional, default = 2. Line widths for predicted values. Can be
-##' single value or a vector, which will be recycled as necessary.
-##' @param opacity Optional, default = 100. A number between 1 and 255.
-##' 1 means "transparent" or invisible, 255 means very dark.
-##' Determines the darkness of confidence interval regions
+##'     intervals if requested). If not specified, the R's builtin
+##'     palette() will be used. User may supply a vector of valid
+##'     color names, either explicitly \code{c("pink","black",
+##'     "gray70")} or implicitly, \code{rainbow(10)} or
+##'     \code{gray.colors(5)}. Color names will be recycled if there
+##'     are more focal values of \code{modx} than colors provided.
+##' @param llwd Optional, default = 2. Line widths for predicted
+##'     values. Can be single value or a vector, which will be
+##'     recycled as necessary.
+##' @param opacity Optional, default = 100. A number between 1 and
+##'     255.  1 means "transparent" or invisible, 255 means very dark.
+##'     Determines the darkness of confidence interval regions
+##' @param width Only used if plotx (horizontal axis) is a factor. Designates
+##'     thickness of shading for bars that depict confidence intervals.
+##' @param gridArgs Only used if plotx (horizontal axis) is a factor
+##'     variable. Designates reference lines between values. Set as
+##'     "none" if no grid lines are needed.  Default will be
+##'     \code{gridArgs = list(lwd = 0.3, lty = 5)}
 ##' @export
 ##' @method plotSlopes lm
 ##' @rdname plotSlopes
 ##' @import carData
 ##' @return The return object includes the "newdata" object that was
-##' used to create the plot, along with the "modxVals" vector, the
-##' values of the moderator for which lines were drawn, and the color
-##' vector. It also includes the call that generated the plot.
-##' @references
-##' Aiken, L. S. and West, S.G. (1991). Multiple Regression:
-##' Testing and Interpreting Interactions. Newbury Park, Calif: Sage Publications.
+##'     used to create the plot, along with the "modxVals" vector, the
+##'     values of the moderator for which lines were drawn, and the
+##'     color vector. It also includes the call that generated the
+##'     plot.
+##' @references Aiken, L. S. and West, S.G. (1991). Multiple
+##'     Regression: Testing and Interpreting Interactions. Newbury
+##'     Park, Calif: Sage Publications.
 ##'
 ##' Cohen, J., Cohen, P., West, S. G., and Aiken, L. S. (2002).
 ##' Applied Multiple Regression/Correlation Analysis for the Behavioral
@@ -131,10 +141,10 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 plotSlopes.lm <-
     function (model, plotx, modx = NULL, n = 3, modxVals = NULL ,
               plotxRange = NULL, interval = c("none", "confidence", "prediction"),
-              plotPoints = TRUE, legendPct = TRUE, legendArgs,
+              plotPoints = TRUE, legendPct = TRUE, legendArgs,  
               llwd = 2, opacity = 100, ...,
               col = c("black", "blue", "darkgreen", "red", "orange", "purple", "green3"),
-              type = c("response", "link"))
+              type = c("response", "link"),  gridArgs, width = 0.2)
 {
     if (missing(model))
         stop("plotSlopes requires a fitted regression model.")
@@ -229,22 +239,23 @@ plotSlopes.lm <-
                        ylim = plotyRange, ylab = ylab, llwd = llwd)
         if(!missing(legendArgs) && !is.null(legendArgs)) parms[["legendArgs"]] <- legendArgs
         parms <- modifyList(parms, dotargs)
-        plotArgs <- do.call("plotFancy", parms)
+        plotret <- do.call("plotFancy", parms)
     } else {
-        if (!plotPoints)
+       
         plotyRange <- magRange(range(c(newdf[["fit"]], if(!is.null(newdf[["lwr"]])) min(newdf[["lwr"]])),
                                    if(!is.null(newdf[["upr"]])) max(newdf[["upr"]])), 1.25)
                
         parms <- list(newdf, olddf = mm,  plotx = plotx, modx = modx, 
                       modxVals = modxVals, depName = depVar, xlim = plotxRange,
-                      xlab = plotx, ylab = ylab,
-                      ylim = plotyRange, main = "", col = col)
+                      xlab = plotx, ylab = ylab,  ylim = plotyRange, main = "",
+                      col = col, width = width)
         if(!missing(legendArgs) && !is.null(legendArgs)) parms[["legendArgs"]] <- legendArgs
+        if(!missing(gridArgs) && !is.null(gridArgs)) parms[["gridArgs"]] <- gridArgs
         parms <- modifyList(parms, dotargs)
-        plotArgs <- do.call("plotFancyCategories", parms)
+        plotret <- do.call("plotFancyCategories", parms)
     }
         
-    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = plotArgs$col, lty = plotArgs$lty)
+    z <- list(call = cl, newdata = newdf, modxVals = modxVals, col = plotret$col, lty = plotret$lty, fancy = plotret)
     class(z) <- c("plotSlopes", "rockchalk")
 
     invisible(z)
@@ -334,7 +345,7 @@ plotFancy <-
         }
     } else {
         if (is.null(names(col))){
-            col <- rep(col, length(lmx))
+            col <- rep(col, length.out = length(lmx))
             if (is.factor(modxVar)) names(col) <- modxLevels
             else names(col) <- names(modxVals)
         } else if (length(col) < lmx) {
@@ -440,7 +451,7 @@ plotFancy <-
         do.call("points", parms)
     }
 
-    if (!missing(legendArgs) && (legendArgs == "none")) {
+    if (!missing(legendArgs) && is.character(legendArgs) && (legendArgs == "none")) {
         ## "do nothing"
     } else if (!is.null(modx)){
         ## guess legend parms from modx information
@@ -502,18 +513,19 @@ NULL
 ##' @param y The fitted "predicted" value
 ##' @param lwr The lower confidence interval bound
 ##' @param upr The upper confidence interval bound
-##' @param arrow.width Arrowhead length must be specified in inches. See ?arrows
 ##' @param width Thickness of shaded column
 ##' @param col Color for a bar
 ##' @param opacity Value in c(0, 254). 120 is default, that's partial see through.
+##' @param lwd line width, usually 1
+##' @param lty line type, usually 1
 ##' @return NONE
 ##' @export
 ##' @author Paul Johnson
 ##' 
-se.bars <- function(x, y, lwr, upr, width=1, col = col.se, opacity = 120, lwd = 1) {
-    h <- 0.35 * width #half width
-    q <- 0.15 * width #quarter width
-    d <- 0.05 * width #shaded area
+se.bars <- function(x, y, lwr, upr, width = 0.20, col = col.se, opacity = 120, lwd = 1, lty = 1) {
+    h <- min(1, 2.5 * width) #half of fit line
+    q <- min(1, width)  #half with of fit line quarter width
+    d <- 0.5 * width #half width of shaded area
     iCol <- col2rgb(col)
     bCol <- mapply(rgb, red = iCol[1,], green = iCol[2,],
                    blue = iCol[3,], alpha = .8 * opacity, maxColorValue = 255)
@@ -524,11 +536,9 @@ se.bars <- function(x, y, lwr, upr, width=1, col = col.se, opacity = 120, lwd = 
                    blue = iCol[3,], alpha = min(255, 2*opacity), maxColorValue = 255)
     if (!is.null(lwr)){
         polygon(c(x-d, x+d, x+d,  x-d), c(rep(lwr, 2), rep(upr, 2)), col = sCol, border = bCol)
-        ## PROBLEM: lwd widths are not linked to lwd parameter.
-        ##  arrows(x0 = x, y0 = lwr, y1 = upr, code=3, angle=90, length=arrow.width, col = lCol, cex=0.5, lwd = 2)
-        lines(c(x, x), c(lwr, upr), col = lCol, cex=0.5, lwd = lwd, lend = 1, ljoin = 1)
-        lines(c(x, x) + c(-q, q), c(lwr, lwr), col = lCol, lwd = lwd, lend = 1, ljoin = 1, lmitre = 2)
-        lines(c(x, x) + c(-q, q), c(upr, upr), col = lCol, lwd = lwd, lend = 1, ljoin = 1, lmitre = 2)
+        lines(c(x, x), c(lwr, upr), col = lCol, cex=0.5, lwd = lwd, lty = lty, lend = 1, ljoin = 1)
+        lines(c(x, x) + c(-q, q), c(lwr, lwr), col = lCol, lwd = lwd, lty = lty, lend = 1, ljoin = 1, lmitre = 2)
+        lines(c(x, x) + c(-q, q), c(upr, upr), col = lCol, lwd = lwd, lty = lty, lend = 1, ljoin = 1, lmitre = 2)
     }
     lines(c(x, x) + c(-h, h), c(y, y), col = lCol, lwd = lwd + 1)
     NULL
@@ -557,12 +567,10 @@ NULL
 ##' @param main main title
 ##' @param space same as space in barplot, vector c(0, 1) is
 ##'     c(space_between, space_before_first)
-##' @param width width of shaded bar area
+##' @param width width of shaded bar area, default is 0.2. Maximum is 1.
 ##' @param llwd requested line width, will re-cycle.
-##' @param drawGrid TRUE: draw reference lines for estimates of first
-##'     group
-##' @param gridlwd line widths for reference lines, default 0.3
-##' @param gridlty line type for reference lines, default 5
+##' @param gridArgs A list of values to control printing of reference grid.
+##'     Set as "none" if no grid is desired. 
 ##' @param ... Arguments sent to par
 ##' @param legendArgs Arguments to the legend function. Set as "none"
 ##'     if no legend is needed. Otherwise, provide a list
@@ -572,12 +580,18 @@ NULL
 ##' 
 plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
                                 modxVals, xlab, xlim, ylab, ylim,
-                                col = c("black", "blue", "darkgreen", "red", "orange", "purple", "green3"), opacity = 120, main,
-                                space=c(0,1), width=1, llwd = 1, offset=0, lty = 1, 
-                                drawGrid = TRUE, gridlwd = 0.3, gridlty = 5, ...,
+                                col = c("black", "blue", "darkgreen", "red", "orange", "purple", "green3"),
+                                opacity = 120, main,
+                                space=c(0,1), width = 0.2, llwd = 1, offset=0, 
+                                ..., gridArgs = list(lwd = 0.3, lty = 5),
                                 legendArgs)
 {
     call.orig <- match.call()
+    dotargs <- list(...)
+    dotnames <- names(dotargs)
+    browser()
+    lty <- if("lty" %in% dotnames)  dotargs[["lty"]] else 1
+   
     plotxval <- newdf[[plotx]]
     plotxVals <- levels(plotxval)
 
@@ -628,57 +642,50 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
     ## can we simplify by having a name selector color/line/ 
     xname <- if(is.null(modx)) plotx else modx
 
-    lwd <- rep(llwd, length(lnc))
+    lwd <- rep(llwd, length.out = length(lnc))
     names(lwd) <- lnc
-    lty <-  rep(lty, length(lnc))
+    
+    lty <-  rep(lty, length.out = length(lnc))
     names(lty) <- lnc
     
     if(!is.null(names(col))){
         if (any(!lnc %in% names(col))) stop("names in color vector incorrect")
     }
     
-    if(missing(col) || is.null(col) || length(col) < length(lnc)) col <- mycolors
-
-    if (length(col) >= length(lnc)){
-        col <- col[1:length(lnc)]
-        names(col) <- lnc
-    } else {
-        col <- rep(col, length.out = length(lnc))
-        names(col) <- lnc                   
-    }
+    if(missing(col) || is.null(col) || length(col) < length(lnc)) col <- col
+    col <- rep(col, length.out = length(lnc))
+    names(col) <- lnc                   
   
     newdf$col <- col[as.character(newdf[[xname]])] 
         
     width <- if(length(width) > 0 && length(width) < length(lnc)) rep(width, length.out = length(lnc))
     names(width) <- lnc
-    newdf$xloc <- as.numeric(newdf[[xname]])
-    
-    newdf$lwd <- lwd[as.numeric(newdf[[xname]])]
-    
+     
+    newdf$lwd <-  lwd[as.character(newdf[[xname]])]
+    newdf$lty <-  lty[as.character(newdf[[xname]])]
     ## Previous were done like this before
     if(is.null(modx)){
-        newdf$width <- width[as.numeric(newdf[[plotx]])]
+        newdf$width <- width[as.character(newdf[[plotx]])]
     } else {
-        newdf$width <- width[as.numeric(newdf[[modx]])]
+        newdf$width <- width[as.character(newdf[[modx]])]
     }
    
-    gridlwd <- if(length(gridlwd) < length(lnc)) rep(gridlwd, length.out = length(lnc))
-    gridlty <- if(length(gridlty) < length(lnc)) rep(gridlty, length.out = length(lnc))        
 
-
-
-    space <- space * mean(width)
     ## In a data subset, now many rows and columns are there?
     NR <- if(is.null(modx)) 1 else length(unique(newdf[[modx]]))
     NC <- length(unique(newdf[[plotx]]))
+    width.internal <- 1
+    space <- space * mean(width.internal)
+  
     
     if (length(space) == 2) {
         space <- rep.int(c(space[2L], rep.int(space[1L], NR - 1)), NC)
     }
-    width <- rep_len(width, NR) ## width of a bar
-    offset <- rep_len(as.vector(offset), length(width))
-    delta <- width/2
-    w.r <- cumsum(space + width)
+   
+    width.internal <- rep_len(width.internal, NR) ## width of a bar
+    offset <- rep_len(as.vector(offset), length(width.internal))
+    delta <- width.internal/2
+    w.r <- cumsum(space + width.internal)
     w.m <- w.r - delta
     w.l <- w.m - delta
     newdf$w.m <- w.m
@@ -692,14 +699,14 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
     ## }
     ## else {
     ##if (is.null(xlim)) 
-        xlim <- c(min(w.l), max(w.r))
+    xlim <- c(min(w.l), max(w.r))
     ##if (is.null(ylim)) 
     ##    ylim <- range()
     ##   }
     ## w.m <- matrix(w.m, ncol = NC)
 
 
-     plot(1, 0, type = "n", ## xlab = xlabs[i], ylab = ylabs[i], 
+    plot(1, 0, type = "n", ## xlab = xlabs[i], ylab = ylabs[i], 
          xlim = xlim, ylim = ylim, main = main, xaxt = "n",
          xlab = xlab, ylab = ylab)
     
@@ -714,27 +721,33 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
     for(mm in 1:(NROW(newdf))){
         ##if(!is.null(newdf[["lwr"]])){
             se.bars(newdf[mm , "w.m"], newdf[mm, "fit"], newdf[mm , "lwr"], newdf[mm , "upr"],
-                    col = newdf[mm , "col"], width = newdf[mm , "width"])
+                    col = newdf[mm , "col"], width = newdf[mm , "width"], lty = newdf[mm, "lty"])
         #}
     }
 
-    if(is.null(modx)){
-        rownames(newdf) <- newdf[[plotx]]
-        plotxList <- list(newdf)
-        names(plotxList) <- plotx
+    if(is.character(gridArgs) && gridArgs == "none"){
+        ## do nothing
     } else {
-        plotxList <- split(newdf, f = newdf[ , plotx], drop = TRUE)
-        for(i in names(plotxList)) rownames(plotxList[[i]]) <- plotxList[[i]][[xname]]
+        gridlwd <- rep(gridArgs[["lwd"]], length.out = length(lnc))
+        gridlty <- rep(gridArgs[["lty"]], length.out = length(lnc))        
+        if(is.null(modx)){
+            rownames(newdf) <- newdf[[plotx]]
+            plotxList <- list(newdf)
+            names(plotxList) <- plotx
+        } else {
+            plotxList <- split(newdf, f = newdf[ , plotx], drop = TRUE)
+            for(i in names(plotxList)) rownames(plotxList[[i]]) <- plotxList[[i]][[xname]]
+        }
+        
+        if(length(plotxList) > 1) {
+            for(i in 1:(length(plotxList) - 1)){
+                set1 <- plotxList[[i]]
+                set2 <- plotxList[[i+1]]
+                arrows(set1[["w.m"]], set1[["fit"]], set2[["w.m"]] - 0.05, set1[["fit"]], col = col, lwd = gridlwd,
+                       lty = gridlty, length = 0.1) 
+            }
+        }
     }
-    
-    if(length(plotxList) > 1) {
-        for(i in 1:(length(plotxList) - 1)){
-            set1 <- plotxList[[i]]
-            set2 <- plotxList[[i+1]]
-            segments(set1[["w.m"]], set1[["fit"]], set2[["w.m"]], set1[["fit"]], col = col, lwd = gridlwd, lty = gridlty ) 
-         }
-    }
-    
     ## if (plotPoints) {
     ##     parms <- list(xlab = plotx, ylab = ylab, cex = 0.6, lwd = 0.75)
     ##     if (is.factor(modxVar)) {
@@ -753,17 +766,17 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
 
 
 
-    if(!missing(legendArgs) && legendArgs == "none") {
+    if(!missing(legendArgs) && is.character(legendArgs) && legendArgs == "none") {
                                         # "do nothing"
     } else if (!is.null(modx)){
         ## guess legend parms from modx information
         legend.parms <- list(x = "bottomleft",
                              fill = col[as.character(lnc)],
                              col = col[as.character(lnc)],
-                             lty = lty[as.character(lnc)],
                              lwd = lwd[as.character(lnc)],
                              border = NA, bty = "n")
-      
+        if(unique(lty) > 1) legend.parms[["lty"]] <- lty[as.character(lnc)]
+        
         if(any(modxVals != lnc)){ browser();
             stop("plotFancyCategories: fatal error")
         }
