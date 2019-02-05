@@ -23,6 +23,14 @@ plotSlopes(m1, plotx = "x1", interval = "conf")
 ## Prediction interval.
 plotSlopes(m1, plotx = "x1", interval = "pred")
 
+plotSlopes(m1, plotx = "x1", modx = "xcat2", modxVals = c("R", "M"))
+
+plotSlopes(m1, plotx = "x1", modx = "xcat2",  interval = "pred")
+
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2",  interval = "conf")
+
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", modxVals = c("R", "M"))
+
 ## Now experiment with a moderator variable
 ## let default quantile algorithm do its job
 plotSlopes(m1, plotx = "xcat2", interval = "none")

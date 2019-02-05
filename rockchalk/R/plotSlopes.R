@@ -102,11 +102,9 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##'     desired. Otherwise, this can be a list of named arguments that
 ##'     will override the settings I have for the legend.
 
-##' @param col Optional. A color vector for predicted value lines (and
-##'     intervals if requested). If not specified, the R's builtin
-##'     palette() will be used. User may supply a vector of valid
-##'     color names, either explicitly \code{c("pink","black",
-##'     "gray70")} or implicitly, \code{rainbow(10)} or
+##' @param col Optional.I offer my preferred color vector as default.
+##'     Replace if you like. User may supply a vector of valid
+##'     color names, or  \code{rainbow(10)} or
 ##'     \code{gray.colors(5)}. Color names will be recycled if there
 ##'     are more focal values of \code{modx} than colors provided.
 ##' @param llwd Optional, default = 2. Line widths for predicted
@@ -199,6 +197,7 @@ plotSlopes.lm <-
         modxVar <- mm[, modx]
         if (is.factor(modxVar)) { ## modxVar is a factor
             n <- ifelse(missing(n), nlevels(modxVar), n)
+            modxVar <- droplevels(modxVar)
             modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
         } else {
             modxVals <- getFocal(modxVar, xvals = modxVals, n, pct = legendPct)
@@ -309,6 +308,7 @@ plotFancy <-
                    else newdf[order(newdf[[plotx]], newdf[[modx]]), ]
     
     modxVar <- if(is.null(modx)) rep(1, NROW(olddf)) else olddf[ , modx]
+    if(is.factor(modxVar)) modxVar <- droplevels(modxVar)
     plotxVar <- olddf[ , plotx]
     depVar <- olddf[ , 1] ## column 1 is observed dv fix me here with name
 
@@ -331,7 +331,7 @@ plotFancy <-
         if (is.null(names(modxVals))) names(modxVals) <- modxVals
     }
  
-    if (length(modxLevels) != length(modxVals)) {stop("goof")}
+  
 
     
     ## Deal w colors
@@ -345,21 +345,27 @@ plotFancy <-
         }
     } else {
         if (is.null(names(col))){
-            col <- rep(col, length.out = length(lmx))
+            col <- rep(col, length.out = length(modxLevels))
             if (is.factor(modxVar)) names(col) <- modxLevels
             else names(col) <- names(modxVals)
         } else if (length(col) < lmx) {
             stop("plotFancy: named color vector does not match data.")
-        } else if (length(col) > length(modxLevels)) {
+        } else if (length(col) >= length(modxLevels)) {
             col <- rep(col, length.out = length(modxLevels))
             if (is.null(names(col))) {
-                browser()
                 names(col) <- names(modxLevels[1:length(col)])
             }
-            
         }
     }
 
+    ## We have colors set for all levels, now
+    ## drop colors to values actually used
+    col <-  if (is.factor(modxVar))  col[names(col) %in% modxVals] else col[1:length(modxVals)]
+    ## Now only modxLevels remaining should be in modxVals
+    modxLevels <- modxLevels[modxLevels %in% modxVals]
+    
+    if (length(modxLevels) != length(modxVals)) {stop("goof")}
+    
     ## Deal w line widths
     if (length(llwd) < length(col)) {
         llwd <- rep(llwd, length.out = length(col))
@@ -371,19 +377,11 @@ plotFancy <-
         lty <-  rep(dotargs[["lty"]], length.out = lmx)
         dotargs[["lty"]] <- NULL ## erase
     }
-    ## lty <- seq_along(col)
-    ## if (is.factor(modxVar)) {
-    ##     lty <- seq_along(modxLevels)
-    ## } else {
-    ##     lty <- seq_along(modxVals)
-    ## }
     names(lty) <- names(col)
-
     parms <- list(x = plotxVar, y = depVar, xlab = plotx, ylab = ylab,
                   type = "n")
     dots.plot <- dotargs[names(dotargs)[names(dotargs) %in% c(names(par()), formalArgs(plot.default))]]
     parms <- modifyList(parms, dots.plot)
-
     do.call("plot", parms)
 
     ## iCol: rgb color matrix. Why does rgb insist the columns be
