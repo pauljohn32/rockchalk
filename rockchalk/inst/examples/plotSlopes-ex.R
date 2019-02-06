@@ -84,7 +84,7 @@ summary(m3)
 plotSlopes(m3, modx = "xcat1", plotx = "x1")
 plotSlopes(m3, modx = "xcat1", plotx = "x1", interval = "predict")
 plotSlopes(m3, modx = "x1", plotx = "xcat1", interval = "confidence",
-           legendArgs(x = "bottomright", title = ""))
+           legendArgs = list(x = "bottomright", title = ""))
 
 m4 <- lm (y ~ x1 * xcat1, data = dat)
 summary(m4)
