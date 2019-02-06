@@ -27,7 +27,7 @@ plotSlopes(m1, plotx = "x1", modx = "xcat2", modxVals = c("R", "M"))
 
 plotSlopes(m1, plotx = "x1", modx = "xcat2",  interval = "pred")
 
-plotSlopes(m1, plotx = "xcat1", modx = "xcat2",  interval = "conf")
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2",  interval = "conf", space = c(0,1))
 
 plotSlopes(m1, plotx = "xcat1", modx = "xcat2", 
            modxVals = c("Print R" = "R" , "Show M" = "M"), gridArgs = "none")
@@ -47,6 +47,10 @@ plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "prediction", gridArg
 plotSlopes(m1, plotx = "xcat2", modx = "xcat1", interval = "confidence", ylim = c(-3, 3))
 plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence", 
            col = c("black", "blue", "green", "red", "orange"), lty = c(1, 4, 6, 3))
+
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence", 
+           col = gray.colors(4, end = 0.5), lty = c(1, 4, 6, 3), legendArgs = list(horiz=TRUE))
+
 
 plotSlopes(m1, plotx = "xcat1", modx = "xcat2", interval = "confidence", 
            col = c("pink", "orange"))

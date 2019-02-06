@@ -620,20 +620,23 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
     ##Caution, modxVals comes out in wrong order compared to levels.
     ## Why? well put back in order according to levels(newdf)
     if(!is.null(modx)){
-        if(is.null(names(modxVals))) names(modxVals) <- as.character(modxVals) 
-        modxVal.names <- names(modxVals)
-        names(modxVal.names) <- modxVals
-        modxVal.names <- modxVal.names[levels(newdf[[modx]])]
-        modxVals <- names(modxVal.names)
-        names(modxVals) <- modxVal.names
-        
-        modx.levels <- modxVals
+        if(is.null(names(modxVals))) names(modxVals) <- as.character(modxVals)
+        if(is.factor(modxVals)){
+            modxVal.names <- names(modxVals)
+            names(modxVal.names) <- modxVals
+            modxVal.names <- modxVal.names[levels(newdf[[modx]])]
+            modxVals <- names(modxVal.names)
+            names(modxVals) <- modxVal.names
+            modx.levels <- modxVals
+        } else {
+            modx.levels <- modxVals
+        }
     }
     ## sort rows
     newdf <- if(is.null(modx)) newdf[order(newdf[[plotx]]), ]
              else newdf[order(newdf[[plotx]], newdf[[modx]]), ]
  
-    if(!is.null(modx) && any(levels(newdf[[modx]]) != modxVals) )stop("levels fail")
+    if(!is.null(modx) && is.factor(modxVals) && any(levels(newdf[[modx]]) != modxVals) )stop("levels fail")
     
     if(missing(ylim)){
         ylim <- magRange(range(c(newdf[["fit"]], if(!is.null(newdf[["lwr"]])) min(newdf[["lwr"]])),
@@ -789,9 +792,11 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
         legend.parms <- list(x = "bottomleft",
                              fill = col[as.character(lnc)],
                              col = col[as.character(lnc)],
-                             lwd = lwd[as.character(lnc)],
                              border = NA, bty = "n")
-        if(length(unique(lty)) > 1) legend.parms[["lty"]] <- lty[as.character(lnc)]
+        if(length(unique(lty)) > 1){
+            legend.parms[["lty"]] <- lty[as.character(lnc)]
+            legend.parms[["lwd"]] <- lwd[as.character(lnc)]
+        }
         
         if(any(modxVals != lnc)){ 
             stop("plotFancyCategories: fatal error")

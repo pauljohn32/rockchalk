@@ -10,6 +10,9 @@
 ##' @param ps pointsize of text
 ##' @param ... arguments passed to par
 ##' @return NULL
+##' @importFrom stats dnorm
+##' @importFrom stats pnorm
+##' @importFrom stats median
 ##' @export
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples

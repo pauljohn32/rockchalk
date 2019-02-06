@@ -1,6 +1,14 @@
 rockchalk package NEWS -- history of user-visible changes.
 
-Copyright (C) 2013-8 Paul E. Johnson.
+Copyright (C) 2013-9 Paul E. Johnson.
+
+* version 1.8.133
+
+** drawnorm: new function to illustrate normal distribution
+** plotSlopes: now accepts discrete plotx variables, makes a modified coefplot
+** plotSlopes: should now be identical to plotCurves, plotCurves should be deprecated
+** descriptiveTable: handy for making stat summaries of regression tables
+** outreg: now has centering with siunitx as an option
 
 * version 1.8.114
 
