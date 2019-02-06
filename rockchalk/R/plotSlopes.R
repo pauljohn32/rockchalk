@@ -205,8 +205,8 @@ plotSlopes.lm <-
         plotxVals <- plotSeq(plotxRange, length.out = 40)
     }
 
-    if (!(missing(modx)) || is.null(modx)){
-        if((missing(modxVals) || is.null(modxVals)) || (length(modxVals) == 1 && is.character(modxVals))){
+    if (!(missing(modx) || is.null(modx))) {
+        if((missing(modxVals) || is.null(modxVals)) || (length(modxVals) == 1 && is.character(modxVals))) {
             modxVar <- mm[, modx]
             if (is.factor(modxVar)) { ## modxVar is a factor
                 n <- ifelse(missing(n), nlevels(modxVar), n)
@@ -245,6 +245,7 @@ plotSlopes.lm <-
     }
 
     if(is.numeric(plotxVals)){
+        
         parms <- list(newdf = newdf, olddf = mm, plotx = plotx, modx = modx,
                        modxVals = modxVals, depName = depVar, 
                        interval = interval, level = level, plotPoints = plotPoints,
