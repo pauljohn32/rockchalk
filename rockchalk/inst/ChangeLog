@@ -1,3 +1,11 @@
+2019-02-06  Paul Johnson  <pauljohn@delllap-16>
+
+	* ../R/plotSlopes.R (plotFancyCategories): plotFancyCategories,
+	analogy to plotFancy for categorical plotx variables
+	(se.bars): illustrates for discrete plotx
+
+	* ../R/drawnorm.R (drawnorm): new function to illustrate normal
+
 2018-11-09  Paul Johnson  <pauljohn@delllap-16>
 
 	* ../R/predictOMatic.R (predictCI): glm predict interval
