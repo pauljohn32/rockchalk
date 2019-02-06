@@ -10,6 +10,7 @@
 ##' @param ps pointsize of text
 ##' @param ... arguments passed to par
 ##' @return NULL
+##' @export
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
 ##' drawnorm(mu = 10, sigma = 20)
