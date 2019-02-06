@@ -189,7 +189,8 @@ plotSlopes.lm <-
     ## depVar <- model.data[ , ylab]
     ## try to get the logged or transformed value???
     ## should be same as model.response(model.frame())??
-    depVar <- with(mm, eval(terms(model)[[2]]))
+    depName <- as.character(terms(model)[[2]])
+    depVar <- mm[[depName]]
     
     if(is.null(plotxRange)){
         if (is.numeric(plotxVar)){
@@ -247,7 +248,7 @@ plotSlopes.lm <-
     if(is.numeric(plotxVals)){
         
         parms <- list(newdf = newdf, olddf = mm, plotx = plotx, modx = modx,
-                       modxVals = modxVals, depName = depVar, 
+                       modxVals = modxVals, depName = depName, 
                        interval = interval, level = level, plotPoints = plotPoints,
                        col = col, opacity = opacity, xlim = plotxRange,
                        ylim = plotyRange, ylab = ylab, llwd = llwd)
@@ -259,10 +260,11 @@ plotSlopes.lm <-
         plotyRange <- magRange(range(c(newdf[["fit"]], if(!is.null(newdf[["lwr"]])) min(newdf[["lwr"]])),
                                    if(!is.null(newdf[["upr"]])) max(newdf[["upr"]])), 1.25)
                
-        parms <- list(newdf, olddf = mm,  plotx = plotx, modx = modx, 
-                      modxVals = modxVals, depName = depVar, xlim = plotxRange,
-                      xlab = plotx, ylab = ylab,  ylim = plotyRange, main = "",
-                      col = col, width = width)
+        parms <- list(newdf, olddf = mm,  plotx = plotx, modx = modx,
+                      modxVals = modxVals, depName = depName,
+                      xlim = plotxRange, interval = interval, level = level,
+                      xlab = plotx, ylab = ylab,  ylim = plotyRange,
+                      main = "", col = col, width = width)
         if(!missing(legendArgs) && !is.null(legendArgs)) parms[["legendArgs"]] <- legendArgs
         if(!missing(gridArgs) && !is.null(gridArgs)) parms[["gridArgs"]] <- gridArgs
         parms <- modifyList(parms, dotargs)
@@ -760,7 +762,7 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
             for(i in 1:(length(plotxList) - 1)){
                 set1 <- plotxList[[i]]
                 set2 <- plotxList[[i+1]]
-                arrows(set1[["w.m"]], set1[["fit"]], set2[["w.m"]] - 0.05, set1[["fit"]], col = col, lwd = gridlwd,
+                arrows(set1[["w.m"]], set1[["fit"]], set2[["w.l"]] + 0.3 * (1 - width), set1[["fit"]], col = col, lwd = gridlwd,
                        lty = gridlty, length = 0.1) 
             }
         }
@@ -789,7 +791,7 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
                              col = col[as.character(lnc)],
                              lwd = lwd[as.character(lnc)],
                              border = NA, bty = "n")
-        if(unique(lty) > 1) legend.parms[["lty"]] <- lty[as.character(lnc)]
+        if(length(unique(lty)) > 1) legend.parms[["lty"]] <- lty[as.character(lnc)]
         
         if(any(modxVals != lnc)){ 
             stop("plotFancyCategories: fatal error")
