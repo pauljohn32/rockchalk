@@ -12,13 +12,14 @@
 ##' @return NULL
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
-##' drawnorm(m = 10, s = 20)
-##' drawnorm(m = 0, s = 1)
-##' drawnorm(m = 102, s = 313)
-##' drawnorm(m = 0, s = 1, main = "A Standard Normal Distribution, N(0,1)", xlab = "X") 
+##' drawnorm(mu = 10, sigma = 20)
+##' drawnorm(mu= 0, sigma = 1)
+##' drawnorm(mu = 102, sigma = 313)
+##' drawnorm(mu = 0, sigma = 1, main = "A Standard Normal Distribution, N(0,1)",
+##'          xlab = "X", ylab = "Density", ps = 7)
+##' drawnorm(mu = 0, sigma = 1, ylab = "Density", ps = 14) 
 drawnorm <- function(mu = 0, sigma = 1, xlab = "A Normally Distributed Variable",
                      ylab = "Probability Density", main, ps = par("ps"), ...){
-
     dotargs <- list(...)
     dotnames <- names(dotargs)
     dots.par <- dotargs[names(dotargs)[names(dotargs) %in% c(names(par()), formalArgs(plot.default))]]
@@ -39,12 +40,9 @@ drawnorm <- function(mu = 0, sigma = 1, xlab = "A Normally Distributed Variable"
     plot.parms <- list(x = myx, y = myDensity, type = "l", xlab = xlab, ylab = ylab, main = main, axes = FALSE)
     plot.parms <- modifyList(plot.parms, dots.par)
     do.call(plot, plot.parms)
-    ##plot(myx, myDensity, type="l", xlab = xlab, ylab = ylab, main = myTitle1, axes=FALSE)
-    axis(2, pos= mu - 3.6*sigma)
-    ## axis(1, pos=0)
-
-    at <- c(mu - 2.5 * sigma, mu,  mu - sigma, mu + sigma, mu + 2.5 * sigma)
-    axis(1, pos = 0, at = at)
+    axis(2, pos = mu - 3.6*sigma)
+    ticksat <- c(mu - 2.5 * sigma, mu,  mu - sigma, mu + sigma, mu + 2.5 * sigma)
+    axis(1, pos = 0, at = ticksat)
     lines(c(myx[1],myx[length(myx)]),c(0,0)) ### closes off axes
 
     ## bquote creates an expression that text plotters can use
