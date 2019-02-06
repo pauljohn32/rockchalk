@@ -511,7 +511,8 @@ NULL
 
 ##' Draw standard error bar for discrete variables
 ##'
-##' Used with plotSlopes if plotx is discrete
+##' Used with plotSlopes if plotx is discrete. This is not currently
+##' exported.
 ##' 
 ##' @param x The x center point
 ##' @param y The fitted "predicted" value
@@ -523,7 +524,6 @@ NULL
 ##' @param lwd line width, usually 1
 ##' @param lty line type, usually 1
 ##' @return NONE
-##' @export
 ##' @author Paul Johnson
 ##' 
 se.bars <- function(x, y, lwr, upr, width = 0.20, col, opacity = 120, lwd = 1, lty = 1) {
@@ -547,7 +547,6 @@ se.bars <- function(x, y, lwr, upr, width = 0.20, col, opacity = 120, lwd = 1, l
     lines(c(x, x) + c(-h, h), c(y, y), col = lCol, lwd = lwd + 1)
     NULL
 }
-
 
 NULL
 
@@ -580,7 +579,6 @@ NULL
 ##' @param legendArgs Arguments to the legend function. Set as "none"
 ##'     if no legend is needed. Otherwise, provide a list
 ##' @importFrom graphics axis
-##' @export
 ##' @return None
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' 
@@ -595,7 +593,6 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
     call.orig <- match.call()
     dotargs <- list(...)
     dotnames <- names(dotargs)
-    browser()
     lty <- if("lty" %in% dotnames)  dotargs[["lty"]] else 1
    
     plotxval <- newdf[[plotx]]
@@ -769,9 +766,6 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
     ##     do.call("points", parms)
     ## }
 
-
-
-
     if(!missing(legendArgs) && is.character(legendArgs) && legendArgs == "none") {
                                         # "do nothing"
     } else if (!is.null(modx)){
@@ -783,7 +777,7 @@ plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
                              border = NA, bty = "n")
         if(unique(lty) > 1) legend.parms[["lty"]] <- lty[as.character(lnc)]
         
-        if(any(modxVals != lnc)){ browser();
+        if(any(modxVals != lnc)){ 
             stop("plotFancyCategories: fatal error")
         }
         if (is.null(names(modxVals))) {
