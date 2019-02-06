@@ -29,7 +29,8 @@ plotSlopes(m1, plotx = "x1", modx = "xcat2",  interval = "pred")
 
 plotSlopes(m1, plotx = "xcat1", modx = "xcat2",  interval = "conf")
 
-plotSlopes(m1, plotx = "xcat1", modx = "xcat2", modxVals = c("R", "M"))
+plotSlopes(m1, plotx = "xcat1", modx = "xcat2", 
+           modxVals = c("Print R" = "R" , "Show M" = "M"), gridArgs = "none")
 
 ## Now experiment with a moderator variable
 ## let default quantile algorithm do its job
@@ -82,7 +83,8 @@ m3 <- lm (y ~ x1 + xcat1, data = dat)
 summary(m3)
 plotSlopes(m3, modx = "xcat1", plotx = "x1")
 plotSlopes(m3, modx = "xcat1", plotx = "x1", interval = "predict")
-
+plotSlopes(m3, modx = "x1", plotx = "xcat1", interval = "confidence",
+           legendArgs(x = "bottomright", title = ""))
 
 m4 <- lm (y ~ x1 * xcat1, data = dat)
 summary(m4)
@@ -100,12 +102,13 @@ testSlopes(m5ps)
 
 
 ## Now examples with real data. How about Chilean voters?
-library(car)
+library(carData)
 m6 <- lm(statusquo ~ income * sex, data = Chile)
 summary(m6)
 plotSlopes(m6, modx = "sex", plotx = "income")
-plotSlopes(m6, modx = "sex", plotx = "income", col = c("yellow", "blue"))
+m6ps <- plotSlopes(m6, modx = "sex", plotx = "income", col = c("orange", "blue"))
 
+testSlopes(m6ps)
 
 m7 <- lm(statusquo ~ region * income, data= Chile)
 summary(m7)
@@ -130,8 +133,17 @@ m9 <- lm(statusquo ~ income * age + education + sex + age, data = Chile)
 summary(m9)
 plotSlopes(m9, modx = "income", plotx = "age")
 
-plotSlopes(m9, modx = "income", plotx = "age", plotPoints = FALSE)
+m9ps <- plotSlopes(m9, modx = "income", plotx = "age")
+m9psts <- testSlopes(m9ps)
+plot(m9psts) ## only works if moderator is numeric
 
+## Demonstrate re-labeling
+plotSlopes(m9, modx = "income", plotx = "age", n = 5,
+           modxVals = c("Very poor" = 7500,  "Rich" = 125000), 
+           main = "Chile Data", legendArgs = list(title = "Designated Incomes"))
+
+plotSlopes(m9, modx = "income", plotx = "age", n = 5, modxVals = c("table"), 
+           main = "Moderator: mean plus/minus 2 SD")
 
 ## Convert education to numeric, for fun
 Chile$educationn <- as.numeric(Chile$education)
