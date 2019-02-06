@@ -2,7 +2,7 @@ Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
 Version: 1.8.133
-Date: 2019-02-05
+Date: 2019-02-06
 Authors@R: c(person("Paul E.","Johnson",email="pauljohn@ku.edu",role = c("aut", "cre")),
     person("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"))
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
