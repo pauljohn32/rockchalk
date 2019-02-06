@@ -113,12 +113,15 @@ plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
 ##' @param opacity Optional, default = 100. A number between 1 and
 ##'     255.  1 means "transparent" or invisible, 255 means very dark.
 ##'     Determines the darkness of confidence interval regions
-##' @param width Only used if plotx (horizontal axis) is a factor. Designates
-##'     thickness of shading for bars that depict confidence intervals.
+##' @param type Argument passed to the predict function. If model is glm,
+##'     can be either "response" or "link". For lm, no argument of this
+##'     type is needed, since both types have same value.
 ##' @param gridArgs Only used if plotx (horizontal axis) is a factor
 ##'     variable. Designates reference lines between values. Set as
 ##'     "none" if no grid lines are needed.  Default will be
 ##'     \code{gridArgs = list(lwd = 0.3, lty = 5)}
+##' @param width Only used if plotx (horizontal axis) is a factor. Designates
+##'     thickness of shading for bars that depict confidence intervals.
 ##' @export
 ##' @method plotSlopes lm
 ##' @rdname plotSlopes
@@ -220,7 +223,7 @@ plotSlopes.lm <-
         parms.pred <- modifyList(parms.pred, dotargs[dotsForPredict])
         dotargs[[dotsForPredict]] <- NULL
     }
-    
+  
     newdf <-  do.call("predictOMatic", parms.pred)
 
     ## ignores confidence interval height here. Why?
@@ -284,6 +287,9 @@ NULL
 ##' @param opacity Value in 0, 255 for darkness of interval shading
 ##' @param ... Other arguments passed to plot function.
 ##' @return col, lty, and lwd information
+##' @importFrom methods formalArgs
+##' @importFrom graphics par
+##' @importFrom graphics plot.default
 ##' @author Paul E. Johnson <pauljohn@@ku.edu>
 ##'
 plotFancy <-
@@ -520,7 +526,7 @@ NULL
 ##' @export
 ##' @author Paul Johnson
 ##' 
-se.bars <- function(x, y, lwr, upr, width = 0.20, col = col.se, opacity = 120, lwd = 1, lty = 1) {
+se.bars <- function(x, y, lwr, upr, width = 0.20, col, opacity = 120, lwd = 1, lty = 1) {
     h <- min(1, 2.5 * width) #half of fit line
     q <- min(1, width)  #half with of fit line quarter width
     d <- 0.5 * width #half width of shaded area
@@ -567,11 +573,13 @@ NULL
 ##'     c(space_between, space_before_first)
 ##' @param width width of shaded bar area, default is 0.2. Maximum is 1.
 ##' @param llwd requested line width, will re-cycle.
+##' @param offset Shifts display to right (not tested)
 ##' @param gridArgs A list of values to control printing of reference grid.
 ##'     Set as "none" if no grid is desired. 
 ##' @param ... Arguments sent to par
 ##' @param legendArgs Arguments to the legend function. Set as "none"
 ##'     if no legend is needed. Otherwise, provide a list
+##' @importFrom graphics axis
 ##' @export
 ##' @return None
 ##' @author Paul Johnson <pauljohn@@ku.edu>

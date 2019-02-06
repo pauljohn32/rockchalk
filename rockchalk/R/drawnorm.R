@@ -8,6 +8,7 @@
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
 ##' drawnorm(m = 10, s = 20)
+##' drawnorm(m = 0, s = 1)
 drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     sigma.rounded <- if(1 == sigma[1]) round(sigma[1],2) else 1
     mu.rounded <- round(mu, 2)
@@ -28,15 +29,15 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     t1 <-  bquote(mu== .(mu))
     ## Find a value of myx that is "very close to" mu
     centerX <- max(which (myx <= mu))
-                                        # plot light vertical line under peak of density
+    ## plot light vertical line under peak of density
     lines( c(mu, mu), c(0, myDensity[centerX]), lty= 14, lwd=.2)
 
-                                        # label the mean in the bottom margin
+    ## label the mean in the bottom margin
     mtext(bquote( mu == .(mu.rounded)), 1, at=mu, line=-1)
 
 ### find position 20% "up" vertically, to use for arrow coordinate
     ss = 0.2 * max(myDensity)
-                                        # Insert interval to represent width of one sigma
+    ## Insert interval to represent width of one sigma
     arrows( x0=mu, y0= ss, x1=mu+sigma, y1=ss, code=3, angle=90, length=0.1)
 
 ### Write the value of sigma above that interval
@@ -44,7 +45,7 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     text( mu+0.5*sigma, 1.15*ss, t2)
 
     ## Create a formula for the Normal
-    normalFormula <- expression (f(x) == frac (1, sigma* sqrt(2*pi)) * e^{~~ - ~~ frac(1,2)~~ bgroup("(", frac(x-mu,sigma),")")^2})
+    normalFormula <- expression (f(x) == frac (1, sigma* sqrt(2*pi)) * e^{~ - ~ frac(1,2)~bgroup("(", frac(x-mu,sigma),")")^2})
                                         # Draw the Normal formula
     text ( mu + 0.5*sigma, max(myDensity)- 0.10 * max(myDensity),  normalFormula, pos=4)
     
@@ -61,9 +62,10 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     ##  Polygon makes a nice shaded illustration
     polygon(c(specialX[1], specialX, specialX[length(specialX )]), c(0, specialY, 0), density=c(-110),col="lightgray" )
     shadedArea <- round(pnorm(mu - 1.96 * sigma, mean=mu, sd=sigma), 4)
+    criticalValue.rounded <- round(criticalValue, 3)
     ## I want to insert annotation about area on left side.
-     al1 <- bquote(atop(Prob(x <= .(round(criticalValue,3))),
-                       phantom(0) == .(shadedArea)))
+     al1 <- bquote(atop(Prob(x <= .(criticalValue.rounded)),
+                        F(.(criticalValue.rounded)) == .(shadedArea)))
     
     ## Hard to position this text "just right"
     ## Have tried many ideas, this may be least bad.
@@ -76,7 +78,8 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     text(medX, denAtMedX, labels=al1, pos = 3, cex = 0.7)
  
     indexMed <- max(which(specialX < medX))
-    arrows( x0=medX, y0=denAtMedX, x1= medX + .1 *abs(max(specialX) - min(specialX)), y1= myDensity[indexMed]  + 0.01,   length=0.1)
+    ## left side arrow
+    arrows( x0=medX, y0=denAtMedX, x1= medX + .1 *abs(max(specialX) - min(specialX)), y1= 1.02 * myDensity[indexMed],   length=0.1)
     ss <- 0.1 * max(myDensity)
     ## Mark interval from mu to mu-1.96*sigma
     arrows( x0=mu, y0= ss, x1=mu-1.96*sigma, y1=ss, code=3, angle=90, length=0.1)
@@ -106,7 +109,7 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     text(medX, denAtMedX, labels=al2, pos = 3, cex = 0.7)
   
    ## point from text toward shaded area
-    arrows( x0=medX, y0=denAtMedX, x1= medX - 0.1*abs(max(specialX) - min(specialX)), y1= 0.40*myDensity[length(specialX)] ,   length=0.1)
+    arrows( x0=medX, y0=denAtMedX, x1= medX - 0.1*abs(max(specialX) - min(specialX)), y1= 1.02 * myDensity[indexMed] ,   length=0.1)
     
     ss <- 0.05 * max(myDensity)
     ## Mark interval from mu to mu+1.96*sigma

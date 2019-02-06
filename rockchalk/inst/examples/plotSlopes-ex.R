@@ -16,7 +16,7 @@ m1 <- lm(y ~ x1 * x2 + x3 + x4 + xcat1* xcat2, data = dat)
 summary(m1)
 
 ## New in rockchalk 1.7.x. No modx required:
-plotSlopes(m1, plotx = "x1"))
+plotSlopes(m1, plotx = "x1")
 ## Confidence interval, anybody?
 plotSlopes(m1, plotx = "x1", interval = "conf")
 
