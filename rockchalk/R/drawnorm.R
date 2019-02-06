@@ -4,25 +4,47 @@
 ##' in my website, pj.freefaculty.org/R/WorkingExamples
 ##' @param mu The mu parameter
 ##' @param sigma The sigma parameter
+##' @param xlab Label for x axis
+##' @param ylab Label for Y axis
+##' @param main Title for plot. OK to ignore this, we'll make a nice one for you
+##' @param ps pointsize of text
+##' @param ... arguments passed to par
 ##' @return NULL
 ##' @author Paul Johnson <pauljohn@@ku.edu>
 ##' @examples
 ##' drawnorm(m = 10, s = 20)
 ##' drawnorm(m = 0, s = 1)
-drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
-    sigma.rounded <- if(1 == sigma[1]) round(sigma[1],2) else 1
+##' drawnorm(m = 102, s = 313)
+##' drawnorm(m = 0, s = 1, main = "A Standard Normal Distribution, N(0,1)", xlab = "X") 
+drawnorm <- function(mu = 0, sigma = 1, xlab = "A Normally Distributed Variable",
+                     ylab = "Probability Density", main, ps = par("ps"), ...){
+
+    dotargs <- list(...)
+    dotnames <- names(dotargs)
+    dots.par <- dotargs[names(dotargs)[names(dotargs) %in% c(names(par()), formalArgs(plot.default))]]
+        
+    sigma.rounded <- if(1 == sigma[1]) 1 else round(sigma[1],2)
     mu.rounded <- round(mu, 2)
   
     myx <- seq( mu - 3.5*sigma,  mu+ 3.5*sigma, length.out=500)
     myDensity <- dnorm(myx,mean=mu,sd=sigma)
-   ## myTitle1 <- bquote(x %~% Normal~group("(", list(mu == .(mu.rounded), sigma^2 == .(sigma.rounded)^2),")"))
-    myTitle1 <- bquote(x %~% Normal~group("(", list(mu == .(mu.rounded), sigma^2 == .(if(sigma == 1) 1 else sigma.rounded^2)),")"))
+    if(missing(main)) {
+        main <- bquote(x %~% Normal~group("(", list(mu == .(mu.rounded),
+                       sigma^2 == .(if(sigma[1] == 1) 1 else sigma.rounded^2)),")"))
+    }
     ## xpd needed to allow writing outside strict box of graph
-    par(xpd=TRUE, ps = ps)
+    par.orig <-  par(xpd=TRUE, ps = ps)
+    on.exit(par(par.orig))
 
-    plot(myx, myDensity, type="l", xlab="x", ylab="Probability Density ", main=myTitle1, axes=FALSE)
+    plot.parms <- list(x = myx, y = myDensity, type = "l", xlab = xlab, ylab = ylab, main = main, axes = FALSE)
+    plot.parms <- modifyList(plot.parms, dots.par)
+    do.call(plot, plot.parms)
+    ##plot(myx, myDensity, type="l", xlab = xlab, ylab = ylab, main = myTitle1, axes=FALSE)
     axis(2, pos= mu - 3.6*sigma)
-    axis(1, pos=0)
+    ## axis(1, pos=0)
+
+    at <- c(mu - 2.5 * sigma, mu,  mu - sigma, mu + sigma, mu + 2.5 * sigma)
+    axis(1, pos = 0, at = at)
     lines(c(myx[1],myx[length(myx)]),c(0,0)) ### closes off axes
 
     ## bquote creates an expression that text plotters can use
@@ -31,22 +53,20 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     centerX <- max(which (myx <= mu))
     ## plot light vertical line under peak of density
     lines( c(mu, mu), c(0, myDensity[centerX]), lty= 14, lwd=.2)
+    ## label the mean
+    text(mu, 0.4 * max(myDensity), labels = bquote( mu == .(mu.rounded)), pos = 2)
 
-    ## label the mean in the bottom margin
-    mtext(bquote( mu == .(mu.rounded)), 1, at=mu, line=-1)
-
-### find position 20% "up" vertically, to use for arrow coordinate
+    ### find position 20% "up" vertically, to use for arrow coordinate
     ss = 0.2 * max(myDensity)
     ## Insert interval to represent width of one sigma
     arrows( x0=mu, y0= ss, x1=mu+sigma, y1=ss, code=3, angle=90, length=0.1)
-
-### Write the value of sigma above that interval
+    ## Write the value of sigma above that interval
     t2 <-  bquote( sigma== .(round(sigma,2)))
     text( mu+0.5*sigma, 1.15*ss, t2)
 
     ## Create a formula for the Normal
-    normalFormula <- expression (f(x) == frac (1, sigma* sqrt(2*pi)) * e^{~ - ~ frac(1,2)~bgroup("(", frac(x-mu,sigma),")")^2})
-                                        # Draw the Normal formula
+    normalFormula <- expression (f(x) == frac (1, sigma* sqrt(2*pi)) * ~~ e^{~-~frac(1,2)~bgroup("(", frac(x-mu,sigma),")")^2})
+    ## Draw the Normal formula
     text ( mu + 0.5*sigma, max(myDensity)- 0.10 * max(myDensity),  normalFormula, pos=4)
     
     ## Theory says we should have 2.5% of the area to the left of: -1.96 * sigma.
@@ -56,7 +76,7 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     specialX <-  myx[myx <= criticalValue]
     
     ## mark the critical value in the graph
-    text ( criticalValue, 0 , label= paste(round(criticalValue,2)), pos=1)
+    text ( criticalValue, 0 , label= paste(round(criticalValue,2)), pos=1, cex = .7)
     ## Take sequence parallel to values of myx inside critical region
     specialY <- myDensity[myx < criticalValue]
     ##  Polygon makes a nice shaded illustration
@@ -64,56 +84,54 @@ drawnorm <- function(mu = 0, sigma = 1, ps = par("ps")){
     shadedArea <- round(pnorm(mu - 1.96 * sigma, mean=mu, sd=sigma), 4)
     criticalValue.rounded <- round(criticalValue, 3)
     ## I want to insert annotation about area on left side.
-     al1 <- bquote(atop(Prob(x <= .(criticalValue.rounded)),
+    al1 <- bquote(atop(Prob(x <= .(criticalValue.rounded)),
                         F(.(criticalValue.rounded)) == .(shadedArea)))
-    
-    ## Hard to position this text "just right"
-    ## Have tried many ideas, this may be least bad.
     ## Get center position in shaded area
-    medX <- min(specialX) + 0.5 * abs(max(specialX) - min(specialX)) 
+    medX <- median(specialX) 
+    indexMed <- max(which(specialX < medX))
     ## density at that center point:
-    medY <- specialY[which(specialX == medX)]
-    ##denAtMedX <- specialY[which(specialX == medX)]
-    denAtMedX <- max(specialY)
-    text(medX, denAtMedX, labels=al1, pos = 3, cex = 0.7)
- 
+    medY <- specialY[indexMed]
+    denMax <- max(specialY)
+    text(medX, denMax, labels=al1, pos = 3, cex = 0.7)
     indexMed <- max(which(specialX < medX))
     ## left side arrow
-    arrows( x0=medX, y0=denAtMedX, x1= medX + .1 *abs(max(specialX) - min(specialX)), y1= 1.02 * myDensity[indexMed],   length=0.1)
+    x1 <-  medX + .1 *abs(max(specialX) - min(specialX))
+    y1 <- 1.2 * myDensity[max(which(specialX < x1))]
+    arrows(x0=medX, y0=denMax, x1= x1, y1 = y1,   length=0.1)
     ss <- 0.1 * max(myDensity)
     ## Mark interval from mu to mu-1.96*sigma
     arrows( x0=mu, y0= ss, x1=mu-1.96*sigma, y1=ss, code=3, angle=90, length=0.1)
     ## Put text above interval
-    text( mu - 2.0*sigma,1.15*ss, bquote(paste(.(round(criticalValue,2)),phantom(1)==mu-1.96 * sigma,sep="")),pos=4 )
+    text( mu - 2.0*sigma, 1.15*ss, bquote(paste(.(criticalValue.rounded)==mu-1.96 * sigma,sep="")),pos=4 )
+
+    ## Now work on right side critical value and area
     criticalValue <- mu +1.96 * sigma
+    criticalValue.rounded <- round(criticalValue, 3)
     ## Then grab all myx values that are "to the left" of that critical value.
     specialX <-  myx[myx >= criticalValue]
     ## mark the critical value in the graph
-    text ( criticalValue, 0 , label= paste(round(criticalValue,2)), pos=1)
+    text ( criticalValue, 0 , label= paste(criticalValue.rounded), pos=1, cex = 0.7)
     ## Take sequence parallel to values of myx inside critical region
-    specialY <- myDensity[myx > criticalValue]
-                                        #  Polygon makes a nice shaded illustration
-    polygon(c(specialX[1], specialX, specialX[length(specialX )]), c(0, specialY, 0), density=c(-110),col="lightgray" )
-
+    specialY <- myDensity[myx >= criticalValue]
+    ##  Polygon for shaded illustration
+    polygon(c(specialX[1], specialX, specialX[length(specialX )]), c(0, specialY, 0), density=c(-110), col="lightgray" )
     shadedArea <- round(pnorm(mu + 1.96 * sigma, mean=mu, sd=sigma, lower.tail=F),4)
-
-
-    ## Insert simpler comment on right side.
-
-    al2 <- bquote(atop(1 - F( .(round(criticalValue,3)) ),
-                  phantom(0) == .(shadedArea)))
-
+    ## Insert comment on right side.
+    al2 <- bquote(atop(1 - F( .(criticalValue.rounded)),
+                       phantom(0) == .(shadedArea)))
     medX <- median(specialX)
     ## denAtMedX <- myDensity[indexMed <- max(which(specialX < medX))]
-    denAtMedX <-  max(specialY)
-    text(medX, denAtMedX, labels=al2, pos = 3, cex = 0.7)
-  
-   ## point from text toward shaded area
-    arrows( x0=medX, y0=denAtMedX, x1= medX - 0.1*abs(max(specialX) - min(specialX)), y1= 1.02 * myDensity[indexMed] ,   length=0.1)
+    denMax <-  max(specialY)
+    text(medX, denMax, labels=al2, pos = 3, cex = 0.7)
+    ## point from text toward shaded area
+    x1 <-  medX - .1 *abs(max(specialX) - min(specialX))
+    y1  <- 1.2 * specialY[max(which(specialX < x1))]
+    ## arrows( x0=medX, y0=denMax, x1= medX - 0.1*abs(max(specialX) - min(specialX)), y1= 1.02 * myDensity[indexMed] ,   length=0.1)
+    arrows( x0=medX, y0=denMax, x1= x1, y1 = y1,  length=0.1)
     
     ss <- 0.05 * max(myDensity)
     ## Mark interval from mu to mu+1.96*sigma
     arrows( x0=mu, y0= ss, x1=mu+1.96*sigma, y1=ss, code=3, angle=90, length=0.1)
     ## Put text above interval
-    text( mu + 1.96*sigma,1.15*ss, bquote(paste(.(round(criticalValue,2)),phantom(1)==mu+1.96 * sigma,sep="")),pos=2 )
+    text( mu + 1.96*sigma,1.15*ss, bquote(paste(.(criticalValue.rounded)==mu+1.96 * sigma,sep="")), pos=2 )
 }
