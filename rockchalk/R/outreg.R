@@ -250,11 +250,8 @@ outreg0 <-
 
     gofRow <- function(x, xname = "fixme") {
         cat(paste(as.character(xname)), sep = "")
-
         for (mname in names(x)) {
-
             cat(paste("      &", x[mname]))
-
             if (tight == FALSE) cat("   &")
         }
         cat("  \\\\\n")
@@ -893,26 +890,23 @@ outreg <-
         errors <- lapply(problematic, checkFunctions, req)
     }
 
-
-  
-    
-   latexreplace <- c(
+   latex.markup <- c(
         "_LB_" = "\\\n",                                                       
-        "_EOC_" =  "",                                                                                        
-        "_BOC_" = "& ",                                                                                     
+        "_EOC_" =  "",                                                                              
+        "_BOC_" = "&",                                                                          
         "_EOMC_" = "}",                                                                       
-        "_EOR_" = "\\\\tabularnewline",                                                                        
-        "_BRU_" = "",                                                                                             
+        "_EOR_" = "\\\\tabularnewline",  
+        "_BRU_" = "",
         "_BRT_" = "",                                                                       
-        "_BOCU_" = "&",                                                                    
-        "_BR_" = "",                          
+        "_BOCU_" = "&",                             
+        "_BR_" = "",   
         "_EOL_" = "\n",                                                               
-        "_HL_" = "\\\\hline",                                                                              
+        "_HL_" = "\\\\hline", 
         "_UL_" = "\\\\underline{",                                                   
         "_EOUL_" = "}",                                                                   
         "_SEPU_" = " &",                                                              
        "_SEP_" = " &",
-       "_ETABULAR_" = "\\\\end{tabular}",                                                                     
+       "_ETABULAR_" = "\\\\end{tabular}",  
         "_BOMR1_" = "& \\\\multirow{1}{c}{",
         "_BOMR2_" = "& \\\\multirow{2}{c}{",
         "_BOMC1_" = "\\\\multicolumn{1}{c}{",
@@ -956,30 +950,30 @@ outreg <-
     ## Replacement strings for HTML output
     ## TODO: 20171102: refactor abbreviations
     ## Problem in output is duplicate <td><td ..>, workaround in last item"
-    htmlreplace <- c(                                                                                                                                                                   
-        "_LB_" = "<br>",                                                                                                                                                                                                         
-        "_EOC_" = "</td>",                                                                                                                                                                                                           
-        "_BOC_" = "<td>",                                                                                                                                                                                                          
-        "_EOMC_" = "</td>",                                                                                                                                                                                                       
-        "_EOR_" = "</tr>",                                                                                                                              
-        "_BRU_" = paste("<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">"),                                                                                                          
-        "_BRT_" = paste("<tr><td style=\"border-top: solid thin black; border-collapse:collapse;\">"),                                                                                                                 
-        "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">"),                                                                                                                   
-        "_BR_" = "<tr><td>",                                                                                                                                                                                                  
-        "_BTABULAR_" =  "<table style=\"padding-right:20px;padding-left:20px;\">\n",                                                                  
+    html.markup <- c(                                                                                          
+        "_LB_" = "<br>",  
+        "_EOC_" = "</td>",   
+        "_BOC_" = "<td>",   
+        "_EOMC_" = "</td>",
+        "_EOR_" = "</tr>", 
+        "_BRU_" = paste("<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">"), 
+        "_BRT_" = paste("<tr><td style=\"border-top: solid thin black; border-collapse:collapse;\">"),
+        "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">"),  
+        "_BR_" = "<tr><td>",      
+        "_BTABULAR_" =  "<table style=\"padding-right:20px;padding-left:20px;\">\n",                           
         "_BT_" =  "<table>\n",
-        "_EOL_" = "\n",                                                                                                                                                                                                
-        "_HL_" =  "",                                                                                                                                                                                              
-        "_UL_" =  "<span style=\"text-decoration: underline;\">",                                                                                                                                                        
-        "_EOUL_" = "</span>",                                                                                                                                                                              
-        "_SEPU_" = "</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;",                                                                                                
-        "_SEP_" = "</td><td>",                                                                                                                                     
-        "_ETABULAR_" = "</table>",                                                                                                                                                        
-        "_BOMR1_" = "<td rowspan = '1'>",                                                                                                                                                                             
-        "_BOMR2_" = "<td rowspan = '2'>",                                                                                                                                                                                   
-        "_BOMC1_" = "<td colspan = '1'; align = 'center'>",                                                                                                                                              
-        "_BOMC2_" = "<td colspan = '2'; align = 'center'>",                                                                                                                                                 
-        "_BOMC3_" = "<td colspan = '3'; align = 'center'>",                                                                                                                                                            
+        "_EOL_" = "\n",                                                                                        
+        "_HL_" =  "",                                                                                          
+        "_UL_" =  "<span style=\"text-decoration: underline;\">",                                              
+        "_EOUL_" = "</span>",                                                                                  
+        "_SEPU_" = "</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;",     
+        "_SEP_" = "</td><td>",                                                                                 
+        "_ETABULAR_" = "</table>",                                                                             
+        "_BOMR1_" = "<td rowspan = '1'>",                                                                      
+        "_BOMR2_" = "<td rowspan = '2'>",                                                                      
+        "_BOMC1_" = "<td colspan = '1'; align = 'center'>",                                                    
+        "_BOMC2_" = "<td colspan = '2'; align = 'center'>",                                                    
+        "_BOMC3_" = "<td colspan = '3'; align = 'center'>",                                                    
         "_BOMC4_" = "<td colspan = '4'; align = 'center'>",
         "_BOMC5_" = "<td colspan = '5'; align = 'center'>",
         "_BOMC6_" = "<td colspan = '6'; align = 'center'>",
@@ -1018,7 +1012,7 @@ outreg <-
     )
     
     ## Replacement strings for CSV output
-    csvreplace <- c(
+    csv.markup <- c(
         "_LB_" = "\n",                           
         "_EOC_" =  ",",       
         "_BOC_" = "",                             
@@ -1075,33 +1069,7 @@ outreg <-
         "_STAR3_" = "**"
     )
 
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
+   
     markup <- function(x, type){
         if (type == "latex"){
             markup <- latex.markup
@@ -1117,9 +1085,10 @@ outreg <-
         x
     }
 
-    # cs = column start
-    # uses environment for tight, defaults as centered
-    bomc <- function(ctr = TRUE, n){
+    ## cs = column start
+    ## uses environment for tight, defaults as centered
+    ## 20190214: TODO figure out the underlining
+    bomc <- function(ctr = TRUE, n, underline = FALSE){
         if(missing(n)) n <- if(tight)1 else 2
         if(ctr) {
             return(paste0("_BOMC", n, "_"))
@@ -1145,7 +1114,7 @@ outreg <-
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
 
                 nstars <- sum(pf(y["value"], df1 = y["numdf"], df2 = y["dendf"], lower.tail = FALSE) < alpha)
-                y <- paste0(bomc(), staty, paste(rep("*", nstars), collapse = ""), "_EOMC_")
+                y <- paste0("_BOC_", bomc(), staty, paste(rep("*", nstars), collapse = ""), "_EOMC_")
             } else if (is.numeric(y)) {
                 if (length(y) > 1){
                     messg <- paste0("outreg: ", 
@@ -1166,12 +1135,11 @@ outreg <-
     }
 
     gofRow <- function(x, xname = "fixme") {
-        zline <- c("_BR_", xname, paste(rep(" ",  max(2, (16 - nchar(xname)))), collapse = "" ))
-        for (mname in names(x)) {
-            zline <- c(zline,  x[mname], paste(rep(" ", max(2, 6-nchar(x[mname]), na.rm = TRUE)), collapse = ""))
-            if (tight == FALSE) zline <- c(zline, sprintf("%6s", " "), "_SEP_")
-        }
-        zline <- paste(paste(zline, collapse = ""), "_EOC__EOR__EOL_")
+        ## x has markup already! don't re-insert
+        ##zline <- c("_BR__BOC_", xname, paste(rep(" ",  max(2, (16 - nchar(xname)))), collapse = "" ))
+        zline <- c("_BR_", xname, "_EOC_")
+        zline <- paste0(paste0(zline, collapse="") , paste0(x, collapse = paste0(if(!tight) "_BOC__EOC_" else " ")), "_EOR__EOL_")
+        zline
     }
 
 
@@ -1326,10 +1294,14 @@ outreg <-
         SE[modlnames, j] <- modl[modlnames, "SE"]
     }
 
-    displayNames <-  as.character(parmnames)
+    displayNames <- as.character(parmnames)
     names(displayNames) <- as.character(parmnames)
     displayNames[names(varLabels)] <- varLabels
 
+    ## 20190214: new idea to fiddle lines HTML
+    fudgeLength <- (1 + !tight) * length(modelList)
+    blankline <- paste0("_BRU_", paste0(rep(paste0("_BOCU__EOC_"), fudgeLength), collapse=""), "_EOR__EOL_")
+    
     getVC.merMod <- function(modl){
         if(inherits(modl, "merMod")){
             vc <- lme4::VarCorr(modl)
@@ -1435,9 +1407,9 @@ outreg <-
  
     ## Put model labels on top of each model column, if modelLabels were given
     if (!is.null(modelLabels)){
-        aline <- paste0("_BR_",  sprintf("%2s", " "), "_EOC_", collapse = "")
+        aline <- paste0("_BR__EOC_",  sprintf("%2s", " "), "_EOC_", collapse = "")
         for (modelLabel in modelLabels){
-                 aline <- c(aline, paste0(bomc(centering %in% c("dcolumn", "siunitx")), modelLabel, "_EOMC_"))
+                 aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), modelLabel, "_EOMC_"))
         }
         aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
@@ -1445,21 +1417,22 @@ outreg <-
 
     ## Print the headers "Estimate" and "(S.E.)", output depends on tight or other format
     if (tight == TRUE) {
-        aline <- paste0("_BR_", paste0(rep(paste0(bomc(centering %in% c("dcolumn", "siunitx")), "Estimate_EOMC_"), nmodels), collapse = ""),
+        aline <- paste0("_BR__EOC_", paste0(rep(paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), "Estimate_EOMC_"), nmodels), collapse = ""),
                        "_EOR__EOL_", collapse = "") 
         z <- c(z, paste0(aline, collapse = ""))
         ##aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_EOC__BOCU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
-        aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep(paste0("_EOC_", bomc(centering %in% c("dcolumn", "siunitx")), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
+        aline <- c("_BR__EOC_", sprintf("%2s", " "), paste0(rep(paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
     } else {
-        aline1 <- paste0("_BRU_", sprintf("%2s", " "), "_EOC_")
+        aline1 <- paste0("_BR_", sprintf("%2s", " "), "_EOC_")
         #aline2 <- paste(rep ("_EOC__BOCU_ Estimate _EOC__BOCU_ (S.E.)", nmodels), collapse = "")
-        aline2 <- paste0(rep ("_BOMC1_Estimate_EOMC__BOMC1_(S.E.)_EOMC_", nmodels), collapse = "")
+        aline2 <- paste0(rep ("_BOC__BOMC1_Estimate_EOMC__BOC__BOMC1_(S.E.)_EOMC_", nmodels), collapse = "")
         aline3 <- paste0("_EOR__EOL_")
         z <- c(z, paste0(aline1, aline2, aline3, collapse = ""))
     }
 
     if (type == "latex") z <- c(z, SL(1, "latex"), SL(1, "latex"))
+    if (type == "html") z <- c(z, blankline)
    
     ## Here come the regression coefficients
     for (regname in parmnames){
@@ -1474,7 +1447,7 @@ outreg <-
                     aline <- c(aline, paste("_SEP_  ", se, collapse = " "))
                 }
             } else {
-                aline <- c(aline, paste0(bomc(centering %in% c("dcolumn", "siunitx"), 1), "_DOT__EOMC_"))
+                aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx"), 1), "_DOT__EOMC_"))
                 if (tight == FALSE) aline  <- c(aline, "_SEP_    ")
             }
         }
@@ -1497,15 +1470,17 @@ outreg <-
     aline <- SL(nColumns, type)
     z <- c(z, aline)
 
-
+  
     ## Print a row for the number of cases
-    aline <- c("_BR_", "N")
+    ##fiddline here to get line above N
+    aline <- c("_BR_", "N", "_EOC_")
     for (model in modelList) {
         myN <- stats::nobs(model)
-        aline <- c(aline, "_BOML1_", myN, "_EOMC_", if(tight==FALSE) "_SEP_")
-        ## if (tight == FALSE) aline <- c(aline, "_SEP_ ")
+        columnFudge <- if(centering %in% c("dcolumn", "siunitx")) "_BOMC1_" else "_BOML1_"
+        aline <- c(aline, "_BOC_", columnFudge,  myN, "_EOMC_", if(tight==FALSE) "  _SEP_" else "")
     }
-    aline <- c(aline, " _EOR__EOL_")
+    ##    if (type == "html") z <- c(z, blankline)
+    aline <- c(if(type == "html") blankline else "", aline, " _EOR__EOL_")
     z <- c(z, paste(aline, collapse = ""))
 
     ## The new way
@@ -1567,7 +1542,7 @@ outreg <-
         }else{
             aline <- paste0(aline, paste(aicv, collapse = "_SEP_"))
         }
-        aline <- paste0(aline, "_EOR__EOL_")
+        aline <- paste0(aline, "_EOC__EOR__EOL_")
         z <- c(z, aline)
     }
 
