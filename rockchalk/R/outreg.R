@@ -893,76 +893,213 @@ outreg <-
         errors <- lapply(problematic, checkFunctions, req)
     }
 
-    latex.markup <- c("_EOC_" = "",
-                      "_BOC_" = "&",
-                      "_EOMC_" = "}",
-                      "_EOR_" = "\\\\tabularnewline",
-                      "_BRU_" = "",
-                      "_BR_" = "", 
-                      "_BT_" = "\begin{tabular}",
-                      "_EOL_" = "\n",
-                      "_HL_" = "\\\\hline",
-                      "_BOCU_" = " &",
-                      "_DOT_" = paste0("\\\\_"), 
-                      "_SEP_" = " &",
-                      "_EOT_" = "\\\\end{tabular}",
-                      "_BOMC1_" = "& \\\\multicolumn{1}{l}{",
-                      "_BOMC2_" = "& \\\\multicolumn{2}{l}{",
-                      "_BOMC1C_" = "& \\\\multicolumn{1}{c}{", 
-                      "_BOMC2C_" = "& \\\\multicolumn{2}{c}{", 
-                      "_X2_" = "$-2LLR (Model \\\\chi^2)$",
-                      "_R2_" = "$R^2$",
-                      "_Fmarkup_" = "F($df_{num}$,$df_{denom}$)",
-                      "_SIGMA_" = "$\\\\sigma$",
-                      "_NBSP_" = "\ ")
 
-    html.markup <- c(
-        "_EOC_" = "</td>",
-        "_BOC_" ="<td>",
-        "_EOMC_" = "</td>",
-        "_EOR_" = "</tr>",
-        "_BRU_" = "<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;",
-        "_BR_" =  "<tr><td>",
+  
+    
+   latexreplace <- c(
+        "_LB_" = "\\\n",                                                       
+        "_EOC_" =  "",                                                                                        
+        "_BOC_" = "& ",                                                                                     
+        "_EOMC_" = "}",                                                                       
+        "_EOR_" = "\\\\tabularnewline",                                                                        
+        "_BRU_" = "",                                                                                             
+        "_BRT_" = "",                                                                       
+        "_BOCU_" = "&",                                                                    
+        "_BR_" = "",                          
+        "_EOL_" = "\n",                                                               
+        "_HL_" = "\\\\hline",                                                                              
+        "_UL_" = "\\\\underline{",                                                   
+        "_EOUL_" = "}",                                                                   
+        "_SEPU_" = " &",                                                              
+       "_SEP_" = " &",
+       "_ETABULAR_" = "\\\\end{tabular}",                                                                     
+        "_BOMR1_" = "& \\\\multirow{1}{c}{",
+        "_BOMR2_" = "& \\\\multirow{2}{c}{",
+        "_BOMC1_" = "\\\\multicolumn{1}{c}{",
+        "_BOMC2_" = "\\\\multicolumn{2}{c}{",
+        "_BOMC3_" = "\\\\multicolumn{3}{c}{",
+        "_BOMC4_" = "\\\\multicolumn{4}{c}{",
+        "_BOMC5_" = "\\\\multicolumn{5}{c}{",
+        "_BOMC6_" = "\\\\multicolumn{6}{c}{",
+        "_BOMC7_" = "\\\\multicolumn{7}{c}{",
+        "_BOMC8_" = "\\\\multicolumn{8}{c}{",
+        "_BOMC9_" = "\\\\multicolumn{9}{c}{",
+        "_BOML1_" = "\\\\multicolumn{1}{l}{",
+        "_BOML2_" = "\\\\multicolumn{2}{l}{",
+        "_BOML3_" = "\\\\multicolumn{3}{l}{",
+        "_BOML4_" = "\\\\multicolumn{4}{l}{",
+        "_BOML5_" = "\\\\multicolumn{5}{l}{",
+        "_BOML6_" = "\\\\multicolumn{6}{l}{",
+        "_BOML7_" = "\\\\multicolumn{7}{l}{",
+        "_BOML8_" = "\\\\multicolumn{8}{l}{",
+        "_BOML9_" = "\\\\multicolumn{9}{l}{",
+        "_BOMCT1_" = "\\\\multicolumn{1}{c}{",
+        "_BOMCT2_" = "\\\\multicolumn{2}{c}{",
+        "_BOMCT3_" = "\\\\multicolumn{3}{c}{",
+        "_BOMCT4_" = "\\\\multicolumn{4}{c}{",
+        "_HTMLHL_" = "",
+        "_CHI2_" = "$\\\\chi^{2}(\\\\mathrm{df})$",
+        "_R2_" = "$R^2$",
+        "_X2_" = "$-2LLR (Model \\\\chi^2)$",
+        "_Fmarkup_" = "F($df_{num}$,$df_{denom}$)",
+        "_DOT_" = paste0("\\\\_"),
+        "_LEQ_" = "$\\\\leq$",
+        "_SIGMA_" = "$\\\\sigma$",
+        "_NBSP_" = " ",
+        "_FIXED_" = "$^+$",
+        "_STAR0_" = "$\\\\phantom{{^{***}}}$",
+        "_STAR1_" = "$^{*}\\\\phantom{{^{**}}}$",
+        "_STAR2_" = "$^{**}\\\\phantom{{^{*}}}$",
+        "_STAR3_" = "$^{***}$"
+    )
+
+    ## Replacement strings for HTML output
+    ## TODO: 20171102: refactor abbreviations
+    ## Problem in output is duplicate <td><td ..>, workaround in last item"
+    htmlreplace <- c(                                                                                                                                                                   
+        "_LB_" = "<br>",                                                                                                                                                                                                         
+        "_EOC_" = "</td>",                                                                                                                                                                                                           
+        "_BOC_" = "<td>",                                                                                                                                                                                                          
+        "_EOMC_" = "</td>",                                                                                                                                                                                                       
+        "_EOR_" = "</tr>",                                                                                                                              
+        "_BRU_" = paste("<tr><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">"),                                                                                                          
+        "_BRT_" = paste("<tr><td style=\"border-top: solid thin black; border-collapse:collapse;\">"),                                                                                                                 
+        "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">"),                                                                                                                   
+        "_BR_" = "<tr><td>",                                                                                                                                                                                                  
+        "_BTABULAR_" =  "<table style=\"padding-right:20px;padding-left:20px;\">\n",                                                                  
         "_BT_" =  "<table>\n",
-        "_EOL_" = "\n",
-        "_HL_" = "",
-        "_BOCU_" = paste("<td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;"),
-        "_DOT_" = "_",
-        "_SEP_" = "</td><td>",
-        "_EOT_" = "</table>",
-        "_BOMC1_" = "<td colspan = '1'>",
-        "_BOMC2_" = "<td colspan = '2'>",
-        "_BOMC1C_" = "<td colspan = '2'>", ##20181002 TODO what about centering??
-        "_BOMC2C_" = "<td colspan = '2'>",
-        "_X2_" =  "&chi;<sup>2</sup>",
-        "_R2_" =  "R<sup>2</sup>",
-        "_Fmarkup_" = "F(df1,df2)",
-        "_SIGMA_" =  "&sigma;",
-        "_NBSP_" = "&nbsp;")
+        "_EOL_" = "\n",                                                                                                                                                                                                
+        "_HL_" =  "",                                                                                                                                                                                              
+        "_UL_" =  "<span style=\"text-decoration: underline;\">",                                                                                                                                                        
+        "_EOUL_" = "</span>",                                                                                                                                                                              
+        "_SEPU_" = "</td><td style=\"border-bottom: solid thin black; border-collapse:collapse;\">&nbsp;",                                                                                                
+        "_SEP_" = "</td><td>",                                                                                                                                     
+        "_ETABULAR_" = "</table>",                                                                                                                                                        
+        "_BOMR1_" = "<td rowspan = '1'>",                                                                                                                                                                             
+        "_BOMR2_" = "<td rowspan = '2'>",                                                                                                                                                                                   
+        "_BOMC1_" = "<td colspan = '1'; align = 'center'>",                                                                                                                                              
+        "_BOMC2_" = "<td colspan = '2'; align = 'center'>",                                                                                                                                                 
+        "_BOMC3_" = "<td colspan = '3'; align = 'center'>",                                                                                                                                                            
+        "_BOMC4_" = "<td colspan = '4'; align = 'center'>",
+        "_BOMC5_" = "<td colspan = '5'; align = 'center'>",
+        "_BOMC6_" = "<td colspan = '6'; align = 'center'>",
+        "_BOMC7_" = "<td colspan = '7'; align = 'center'>",
+        "_BOMC8_" = "<td colspan = '8'; align = 'center'>",
+        "_BOMC9_" = "<td colspan = '9'; align = 'center'>",
+        "_BOML1_" = "<td colspan = '1'; align = 'left'>",
+        "_BOML2_" = "<td colspan = '2'; align = 'left'>",
+        "_BOML3_" = "<td colspan = '3'; align = 'left'>",
+        "_BOML4_" = "<td colspan = '4'; align = 'left'>",
+        "_BOML5_" = "<td colspan = '5'; align = 'left'>",
+        "_BOML6_" = "<td colspan = '6'; align = 'left'>",
+        "_BOML7_" = "<td colspan = '7'; align = 'left'>",
+        "_BOML8_" = "<td colspan = '8'; align = 'left'>",
+        "_BOML9_" = "<td colspan = '9'; align = 'left'>",
+        "_BOMCT1_" = "<td colspan = '1'; style=\"border-top: solid thin black; border-collapse:collapse;\">&nbsp;",
+        "_BOMCT2_" = "<td colspan = '2'; style=\"border-top: solid thin black; border-collapse:collapse;\">&nbsp;",
+        "_BOMCT3_" = "<td colspan = '3'; style=\"border-top: solid thin black; border-collapse:collapse;\">&nbsp;",
+        "_BOMCT4_" = "<td colspan = '4'; align = 'center'; ; style=\"border-top: solid thin black; border-collapse:collapse;\">&nbsp;",
+        "_HTMLHL_" = "<tr><td colspan = '5'; align = 'center'; ; style=\"border-top: solid thin black; border-collapse:collapse;\">&nbsp;</tr>",
+        "_DOT_" = "_",    
+        "_CHI2_" = "&chi;<sup>2</sup>",
+         "_X2_" =  "&chi;<sup>2</sup>",  
+        "_R2_" = "R<sup>2</sup>",
+        "_LEQ_" = "&le;",
+        "_Fmarkup_" = "F(df1,df2)",                   
+        "_SIGMA_" = "&sigma;",
+        "_NBSP_" = "&nbsp;",
+        "_FIXED_" = "<sup>+</sup>",
+        "_STAR0_" = "&nbsp;",
+        "_STAR1_" = "<sup>*</sup>",
+        "_STAR2_" = "<sup>**</sup>",
+        "_STAR3_" = "<sup>***</sup>",
+         "_NBSP_" = "&nbsp;",                
+        "<td><td" = "<td"
+    )
+    
+    ## Replacement strings for CSV output
+    csvreplace <- c(
+        "_LB_" = "\n",                           
+        "_EOC_" =  ",",       
+        "_BOC_" = "",                             
+        "_EOMC_" = ",",                               
+        "_EOR_" = "\n",                              
+        "_BRU_" = "",                             
+        "_BRT_" = "",                              
+        "_BOCU_" = ",",                          
+        "_BR_" = "",                               
+        "_BTABULAR_" = "",                        
+        "_EOL_" = "\n",                             
+        "_HL_" = "",                          
+        "_UL_" = "",                           
+        "_EOUL_" = "",                           
+        "_SEPU_" = "",                      
+        "_SEP_" = ",",                            
+        "_ETABULAR_" = "",                        
+        "_BOMR1_" = "",                          
+        "_BOMR2_" = "",                              
+        "_BOMC1_" = "",                         
+        "_BOMC2_" = "",                       
+        "_BOMC3_" = "",                             
+        "_BOMC4_" = "",
+        "_BOMC5_" = "",
+        "_BOMC6_" = "",
+        "_BOMC7_" = "",
+        "_BOMC8_" = "",
+        "_BOMC9_" = "",
+        "_BOML1_" = "",
+        "_BOML2_" = "",
+        "_BOML3_" = "",
+        "_BOML4_" = "",
+        "_BOML5_" = "",
+        "_BOML6_" = "",
+        "_BOML7_" = "",
+        "_BOML8_" = "",
+        "_BOML9_" = "",
+        "_BOMCT1_" = "",
+        "_BOMCT2_" = "",
+        "_BOMCT3_" = "",
+        "_BOMCT4_" = "",
+        "_HTMLHL_" = "",
+         "_DOT_" = ".",   
+        "_CHI2_" = "chi^2",
+        "_R2_" = "R^2",
+        "_LEQ_" = "<=",
+        "_SIGMA_" = "sigma",
+         "_Fmarkup_" = "F",  
+        "_NBSP_" = " ",
+        "_FIXED_" = "+",
+        "_STAR0_" = "", 
+        "_STAR1_" = "*",
+        "_STAR2_" = "**",
+        "_STAR3_" = "**"
+    )
 
-    csv.markup <- c(
-        "_EOC_" = "",
-        "_BOC_" = ",",
-        "_EOMC_" = "",
-        "_EOR_" = "",
-        "_BRU_" = "",
-        "_BR_" =  "",
-        "_BT_" =  "",
-        "_EOL_" = "\n",
-        "_HL_" = "",
-        "_BOCU_" = ",",
-        "_DOT_" = ".",
-        "_SEP_" = ",",
-        "_EOT_" = "",
-        "_BOMC1_" = ",",
-        "_BOMC2_" = ",",
-        "_BOMC1C_" = ",",
-        "_BOMC2C_" = ",",
-        "_X2_" =  "chi2",
-        "_R2_" =  "R2",
-        "_Fmarkup_" = "F",
-        "_SIGMA_" =  "sigma",
-        "_NBSP_" = " ")
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
     markup <- function(x, type){
@@ -985,9 +1122,9 @@ outreg <-
     bomc <- function(ctr = TRUE, n){
         if(missing(n)) n <- if(tight)1 else 2
         if(ctr) {
-            return(paste0("_BOMC", n, "C_"))
-        } else {
             return(paste0("_BOMC", n, "_"))
+        } else {
+            return(paste0("_BOML", n, "_"))
         }
     }
     
@@ -1315,9 +1452,9 @@ outreg <-
         aline <- c("_BRU_", sprintf("%2s", " "), paste0(rep(paste0("_EOC_", bomc(centering %in% c("dcolumn", "siunitx")), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
     } else {
-        aline1 <- paste0("_BRU_", sprintf("%2s", " "))
+        aline1 <- paste0("_BRU_", sprintf("%2s", " "), "_EOC_")
         #aline2 <- paste(rep ("_EOC__BOCU_ Estimate _EOC__BOCU_ (S.E.)", nmodels), collapse = "")
-        aline2 <- paste0(rep ("_EOC__BOMC1C_Estimate_EOMC__EOC__BOMC1C_(S.E.)_EOMC_", nmodels), collapse = "")
+        aline2 <- paste0(rep ("_BOMC1_Estimate_EOMC__BOMC1_(S.E.)_EOMC_", nmodels), collapse = "")
         aline3 <- paste0("_EOR__EOL_")
         z <- c(z, paste0(aline1, aline2, aline3, collapse = ""))
     }
@@ -1365,7 +1502,7 @@ outreg <-
     aline <- c("_BR_", "N")
     for (model in modelList) {
         myN <- stats::nobs(model)
-        aline <- c(aline, "_BOMC1C_", myN, "_EOMC_", if(tight==FALSE) "_SEP_")
+        aline <- c(aline, "_BOML1_", myN, "_EOMC_", if(tight==FALSE) "_SEP_")
         ## if (tight == FALSE) aline <- c(aline, "_SEP_ ")
     }
     aline <- c(aline, " _EOR__EOL_")
@@ -1445,7 +1582,7 @@ outreg <-
                     y <- do.call(myfn, list(x))
                     fstaty <- paste(format(y[1], digits = digits), collapse = ", ",
                                     "(", format(attr(y, "df")), ")", sep = "")
-                    fstaty <- paste0(if(tight)"_BOMC1C_" else "_BOMC2C_", fstaty, "_EOMC_")
+                    fstaty <- paste0(if(tight)"_BOMC1_" else "_BOMC2_", fstaty, "_EOMC_")
                     invisible(fstaty)
                 })
                 elist[[i]] <- myresult
@@ -1453,7 +1590,7 @@ outreg <-
                 myresult <- lapply(modelList, function(x){
                     y <- do.call(myfn, list(x))
                     fstaty <- format(c(y), digits = digits, nsmall = 2)
-                    fstaty <- paste0(if(tight)"_BOMC1C_" else "_BOCMC2_", fstaty, "_EOMC_")
+                    fstaty <- paste0(if(tight)"_BOMC1_" else "_BOMC2_", fstaty, "_EOMC_")
                 })
                 elist[[i]] <- myresult
             }
@@ -1497,7 +1634,7 @@ outreg <-
         
     z <- c(z, pline(type, alpha))
 
-    aline <- "_EOT__EOL_"
+    aline <- "_ETABULAR__EOL_"
     z <- c(z, aline)
     if (float == TRUE && type == "latex"){
         aline <- "\\end{table}_EOL_\n"
