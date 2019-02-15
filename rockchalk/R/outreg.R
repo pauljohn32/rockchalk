@@ -1024,7 +1024,7 @@ outreg <-
                     y <- do.call(myfn, list(x))
                     fstaty <- paste(format(y[1], digits = digits), collapse = ", ",
                                     "(", format(attr(y, "df")), ")", sep = "")
-                    fstaty <- paste0(if(tight)"_BOMC1_" else "_BOMC2_", fstaty, "_EOMC_")
+                    fstaty <- paste0(if(tight)"_BOC__BOMC1_" else "_BOMC2_", fstaty, "_EOMC_")
                     invisible(fstaty)
                 })
                 elist[[i]] <- myresult
@@ -1032,7 +1032,7 @@ outreg <-
                 myresult <- lapply(modelList, function(x){
                     y <- do.call(myfn, list(x))
                     fstaty <- format(c(y), digits = digits, nsmall = 2)
-                    fstaty <- paste0(if(tight)"_BOMC1_" else "_BOMC2_", fstaty, "_EOMC_")
+                    fstaty <- paste0(if(tight)"_BOC__BOMC1_" else "_BOMC2_", fstaty, "_EOMC_")
                 })
                 elist[[i]] <- myresult
             }
