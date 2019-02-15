@@ -1005,18 +1005,12 @@ outreg <-
     ## Print a row for the model's fit, as -2 LLR
     ## Can't remember why I was multiplying by -2
     if (showAIC == TRUE) {
-        aline <- "_BR_AIC    _SEP_"
-        aicv <- lapply(modelList, function(x) {
+        aicList <- lapply(modelList, function(x) {
             aic.x <- AIC(x)
-            if(is.numeric(aic.x)) format(aic.x, digits=digits, nsmall=3) else ""
+            y <- if(is.numeric(aic.x)) format(aic.x, digits=digits, nsmall=3) else ""
+            paste0("_BOC_", y, "_EOC_")
         })
-        if (tight == FALSE){
-            aline <- paste0(aline, paste(aicv, collapse = "_SEP__SEP_"))
-        }else{
-            aline <- paste0(aline, paste(aicv, collapse = "_SEP_"))
-        }
-        aline <- paste0(aline, "_EOC__EOR__EOL_")
-        z <- c(z, aline)
+        z <- c(z, gofRow(aicList, "AIC"))
     }
 
     ## TODO: round the following output

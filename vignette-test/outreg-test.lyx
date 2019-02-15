@@ -1217,7 +1217,7 @@ status open
 
 \begin_layout Plain Layout
 \noindent
-dcolumn=TRUE
+centering = "dcolumn"
 \end_layout
 
 \end_inset
@@ -1228,7 +1228,7 @@ status open
 
 \begin_layout Plain Layout
 \noindent
-siunitx=TRUE
+centering = "siunitx"
 \end_layout
 
 \end_inset
@@ -1433,7 +1433,7 @@ status open
 
 \begin_layout Plain Layout
 \noindent
-dcolumn=TRUE
+centering = "dcolumn"
 \end_layout
 
 \end_inset
@@ -1444,7 +1444,7 @@ status open
 
 \begin_layout Plain Layout
 \noindent
-siunitx=TRUE
+centering = "siunitx"
 \end_layout
 
 \end_inset
@@ -1579,43 +1579,13 @@ I've already noticed a couple of quirks while testing 1.8.125, so by the time
 \end_layout
 
 \begin_layout Section
-User Interface question for you, the user
+User Interface question
 \end_layout
 
 \begin_layout Standard
-Currently, there are 2 arguments, TRUE or FALSE.
- 
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-dcolumn=TRUE
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-siunitx=TRUE
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Maybe that's a mistake.
- I realize maybe I should have 1 argument 
+In this iteration of the effort, I've allowed the user to specify one argument
+ for column centering.
+ The parameter 
 \begin_inset Quotes eld
 \end_inset
 
@@ -1633,7 +1603,7 @@ centering
 \begin_inset Quotes erd
 \end_inset
 
- with legal values c(
+ has legal values c(
 \begin_inset Quotes eld
 \end_inset
 
@@ -1658,20 +1628,12 @@ siunitx
 \end_inset
 
 ).
- Do you think that's better? Then we'd make some fancy magic so that if
- a user mistakenly enters 
-\begin_inset Quotes eld
-\end_inset
-
-centering=TRUE
-\begin_inset Quotes erd
-\end_inset
-
- then we give them siunitx.
+ What is your thought on that?
 \end_layout
 
 \begin_layout Standard
-What is your thought on that?
+It is almost certain to me now that siunitx is the best approach, by far,
+ and I'm using it almost all the time in my projects.
 \end_layout
 
 \begin_layout Section
@@ -2447,7 +2409,11 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
-ex2d <- outreg(m1, title = "Tight column with dcolumn=TRUE",
+ex2d <- outreg(m1, title = "Tight column with centering = 
+\backslash
+"dcolumn
+\backslash
+"",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2460,7 +2426,15 @@ tab:ex2d
 \begin_inset Quotes erd
 \end_inset
 
-, dcolumn = TRUE,
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+,
 \end_layout
 
 \begin_layout Plain Layout
@@ -2499,7 +2473,11 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
-ex2s <- outreg(m1, title = "Tight column with siunitx=TRUE",
+ex2s <- outreg(m1, title = "Tight column with centering = 
+\backslash
+"siunitx
+\backslash
+"",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2512,7 +2490,7 @@ tab:ex2s
 \begin_inset Quotes erd
 \end_inset
 
-, siunitx = TRUE,
+, centering = "siunitx",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2546,7 +2524,8 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
-ex1wd <- outreg(m1, title = "Wide (not tight) format with dcolumn = TRUE",
+ex1wd <- outreg(m1, title = "Wide (not tight) format with centering = 'dcolumn'"
+,
 \end_layout
 
 \begin_layout Plain Layout
@@ -2559,7 +2538,15 @@ tab:ex2wd
 \begin_inset Quotes erd
 \end_inset
 
-, tight = FALSE, dcolumn = TRUE,
+, tight = FALSE, centering = 
+\begin_inset Quotes erd
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+,
 \end_layout
 
 \begin_layout Plain Layout
@@ -2593,7 +2580,7 @@ status open
 
 \begin_layout Plain Layout
 
-ex1ws <- outreg(m1, title = "Wide (not tight) format with siunitx = TRUE",
+ex1ws <- outreg(m1, title = "Wide (not tight) format with centering='siunitx'",
 \end_layout
 
 \begin_layout Plain Layout
@@ -2606,7 +2593,15 @@ tab:ex2ws
 \begin_inset Quotes erd
 \end_inset
 
-, tight = FALSE, siunitx = TRUE,
+, tight = FALSE, centering = 
+\begin_inset Quotes erd
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+,
 \end_layout
 
 \begin_layout Plain Layout
@@ -2728,7 +2723,15 @@ tab:ex2pd
 \begin_inset Quotes erd
 \end_inset
 
-, dcolumn = TRUE,
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+,
 \end_layout
 
 \begin_layout Plain Layout
@@ -2812,7 +2815,15 @@ tab:ex2ps
 \begin_inset Quotes erd
 \end_inset
 
-, dcolumn = TRUE, float = TRUE,
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+, float = TRUE,
 \end_layout
 
 \begin_layout Plain Layout
@@ -3105,7 +3116,15 @@ tab:ex3bd
 \begin_inset Quotes erd
 \end_inset
 
-, dcolumn=TRUE)
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3157,7 +3176,15 @@ tab:ex3bs
 \begin_inset Quotes erd
 \end_inset
 
-, siunitx = TRUE)
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3320,7 +3347,15 @@ tab:ex5dd
 \begin_inset Quotes erd
 \end_inset
 
-, showAIC = TRUE, float = TRUE, dcolumn = TRUE)
+, showAIC = TRUE, float = TRUE, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3362,7 +3397,15 @@ tab:ex5ds
 \begin_inset Quotes erd
 \end_inset
 
-, showAIC = TRUE, float = TRUE, siunitx = TRUE)
+, showAIC = TRUE, float = TRUE, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3499,7 +3542,8 @@ ex6d
 
 \begin_layout Plain Layout
 
-         runFuns = c("AIC" = "Akaike IC"), dcolumn=TRUE, print.results=FALSE)
+         runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=F
+ALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3549,7 +3593,7 @@ status open
 
 \begin_layout Plain Layout
 
-ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), dcolumn=FALSE,
+ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
 \end_layout
 
 \begin_layout Plain Layout
@@ -3603,7 +3647,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), dcolumn=TRUE,
+ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), centering =
+ "dcolumn",
 \end_layout
 
 \begin_layout Plain Layout
@@ -3718,7 +3763,7 @@ ex11 <- outreg(list("I Love Long Titles" = m1,
 
 \begin_layout Plain Layout
 
-               dcolumn = TRUE)
+               centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3790,7 +3835,7 @@ ex11td <- outreg(list("I Love Long Titles" = m1,
 
 \begin_layout Plain Layout
 
-               dcolumn = TRUE)
+               centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3862,7 +3907,7 @@ ex11ts <- outreg(list("I Love Long Titles" = m1,
 
 \begin_layout Plain Layout
 
-               siunitx = TRUE)
+               centering = "siunitx")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4060,7 +4105,7 @@ if (require(car)){
 
 \begin_layout Plain Layout
 
-             dcolumn = TRUE)
+             centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4145,7 +4190,7 @@ if (require(car)){
 
 \begin_layout Plain Layout
 
-             siunitx = TRUE)
+             centering = "siunitx")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4238,7 +4283,7 @@ tab:ex13
 \begin_inset Quotes erd
 \end_inset
 
-, alpha = c(0.05, 0.01), dcolumn = TRUE)
+, alpha = c(0.05, 0.01), centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4315,7 +4360,7 @@ tab:ex14
 
 \begin_layout Plain Layout
 
-         dcolumn = TRUE)
+         centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4394,7 +4439,7 @@ tab:ex15
 
 \begin_layout Plain Layout
 
-         digits = 5, alpha = c(0.01), dcolumn = TRUE)
+         digits = 5, alpha = c(0.01), centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4486,7 +4531,7 @@ logLik
 
 \begin_layout Plain Layout
 
-           digits = 5, alpha = c(0.1, 0.05, 0.01), dcolumn = TRUE)
+           digits = 5, alpha = c(0.1, 0.05, 0.01), centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4559,7 +4604,7 @@ logLik
 
 \begin_layout Plain Layout
 
-           digits = 5, alpha = c(0.1, 0.05, 0.01), siunitx = TRUE)
+           digits = 5, alpha = c(0.1, 0.05, 0.01), centering = "siunitx")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4653,7 +4698,7 @@ logLik
 
 \begin_layout Plain Layout
 
-         "nobs" = "N Again?"), dcolumn=TRUE)
+         "nobs" = "N Again?"), centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -4730,7 +4775,7 @@ logLik
 
 \begin_layout Plain Layout
 
-         "nobs" = "N Again?"), siunitx=TRUE)
+         "nobs" = "N Again?"), centering = "siunitx")
 \end_layout
 
 \begin_layout Plain Layout
