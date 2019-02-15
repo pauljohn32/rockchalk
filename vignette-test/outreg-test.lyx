@@ -1045,17 +1045,9 @@ outreg
 
  table-writer for regression models.
  This has been the most widely requested feature for a while.
- Years ago, I declined to do it because I was afraid I would make tables
- that would fail in ordinary user documents.
- I did not want to impose any complications, especially for novice LaTeX
- users.
- There was an explanation of my reticence in the rockchalk vignette.
-\end_layout
-
-\begin_layout Abstract
-\noindent
-However, in 2018 I was persuaded we should try harder on decimal centering.
- In today's version of rockchalk, 1.8.126, I have working examples of 2 centering
+ Years ago, I declined to do it because it seemed a needless complication.
+ However, in 2018 I was persuaded we should try harder on decimal centering.
+ In today's version of rockchalk, 1.8.136, I have working examples of 2 centering
  methods, 
 \begin_inset Flex Code
 status open
@@ -1091,7 +1083,30 @@ dcolumn
 \end_inset
 
  was the first method attempted.
- It is much simpler, easier to work with.
+ It is relatively widely used.
+ It is simpler to work with inside the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ code, but the results are not quite as good as 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+.
  
 \begin_inset Flex Code
 status open
@@ -1103,8 +1118,8 @@ dcolumn
 
 \end_inset
 
- output it is mostly adequate, but it leaves column headers and non-numeric
- content alignment.
+ output it is mostly adequate, but it leaves problems in column headers
+ and non-numeric content alignment.
  
 \begin_inset Flex Code
 status open
@@ -1117,7 +1132,18 @@ siunitx
 \end_inset
 
  is a much more massive framework.
- It required much more alteration of rockchalk itself.
+ It required much more alteration of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+rockchalk
+\end_layout
+
+\end_inset
+
+ itself.
  There is much more danger of outright failure because of the immensity
  of 
 \begin_inset Flex Code
@@ -1233,7 +1259,7 @@ centering = "siunitx"
 
 \end_inset
 
- (NOT both).
+.
 \end_layout
 
 \begin_layout Abstract
@@ -1263,20 +1289,25 @@ https://github.com/pauljohn32/rockchalk
 
 .
  Anybody with a GitHub account can clone that.
- The PDF you are reading write now is in a folder named 
+ This vignette will be included in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+rockchalk
+\end_layout
+
+\end_inset
+
+ itself under the name 
 \begin_inset Quotes eld
 \end_inset
 
-vignette-test
+outreg
 \begin_inset Quotes erd
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Abstract
-I need stress tests for tables.
- 
 \end_layout
 
 \begin_layout Standard
@@ -2644,7 +2675,79 @@ ref{tab:ex2p}
 
 , I demonstrate that the alpha parameter can be used to select different
  values for the critical region.
- Several alpha adjustments are scattered about in the examples.
+ In Tables 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2pd}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2ps}
+\end_layout
+
+\end_inset
+
+, the centered-with-dcolumn and centered-with-siunitx are presented.
+ I see some trouble here because the stars are not evenly spaced in the
+ dcolumn-based Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\backslash
+ref{tab:ex2pd}}
+\end_layout
+
+\end_inset
+
+.
+ However, the siunitx based Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\backslash
+ref{tab:ex2ps}}
+\end_layout
+
+\end_inset
+
+ may be adequate.
+ This is one of the reasons I now 
+\emph on
+strongly
+\emph default
+ lean toward use of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+siunitx
+\end_layout
+
+\end_inset
+
+ if centering is desired.
+ Several alpha adjustments are scattered about in the examples in this essay,
+ just to make sure they work.
 \end_layout
 
 \begin_layout Standard
@@ -2663,7 +2766,7 @@ ex2p <- outreg(list("Fingers" = m1), tight = FALSE,
 
 \begin_layout Plain Layout
 
-         title = "Ability to change p values", 
+         title = "Ability to change p values (not centered)", 
 \end_layout
 
 \begin_layout Plain Layout
@@ -2755,38 +2858,6 @@ dcolumn
 \end_layout
 
 \begin_layout Standard
-In my first tests, I see some trouble here because the stars are not evenly
- spaced in the dcolumn-based Table 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-{
-\backslash
-ref{tab:ex2pd}}
-\end_layout
-
-\end_inset
-
-.
- However, the siunitx based Table 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-{
-\backslash
-ref{tab:ex2ps}}
-\end_layout
-
-\end_inset
-
- may be adequate.
-\end_layout
-
-\begin_layout Standard
 \begin_inset ERT
 status open
 
@@ -2819,7 +2890,7 @@ tab:ex2ps
 \begin_inset Quotes eld
 \end_inset
 
-dcolumn
+siunitx
 \begin_inset Quotes erd
 \end_inset
 
