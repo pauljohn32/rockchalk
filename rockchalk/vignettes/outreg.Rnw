@@ -31,6 +31,8 @@
 
 \@ifundefined{date}{}{\date{}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%\VignetteIndexEntry{outreg}
+
 % Following comment is required. Do not delete it.
 %\usepackage{Sweave}
 

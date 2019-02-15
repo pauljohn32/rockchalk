@@ -13,6 +13,7 @@ echo "$pwd"
 lyx -f -e sweave Rstyle.lyx;
 lyx -f -e sweave rockchalk.lyx;
 lyx -f -e sweave Rchaeology.lyx;
+lyx -f -e sweave outreg.lyx;
 cd ..
 
 ## copies UNCOMMITTED but TRACKED files.
