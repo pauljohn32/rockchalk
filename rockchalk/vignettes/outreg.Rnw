@@ -1,0 +1,1181 @@
+%% LyX 2.3.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,letterpaper,english]{extarticle}
+\usepackage{lmodern}
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
+\usepackage{babel}
+\usepackage{float}
+\usepackage{url}
+\usepackage[authoryear]{natbib}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\special{papersize=\the\paperwidth,\the\paperheight}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+<<echo=F>>=
+  if(exists(".orig.enc")) options(encoding = .orig.enc)
+@
+\providecommand*{\code}[1]{\texttt{#1}}
+
+\@ifundefined{date}{}{\date{}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+% Following comment is required. Do not delete it.
+%\usepackage{Sweave}
+
+\usepackage[includehead,includefoot]{geometry}
+\geometry{
+lmargin=1in,
+rmargin=1in,
+tmargin=0.75in,
+bmargin=1.0in,
+headheight=0pt,
+headsep=0pt,
+marginparwidth=0pt,
+footskip=1.5\baselineskip,
+}
+
+\usepackage{booktabs}
+\usepackage{dcolumn}
+
+% paste in
+%%\input{theme/guidePreambleHeader.tex}
+
+% $ This nullifies emacs subscripting in following%
+%%BEGIN: This begins the custom header
+\usepackage{array}
+\usepackage{xparse}
+\usepackage{babel}
+\usepackage{datetime}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{multicol}
+
+\definecolor{darkblue}{HTML}{1e2277}
+\definecolor{kublue81186}{RGB}{0,81,186}
+\newdateformat{monddyyyy}{\shortmonthname[\THEMONTH].~\THEDAY,~\THEYEAR}
+
+
+%% BEGIN custom header
+\ExplSyntaxOn
+\NewDocumentCommand \guidesetup { m }
+ {
+  \keys_set:nn { guide } { #1 }
+ }
+
+\int_new:N \g_guide_authors_int
+\prop_new:N \g_guide_authors_prop
+\tl_new:N \l__guide_authors_tl
+
+\keys_define:nn { guide }
+ {
+  author .code:n =
+   {
+    \int_gincr:N \g_guide_authors_int
+    \keys_set:nn { guide / author } { #1 }
+   },
+  author/firstname .code:n = { \guide_add_author:nn { firstname } { #1 } },
+  author/lastname .code:n = { \guide_add_author:nn { lastname } { #1 } },
+  author/affiliation .code:n = { \guide_add_author:nn { affiliation } { #1 } },
+  author/email .code:n = { \guide_add_author:nn { email } { #1 } },
+  leftlogo .tl_set:N = \l_guide_leftlogo_tl,
+  rightlogo .tl_set:N = \l_guide_rightlogo_tl,
+  number .tl_set:N = \l_guide_number_tl,
+  title .tl_set:N = \l_guide_title_tl,
+  subtitle .tl_set:N = \l_guide_subtitle_tl,
+  keywords .tl_set:N = \l_guide_keywords_tl,
+  url .tl_set:N = \l_guide_url_tl,
+  title .initial:n = {TITLE~NEEDED},
+}
+\NewDocumentCommand \guidehdr { +O{} }
+ {
+  \group_begin:
+  \keys_set:nn { guide } { #1 }
+  \guide_hdr:
+  \group_end:
+ }
+\cs_new_protected:Nn \guide_hdr:
+ {
+   \centering
+   \noindent\fcolorbox{kublue81186}{white}{
+  \begin{tabular}
+   {
+    @{}c
+    >{\centering}m{ \dim_eval:n { \textwidth - 2.5in - 6\tabcolsep - 2\arrayrulewidth } }
+    c@{}
+   }
+   &&\tabularnewline[-\dim_eval:n { -\normalbaselineskip + 3ex }]
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=.75in]{\l_guide_leftlogo_tl}
+  \end{tabular}
+  &
+  \centering
+    {\textsc{\large{}\l_guide_title_tl}}
+    \tl_if_empty:NF \l_guide_subtitle_tl
+    {
+      {\\\textsc{\large{}\l_guide_subtitle_tl}}
+    }
+  \\
+  \textcolor{kublue81186}{\rule[0.5ex]{1\linewidth}{0.7pt}}\\
+  \guide_print_authors:
+  &
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=1.25in]{\l_guide_rightlogo_tl}
+  \end{tabular}
+  \tabularnewline
+  \tl_if_empty:NTF \l_guide_number_tl
+   { \leavevmode\vphantom{G}}
+   {\small\bfseries { Guide~No: ~ \tl_use:N \l_guide_number_tl }} & 
+   \tl_if_empty:NF \l_guide_keywords_tl
+   {\centering
+    \textbf{Keywords}: ~ \l_guide_keywords_tl}
+   & 
+   \small\bfseries\monddyyyy\today \tabularnewline
+   \tl_if_empty:NF \l_guide_url_tl
+   {
+   \multicolumn{3}{c}{
+    See ~ \url{\l_guide_url_tl} ~ for ~ updates.}
+     }
+  \tabularnewline
+  \end{tabular}
+  }
+}
+
+\cs_new_protected:Nn \guide_add_author:nn
+ {
+  \prop_gput:Nxn \g_guide_authors_prop
+   { #1 \int_to_arabic:n { \g_guide_authors_int } }
+   { #2 }
+ }
+\cs_generate_variant:Nn \prop_gput:Nnn { Nx }
+\cs_new_protected:Nn \guide_print_authors:
+ {
+  \tl_clear:N \l__guide_authors_tl
+  \int_step_inline:nnnn { 1 } { 1 } { \g_guide_authors_int }
+   {
+    \tl_put_right:Nn \l__guide_authors_tl
+     {
+      \textbf
+       {
+        \prop_item:Nn \g_guide_authors_prop { firstname ##1 }~
+        \prop_item:Nn \g_guide_authors_prop { lastname ##1 },~
+       }
+       \prop_item:Nn \g_guide_authors_prop { affiliation##1 },~
+       \href{mailto:\prop_item:Nn \g_guide_authors_prop { email##1 } }
+       {\url{\prop_item:Nn \g_guide_authors_prop { email##1 }}}
+       \\
+     }
+   }
+   \tl_use:N \l__guide_authors_tl
+ }
+\ExplSyntaxOff
+%%END This ends the custom header
+
+
+%%Now the hyperref colors
+
+\hypersetup{
+ unicode=true,pdfusetitle,bookmarks=true,
+ bookmarksnumbered=false, bookmarksopen=false,
+ breaklinks=true, pdfborder={0 0 0},
+ pdfborderstyle={}, backref=false,
+ colorlinks=true, linkcolor=darkblue,
+ urlcolor=darkblue, citecolor=darkblue}
+
+%% Was previously in "preambleFloatCenter.tex"
+%%BEGIN: graphics and such inside floats are centered by default
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+}{%
+ \end@float
+}
+%%END: graphics and such inside floats are centered by default
+
+% paste
+%%\input{theme/preambleFooter.tex}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand \footersetup { +m }
+{
+\keys_set:nn { footer } { #1 }
+}
+\keys_define:nn { footer }
+{	
+    leftside .code:n = {
+\keys_set:nn { footer / leftside } { #1 }
+},
+rightside .code:n = {
+\keys_set:nn { footer / rightside } { #1 }
+},
+    leftside / lone .tl_set:N = \l_footer_leftside_lone_tl,
+    leftside / ltwo .tl_set:N = \l_footer_leftside_ltwo_tl,
+    leftside / lthree .tl_set:N = \l_footer_leftside_lthree_tl,
+    rightside / rone .tl_set:N = \l_footer_rightside_rone_tl,
+    rightside / rtwo .tl_set:N = \l_footer_rightside_rtwo_tl,
+    rightside / rthree .tl_set:N = \l_footer_rightside_rthree_tl,
+    leftside .initial:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .initial:n = {rone = ~, rtwo = ~,  rthree = ~},
+    leftside .default:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .default:n = {rone = ~, rtwo = ~,  rthree = ~},
+}
+\NewDocumentCommand \guideftr { +o }
+{
+  \IfValueT { #1 } 
+  {
+    \keys_set:nn { footer } { #1 }
+  }
+  \guide_ftr:
+}
+\cs_new_protected:Nn \guide_ftr:
+{
+  % Now fancy header/footer settings
+  \lhead{}%
+  \chead{}%
+  \rhead{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \lfoot{}%
+  \cfoot{{Page} ~ \thepage {} ~ { of } ~ {} \pageref{LastPage}}%
+  \rfoot{}%
+
+  \fancypagestyle{firststyle}%
+  {%
+    \lhead{}%
+    \chead{}%
+    \rhead{}%
+    \lfoot{}%
+    \cfoot{}%
+    \rfoot{}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \fancyfoot[L]{\l_footer_leftside_lone_tl {}\\%
+      \l_footer_leftside_ltwo_tl {}\\%
+      \l_footer_leftside_lthree_tl {}}%
+    \fancyfoot[R]{\l_footer_rightside_rone_tl {}\\%
+      \l_footer_rightside_rtwo_tl {}\\%
+      \l_footer_rightside_rthree_tl {}}%
+      \renewcommand{\footrulewidth}{.2pt}%
+  }%
+  \thispagestyle{firststyle}
+}
+\ExplSyntaxOff
+
+\pagestyle{fancy}
+%% End of fancy footer setup
+
+%% Now the addressFooter file
+\urlstyle{tt}
+\footersetup{
+  leftside={
+    lone={CRMDA{,}~1425~Jayhawk~BLVD}, 
+    ltwo={University~of~Kansas{,}~Waston~Library~Suite~470}, 
+    lthree={Lawrence{,}~KS~66045}},
+  rightside={
+    rone=Web: \url{https://crmda.ku.edu},
+    rtwo=Email: \href{mailto:pauljohn@ku.edu}{\url{pauljohn@ku.edu}},
+    rthree=Phone: 785-864-3353}
+}
+\guideftr
+
+
+
+
+% paste from
+%%\input{theme/guidePreambleSweavel.tex}
+%%% From beamer slide:
+%% \usepackage{Sweave}
+%% 
+%% This controls display of code chunks
+\usepackage{ae,fancyvrb,relsize,listings}
+
+\providecommand{\Sweavesize}{\normalsize}
+\providecommand{\Rsize}{}
+\renewcommand{\Rsize}{\normalsize}
+\providecommand{\Routsize}{\scriptsize}
+
+\providecommand{\Rcolor}{\color[rgb]{0.1, 0.1, 0.1}}
+\providecommand{\Routcolor}{\color[rgb]{0.2, 0.2, 0.2}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.43, 0.432}}
+
+\providecommand{\Rbackground}{\color[gray]{0.91}}
+\providecommand{\Routbackground}{\color[gray]{0.935}}
+% Can specify \color[gray]{1} for white background or just \color{white}
+
+\lstdefinestyle{Rinput}{
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  basicstyle=\Rsize\Rcolor\ttfamily,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%,
+  commentstyle=\Rcommentcolor\ttfamily,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1{==}{{=\,=}}2{--}{{-\,-}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+  backgroundcolor=\Rbackground,%
+  numbers=left,%
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}%
+
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routput}{fancyvrb=false,
+  literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+  basicstyle=\Routcolor\Routsize\ttfamily,%
+  backgroundcolor=\Routbackground,
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1 {==}{{=\,=}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},
+  numbers=left,
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}
+
+\newenvironment{Schunk}{}{}
+\newenvironment{Sinput}{}{}
+\let\Sinput\relax
+\let\Scode\relax
+\let\Soutput\relax
+\lstnewenvironment{Sinput}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Scode}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Soutput}{\lstset{style=Routput}}{}
+%%end paste in from guidePreambleSweavel.tex
+
+
+\lstset{tabsize=2, breaklines=true, style=Rinput, breakatwhitespace=true}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.90}
+\usepackage{realboxes}
+\providecommand*{\code}[1]{\texttt{#1}}
+\renewcommand{\code}[1]{%
+\Colorbox{light-gray}{#1}%
+}%
+
+
+\usepackage{siunitx}
+%following now in each table
+\sisetup{
+  input-symbols = ( )
+}
+%,
+%  group-minimum-digits = 9,
+%  table-number-alignment = center,
+%  table-space-text-pre = (,
+%  table-align-text-pre = false,
+%  table-align-text-post = false,
+%  table-space-text-post = {***},
+%  parse-units = false
+%}
+
+\makeatother
+
+\usepackage{listings}
+\renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
+
+\begin{document}
+%% Fill in values of the arguments here, 
+%% If blanks are needed, must insert value " ~ "
+%% If comma needed inside value, wrap in {}.
+%% Delete secondauthor and thirdauthor if not needed
+\guidesetup{%
+  author={
+    lastname=Johson, 
+    firstname=Paul, 
+    affiliation=CRMDA,
+    email=pauljohn@ku.edu},
+  url={https://crmda.ku.edu/guides},
+  keywords={R, rockchalk, outreg, LaTeX, regression tables},
+  title={Regression Table Survey with outreg},
+  leftlogo={theme/logoleft.pdf},
+  rightlogo={theme/logo-vert.pdf},
+  number=51,
+}
+\guidehdr
+
+% tmpout directory must exist first
+<<tmpout, echo=FALSE, include=FALSE, results=hide>>=
+if(!dir.exists("tmpout")) dir.create("tmpout", showWarnings=FALSE)
+@
+
+% In document Latex options:
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+\SweaveOpts{prefix.string=tmpout/t, split=F, ae=FALSE, height=3, width=5}
+
+<<Roptions, echo=FALSE, include=FALSE, results=hide>>=
+opts.orig <- options()
+options(width=100, prompt=" ", continue="  ")
+options(useFancyQuotes = FALSE) 
+set.seed(12345)
+options(SweaveHooks=list(fig=function() par(ps=10)))
+pdf.options(onefile=FALSE,family="Times",pointsize=10)
+@
+
+<<echo=FALSE,results=hide>>=
+fn1 <- "theme/logoleft.pdf"
+fn2 <- "theme/logo-vert.pdf"
+if(!file.exists("theme")) dir.create("theme")
+
+blankpdf <- function(file, height=3, width=3, pointsize=20,      replace = FALSE){
+    if(file.exists(file) && !replace) return(TRUE)
+    pdf(file=file, width=width, height=height, paper="special", 
+        onefile=FALSE, pointsize=pointsize)
+    par(mar=c(1,1,1,1))
+    plot(1:2, 1:2, type = "n", axes=FALSE, xlab="", ylab="")
+    ##text(1.5, 1.5, "left\n logo", axes=FALSE) 
+    ##box(which="plot")
+    dev.off()
+    if(file.exists(file)) TRUE else FALSE
+}
+blankpdf(fn1)
+blankpdf(fn2)
+@
+
+%The listings class used here allows within-document style
+%changes. R input boxes are governed by 
+% "Rsize", "Rbackground" and "Rcolor", while R output boxes depend on
+% "Routsize", "Routbackground", and "Routcolor". Colors
+% can be specified in many ways, as shown here
+%\def\Rsize{\huge\ttfamily}
+%\def\Routsize{\huge}
+%\def\Rbackground{\color[gray]{0.90}}
+%\def\Routbackground{\color[gray]{0.40}}
+%\def\Rcolor{\color[gray]{0.60}
+%\def\Routcolor{\color[rgb]{0.9, 0.1, 0.1}]}
+%\def\Rcommentcolor{\color{green}}
+\begin{abstract}
+\noindent \code{rockchalk} version 1.8.120 marked the first effort
+to introduce decimal-centering of columns in the \code{outreg} table-writer
+for regression models. This has been the most widely requested feature
+for a while. Years ago, I declined to do it because it seemed a needless
+complication. However, in 2018 I was persuaded we should try harder
+on decimal centering. In today's version of rockchalk, 1.8.136, I
+have working examples of 2 centering methods, \code{dcolumn} and
+\code{siunitx}. \code{dcolumn} was the first method attempted. It
+is relatively widely used. It is simpler to work with inside the \code{outreg}
+code, but the results are not quite as good as \code{siunitx}. \code{dcolumn}
+output it is mostly adequate, but it leaves problems in column headers
+and non-numeric content alignment. \code{siunitx} is a much more
+massive framework. It required much more alteration of \code{rockchalk}
+itself. There is much more danger of outright failure because of the
+immensity of \code{siunitx} itself. However, there are hopeful signs
+it can deal with some very tough examples. See Table \ref{tab:ex16s}
+I have a solution using \code{siunitx} for a troublesome table that
+failed badly with \code{dcolumn} (Table \ref{tab:ex16d}).
+
+\noindent I am asking friends and colleagues to explore and test.
+Run \code{outreg} as usual to have my traditional, simple solution
+that has been good enough for 13 years for most people. Then insert
+an additional \code{outreg} argument to ask for column centering.
+Try \code{centering = \textquotedbl dcolumn\textquotedbl} or \code{centering = \textquotedbl siunitx\textquotedbl}.
+
+This document might become a vignette in \code{rockchalk}, but right
+now it is just a brief explanation and a giant collection of example
+tables. It is a plea for insight \& advice. This essay is not in the
+package, but it is in the repository: \url{https://github.com/pauljohn32/rockchalk}.
+Anybody with a GitHub account can clone that. This vignette will be
+included in \code{rockchalk} itself under the name ``outreg''.
+\end{abstract}
+\tableofcontents{}
+
+The \code{rockchalk} package for R \citep{RCore} was created to
+facilitate authors in stats classes who need to make presentable tables
+and graphs for regression models. It does not aspire to be a comprehensive
+table-maker, mainly because R package writers are not consistent in
+their methodology. Procedures called ``regression'' within R's base
+have a certain internal consistency, but user-contributed packages
+do not. The \code{outreg} function works for regression models that
+I use regularly, usually in the base of R, like \code{lm}, \code{glm},
+and for \code{lme4} objects. Other regression packages may work.
+I've tried to be somewhat general in the design.
+
+The new arguments for column centering are \code{dcolumn} and \code{siunitx}.
+The default is \code{FALSE}, meaning there will be no effect. If
+FALSE, the \code{outreg} table will be the same as it always was.
+However, if the \code{outreg} function call sets the argument \code{centering = \textquotedbl dcolumn\textquotedbl}
+or \code{centering = \textquotedbl siunitx\textquotedbl}, then the
+decimal-centering of columns will be attempted. NOTE: it is necessary
+for the user to insert either \code{\textbackslash usepackage\{dcolumn\}}
+or \code{\textbackslash usepackage\{siunitx\}} in the preamble! The
+aim is for this whole thing to ``just work'' without any more attention
+than that.
+
+In the past, my concern about the \code{dcolumn} package was that
+it turned all of the text in columns into math mode italics, so many
+tables either had unexpected style changes or failed to compile altogether.
+It turned out that \code{siunitx} had the same impact, so the same
+solutions were needed to correct the problem. (The solution is to
+protect all text from that transformation, which is a primary source
+of errors in this function at the current moment. Tell me what works!)
+
+\section{Get the test version}
+
+The test versions are uploaded to our local package server, KRAN.
+Users can obtain like so
+
+<<eval=F,results=hide>>=
+CRAN <- "http://rweb.crmda.ku.edu/cran" 
+KRAN <- "http://rweb.crmda.ku.edu/kran"
+options(repos = c(KRAN, CRAN))
+update("rockchalk")
+@
+
+I've already noticed a couple of quirks while testing 1.8.125, so
+by the time you try this, you'll get newer.
+
+\section{User Interface question}
+
+In this iteration of the effort, I've allowed the user to specify
+one argument for column centering. The parameter ``\code{centering}''
+has legal values c(``none'', ``dcolumn'', ``siunitx''). What
+is your thought on that?
+
+It is almost certain to me now that siunitx is the best approach,
+by far, and I'm using it almost all the time in my projects.
+
+\section{Briefly: outreg}
+
+First, run regression models. Second, give the fitted regression object(s)
+to \code{outreg}. When \code{outreg} runs, it will have 2 effects.
+First, it will write out LaTeX code to the screen (unless \code{print.results=FALSE}).
+A user might ``copy/paste'' that code into a LaTeX document. (Or,
+write it in a file and import it in the future. (Or, as in the case
+of this Sweaved document, the output goes directly into the result
+file.)
+
+\section{Briefly: table vs tabular}
+
+This is the most confusing thing for LaTeX beginners. \emph{Put bluntly,
+a ``table'' is not a table}. 
+
+Terminology
+\begin{description}
+\item [{tabular}] In LaTeX, a ``\code{tablular}'' object is a grid,
+a display like a ``spreadsheet''. You'd call that a ``table'',
+I believe.
+\item [{table}] In LaTeX, a ``\code{table}'' is something else. It is
+a document ``subsection'' that ``floats'' around in the document.
+It is a container. A tabular is placed inside one of these table containers.
+Table objects are numbered, can be used in cross references (if they
+have labels)
+\end{description}
+If we are writing LaTeX code by hand, a tabular inside a table will
+look like 
+
+\inputencoding{latin9}\begin{lstlisting}
+\begin{table}
+    \caption{The title of the floating object is specified in caption}
+    \label{tab:ex1}% means that for cross referencing, call this float "tab:ex1"
+\begin{tabular}
+  ...code to create tablar defined here
+\end{tabular}
+\end{table}
+\end{lstlisting}
+\inputencoding{utf8}
+The big question is ``should my outreg function write the tabular
+only, or also the table container''?
+
+I used to think the only reasonable answer was ``tabular only'',
+but now I see reasons why we might want to do both. So it is an option,
+as explained next.
+
+\subsection*{rockchalk lets you choose, float or no float}
+
+The rockchalk outreg function has a parameter, \code{float=FALSE}
+or \code{float=TRUE}, to determine whether the output should include
+the floating table part along with the tabular object. If outreg users
+specify the argument title, then they are implicitly setting \code{float=TRUE}
+and the value for title is used as the LaTeX caption. 
+
+The default for \code{float} is \code{FALSE}, because I have usually
+preferred to control the floating table from my document. However,
+I recognize that many people who are better at LaTeX than I am disagree,
+they want to write the table and tabular structures into one file. 
+
+\subsection*{Why would a user prefer float=TRUE?}
+
+If you are not using LyX, then it may be convenient to let float=TRUE
+so the floating table can be handled from the outreg function. outreg
+allows the author to specify the caption and the label. However, I
+did not allow for any more fine-grained customizations, especially
+table placement details.
+
+\subsection*{Why I don't generally use float=TRUE}
+
+LaTeX has options to control the placement of floating table structures
+that the rockchalk outreg function does not adjust. I think that if
+the LaTeX author wants to adjust those things, it is easier for the
+author to control them in the document itself, rather than the outreg
+function that writes a tabular object. 
+
+In LyX, the user interface has a pull down menu to create floating
+objects and the GUI includes a feature to set the title (sorry, the
+'caption'), and it also includes a way to set a label. If I use this
+method, then LyX is aware of this thing and the LyX cross-referencing
+system is available. 
+
+\subsection*{Another reason to use float=FALSE}
+
+In an instructional document using Sweave, the code chunks will print
+out where they ``are'' in the input file. 
+
+In LyX, there are some cross-referencing tools. It is more desirable
+to create the table container in LyX, so then cross-references work
+correctly. If one creates a table (floating container), and then puts
+the tabular-creating code chunk inside, then the code will print out
+with the table. And cross references succeed using the LyX pull down
+menus. That is demonstrated in Tables \ref{tab:ex11}, \ref{tab:ex11t},
+\ref{tab:ex8}, \ref{tab:ex17}.
+
+\section{Torture test of ``rockchalk'' outreg function}
+
+In most of these examples, I've taken the one-step ``float=TRUE''
+option, but I have some examples where I've manually created the LaTeX
+float and placed an outreg tabular inside it.
+
+<<>>=
+set.seed(2134234)
+dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
+dat$y1 <- 30 + 5 * rnorm(100) + 3 * dat$x1 + 4 * dat$x2
+dat$y2 <- rnorm(100) + 5 * dat$x2
+m1 <- lm(y1 ~ x1, data = dat)
+m2 <- lm(y1 ~ x2, data = dat)
+m3 <- lm(y1 ~ x1 + x2, data = dat)
+gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
+@
+
+\subsection{tight and wide styles for regression tables}
+
+In my terminology, a tight table has one ``narrow'' column for a
+regression (parameter and standard error stacked on top of each other).
+A table that is not in the tight format is wide, it has 2 columns
+for each table (parameter and standard error side by side).
+
+A tight table is the default, it seems to be what many political science,
+sociology, and economics students will need. See Table \ref{tab:ex1}.
+A wide format table is, in my opinion, more pleasant for the eyes
+and seems to be more popular in psychology. See Table \ref{tab:ex1w}. 
+
+<<ex1, echo=F, results=tex>>=
+library(rockchalk)
+vl <- c("(Intercept)" = "Intercept")
+ex1 <- outreg(m1, title = "My One Tightly Printed Regression (uncentered)",
+                    label = "tab:ex1",
+                    float = TRUE, print.results = FALSE, varLabels=vl)
+# cat that, don't print it
+cat(ex1)
+@
+
+<<ex1w,results=tex>>=
+library(rockchalk)
+ex1w <- outreg(m1, title = "My Wide Format \"side-by-side\" columns (uncentered)",
+               label = "tab:ex1w", tight = FALSE,
+               float = TRUE, print.results = FALSE)
+cat(ex1w)
+@
+
+\subsection*{Decimal-centered test case 1}
+
+A decimal-centered version of the tight column format can be seen
+in Table \ref{tab:ex2d} and the decimal-centered version of the wide
+format is seen in Table \ref{tab:ex2wd}
+
+<<ex1d, results=tex>>=
+library(rockchalk)
+ex2d <- outreg(m1, title = "Tight column with centering = \"dcolumn\"",
+               label = "tab:ex2d", centering = "dcolumn",
+               float = TRUE, print.results=FALSE)
+cat(ex2d)
+@
+
+<<ex1s, results=tex>>=
+library(rockchalk)
+ex2s <- outreg(m1, title = "Tight column with centering = \"siunitx\"",
+               label = "tab:ex2s", centering = "siunitx",
+               float = TRUE)
+@
+
+<<ex2wd, results=tex>>=
+library(rockchalk)
+ex1wd <- outreg(m1, title = "Wide (not tight) format with centering = 'dcolumn'",
+                label = "tab:ex2wd", tight = FALSE, centering = "dcolumn",
+                float = TRUE, print.results = FALSE)
+cat(ex1wd)
+@
+
+<<ex2ws, results=tex>>=
+ex1ws <- outreg(m1, title = "Wide (not tight) format with centering='siunitx'",
+                label = "tab:ex2ws", tight = FALSE, centering = "siunitx",
+                float = TRUE, print.results = FALSE)
+cat(ex1ws)
+@
+
+\subsection*{alpha level adjustments}
+
+In Table \ref{tab:ex2p}, I demonstrate that the alpha parameter can
+be used to select different values for the critical region. In Tables
+\ref{tab:ex2pd} and \ref{tab:ex2ps}, the centered-with-dcolumn and
+centered-with-siunitx are presented. I see some trouble here because
+the stars are not evenly spaced in the dcolumn-based Table {\ref{tab:ex2pd}}.
+However, the siunitx based Table {\ref{tab:ex2ps}} may be adequate.
+This is one of the reasons I now \emph{strongly} lean toward use of
+\code{siunitx} if centering is desired. Several alpha adjustments
+are scattered about in the examples in this essay, just to make sure
+they work.
+
+<<results=tex>>=
+ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
+         title = "Ability to change p values (not centered)", 
+         label = "tab:ex2p",  float = TRUE,
+         alpha = c(0.1, 0.05, 0.01)) 
+@
+
+<<results=tex>>=
+ex2pd <- outreg(list("Fingers" = m1), tight = FALSE, 
+         title = "Ability to change p values (dcolumn)", 
+         label = "tab:ex2pd", centering = "dcolumn",
+         float = TRUE,
+         alpha = c(0.1, 0.05, 0.01)) 
+@
+
+<<results=tex>>=
+ex2ps <- outreg(list("Fingers" = m1), tight = FALSE, 
+         title = "Ability to change p values (siunitx)", 
+         label = "tab:ex2ps", centering = "siunitx", float = TRUE,
+         alpha = c(0.1, 0.05, 0.01)) 
+@
+
+\subsection*{Several models in same table}
+
+One of the most valuable features of rockchalk is that one can align
+several models side by side and compare them. The rows are matched
+by the variable name.
+
+About model names: If a list of regression fits is not named, then
+the names will be bland, ``M1'', ``M2''. 
+
+It is highly recommended that authors should name the regression models. 
+
+Currently, I recommend that we provide the model names \textbf{in}
+the list that provides the fitted regressions, as you see here. That
+produces Table \ref{tab:ex3}.
+
+<<results=tex>>=
+ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2),
+         varLabels = list(x1 = "Billie"), 
+         title = "My Two Linear Regressions (uncentered)", label = "tab:ex3",
+         request = c(fstatistic = "F"),
+         print.results = FALSE)
+cat(ex3)
+@
+
+In the original rockchalk, I had it differently. It is possible to
+provide model names in a separate argument, \code{modelLabels}. That
+is shown in the code below, and in output Table \ref{tab:ex3b}. The
+modelLabels parameter takes precedence, it will replace the labels
+in the first argument. However, I found it confusing to write tables
+that way, so I made it work the other way too.
+
+<<results=tex>>=
+ex3b <- outreg(list("Model A" = m1, "Model B" = m2),
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+         varLabels = list(x1 = "Billie"),
+         title = "Note modelLabels Overrides model names (uncentered)",
+         label = "tab:ex3b"
+)
+@
+
+The column-centered versions are in Table \ref{tab:ex3bd} and Table
+\ref{tab:ex3bs}.
+
+<<results=tex>>=
+ex3bd <- outreg(list("Model A" = m1, "Model B" = m2),
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+         varLabels = list(x1 = "Billie"),
+         title = "Note modelLabels Overrides model names (dcolumn)",
+         label = "tab:ex3bd", centering = "dcolumn")
+@
+
+<<results=tex>>=
+ex3bs <- outreg(list("Model A" = m1, "Model B" = m2),
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+         varLabels = list(x1 = "Billie"),
+         title = "Note modelLabels Overrides model names (siunitx)",
+         label = "tab:ex3bs", centering = "siunitx")
+@
+
+\subsection*{Specifying additional summary information}
+
+In the first version, I was thinking that everybody would be happy
+enough if the table included N, the standard error of the regression
+(which I dubbed RMSE in the old SAS style), and R-square. There were
+requests for other summaries. 
+
+At first, I was thinking I needed to add arguments for each request.
+I created argument ``\code{showAIC=TRUE}'' to request Akaike's
+information criterion. For example, see Table \ref{tab:ex5d} produced
+by the following
+
+<<ex5d, results=tex>>=
+ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2),
+         title = "Still have showAIC argument (uncentered)",
+         label = "tab:ex5d", showAIC = TRUE, float = TRUE)
+@
+
+The column-centered versions are in Table \ref{tab:ex5dd} and \ref{tab:ex5ds}.
+
+<<ex5dd, results=tex>>=
+ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),
+         title = "Still have showAIC argument (dcolumn)",
+         label = "tab:ex5dd", showAIC = TRUE, float = TRUE, centering = "dcolumn")
+@
+
+<<ex5ds, results=tex>>=
+ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2),
+         title = "Still have showAIC argument (siunitx)",
+         label = "tab:ex5ds", showAIC = TRUE, float = TRUE, centering = "siunitx")
+@
+
+However, I anticipated that way might lead me down a bad path of writing
+a parameter for every possible summary statistic.
+
+My first idea was to create a recipe book of particular summary items
+and make them available for requests by users. For example, I wrote
+a customized reporter for F statistics and a parameter to ask for
+that was called ``request''. For example, \code{request = c(fstatistic = \textquotedbl F\textquotedbl )}
+asks for my special fstatistic and the label to be used for it in
+the table would be ``F''. I ended up not making very many of those
+fancy object, but in the semTable in the kutils package there is a
+similar approach for the model Chi-Square and now it seems to me I
+should come back and do more like that in outreg.
+
+Because I expected that I would never have time to keep up with requests
+for specialized summary items, I created a ``back door'' though
+which users could use functions and include them in the summary. 
+
+However, I shot myself in the foot by creating that general purpose
+ability with a horrible, ungainly name for the function's argument,
+\code{runFuns}. I admit that is a horrible name, but I had good intentions.
+``runFuns'' is short for ``run functions''. It will run a function
+named as the first argument and then label it with the right hand
+side argument. So, if one has a lot of request like AIC, BIC, and
+so forth, the R functions can be used without too much effort. 
+
+<<ex6d,results=tex>>=
+ex6d <- outreg(list("Whatever" = m1, "Whatever" =m2),
+         title = "Another way to get AIC output", label="ex6d",
+         runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=FALSE)
+cat(ex6d)
+@
+
+\subsection*{Insert more regressions in one table}
+
+This code produces Table \ref{tab:ex7}, which is NOT decimal aligned
+
+<<results=tex>>=
+ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
+              title = "My Three Linear Regressions", label="tab:ex7")
+@
+
+The column-aligned version of the same is found in Table \ref{tab:ex7d},
+produced by the following code.
+
+<<results=tex>>=
+ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), centering = "dcolumn",
+              title = "My Three Linear Regressions (decimal aligned)", label="tab:ex7d")
+@
+
+I worried that users who are verbose might break the function. In
+Table \ref{tab:ex11}, I show that some very long names, even ones
+with periods, do not seem to cause horrible trouble. They WILL run
+off the edge of the page if they get much longer. Author will need
+to change to the tight columns if that is an issue, as seen in Table
+\ref{tab:ex11t}.
+
+\begin{table}[H]
+\caption{Stress test very long titles (uncentered) \label{tab:ex11}}
+
+<<results=tex>>=
+ex11 <- outreg(list("I Love Long Titles" = m1,
+               "Prefer Brevity" = m2,
+               "Captain. Kirk. Named. This." = m3), tight = FALSE, float = FALSE,
+               centering = "dcolumn")
+@
+\end{table}
+\begin{table}[H]
+\caption{Stress test very long titles (dcolumn) \label{tab:ex11t}}
+
+<<results=tex>>=
+ex11td <- outreg(list("I Love Long Titles" = m1,
+               "Prefer Brevity" = m2, 
+               "Captain. Kirk. Named. This" = m3), float = FALSE,
+               centering = "dcolumn")
+@
+\end{table}
+\begin{table}[H]
+\caption{Stress test very long titles (dcolumn) \label{tab:ex11ts}}
+
+<<results=tex>>=
+ex11ts <- outreg(list("I Love Long Titles" = m1,
+               "Prefer Brevity" = m2, 
+               "Captain. Kirk. Named. This" = m3), float = FALSE,
+               centering = "siunitx")
+@
+\end{table}
+
+\subsection*{Alternative standard errors}
+
+The original rockchalk took the standard errors from the fitted model.
+A student in Brazil wrote and asked me to make it possible for the
+author to supply ``robust'' standard errors. That was a good idea.
+The code to demonstrate how to create an alternative vector of standard
+errors (in that case, Huber-White robust standard errors) will appear
+with the output in Table \ref{tab:ex8}. The code is displayed there
+because I created the outreg table with float=FALSE, and then I manually
+created a table container into which I typed the R code chunk.
+
+\begin{table}[H]
+\caption{Robust Standard Errors (uncentered)\label{tab:ex8}}
+
+<<results=tex>>=
+if (require(car)){
+   newSE <- sqrt(diag(car::hccm(m3)))
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+             "Model C w Robust SE" = m3),
+             SElist= list("Model C w Robust SE" = newSE))
+}
+@
+\end{table}
+\begin{table}[H]
+\caption{Robust Standard Errors (dcolumn)\label{tab:ex8d}}
+
+<<results=tex>>=
+if (require(car)){
+   newSE <- sqrt(diag(car::hccm(m3)))
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+             "Model C w Robust SE" = m3),
+             SElist= list("Model C w Robust SE" = newSE),
+             centering = "dcolumn")
+}
+@
+\end{table}
+\begin{table}[H]
+\caption{Robust Standard Errors (siunitx)\label{tab:ex8s}}
+
+<<results=tex>>=
+if (require(car)){
+   newSE <- sqrt(diag(car::hccm(m3)))
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+             "Model C w Robust SE" = m3),
+             SElist= list("Model C w Robust SE" = newSE),
+             centering = "siunitx")
+}
+@
+\end{table}
+
+\subsection*{Aligning different kinds of fits}
+
+The output from lm and glm fits may sometimes be usefully compared.
+The parameter display from rockchalk will align same-named variables.
+The difference in the available summary statistics is apparent because
+the rows do not ``line up''. See Table \ref{tab:ex13} for the output
+from the following.
+
+<<results=tex>>=
+ex13 <- outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
+               title = "OLS and Logit in same table (dcolumn)", 
+               label="tab:ex13", alpha = c(0.05, 0.01), centering = "dcolumn")
+@
+
+As seen in Table \ref{tab:ex14}, we check if the supplemental parameter
+requests hold up with dcolumn
+
+<<results=tex>>=
+ex14 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+         title = "OLS and Logit with summary report features (dcolumn)",
+         label = "tab:ex14",
+         request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
+         centering = "dcolumn")
+@
+
+What if the number of digits is dialed up and alpha is altered? See
+Table \ref{tab:ex15}. 
+
+<<results=tex>>=
+ex15 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+         title="OLS and GLM with more digits (digits)", 
+         label="tab:ex15", 
+         request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
+         digits = 5, alpha = c(0.01), centering = "dcolumn")
+@
+
+In Table \ref{tab:ex16d}, output shows result when several runFuns
+are requested. Again, I'm very sorry that parameter name is so awful.
+I adjusted the alpha stars as well.
+
+<<results=tex>>=
+ex16d <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+           title = "2 OLS and 1 Logit (dcolumn), additional runFuns", 
+           label="tab:ex16d",
+           request = c(fstatistic = "F"),
+           runFuns = c("BIC" = "BIC", "logLik" = "ll"),
+           digits = 5, alpha = c(0.1, 0.05, 0.01), centering = "dcolumn")
+@
+
+<<results=tex>>=
+ex16s <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+           title = "2 OLS and 1 Logit (siunitx), additional runFuns", 
+           label="tab:ex16s",
+           request = c(fstatistic = "F"),
+           runFuns = c("BIC" = "BIC", "logLik" = "ll"),
+           digits = 5, alpha = c(0.1, 0.05, 0.01), centering = "siunitx")
+@
+
+After a while, I noticed that the left hand side of runFuns need not
+be in quotation marks. So my examples are not always consistent. For
+example, in Table \ref{tab:ex17} I have some in quotes, some not.
+And I also show that if authors want to create redundant rows, they
+are allowed to do so (N, for example).
+
+\begin{table}[H]
+\caption{Additional test on summary stats (dcolumn)\label{tab:ex17}}
+
+<<results=tex>>=
+ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
+         request = c(fstatistic = "F"),
+         runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "logLik" = "ll",
+         "nobs" = "N Again?"), centering = "dcolumn")
+@
+\end{table}
+\begin{table}[H]
+\caption{Additional test on summary stats (siunitx)\label{tab:ex17s}}
+
+<<results=tex>>=
+ex17s <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
+         request = c(fstatistic = "F"),
+         runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", "logLik" = "ll",
+         "nobs" = "N Again?"), centering = "siunitx")
+@
+\end{table}
+
+\section{About examples here and your long-run work flow}
+
+In this document, I'm using a lot of short cuts to make it easier
+to produce examples with and without centering. I'm using the \code{float=TRUE}
+option (or, equivalently, giving a title) often here to cut down on
+the amount of work I'm doing. 
+
+If you are learning how to make tables, I usually suggest doing it
+in a different way. I would suggest instead that authors should create
+an outreg output file, with a sequence like this
+
+\inputencoding{latin9}\begin{lstlisting}
+lm1 <- lm(... regression commands ...)
+lm1.out <- outreg(lm1, print.results=FALSE, ...parameters like float=FALSE, tight = FALSE ...)
+cat(lm1.out, file = "lm1.out.tex")
+\end{lstlisting}
+\inputencoding{utf8}
+I'd usually have an output directory where the tex file would be placed,
+but aside from this detail, that's my workflow. Then, when I want
+to use that file in my document, I use the LaTeX code ``\textbackslash input\{lm1.out.tex\}''. 
+
+One reason for using that 2-step workflow is that the \emph{automatically
+produced outreg table may not be exactly perfect}. Perhaps a variable
+label does not look right. Personally speaking, I wish the automatic
+table were always perfect. Practically, I accept it is not. So I leave
+open the opportunity that it might need to be revised by hand. 
+
+\pagebreak{}
+
+\bibliographystyle{apalike2}
+\phantomsection\addcontentsline{toc}{section}{\refname}\bibliography{rockchalk}
+
+\pagebreak{}
+
+\section*{Replication Information\label{sec:Session-Info}}
+
+<<session, echo=F>>=
+sessionInfo()
+if(!is.null(warnings())){
+    print("Warnings:")
+    warnings()}
+@
+
+<<opts20, include=F>>=
+## Don't delete this. It puts the interactive session options
+## back the way they were. If this is compiled within a session
+## it is vital to do this.
+options(opts.orig)
+@
+\end{document}

@@ -1,0 +1,5080 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass extarticle
+\begin_preamble
+% Following comment is required. Do not delete it.
+%\usepackage{Sweave}
+
+\usepackage[includehead,includefoot]{geometry}
+\geometry{
+lmargin=1in,
+rmargin=1in,
+tmargin=0.75in,
+bmargin=1.0in,
+headheight=0pt,
+headsep=0pt,
+marginparwidth=0pt,
+footskip=1.5\baselineskip,
+}
+
+\usepackage{booktabs}
+\usepackage{dcolumn}
+
+% paste in
+%%\input{theme/guidePreambleHeader.tex}
+
+% $ This nullifies emacs subscripting in following%
+%%BEGIN: This begins the custom header
+\usepackage{array}
+\usepackage{xparse}
+\usepackage{babel}
+\usepackage{datetime}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{multicol}
+
+\definecolor{darkblue}{HTML}{1e2277}
+\definecolor{kublue81186}{RGB}{0,81,186}
+\newdateformat{monddyyyy}{\shortmonthname[\THEMONTH].~\THEDAY,~\THEYEAR}
+
+
+%% BEGIN custom header
+\ExplSyntaxOn
+\NewDocumentCommand \guidesetup { m }
+ {
+  \keys_set:nn { guide } { #1 }
+ }
+
+\int_new:N \g_guide_authors_int
+\prop_new:N \g_guide_authors_prop
+\tl_new:N \l__guide_authors_tl
+
+\keys_define:nn { guide }
+ {
+  author .code:n =
+   {
+    \int_gincr:N \g_guide_authors_int
+    \keys_set:nn { guide / author } { #1 }
+   },
+  author/firstname .code:n = { \guide_add_author:nn { firstname } { #1 } },
+  author/lastname .code:n = { \guide_add_author:nn { lastname } { #1 } },
+  author/affiliation .code:n = { \guide_add_author:nn { affiliation } { #1 } },
+  author/email .code:n = { \guide_add_author:nn { email } { #1 } },
+  leftlogo .tl_set:N = \l_guide_leftlogo_tl,
+  rightlogo .tl_set:N = \l_guide_rightlogo_tl,
+  number .tl_set:N = \l_guide_number_tl,
+  title .tl_set:N = \l_guide_title_tl,
+  subtitle .tl_set:N = \l_guide_subtitle_tl,
+  keywords .tl_set:N = \l_guide_keywords_tl,
+  url .tl_set:N = \l_guide_url_tl,
+  title .initial:n = {TITLE~NEEDED},
+}
+\NewDocumentCommand \guidehdr { +O{} }
+ {
+  \group_begin:
+  \keys_set:nn { guide } { #1 }
+  \guide_hdr:
+  \group_end:
+ }
+\cs_new_protected:Nn \guide_hdr:
+ {
+   \centering
+   \noindent\fcolorbox{kublue81186}{white}{
+  \begin{tabular}
+   {
+    @{}c
+    >{\centering}m{ \dim_eval:n { \textwidth - 2.5in - 6\tabcolsep - 2\arrayrulewidth } }
+    c@{}
+   }
+   &&\tabularnewline[-\dim_eval:n { -\normalbaselineskip + 3ex }]
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=.75in]{\l_guide_leftlogo_tl}
+  \end{tabular}
+  &
+  \centering
+    {\textsc{\large{}\l_guide_title_tl}}
+    \tl_if_empty:NF \l_guide_subtitle_tl
+    {
+      {\\\textsc{\large{}\l_guide_subtitle_tl}}
+    }
+  \\
+  \textcolor{kublue81186}{\rule[0.5ex]{1\linewidth}{0.7pt}}\\
+  \guide_print_authors:
+  &
+  \begin{tabular}{@{}>{\centering}p{1.25in}@{}}
+  \includegraphics[width=1.25in]{\l_guide_rightlogo_tl}
+  \end{tabular}
+  \tabularnewline
+  \tl_if_empty:NTF \l_guide_number_tl
+   { \leavevmode\vphantom{G}}
+   {\small\bfseries { Guide~No: ~ \tl_use:N \l_guide_number_tl }} & 
+   \tl_if_empty:NF \l_guide_keywords_tl
+   {\centering
+    \textbf{Keywords}: ~ \l_guide_keywords_tl}
+   & 
+   \small\bfseries\monddyyyy\today \tabularnewline
+   \tl_if_empty:NF \l_guide_url_tl
+   {
+   \multicolumn{3}{c}{
+    See ~ \url{\l_guide_url_tl} ~ for ~ updates.}
+     }
+  \tabularnewline
+  \end{tabular}
+  }
+}
+
+\cs_new_protected:Nn \guide_add_author:nn
+ {
+  \prop_gput:Nxn \g_guide_authors_prop
+   { #1 \int_to_arabic:n { \g_guide_authors_int } }
+   { #2 }
+ }
+\cs_generate_variant:Nn \prop_gput:Nnn { Nx }
+\cs_new_protected:Nn \guide_print_authors:
+ {
+  \tl_clear:N \l__guide_authors_tl
+  \int_step_inline:nnnn { 1 } { 1 } { \g_guide_authors_int }
+   {
+    \tl_put_right:Nn \l__guide_authors_tl
+     {
+      \textbf
+       {
+        \prop_item:Nn \g_guide_authors_prop { firstname ##1 }~
+        \prop_item:Nn \g_guide_authors_prop { lastname ##1 },~
+       }
+       \prop_item:Nn \g_guide_authors_prop { affiliation##1 },~
+       \href{mailto:\prop_item:Nn \g_guide_authors_prop { email##1 } }
+       {\url{\prop_item:Nn \g_guide_authors_prop { email##1 }}}
+       \\
+     }
+   }
+   \tl_use:N \l__guide_authors_tl
+ }
+\ExplSyntaxOff
+%%END This ends the custom header
+
+
+%%Now the hyperref colors
+
+\hypersetup{
+ unicode=true,pdfusetitle,bookmarks=true,
+ bookmarksnumbered=false, bookmarksopen=false,
+ breaklinks=true, pdfborder={0 0 0},
+ pdfborderstyle={}, backref=false,
+ colorlinks=true, linkcolor=darkblue,
+ urlcolor=darkblue, citecolor=darkblue}
+
+%% Was previously in "preambleFloatCenter.tex"
+%%BEGIN: graphics and such inside floats are centered by default
+\renewenvironment{figure}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{figure}
+ }{%
+   \@float{figure}[#1]%
+ }%
+ \centering
+}{%
+ \end@float
+}
+\renewenvironment{table}[1][]{%
+ \ifthenelse{\equal{#1}{}}{%
+   \@float{table}
+ }{%
+   \@float{table}[#1]%
+ }%
+
+ \centering
+}{%
+ \end@float
+}
+%%END: graphics and such inside floats are centered by default
+
+% paste
+%%\input{theme/preambleFooter.tex}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand \footersetup { +m }
+{
+\keys_set:nn { footer } { #1 }
+}
+\keys_define:nn { footer }
+{	
+    leftside .code:n = {
+\keys_set:nn { footer / leftside } { #1 }
+},
+rightside .code:n = {
+\keys_set:nn { footer / rightside } { #1 }
+},
+    leftside / lone .tl_set:N = \l_footer_leftside_lone_tl,
+    leftside / ltwo .tl_set:N = \l_footer_leftside_ltwo_tl,
+    leftside / lthree .tl_set:N = \l_footer_leftside_lthree_tl,
+    rightside / rone .tl_set:N = \l_footer_rightside_rone_tl,
+    rightside / rtwo .tl_set:N = \l_footer_rightside_rtwo_tl,
+    rightside / rthree .tl_set:N = \l_footer_rightside_rthree_tl,
+    leftside .initial:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .initial:n = {rone = ~, rtwo = ~,  rthree = ~},
+    leftside .default:n = {lone = , ltwo = ~, lthree = ~ },
+    rightside .default:n = {rone = ~, rtwo = ~,  rthree = ~},
+}
+\NewDocumentCommand \guideftr { +o }
+{
+  \IfValueT { #1 } 
+  {
+    \keys_set:nn { footer } { #1 }
+  }
+  \guide_ftr:
+}
+\cs_new_protected:Nn \guide_ftr:
+{
+  % Now fancy header/footer settings
+  \lhead{}%
+  \chead{}%
+  \rhead{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \lfoot{}%
+  \cfoot{{Page} ~ \thepage {} ~ { of } ~ {} \pageref{LastPage}}%
+  \rfoot{}%
+
+  \fancypagestyle{firststyle}%
+  {%
+    \lhead{}%
+    \chead{}%
+    \rhead{}%
+    \lfoot{}%
+    \cfoot{}%
+    \rfoot{}%
+    \renewcommand{\headrulewidth}{0pt}%
+    \fancyfoot[L]{\l_footer_leftside_lone_tl {}\\%
+      \l_footer_leftside_ltwo_tl {}\\%
+      \l_footer_leftside_lthree_tl {}}%
+    \fancyfoot[R]{\l_footer_rightside_rone_tl {}\\%
+      \l_footer_rightside_rtwo_tl {}\\%
+      \l_footer_rightside_rthree_tl {}}%
+      \renewcommand{\footrulewidth}{.2pt}%
+  }%
+  \thispagestyle{firststyle}
+}
+\ExplSyntaxOff
+
+\pagestyle{fancy}
+%% End of fancy footer setup
+
+%% Now the addressFooter file
+\urlstyle{tt}
+\footersetup{
+  leftside={
+    lone={CRMDA{,}~1425~Jayhawk~BLVD}, 
+    ltwo={University~of~Kansas{,}~Waston~Library~Suite~470}, 
+    lthree={Lawrence{,}~KS~66045}},
+  rightside={
+    rone=Web: \url{https://crmda.ku.edu},
+    rtwo=Email: \href{mailto:pauljohn@ku.edu}{\url{pauljohn@ku.edu}},
+    rthree=Phone: 785-864-3353}
+}
+\guideftr
+
+
+
+
+% paste from
+%%\input{theme/guidePreambleSweavel.tex}
+%%% From beamer slide:
+%% \usepackage{Sweave}
+%% 
+%% This controls display of code chunks
+\usepackage{ae,fancyvrb,relsize,listings}
+
+\providecommand{\Sweavesize}{\normalsize}
+\providecommand{\Rsize}{}
+\renewcommand{\Rsize}{\normalsize}
+\providecommand{\Routsize}{\scriptsize}
+
+\providecommand{\Rcolor}{\color[rgb]{0.1, 0.1, 0.1}}
+\providecommand{\Routcolor}{\color[rgb]{0.2, 0.2, 0.2}}
+\providecommand{\Rcommentcolor}{\color[rgb]{0.101, 0.43, 0.432}}
+
+\providecommand{\Rbackground}{\color[gray]{0.91}}
+\providecommand{\Routbackground}{\color[gray]{0.935}}
+% Can specify \color[gray]{1} for white background or just \color{white}
+
+\lstdefinestyle{Rinput}{
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  basicstyle=\Rsize\Rcolor\ttfamily,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%,
+  commentstyle=\Rcommentcolor\ttfamily,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1{==}{{=\,=}}2{--}{{-\,-}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},%
+  backgroundcolor=\Rbackground,%
+  numbers=left,%
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}%
+
+% Other options of interest:
+% frame=single,framerule=0.1pt,framesep=1pt,rulecolor=\color{blue},
+% numbers=left,numberstyle=\tiny,stepnumber=1,numbersep=7pt,
+% keywordstyle={\bf\Rcolor}
+
+\lstdefinestyle{Routput}{fancyvrb=false,
+  literate={~}{{$\sim$}}1{R^2}{{$R^{2}$}}2{^}{{$^{\scriptstyle\wedge}$}}1{R-squared}{{$R^{2}$}}2,%
+  basicstyle=\Routcolor\Routsize\ttfamily,%
+  backgroundcolor=\Routbackground,
+  language=R,
+  escapechar=`,
+  fancyvrb=false,%
+  tabsize=2,%
+  breaklines=true,
+  breakatwhitespace=true,%
+  captionpos=b,%
+  frame=single,%
+  framerule=0.2pt,%
+  framesep=1pt,%
+  showstringspaces=false,%
+  columns=fixed%,
+  \lst@ifdisplaystyle\scriptsize\fi,%
+  identifierstyle=,%
+  keywords=\bfseries,%
+  keywordstyle=\color[rgb]{0, 0.5, 0.5},
+  escapeinside={(*}{*)},
+  literate={~}{{$\sim$}}1 {==}{{=\,=}}2,
+  alsoother={$},
+  alsoletter={.<-},%
+  otherkeywords={!,!=,~,$,*,\&,\%/\%,\%*\%,\%\%,<-,<<-,/},
+  numbers=left,
+  %numberblanklines=false,%
+  stepnumber=5,
+  firstnumber=1,
+  numberstyle={\tiny}
+}
+
+\newenvironment{Schunk}{}{}
+\newenvironment{Sinput}{}{}
+\let\Sinput\relax
+\let\Scode\relax
+\let\Soutput\relax
+\lstnewenvironment{Sinput}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Scode}{\lstset{style=Rinput}}{}
+\lstnewenvironment{Soutput}{\lstset{style=Routput}}{}
+%%end paste in from guidePreambleSweavel.tex
+
+
+\lstset{tabsize=2, breaklines=true, style=Rinput, breakatwhitespace=true}
+
+\fvset{listparameters={\setlength{\topsep}{0em}}}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.90}
+\usepackage{realboxes}
+\providecommand*{\code}[1]{\texttt{#1}}
+\renewcommand{\code}[1]{%
+\Colorbox{light-gray}{#1}%
+}%
+
+
+\usepackage{siunitx}
+%following now in each table
+\sisetup{
+  input-symbols = ( )
+}
+%,
+%  group-minimum-digits = 9,
+%  table-number-alignment = center,
+%  table-space-text-pre = (,
+%  table-align-text-pre = false,
+%  table-align-text-post = false,
+%  table-space-text-post = {***},
+%  parse-units = false
+%}
+\end_preamble
+\use_default_options false
+\begin_modules
+logicalmkup
+sweave
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding utf8
+\fontencoding global
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize 11
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize letterpaper
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date true
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation skip
+\defskip medskip
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\noindent
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%% Fill in values of the arguments here, 
+\end_layout
+
+\begin_layout Plain Layout
+
+%% If blanks are needed, must insert value " ~ "
+\end_layout
+
+\begin_layout Plain Layout
+
+%% If comma needed inside value, wrap in {}.
+\end_layout
+
+\begin_layout Plain Layout
+
+%% Delete secondauthor and thirdauthor if not needed
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+guidesetup{%
+\end_layout
+
+\begin_layout Plain Layout
+
+  author={
+\end_layout
+
+\begin_layout Plain Layout
+
+    lastname=Johson, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    firstname=Paul, 
+\end_layout
+
+\begin_layout Plain Layout
+
+    affiliation=CRMDA,
+\end_layout
+
+\begin_layout Plain Layout
+
+    email=pauljohn@ku.edu},
+\end_layout
+
+\begin_layout Plain Layout
+
+  url={https://crmda.ku.edu/guides},
+\end_layout
+
+\begin_layout Plain Layout
+
+  keywords={R, rockchalk, outreg, LaTeX, regression tables},
+\end_layout
+
+\begin_layout Plain Layout
+
+  title={Regression Table Survey with outreg},
+\end_layout
+
+\begin_layout Plain Layout
+
+  leftlogo={theme/logoleft.pdf},
+\end_layout
+
+\begin_layout Plain Layout
+
+  rightlogo={theme/logo-vert.pdf},
+\end_layout
+
+\begin_layout Plain Layout
+
+  number=51,
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+guidehdr
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% tmpout directory must exist first
+\end_layout
+
+\begin_layout Plain Layout
+
+<<tmpout, echo=FALSE, include=FALSE, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if(!dir.exists("tmpout")) dir.create("tmpout", showWarnings=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+% In document Latex options:
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+fvset{listparameters={
+\backslash
+setlength{
+\backslash
+topsep}{0em}}}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+SweaveOpts{prefix.string=tmpout/t, split=F, ae=FALSE, height=3, width=5}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<Roptions, echo=FALSE, include=FALSE, results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+opts.orig <- options()
+\end_layout
+
+\begin_layout Plain Layout
+
+options(width=100, prompt=" ", continue="  ")
+\end_layout
+
+\begin_layout Plain Layout
+
+options(useFancyQuotes = FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(12345)
+\end_layout
+
+\begin_layout Plain Layout
+
+options(SweaveHooks=list(fig=function() par(ps=10)))
+\end_layout
+
+\begin_layout Plain Layout
+
+pdf.options(onefile=FALSE,family="Times",pointsize=10)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<echo=FALSE,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+fn1 <- 
+\begin_inset Quotes eld
+\end_inset
+
+theme/logoleft.pdf
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+fn2 <- 
+\begin_inset Quotes eld
+\end_inset
+
+theme/logo-vert.pdf
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+if(!file.exists(
+\begin_inset Quotes eld
+\end_inset
+
+theme
+\begin_inset Quotes erd
+\end_inset
+
+)) dir.create(
+\begin_inset Quotes eld
+\end_inset
+
+theme
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+blankpdf <- function(file, height=3, width=3, pointsize=20,      replace
+ = FALSE){
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(file.exists(file) && !replace) return(TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+    pdf(file=file, width=width, height=height, paper=
+\begin_inset Quotes erd
+\end_inset
+
+special
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+        onefile=FALSE, pointsize=pointsize)
+\end_layout
+
+\begin_layout Plain Layout
+
+    par(mar=c(1,1,1,1))
+\end_layout
+
+\begin_layout Plain Layout
+
+    plot(1:2, 1:2, type = 
+\begin_inset Quotes eld
+\end_inset
+
+n
+\begin_inset Quotes erd
+\end_inset
+
+, axes=FALSE, xlab=
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+, ylab=
+\begin_inset Quotes erd
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+    ##text(1.5, 1.5, 
+\begin_inset Quotes eld
+\end_inset
+
+left
+\backslash
+n logo
+\begin_inset Quotes erd
+\end_inset
+
+, axes=FALSE) 
+\end_layout
+
+\begin_layout Plain Layout
+
+    ##box(which=
+\begin_inset Quotes erd
+\end_inset
+
+plot
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+    dev.off()
+\end_layout
+
+\begin_layout Plain Layout
+
+    if(file.exists(file)) TRUE else FALSE
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+blankpdf(fn1)
+\end_layout
+
+\begin_layout Plain Layout
+
+blankpdf(fn2)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+%The listings class used here allows within-document style
+\end_layout
+
+\begin_layout Plain Layout
+
+%changes.
+ R input boxes are governed by 
+\end_layout
+
+\begin_layout Plain Layout
+
+% "Rsize", "Rbackground" and "Rcolor", while R output boxes depend on
+\end_layout
+
+\begin_layout Plain Layout
+
+% "Routsize", "Routbackground", and "Routcolor".
+ Colors
+\end_layout
+
+\begin_layout Plain Layout
+
+% can be specified in many ways, as shown here
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rsize{
+\backslash
+huge
+\backslash
+ttfamily}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Routsize{
+\backslash
+huge}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rbackground{
+\backslash
+color[gray]{0.90}}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Routbackground{
+\backslash
+color[gray]{0.40}}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rcolor{
+\backslash
+color[gray]{0.60}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Routcolor{
+\backslash
+color[rgb]{0.9, 0.1, 0.1}]}
+\end_layout
+
+\begin_layout Plain Layout
+
+%
+\backslash
+def
+\backslash
+Rcommentcolor{
+\backslash
+color{green}}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+\noindent
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+rockchalk
+\end_layout
+
+\end_inset
+
+ version 1.8.120 marked the first effort to introduce decimal-centering of
+ columns in the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ table-writer for regression models.
+ This has been the most widely requested feature for a while.
+ Years ago, I declined to do it because it seemed a needless complication.
+ However, in 2018 I was persuaded we should try harder on decimal centering.
+ In today's version of rockchalk, 1.8.136, I have working examples of 2 centering
+ methods, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ was the first method attempted.
+ It is relatively widely used.
+ It is simpler to work with inside the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ code, but the results are not quite as good as 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ output it is mostly adequate, but it leaves problems in column headers
+ and non-numeric content alignment.
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ is a much more massive framework.
+ It required much more alteration of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+rockchalk
+\end_layout
+
+\end_inset
+
+ itself.
+ There is much more danger of outright failure because of the immensity
+ of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ itself.
+ However, there are hopeful signs it can deal with some very tough examples.
+ See Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16s}
+\end_layout
+
+\end_inset
+
+ I have a solution using 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ for a troublesome table that failed badly with 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ (Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16d}
+\end_layout
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Abstract
+\noindent
+I am asking friends and colleagues to explore and test.
+ Run 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ as usual to have my traditional, simple solution that has been good enough
+ for 13 years for most people.
+ Then insert an additional 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ argument to ask for column centering.
+ Try 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+centering = "dcolumn"
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+centering = "siunitx"
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Abstract
+This document might become a vignette in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+rockchalk
+\end_layout
+
+\end_inset
+
+, but right now it is just a brief explanation and a giant collection of
+ example tables.
+ It is a plea for insight & advice.
+ This essay is not in the package, but it is in the repository: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/pauljohn32/rockchalk
+\end_layout
+
+\end_inset
+
+.
+ Anybody with a GitHub account can clone that.
+ This vignette will be included in 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+rockchalk
+\end_layout
+
+\end_inset
+
+ itself under the name 
+\begin_inset Quotes eld
+\end_inset
+
+outreg
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+rockchalk
+\end_layout
+
+\end_inset
+
+ package for R 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "RCore"
+literal "true"
+
+\end_inset
+
+ was created to facilitate authors in stats classes who need to make presentable
+ tables and graphs for regression models.
+ It does not aspire to be a comprehensive table-maker, mainly because R
+ package writers are not consistent in their methodology.
+ Procedures called 
+\begin_inset Quotes eld
+\end_inset
+
+regression
+\begin_inset Quotes erd
+\end_inset
+
+ within R's base have a certain internal consistency, but user-contributed
+ packages do not.
+ The 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+outreg
+\end_layout
+
+\end_inset
+
+ function works for regression models that I use regularly, usually in the
+ base of R, like 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+lm
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+glm
+\end_layout
+
+\end_inset
+
+, and for 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+lme4
+\end_layout
+
+\end_inset
+
+ objects.
+ Other regression packages may work.
+ I've tried to be somewhat general in the design.
+\end_layout
+
+\begin_layout Standard
+\noindent
+The new arguments for column centering are 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+.
+ The default is 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+FALSE
+\end_layout
+
+\end_inset
+
+, meaning there will be no effect.
+ If FALSE, the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ table will be the same as it always was.
+ However, if the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg
+\end_layout
+
+\end_inset
+
+ function call sets the argument 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+centering = "dcolumn"
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+centering = "siunitx"
+\end_layout
+
+\end_inset
+
+, then the decimal-centering of columns will be attempted.
+ NOTE: it is necessary for the user to insert either 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+\backslash
+usepackage{dcolumn}
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+
+\backslash
+usepackage{siunitx}
+\end_layout
+
+\end_inset
+
+ in the preamble! The aim is for this whole thing to 
+\begin_inset Quotes eld
+\end_inset
+
+just work
+\begin_inset Quotes erd
+\end_inset
+
+ without any more attention than that.
+\end_layout
+
+\begin_layout Standard
+In the past, my concern about the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+dcolumn
+\end_layout
+
+\end_inset
+
+ package was that it turned all of the text in columns into math mode italics,
+ so many tables either had unexpected style changes or failed to compile
+ altogether.
+ It turned out that 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+siunitx
+\end_layout
+
+\end_inset
+
+ had the same impact, so the same solutions were needed to correct the problem.
+ (The solution is to protect all text from that transformation, which is
+ a primary source of errors in this function at the current moment.
+ Tell me what works!)
+\end_layout
+
+\begin_layout Section
+Get the test version
+\end_layout
+
+\begin_layout Standard
+The test versions are uploaded to our local package server, KRAN.
+ Users can obtain like so
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=F,results=hide>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+CRAN <- "http://rweb.crmda.ku.edu/cran" 
+\end_layout
+
+\begin_layout Plain Layout
+
+KRAN <- "http://rweb.crmda.ku.edu/kran"
+\end_layout
+
+\begin_layout Plain Layout
+
+options(repos = c(KRAN, CRAN))
+\end_layout
+
+\begin_layout Plain Layout
+
+update(
+\begin_inset Quotes eld
+\end_inset
+
+rockchalk
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I've already noticed a couple of quirks while testing 1.8.125, so by the time
+ you try this, you'll get newer.
+\end_layout
+
+\begin_layout Section
+User Interface question
+\end_layout
+
+\begin_layout Standard
+In this iteration of the effort, I've allowed the user to specify one argument
+ for column centering.
+ The parameter 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+centering
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ has legal values c(
+\begin_inset Quotes eld
+\end_inset
+
+none
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+).
+ What is your thought on that?
+\end_layout
+
+\begin_layout Standard
+It is almost certain to me now that siunitx is the best approach, by far,
+ and I'm using it almost all the time in my projects.
+\end_layout
+
+\begin_layout Section
+Briefly: outreg
+\end_layout
+
+\begin_layout Standard
+First, run regression models.
+ Second, give the fitted regression object(s) to 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+outreg
+\end_layout
+
+\end_inset
+
+.
+ When 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+outreg
+\end_layout
+
+\end_inset
+
+ runs, it will have 2 effects.
+ First, it will write out LaTeX code to the screen (unless 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+print.results=FALSE
+\end_layout
+
+\end_inset
+
+).
+ A user might 
+\begin_inset Quotes eld
+\end_inset
+
+copy/paste
+\begin_inset Quotes erd
+\end_inset
+
+ that code into a LaTeX document.
+ (Or, write it in a file and import it in the future.
+ (Or, as in the case of this Sweaved document, the output goes directly
+ into the result file.)
+\end_layout
+
+\begin_layout Section
+Briefly: table vs tabular
+\end_layout
+
+\begin_layout Standard
+This is the most confusing thing for LaTeX beginners.
+ 
+\emph on
+Put bluntly, a 
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+ is not a table
+\emph default
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Terminology
+\end_layout
+
+\begin_layout Description
+tabular In LaTeX, a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+tablular
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ object is a grid, a display like a 
+\begin_inset Quotes eld
+\end_inset
+
+spreadsheet
+\begin_inset Quotes erd
+\end_inset
+
+.
+ You'd call that a 
+\begin_inset Quotes eld
+\end_inset
+
+table
+\begin_inset Quotes erd
+\end_inset
+
+, I believe.
+\end_layout
+
+\begin_layout Description
+table In LaTeX, a 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+table
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ is something else.
+ It is a document 
+\begin_inset Quotes eld
+\end_inset
+
+subsection
+\begin_inset Quotes erd
+\end_inset
+
+ that 
+\begin_inset Quotes eld
+\end_inset
+
+floats
+\begin_inset Quotes erd
+\end_inset
+
+ around in the document.
+ It is a container.
+ A tabular is placed inside one of these table containers.
+ Table objects are numbered, can be used in cross references (if they have
+ labels)
+\end_layout
+
+\begin_layout Standard
+If we are writing LaTeX code by hand, a tabular inside a table will look
+ like 
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{table}
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+caption{The title of the floating object is specified in caption}
+\end_layout
+
+\begin_layout Plain Layout
+
+    
+\backslash
+label{tab:ex1}% means that for cross referencing, call this float 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex1
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{tabular}
+\end_layout
+
+\begin_layout Plain Layout
+
+  ...code to create tablar defined here
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{tabular}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{table}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The big question is 
+\begin_inset Quotes eld
+\end_inset
+
+should my outreg function write the tabular only, or also the table container
+\begin_inset Quotes erd
+\end_inset
+
+?
+\end_layout
+
+\begin_layout Standard
+I used to think the only reasonable answer was 
+\begin_inset Quotes eld
+\end_inset
+
+tabular only
+\begin_inset Quotes erd
+\end_inset
+
+, but now I see reasons why we might want to do both.
+ So it is an option, as explained next.
+\end_layout
+
+\begin_layout Subsection*
+rockchalk lets you choose, float or no float
+\end_layout
+
+\begin_layout Standard
+The rockchalk outreg function has a parameter, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+float=FALSE
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+float=TRUE
+\end_layout
+
+\end_inset
+
+, to determine whether the output should include the floating table part
+ along with the tabular object.
+ If outreg users specify the argument title, then they are implicitly setting
+ 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+float=TRUE
+\end_layout
+
+\end_inset
+
+ and the value for title is used as the LaTeX caption.
+ 
+\end_layout
+
+\begin_layout Standard
+The default for 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+float
+\end_layout
+
+\end_inset
+
+ is 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+FALSE
+\end_layout
+
+\end_inset
+
+, because I have usually preferred to control the floating table from my
+ document.
+ However, I recognize that many people who are better at LaTeX than I am
+ disagree, they want to write the table and tabular structures into one
+ file.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Why would a user prefer float=TRUE?
+\end_layout
+
+\begin_layout Standard
+If you are not using LyX, then it may be convenient to let float=TRUE so
+ the floating table can be handled from the outreg function.
+ outreg allows the author to specify the caption and the label.
+ However, I did not allow for any more fine-grained customizations, especially
+ table placement details.
+\end_layout
+
+\begin_layout Subsection*
+Why I don't generally use float=TRUE
+\end_layout
+
+\begin_layout Standard
+LaTeX has options to control the placement of floating table structures
+ that the rockchalk outreg function does not adjust.
+ I think that if the LaTeX author wants to adjust those things, it is easier
+ for the author to control them in the document itself, rather than the
+ outreg function that writes a tabular object.
+ 
+\end_layout
+
+\begin_layout Standard
+In LyX, the user interface has a pull down menu to create floating objects
+ and the GUI includes a feature to set the title (sorry, the 'caption'),
+ and it also includes a way to set a label.
+ If I use this method, then LyX is aware of this thing and the LyX cross-referen
+cing system is available.
+ 
+\end_layout
+
+\begin_layout Subsection*
+Another reason to use float=FALSE
+\end_layout
+
+\begin_layout Standard
+In an instructional document using Sweave, the code chunks will print out
+ where they 
+\begin_inset Quotes eld
+\end_inset
+
+are
+\begin_inset Quotes erd
+\end_inset
+
+ in the input file.
+ 
+\end_layout
+
+\begin_layout Standard
+In LyX, there are some cross-referencing tools.
+ It is more desirable to create the table container in LyX, so then cross-refere
+nces work correctly.
+ If one creates a table (floating container), and then puts the tabular-creating
+ code chunk inside, then the code will print out with the table.
+ And cross references succeed using the LyX pull down menus.
+ That is demonstrated in Tables 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex11}
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex11t}
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex8}
+\end_layout
+
+\end_inset
+
+, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex17}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Torture test of 
+\begin_inset Quotes eld
+\end_inset
+
+rockchalk
+\begin_inset Quotes erd
+\end_inset
+
+ outreg function
+\end_layout
+
+\begin_layout Standard
+In most of these examples, I've taken the one-step 
+\begin_inset Quotes eld
+\end_inset
+
+float=TRUE
+\begin_inset Quotes erd
+\end_inset
+
+ option, but I have some examples where I've manually created the LaTeX
+ float and placed an outreg tabular inside it.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+set.seed(2134234)
+\end_layout
+
+\begin_layout Plain Layout
+
+dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y1 <- 30 + 5 * rnorm(100) + 3 * dat$x1 + 4 * dat$x2
+\end_layout
+
+\begin_layout Plain Layout
+
+dat$y2 <- rnorm(100) + 5 * dat$x2
+\end_layout
+
+\begin_layout Plain Layout
+
+m1 <- lm(y1 ~ x1, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m2 <- lm(y1 ~ x2, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+m3 <- lm(y1 ~ x1 + x2, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+gm1 <- glm(y1 ~ x1, family = Gamma, data = dat)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+tight and wide styles for regression tables
+\end_layout
+
+\begin_layout Standard
+In my terminology, a tight table has one 
+\begin_inset Quotes eld
+\end_inset
+
+narrow
+\begin_inset Quotes erd
+\end_inset
+
+ column for a regression (parameter and standard error stacked on top of
+ each other).
+ A table that is not in the tight format is wide, it has 2 columns for each
+ table (parameter and standard error side by side).
+\end_layout
+
+\begin_layout Standard
+A tight table is the default, it seems to be what many political science,
+ sociology, and economics students will need.
+ See Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex1}
+\end_layout
+
+\end_inset
+
+.
+ A wide format table is, in my opinion, more pleasant for the eyes and seems
+ to be more popular in psychology.
+ See Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex1w}
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex1, echo=F, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+vl <- c(
+\begin_inset Quotes eld
+\end_inset
+
+(Intercept)
+\begin_inset Quotes erd
+\end_inset
+
+ = 
+\begin_inset Quotes eld
+\end_inset
+
+Intercept
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+ex1 <- outreg(m1, title = "My One Tightly Printed Regression (uncentered)",
+\end_layout
+
+\begin_layout Plain Layout
+
+                    label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex1
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+                    float = TRUE, print.results = FALSE, varLabels=vl)
+\end_layout
+
+\begin_layout Plain Layout
+
+# cat that, don't print it
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex1)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex1w,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+ex1w <- outreg(m1, title = "My Wide Format 
+\backslash
+
+\begin_inset Quotes erd
+\end_inset
+
+side-by-side
+\backslash
+
+\begin_inset Quotes erd
+\end_inset
+
+ columns (uncentered)",
+\end_layout
+
+\begin_layout Plain Layout
+
+               label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex1w
+\begin_inset Quotes erd
+\end_inset
+
+, tight = FALSE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               float = TRUE, print.results = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex1w)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Decimal-centered test case 1
+\end_layout
+
+\begin_layout Standard
+A decimal-centered version of the tight column format can be seen in Table
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2d}
+\end_layout
+
+\end_inset
+
+ and the decimal-centered version of the wide format is seen in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2wd}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex1d, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+ex2d <- outreg(m1, title = "Tight column with centering = 
+\backslash
+"dcolumn
+\backslash
+"",
+\end_layout
+
+\begin_layout Plain Layout
+
+               label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2d
+\begin_inset Quotes erd
+\end_inset
+
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+               float = TRUE, print.results=FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex2d)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex1s, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+ex2s <- outreg(m1, title = "Tight column with centering = 
+\backslash
+"siunitx
+\backslash
+"",
+\end_layout
+
+\begin_layout Plain Layout
+
+               label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2s
+\begin_inset Quotes erd
+\end_inset
+
+, centering = "siunitx",
+\end_layout
+
+\begin_layout Plain Layout
+
+               float = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex2wd, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+library(rockchalk)
+\end_layout
+
+\begin_layout Plain Layout
+
+ex1wd <- outreg(m1, title = "Wide (not tight) format with centering = 'dcolumn'"
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+                label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2wd
+\begin_inset Quotes erd
+\end_inset
+
+, tight = FALSE, centering = 
+\begin_inset Quotes erd
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+                float = TRUE, print.results = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex1wd)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex2ws, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex1ws <- outreg(m1, title = "Wide (not tight) format with centering='siunitx'",
+\end_layout
+
+\begin_layout Plain Layout
+
+                label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2ws
+\begin_inset Quotes erd
+\end_inset
+
+, tight = FALSE, centering = 
+\begin_inset Quotes erd
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+                float = TRUE, print.results = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex1ws)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+alpha level adjustments
+\end_layout
+
+\begin_layout Standard
+In Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2p}
+\end_layout
+
+\end_inset
+
+, I demonstrate that the alpha parameter can be used to select different
+ values for the critical region.
+ In Tables 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2pd}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex2ps}
+\end_layout
+
+\end_inset
+
+, the centered-with-dcolumn and centered-with-siunitx are presented.
+ I see some trouble here because the stars are not evenly spaced in the
+ dcolumn-based Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\backslash
+ref{tab:ex2pd}}
+\end_layout
+
+\end_inset
+
+.
+ However, the siunitx based Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+{
+\backslash
+ref{tab:ex2ps}}
+\end_layout
+
+\end_inset
+
+ may be adequate.
+ This is one of the reasons I now 
+\emph on
+strongly
+\emph default
+ lean toward use of 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+siunitx
+\end_layout
+
+\end_inset
+
+ if centering is desired.
+ Several alpha adjustments are scattered about in the examples in this essay,
+ just to make sure they work.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Ability to change p values (not centered)", 
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2p
+\begin_inset Quotes erd
+\end_inset
+
+,  float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+         alpha = c(0.1, 0.05, 0.01)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex2pd <- outreg(list("Fingers" = m1), tight = FALSE, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Ability to change p values (dcolumn)", 
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2pd
+\begin_inset Quotes erd
+\end_inset
+
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+         float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+         alpha = c(0.1, 0.05, 0.01)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex2ps <- outreg(list("Fingers" = m1), tight = FALSE, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Ability to change p values (siunitx)", 
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex2ps
+\begin_inset Quotes erd
+\end_inset
+
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+, float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+         alpha = c(0.1, 0.05, 0.01)) 
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Several models in same table
+\end_layout
+
+\begin_layout Standard
+One of the most valuable features of rockchalk is that one can align several
+ models side by side and compare them.
+ The rows are matched by the variable name.
+\end_layout
+
+\begin_layout Standard
+About model names: If a list of regression fits is not named, then the names
+ will be bland, 
+\begin_inset Quotes eld
+\end_inset
+
+M1
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+M2
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+It is highly recommended that authors should name the regression models.
+ 
+\end_layout
+
+\begin_layout Standard
+Currently, I recommend that we provide the model names 
+\series bold
+in
+\series default
+ the list that provides the fitted regressions, as you see here.
+ That produces Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex3}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         varLabels = list(x1 = "Billie"), 
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "My Two Linear Regressions (uncentered)", label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex3
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+         request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         print.results = FALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex3)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the original rockchalk, I had it differently.
+ It is possible to provide model names in a separate argument, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+modelLabels
+\end_layout
+
+\end_inset
+
+.
+ That is shown in the code below, and in output Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex3b}
+\end_layout
+
+\end_inset
+
+.
+ The modelLabels parameter takes precedence, it will replace the labels
+ in the first argument.
+ However, I found it confusing to write tables that way, so I made it work
+ the other way too.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex3b <- outreg(list("Model A" = m1, "Model B" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         varLabels = list(x1 = "Billie"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Note modelLabels Overrides model names (uncentered)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex3b
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The column-centered versions are in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex3bd}
+\end_layout
+
+\end_inset
+
+ and Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex3bs}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex3bd <- outreg(list("Model A" = m1, "Model B" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         varLabels = list(x1 = "Billie"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Note modelLabels Overrides model names (dcolumn)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex3bd
+\begin_inset Quotes erd
+\end_inset
+
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex3bs <- outreg(list("Model A" = m1, "Model B" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         varLabels = list(x1 = "Billie"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Note modelLabels Overrides model names (siunitx)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex3bs
+\begin_inset Quotes erd
+\end_inset
+
+, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Specifying additional summary information
+\end_layout
+
+\begin_layout Standard
+In the first version, I was thinking that everybody would be happy enough
+ if the table included N, the standard error of the regression (which I
+ dubbed RMSE in the old SAS style), and R-square.
+ There were requests for other summaries.
+ 
+\end_layout
+
+\begin_layout Standard
+At first, I was thinking I needed to add arguments for each request.
+ I created argument 
+\begin_inset Quotes eld
+\end_inset
+
+
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+showAIC=TRUE
+\end_layout
+
+\end_inset
+
+
+\begin_inset Quotes erd
+\end_inset
+
+ to request Akaike's information criterion.
+ For example, see Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex5d}
+\end_layout
+
+\end_inset
+
+ produced by the following
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex5d, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Still have showAIC argument (uncentered)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex5d
+\begin_inset Quotes erd
+\end_inset
+
+, showAIC = TRUE, float = TRUE)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The column-centered versions are in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex5dd}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex5ds}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex5dd, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Still have showAIC argument (dcolumn)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex5dd
+\begin_inset Quotes erd
+\end_inset
+
+, showAIC = TRUE, float = TRUE, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+dcolumn
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex5ds, results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Still have showAIC argument (siunitx)",
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex5ds
+\begin_inset Quotes erd
+\end_inset
+
+, showAIC = TRUE, float = TRUE, centering = 
+\begin_inset Quotes eld
+\end_inset
+
+siunitx
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+However, I anticipated that way might lead me down a bad path of writing
+ a parameter for every possible summary statistic.
+\end_layout
+
+\begin_layout Standard
+My first idea was to create a recipe book of particular summary items and
+ make them available for requests by users.
+ For example, I wrote a customized reporter for F statistics and a parameter
+ to ask for that was called 
+\begin_inset Quotes eld
+\end_inset
+
+request
+\begin_inset Quotes erd
+\end_inset
+
+.
+ For example, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+request = c(fstatistic = "F")
+\end_layout
+
+\end_inset
+
+ asks for my special fstatistic and the label to be used for it in the table
+ would be 
+\begin_inset Quotes eld
+\end_inset
+
+F
+\begin_inset Quotes erd
+\end_inset
+
+.
+ I ended up not making very many of those fancy object, but in the semTable
+ in the kutils package there is a similar approach for the model Chi-Square
+ and now it seems to me I should come back and do more like that in outreg.
+\end_layout
+
+\begin_layout Standard
+Because I expected that I would never have time to keep up with requests
+ for specialized summary items, I created a 
+\begin_inset Quotes eld
+\end_inset
+
+back door
+\begin_inset Quotes erd
+\end_inset
+
+ though which users could use functions and include them in the summary.
+ 
+\end_layout
+
+\begin_layout Standard
+However, I shot myself in the foot by creating that general purpose ability
+ with a horrible, ungainly name for the function's argument, 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+runFuns
+\end_layout
+
+\end_inset
+
+.
+ I admit that is a horrible name, but I had good intentions.
+ 
+\begin_inset Quotes eld
+\end_inset
+
+runFuns
+\begin_inset Quotes erd
+\end_inset
+
+ is short for 
+\begin_inset Quotes eld
+\end_inset
+
+run functions
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It will run a function named as the first argument and then label it with
+ the right hand side argument.
+ So, if one has a lot of request like AIC, BIC, and so forth, the R functions
+ can be used without too much effort.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<ex6d,results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex6d <- outreg(list("Whatever" = m1, "Whatever" =m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = "Another way to get AIC output", label=
+\begin_inset Quotes erd
+\end_inset
+
+ex6d
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+         runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=F
+ALSE)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(ex6d)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Insert more regressions in one table
+\end_layout
+
+\begin_layout Standard
+This code produces Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex7}
+\end_layout
+
+\end_inset
+
+, which is NOT decimal aligned
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
+\end_layout
+
+\begin_layout Plain Layout
+
+              title = "My Three Linear Regressions", label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex7
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The column-aligned version of the same is found in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex7d}
+\end_layout
+
+\end_inset
+
+, produced by the following code.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), centering =
+ "dcolumn",
+\end_layout
+
+\begin_layout Plain Layout
+
+              title = "My Three Linear Regressions (decimal aligned)", label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex7d
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I worried that users who are verbose might break the function.
+ In Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex11}
+\end_layout
+
+\end_inset
+
+, I show that some very long names, even ones with periods, do not seem
+ to cause horrible trouble.
+ They WILL run off the edge of the page if they get much longer.
+ Author will need to change to the tight columns if that is an issue, as
+ seen in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex11t}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Stress test very long titles (uncentered) 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex11"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex11 <- outreg(list("I Love Long Titles" = m1,
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Prefer Brevity" = m2,
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Captain.
+ Kirk.
+ Named.
+ This." = m3), tight = FALSE, float = FALSE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Stress test very long titles (dcolumn) 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex11t"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex11td <- outreg(list("I Love Long Titles" = m1,
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Prefer Brevity" = m2, 
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Captain.
+ Kirk.
+ Named.
+ This" = m3), float = FALSE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Stress test very long titles (dcolumn) 
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex11ts"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex11ts <- outreg(list("I Love Long Titles" = m1,
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Prefer Brevity" = m2, 
+\end_layout
+
+\begin_layout Plain Layout
+
+               "Captain.
+ Kirk.
+ Named.
+ This" = m3), float = FALSE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               centering = "siunitx")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Alternative standard errors
+\end_layout
+
+\begin_layout Standard
+The original rockchalk took the standard errors from the fitted model.
+ A student in Brazil wrote and asked me to make it possible for the author
+ to supply 
+\begin_inset Quotes eld
+\end_inset
+
+robust
+\begin_inset Quotes erd
+\end_inset
+
+ standard errors.
+ That was a good idea.
+ The code to demonstrate how to create an alternative vector of standard
+ errors (in that case, Huber-White robust standard errors) will appear with
+ the output in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex8}
+\end_layout
+
+\end_inset
+
+.
+ The code is displayed there because I created the outreg table with float=FALSE
+, and then I manually created a table container into which I typed the R
+ code chunk.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Robust Standard Errors (uncentered)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex8"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (require(car)){
+\end_layout
+
+\begin_layout Plain Layout
+
+   newSE <- sqrt(diag(car::hccm(m3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Model C w Robust SE" = m3),
+\end_layout
+
+\begin_layout Plain Layout
+
+             SElist= list("Model C w Robust SE" = newSE))
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Robust Standard Errors (dcolumn)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex8d"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (require(car)){
+\end_layout
+
+\begin_layout Plain Layout
+
+   newSE <- sqrt(diag(car::hccm(m3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Model C w Robust SE" = m3),
+\end_layout
+
+\begin_layout Plain Layout
+
+             SElist= list("Model C w Robust SE" = newSE),
+\end_layout
+
+\begin_layout Plain Layout
+
+             centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Robust Standard Errors (siunitx)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex8s"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+if (require(car)){
+\end_layout
+
+\begin_layout Plain Layout
+
+   newSE <- sqrt(diag(car::hccm(m3)))
+\end_layout
+
+\begin_layout Plain Layout
+
+   ex8 <- outreg(list("Model A" = m1, "Model B" = m2, "Model C" = m3, 
+\end_layout
+
+\begin_layout Plain Layout
+
+             "Model C w Robust SE" = m3),
+\end_layout
+
+\begin_layout Plain Layout
+
+             SElist= list("Model C w Robust SE" = newSE),
+\end_layout
+
+\begin_layout Plain Layout
+
+             centering = "siunitx")
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Aligning different kinds of fits
+\end_layout
+
+\begin_layout Standard
+The output from lm and glm fits may sometimes be usefully compared.
+ The parameter display from rockchalk will align same-named variables.
+ The difference in the available summary statistics is apparent because
+ the rows do not 
+\begin_inset Quotes eld
+\end_inset
+
+line up
+\begin_inset Quotes erd
+\end_inset
+
+.
+ See Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex13}
+\end_layout
+
+\end_inset
+
+ for the output from the following.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex13 <- outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+               title = 
+\begin_inset Quotes eld
+\end_inset
+
+OLS and Logit in same table (dcolumn)
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+               label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex13
+\begin_inset Quotes erd
+\end_inset
+
+, alpha = c(0.05, 0.01), centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As seen in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex14}
+\end_layout
+
+\end_inset
+
+, we check if the supplemental parameter requests hold up with dcolumn
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex14 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+         title = 
+\begin_inset Quotes eld
+\end_inset
+
+OLS and Logit with summary report features (dcolumn)
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+         label = 
+\begin_inset Quotes eld
+\end_inset
+
+tab:ex14
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+         request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+What if the number of digits is dialed up and alpha is altered? See Table
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex15}
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex15 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+         title=
+\begin_inset Quotes erd
+\end_inset
+
+OLS and GLM with more digits (digits)
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex15
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+         request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         digits = 5, alpha = c(0.01), centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16d}
+\end_layout
+
+\end_inset
+
+, output shows result when several runFuns are requested.
+ Again, I'm very sorry that parameter name is so awful.
+ I adjusted the alpha stars as well.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex16d <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+           title = 
+\begin_inset Quotes eld
+\end_inset
+
+2 OLS and 1 Logit (dcolumn), additional runFuns
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+           label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex16d
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+           request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+           runFuns = c("BIC" = "BIC", 
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+ = "ll"),
+\end_layout
+
+\begin_layout Plain Layout
+
+           digits = 5, alpha = c(0.1, 0.05, 0.01), centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex16s <- outreg(list("OLS 1" = m1, "OLS 2" = m2,  GLM = gm1), float = TRUE,
+\end_layout
+
+\begin_layout Plain Layout
+
+           title = 
+\begin_inset Quotes eld
+\end_inset
+
+2 OLS and 1 Logit (siunitx), additional runFuns
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\end_layout
+
+\begin_layout Plain Layout
+
+           label=
+\begin_inset Quotes erd
+\end_inset
+
+tab:ex16s
+\begin_inset Quotes erd
+\end_inset
+
+,
+\end_layout
+
+\begin_layout Plain Layout
+
+           request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+           runFuns = c("BIC" = "BIC", 
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+ = "ll"),
+\end_layout
+
+\begin_layout Plain Layout
+
+           digits = 5, alpha = c(0.1, 0.05, 0.01), centering = "siunitx")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+After a while, I noticed that the left hand side of runFuns need not be
+ in quotation marks.
+ So my examples are not always consistent.
+ For example, in Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex17}
+\end_layout
+
+\end_inset
+
+ I have some in quotes, some not.
+ And I also show that if authors want to create redundant rows, they are
+ allowed to do so (N, for example).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Additional test on summary stats (dcolumn)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex17"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", 
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+ = "ll",
+\end_layout
+
+\begin_layout Plain Layout
+
+         "nobs" = "N Again?"), centering = "dcolumn")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Additional test on summary stats (siunitx)
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:ex17s"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<results=tex>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+ex17s <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
+\end_layout
+
+\begin_layout Plain Layout
+
+         request = c(fstatistic = "F"),
+\end_layout
+
+\begin_layout Plain Layout
+
+         runFuns = c("BIC" = "Schwarz IC", "AIC" = "Akaike IC", 
+\begin_inset Quotes eld
+\end_inset
+
+logLik
+\begin_inset Quotes erd
+\end_inset
+
+ = "ll",
+\end_layout
+
+\begin_layout Plain Layout
+
+         "nobs" = "N Again?"), centering = "siunitx")
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+About examples here and your long-run work flow
+\end_layout
+
+\begin_layout Standard
+In this document, I'm using a lot of short cuts to make it easier to produce
+ examples with and without centering.
+ I'm using the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+float=TRUE
+\end_layout
+
+\end_inset
+
+ option (or, equivalently, giving a title) often here to cut down on the
+ amount of work I'm doing.
+ 
+\end_layout
+
+\begin_layout Standard
+If you are learning how to make tables, I usually suggest doing it in a
+ different way.
+ I would suggest instead that authors should create an outreg output file,
+ with a sequence like this
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+lm1 <- lm(...
+ regression commands ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+lm1.out <- outreg(lm1, print.results=FALSE, ...parameters like float=FALSE, tight
+ = FALSE ...)
+\end_layout
+
+\begin_layout Plain Layout
+
+cat(lm1.out, file = 
+\begin_inset Quotes eld
+\end_inset
+
+lm1.out.tex
+\begin_inset Quotes erd
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I'd usually have an output directory where the tex file would be placed,
+ but aside from this detail, that's my workflow.
+ Then, when I want to use that file in my document, I use the LaTeX code
+ 
+\begin_inset Quotes eld
+\end_inset
+
+
+\backslash
+input{lm1.out.tex}
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+One reason for using that 2-step workflow is that the 
+\emph on
+automatically produced outreg table may not be exactly perfect
+\emph default
+.
+ Perhaps a variable label does not look right.
+ Personally speaking, I wish the automatic table were always perfect.
+ Practically, I accept it is not.
+ So I leave open the opportunity that it might need to be revised by hand.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintCited"
+bibfiles "rockchalk"
+options "bibtotoc,apalike2"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Replication Information
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Session-Info"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<session, echo=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+sessionInfo()
+\end_layout
+
+\begin_layout Plain Layout
+
+if(!is.null(warnings())){
+\end_layout
+
+\begin_layout Plain Layout
+
+    print("Warnings:")
+\end_layout
+
+\begin_layout Plain Layout
+
+    warnings()}
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<opts20, include=F>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+## Don't delete this.
+ It puts the interactive session options
+\end_layout
+
+\begin_layout Plain Layout
+
+## back the way they were.
+ If this is compiled within a session
+\end_layout
+
+\begin_layout Plain Layout
+
+## it is vital to do this.
+\end_layout
+
+\begin_layout Plain Layout
+
+options(opts.orig)
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
