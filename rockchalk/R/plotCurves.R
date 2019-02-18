@@ -59,12 +59,11 @@
 ##' title, such as "Moderator: modx", but if you don't like that,
 ##' specify your own string here.
 ##' @param legendPct Default = TRUE. Variable labels print with sample percentages.
-##' @param col Optional.  A color vector to differentiate the moderator
-##' values in the plot. If not specified, the R's builtin palette()
-##' will be used. User may supply a vector of valid color names,
-##' either explicitly c("pink","black", "gray70") or implicitly,
-##' rainbow(10) or gray.colors(5). Color names will be recycled if there
-##' are more focal values of \code{modx} than colors provided.
+##' @param col I offer my preferred color vector as default.
+##'     Replace if you like. User may supply a vector of valid
+##'     color names, or  \code{rainbow(10)} or
+##'     \code{gray.colors(5)}. Color names will be recycled if there
+##'     are more focal values of \code{modx} than colors provided.
 ##' @param envir environment to search for variables.
 ##' @param llwd Optional. Line widths for predicted values. Can be
 ##' single value or a vector, which will be recycled as necessary.
@@ -88,7 +87,8 @@ plotCurves <-
               interval = c("none", "confidence", "prediction"),
               plotPoints = TRUE, plotLegend = TRUE, legendTitle = NULL,
               legendPct = TRUE, 
-              col = NULL, llwd = 2, opacity = 100,
+              col = c("black", "blue", "darkgreen", "red", "orange", "purple", "green3"),
+              llwd = 2, opacity = 100,
               envir = environment(formula(model)), ...)
 {
     if (missing(model))
