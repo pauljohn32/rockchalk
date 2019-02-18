@@ -279,7 +279,7 @@ getFocal.default <- function(x, xvals = NULL, n = 3, pct = TRUE, ...)
         return(xfocal <- cutByQuantile(x, n))
 
     if (is.numeric(xvals)) {
-        if ((xvals > max(xRange)) || (xvals < min(xRange))){
+        if ((max(xvals) > max(xRange)) || (min(xvals) < min(xRange))){
             warning("values requested out of observed range in getFocal")
         }
         xvals <- sort(xvals)

@@ -782,8 +782,7 @@ theme
 
 \begin_layout Plain Layout
 
-blankpdf <- function(file, height=3, width=3, pointsize=20,      replace
- = FALSE){
+blankpdf <- function(file, height=3, width=3, pointsize=20, replace = FALSE){
 \end_layout
 
 \begin_layout Plain Layout
@@ -1858,15 +1857,9 @@ caption{The title of the floating object is specified in caption}
 
     
 \backslash
-label{tab:ex1}% means that for cross referencing, call this float 
-\begin_inset Quotes eld
-\end_inset
-
-tab:ex1
-\begin_inset Quotes erd
-\end_inset
-
-
+label{tab:ex1}% cross referencing use 
+\backslash
+ref{tab:ex1}
 \end_layout
 
 \begin_layout Plain Layout
@@ -2355,12 +2348,7 @@ side-by-side
 \begin_inset Quotes erd
 \end_inset
 
- columns (uncentered)",
-\end_layout
-
-\begin_layout Plain Layout
-
-               label = 
+ columns (uncentered)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2368,12 +2356,7 @@ tab:ex1w
 \begin_inset Quotes erd
 \end_inset
 
-, tight = FALSE,
-\end_layout
-
-\begin_layout Plain Layout
-
-               float = TRUE, print.results = FALSE)
+, tight = FALSE, float = TRUE, print.results = FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2442,16 +2425,15 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
-ex2d <- outreg(m1, title = "Tight column with centering = 
-\backslash
-"dcolumn
-\backslash
-"",
-\end_layout
+ex2d <- outreg(m1, title = 'Tight column with centering = 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
+dcolumn
+\begin_inset Quotes erd
+\end_inset
 
-               label = 
+', label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2467,12 +2449,7 @@ dcolumn
 \begin_inset Quotes erd
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Plain Layout
-
-               float = TRUE, print.results=FALSE)
+, float = TRUE, print.results=FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2506,16 +2483,15 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
-ex2s <- outreg(m1, title = "Tight column with centering = 
-\backslash
-"siunitx
-\backslash
-"",
-\end_layout
+ex2s <- outreg(m1, title = 'Tight column with centering = 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
+siunitx
+\begin_inset Quotes erd
+\end_inset
 
-               label = 
+', label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2523,12 +2499,7 @@ tab:ex2s
 \begin_inset Quotes erd
 \end_inset
 
-, centering = "siunitx",
-\end_layout
-
-\begin_layout Plain Layout
-
-               float = TRUE)
+, centering = "siunitx", float = TRUE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2557,13 +2528,11 @@ library(rockchalk)
 
 \begin_layout Plain Layout
 
-ex1wd <- outreg(m1, title = "Wide (not tight) format with centering = 'dcolumn'"
-,
-\end_layout
+ex1wd <- outreg(m1, title = 'Wide (not tight) format with centering = 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
-
-                label = 
+dcolumn"',  label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2579,12 +2548,7 @@ dcolumn
 \begin_inset Quotes erd
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Plain Layout
-
-                float = TRUE, print.results = FALSE)
+,  float = TRUE, print.results = FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2613,12 +2577,11 @@ status open
 
 \begin_layout Plain Layout
 
-ex1ws <- outreg(m1, title = "Wide (not tight) format with centering='siunitx'",
-\end_layout
+ex1ws <- outreg(m1, title = 'Wide (not tight) format with centering = 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
-
-                label = 
+siunitx"',  label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2634,12 +2597,7 @@ siunitx
 \begin_inset Quotes erd
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Plain Layout
-
-                float = TRUE, print.results = FALSE)
+, float = TRUE, print.results = FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -2763,17 +2721,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Ability to change p values (not centered)", 
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex2p <- outreg(list("Fingers" = m1), tight = FALSE, title = "Ability to
+ change p values (not centered)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2781,12 +2730,7 @@ tab:ex2p
 \begin_inset Quotes erd
 \end_inset
 
-,  float = TRUE,
-\end_layout
-
-\begin_layout Plain Layout
-
-         alpha = c(0.1, 0.05, 0.01)) 
+,  float = TRUE, alpha = c(0.1, 0.05, 0.01)) 
 \end_layout
 
 \begin_layout Plain Layout
@@ -2810,17 +2754,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex2pd <- outreg(list("Fingers" = m1), tight = FALSE, 
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Ability to change p values (dcolumn)", 
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex2pd <- outreg(list("Fingers" = m1), tight = FALSE,  title = "Ability to
+ change p values (dcolumn)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2836,17 +2771,7 @@ dcolumn
 \begin_inset Quotes erd
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Plain Layout
-
-         float = TRUE,
-\end_layout
-
-\begin_layout Plain Layout
-
-         alpha = c(0.1, 0.05, 0.01)) 
+, float = TRUE, alpha = c(0.1, 0.05, 0.01)) 
 \end_layout
 
 \begin_layout Plain Layout
@@ -2870,17 +2795,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex2ps <- outreg(list("Fingers" = m1), tight = FALSE, 
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Ability to change p values (siunitx)", 
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex2ps <- outreg(list("Fingers" = m1), tight = FALSE,  title = "Ability to
+ change p values (siunitx)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -2896,12 +2812,7 @@ siunitx
 \begin_inset Quotes erd
 \end_inset
 
-, float = TRUE,
-\end_layout
-
-\begin_layout Plain Layout
-
-         alpha = c(0.1, 0.05, 0.01)) 
+, float = TRUE, alpha = c(0.1, 0.05, 0.01)) 
 \end_layout
 
 \begin_layout Plain Layout
@@ -2985,16 +2896,8 @@ status open
 \begin_layout Plain Layout
 
 ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         varLabels = list(x1 = "Billie"), 
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "My Two Linear Regressions (uncentered)", label = 
+ varLabels = list(x1 = "Billie"),   title = "My Two Linear Regressions (uncenter
+ed)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3002,17 +2905,7 @@ tab:ex3
 \begin_inset Quotes erd
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Plain Layout
-
-         request = c(fstatistic = "F"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         print.results = FALSE)
+, request = c(fstatistic = "F"),  print.results = FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3074,27 +2967,9 @@ status open
 
 \begin_layout Plain Layout
 
-ex3b <- outreg(list("Model A" = m1, "Model B" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         varLabels = list(x1 = "Billie"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Note modelLabels Overrides model names (uncentered)",
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex3b <- outreg(list("Model A" = m1, "Model B" = m2),   modelLabels = c("Override
+s ModelA", "Overrides ModelB"), varLabels = list(x1 = "Billie"), title =
+ "Note modelLabels Overrides model names (uncentered)",  label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3161,27 +3036,9 @@ status open
 
 \begin_layout Plain Layout
 
-ex3bd <- outreg(list("Model A" = m1, "Model B" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         varLabels = list(x1 = "Billie"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Note modelLabels Overrides model names (dcolumn)",
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex3bd <- outreg(list("Model A" = m1, "Model B" = m2), modelLabels = c("Overrides
+ ModelA", "Overrides ModelB"), varLabels = list(x1 = "Billie"), title =
+ "Note modelLabels Overrides model names (dcolumn)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3221,27 +3078,9 @@ status open
 
 \begin_layout Plain Layout
 
-ex3bs <- outreg(list("Model A" = m1, "Model B" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         varLabels = list(x1 = "Billie"),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Note modelLabels Overrides model names (siunitx)",
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex3bs <- outreg(list("Model A" = m1, "Model B" = m2), modelLabels = c("Overrides
+ ModelA", "Overrides ModelB"),  varLabels = list(x1 = "Billie"), title =
+ "Note modelLabels Overrides model names (siunitx)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3330,17 +3169,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Still have showAIC argument (uncentered)",
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2), title = "Still have
+ showAIC argument (uncentered)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3402,17 +3232,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Still have showAIC argument (dcolumn)",
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),  title = "Still
+ have showAIC argument (dcolumn)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3452,17 +3273,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Still have showAIC argument (siunitx)",
-\end_layout
-
-\begin_layout Plain Layout
-
-         label = 
+ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2), title = "Still
+ have showAIC argument (siunitx)", label = 
 \begin_inset Quotes eld
 \end_inset
 
@@ -3597,12 +3409,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex6d <- outreg(list("Whatever" = m1, "Whatever" =m2),
-\end_layout
-
-\begin_layout Plain Layout
-
-         title = "Another way to get AIC output", label=
+ex6d <- outreg(list("Whatever" = m1, "Whatever" =m2), title = "Another way
+ to get AIC output", label=
 \begin_inset Quotes erd
 \end_inset
 
@@ -3610,13 +3418,7 @@ ex6d
 \begin_inset Quotes erd
 \end_inset
 
-,
-\end_layout
-
-\begin_layout Plain Layout
-
-         runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=F
-ALSE)
+,  runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=FALSE)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3666,12 +3468,8 @@ status open
 
 \begin_layout Plain Layout
 
-ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
-\end_layout
-
-\begin_layout Plain Layout
-
-              title = "My Three Linear Regressions", label=
+ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three
+ Linear Regressions", label=
 \begin_inset Quotes erd
 \end_inset
 
@@ -3721,12 +3519,7 @@ status open
 \begin_layout Plain Layout
 
 ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), centering =
- "dcolumn",
-\end_layout
-
-\begin_layout Plain Layout
-
-              title = "My Three Linear Regressions (decimal aligned)", label=
+ "dcolumn", title = "My Three Linear Regressions (decimal aligned)", label=
 \begin_inset Quotes erd
 \end_inset
 
@@ -3818,25 +3611,10 @@ status open
 
 \begin_layout Plain Layout
 
-ex11 <- outreg(list("I Love Long Titles" = m1,
-\end_layout
-
-\begin_layout Plain Layout
-
-               "Prefer Brevity" = m2,
-\end_layout
-
-\begin_layout Plain Layout
-
-               "Captain.
+ex11 <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain.
  Kirk.
  Named.
- This." = m3), tight = FALSE, float = FALSE,
-\end_layout
-
-\begin_layout Plain Layout
-
-               centering = "dcolumn")
+ This." = m3), tight = FALSE, float = FALSE, centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3890,25 +3668,15 @@ status open
 
 \begin_layout Plain Layout
 
-ex11td <- outreg(list("I Love Long Titles" = m1,
-\end_layout
+ex11td <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2,
+ 
+\begin_inset Quotes eld
+\end_inset
 
-\begin_layout Plain Layout
-
-               "Prefer Brevity" = m2, 
-\end_layout
-
-\begin_layout Plain Layout
-
-               "Captain.
+Captain.
  Kirk.
  Named.
- This" = m3), float = FALSE,
-\end_layout
-
-\begin_layout Plain Layout
-
-               centering = "dcolumn")
+ This" = m3), float = FALSE,  centering = "dcolumn")
 \end_layout
 
 \begin_layout Plain Layout
@@ -3962,25 +3730,11 @@ status open
 
 \begin_layout Plain Layout
 
-ex11ts <- outreg(list("I Love Long Titles" = m1,
-\end_layout
-
-\begin_layout Plain Layout
-
-               "Prefer Brevity" = m2, 
-\end_layout
-
-\begin_layout Plain Layout
-
-               "Captain.
+ex11ts <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2,
+ "Captain.
  Kirk.
  Named.
- This" = m3), float = FALSE,
-\end_layout
-
-\begin_layout Plain Layout
-
-               centering = "siunitx")
+ This" = m3), float = FALSE, centering = "siunitx")
 \end_layout
 
 \begin_layout Plain Layout

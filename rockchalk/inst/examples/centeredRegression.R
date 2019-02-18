@@ -25,8 +25,10 @@
 
 
 library(rockchalk)
+
 set.seed(222233)
-dat3 <- genCorrelatedData(rho = .31, stde = 80, beta=c(0.1, 0.2, 0.3, -0.2))
+dat3 <- genCorrelatedData3(y ~ 0.1 + 0.2 * x1 + 0.3 * x2 - 0.2 * x1:x2, N = 100000, rho = .31,
+                            stde = 80, means = c(x1 = 50, x2 = 50), sds = c(10, 10))
 
 ## We now explore a regression model like this:
 
@@ -42,7 +44,7 @@ dat3 <- genCorrelatedData(rho = .31, stde = 80, beta=c(0.1, 0.2, 0.3, -0.2))
 ## First, fit the model without the interaction term.
 ## y = b0 + b1 * x1 + b2 *x2 + e
 
-m1 <- lm(y ~ x1 + x2, data= dat3)
+m1 <- lm(y ~ x1 + x2, data = dat3)
 summary(m1)
 dev.new()
 plotPlane(m1, plotx1="x1", plotx2="x2")

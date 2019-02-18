@@ -17,12 +17,14 @@ lmAuxiliary <- function(model){
 
   results <- list()
   colnames(dat) <- gsub("`","",  colnames(dat)) #rm ticks on varnames
+  
   for (i in ivnames) {
     fmla <- paste( "`",i,"`", " ~ ." , sep = "") #add ticks in fmla
     fmla <- gsub("``","`",  fmla) # remove double ticks
     lmcall <- call("lm", formula(fmla, data = dat), quote(dat))
     results[[ i ]] <- maux <- eval(lmcall)
-    print(formula(maux))
+    maux.fmla <- formula(maux)
+    print(maux.fmla, showEnv = FALSE)
   }
  results
 }
@@ -119,14 +121,12 @@ mcDiagnose <- function(model){
   auxRegs <- lmAuxiliary(model)
   auxRsq <- getAuxRsq(auxRegs)
   vif <- getVIF(auxRsq)
-
-  cat("Drum roll please! \n")
   cat("\n")
-  cat("And your R_j Squareds are (auxiliary Rsq)\n")
+  cat("R_j Squares of auxiliary models\n")
   print(auxRsq)
   cat("The Corresponding VIF, 1/(1-R_j^2)\n")
   print(vif)
-  cat("Bivariate Correlations for design matrix \n")
+  cat("Bivariate Pearson Correlations for design matrix \n")
   mm <- model.matrix(model)[ , -1] ## data, omit intercept
   print(round(cor(mm[,]), 2))
   invisible(auxRegs)

@@ -134,11 +134,11 @@ newdata.default <-
     auto <- FALSE   ## 20141015 brain freeze on how to do this more elegantly
     margins <- FALSE
 
-    if (isTRUE(predVals == "auto")) {
+    if (length(predVals) == 1 && is.character(predVals) && isTRUE(predVals == "auto")) {
         predVals <- vector("list", length = length(varNamesRHS))
         names(predVals) <- varNamesRHS
         auto <- TRUE
-    } else if (isTRUE(predVals == "margins")) {
+    } else if (length(predVals) == 1 && is.character(predVals) && isTRUE(predVals == "margins")) {
         predVals <- vector("list", length = length(varNamesRHS))
         names(predVals) <- varNamesRHS
         margins <- TRUE
@@ -495,13 +495,13 @@ predictOMatic <-
     emf <- model.data(model = model)
     varNamesRHS <- attr(emf, "varNamesRHS")
 
-    ##2013-04-18. Considering changing user interface
-    ## if(length(n) < length(predVals)) n <- rep(n, length.out = length(predVals))
-    ## if(length(divider) < length(predVals)) divider <- rep(divider, length.out = length(predVals)
-    
-    if (((predVals == "auto") && (!any(predVals %in% varNamesRHS))) ||
-        ((predVals == "margins") && (!any(predVals %in% varNamesRHS)))) {
-        
+    ## Cover the bases
+    ## User gives in a length 1 character vector "auto" or "margins"
+    ## FIXME ??? 2019-02-18 R 3.5.3 fails here, now can't remember why I had last stanza here ## (!any(predVals %in% varNamesRHS)
+    ##if ( (length(predVals) == 1 && is.character(predVals) && predVals == "auto") && (!any(predVals %in% varNamesRHS)) ||
+    ##    ((length(predVals) == 1 && is.character(predVals) && predVals == "margins") && (!any(predVals %in% varNamesRHS))) )  {
+    if ( (length(predVals) == 1 && is.character(predVals) && predVals == "auto")  ||
+         (length(predVals) == 1 && is.character(predVals) && predVals == "margins") )  {   
         ndat <- newdata(model, predVals = predVals, emf = emf, divider = divider, n = n)
         ## auto returns a data frame, margins returns a list of data frames
         ## put the single df in a list
@@ -520,7 +520,7 @@ predictOMatic <-
             ndsub
         })
     } else {
-        if (!is.list(predVals) & is.vector(predVals)) {
+        if (!is.list(predVals) && is.vector(predVals)) {
             if (is.null(names(predVals))){ ##no names
                 pnames <- predVals
                 predVals <- lapply(pnames, function(x) "default")
@@ -531,7 +531,8 @@ predictOMatic <-
         }
         pnames <- names(predVals)
         if (any(! pnames %in% varNamesRHS))
-            stop(paste("Sorry, predictOMatic won't work. \nYou cannot put variables in predVals unless you fit them in the model. \nFor this model, the only legal values would be, ", paste(varNamesRHS, collapse = " "), "\n"))
+            stop(paste("predictOMatic predVals variables must be included in the regression model.",
+                       paste(varNamesRHS, collapse = " "), "\n"))
 
         for(x in pnames) {
             if (is.character(predVals[[x]]) && length(predVals[[x]]) == 1)

@@ -190,10 +190,10 @@ library(rockchalk)
 @
 
 Consider the results of applying summarize() to Fox's Chile data set
-from the car package:
+from the carData package:
 
 <<echo=T>>=
-library(car)
+library(carData)
 data(Chile)
 (summChile <- summarize(Chile))
 @
@@ -224,7 +224,7 @@ impossible for first-time R users to get this right. In version 1.8,
 I believe I have solved the problem entirely with the functions newdata()
 and predictOMatic(). 
 
-Let's fit an example regression with the Chile data set from the car
+Let's fit an example regression with the Chile data set from the carData
 package.
 
 <<echo=T>>=
@@ -393,9 +393,9 @@ In this version, a new parameter \code{centering} is introduced for
 decimal-centered columns. 
 
 In the following, I will demonstrate some tables for lm and glm fits
-on a simulated data set. This new simulation function, genCorrelatedData2(),
+on a simulated data set. This new simulation function, genCorrelatedData3(),
 is a convenient way to create multiple-predictor regression data sets
-of arbitary size and complexity, allowing for interactions and nonlinearity. 
+of arbitrary size and complexity, allowing for interactions and nonlinearity. 
 
 <<createdata1, echo=T>>=
 set.seed(1234)
@@ -1080,7 +1080,7 @@ Neither of the key variables is ``statistically significant'' any
 more. 
 
 <<echo=F, include=F>>=
-dat2 <- genCorrelatedData(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
+dat2 <- genCorrelatedData3(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
 m6linear <- lm (y ~ x1 + x2, data=dat2)
 m6int <- lm (y ~ x1 * x2, data=dat2)
 m6mc <- meanCenter(m6int)

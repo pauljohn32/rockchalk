@@ -489,7 +489,7 @@ fn1 <- "theme/logoleft.pdf"
 fn2 <- "theme/logo-vert.pdf"
 if(!file.exists("theme")) dir.create("theme")
 
-blankpdf <- function(file, height=3, width=3, pointsize=20,      replace = FALSE){
+blankpdf <- function(file, height=3, width=3, pointsize=20, replace = FALSE){
     if(file.exists(file) && !replace) return(TRUE)
     pdf(file=file, width=width, height=height, paper="special", 
         onefile=FALSE, pointsize=pointsize)
@@ -638,7 +638,7 @@ look like
 \inputencoding{latin9}\begin{lstlisting}
 \begin{table}
     \caption{The title of the floating object is specified in caption}
-    \label{tab:ex1}% means that for cross referencing, call this float "tab:ex1"
+    \label{tab:ex1}% cross referencing use \ref{tab:ex1}
 \begin{tabular}
   ...code to create tablar defined here
 \end{tabular}
@@ -741,9 +741,7 @@ cat(ex1)
 
 <<ex1w,results=tex>>=
 library(rockchalk)
-ex1w <- outreg(m1, title = "My Wide Format \"side-by-side\" columns (uncentered)",
-               label = "tab:ex1w", tight = FALSE,
-               float = TRUE, print.results = FALSE)
+ex1w <- outreg(m1, title = "My Wide Format \"side-by-side\" columns (uncentered)", label = "tab:ex1w", tight = FALSE, float = TRUE, print.results = FALSE)
 cat(ex1w)
 @
 
@@ -755,31 +753,23 @@ format is seen in Table \ref{tab:ex2wd}
 
 <<ex1d, results=tex>>=
 library(rockchalk)
-ex2d <- outreg(m1, title = "Tight column with centering = \"dcolumn\"",
-               label = "tab:ex2d", centering = "dcolumn",
-               float = TRUE, print.results=FALSE)
+ex2d <- outreg(m1, title = 'Tight column with centering = "dcolumn"', label = "tab:ex2d", centering = "dcolumn", float = TRUE, print.results=FALSE)
 cat(ex2d)
 @
 
 <<ex1s, results=tex>>=
 library(rockchalk)
-ex2s <- outreg(m1, title = "Tight column with centering = \"siunitx\"",
-               label = "tab:ex2s", centering = "siunitx",
-               float = TRUE)
+ex2s <- outreg(m1, title = 'Tight column with centering = "siunitx"', label = "tab:ex2s", centering = "siunitx", float = TRUE)
 @
 
 <<ex2wd, results=tex>>=
 library(rockchalk)
-ex1wd <- outreg(m1, title = "Wide (not tight) format with centering = 'dcolumn'",
-                label = "tab:ex2wd", tight = FALSE, centering = "dcolumn",
-                float = TRUE, print.results = FALSE)
+ex1wd <- outreg(m1, title = 'Wide (not tight) format with centering = "dcolumn"',  label = "tab:ex2wd", tight = FALSE, centering = "dcolumn",  float = TRUE, print.results = FALSE)
 cat(ex1wd)
 @
 
 <<ex2ws, results=tex>>=
-ex1ws <- outreg(m1, title = "Wide (not tight) format with centering='siunitx'",
-                label = "tab:ex2ws", tight = FALSE, centering = "siunitx",
-                float = TRUE, print.results = FALSE)
+ex1ws <- outreg(m1, title = 'Wide (not tight) format with centering = "siunitx"',  label = "tab:ex2ws", tight = FALSE, centering = "siunitx", float = TRUE, print.results = FALSE)
 cat(ex1ws)
 @
 
@@ -797,25 +787,15 @@ are scattered about in the examples in this essay, just to make sure
 they work.
 
 <<results=tex>>=
-ex2p <- outreg(list("Fingers" = m1), tight = FALSE, 
-         title = "Ability to change p values (not centered)", 
-         label = "tab:ex2p",  float = TRUE,
-         alpha = c(0.1, 0.05, 0.01)) 
+ex2p <- outreg(list("Fingers" = m1), tight = FALSE, title = "Ability to change p values (not centered)", label = "tab:ex2p",  float = TRUE, alpha = c(0.1, 0.05, 0.01)) 
 @
 
 <<results=tex>>=
-ex2pd <- outreg(list("Fingers" = m1), tight = FALSE, 
-         title = "Ability to change p values (dcolumn)", 
-         label = "tab:ex2pd", centering = "dcolumn",
-         float = TRUE,
-         alpha = c(0.1, 0.05, 0.01)) 
+ex2pd <- outreg(list("Fingers" = m1), tight = FALSE,  title = "Ability to change p values (dcolumn)", label = "tab:ex2pd", centering = "dcolumn", float = TRUE, alpha = c(0.1, 0.05, 0.01)) 
 @
 
 <<results=tex>>=
-ex2ps <- outreg(list("Fingers" = m1), tight = FALSE, 
-         title = "Ability to change p values (siunitx)", 
-         label = "tab:ex2ps", centering = "siunitx", float = TRUE,
-         alpha = c(0.1, 0.05, 0.01)) 
+ex2ps <- outreg(list("Fingers" = m1), tight = FALSE,  title = "Ability to change p values (siunitx)", label = "tab:ex2ps", centering = "siunitx", float = TRUE, alpha = c(0.1, 0.05, 0.01)) 
 @
 
 \subsection*{Several models in same table}
@@ -834,11 +814,7 @@ the list that provides the fitted regressions, as you see here. That
 produces Table \ref{tab:ex3}.
 
 <<results=tex>>=
-ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2),
-         varLabels = list(x1 = "Billie"), 
-         title = "My Two Linear Regressions (uncentered)", label = "tab:ex3",
-         request = c(fstatistic = "F"),
-         print.results = FALSE)
+ex3 <- outreg(list("Model A" = m1, "Model B has a longer heading" = m2), varLabels = list(x1 = "Billie"),   title = "My Two Linear Regressions (uncentered)", label = "tab:ex3", request = c(fstatistic = "F"),  print.results = FALSE)
 cat(ex3)
 @
 
@@ -850,11 +826,7 @@ in the first argument. However, I found it confusing to write tables
 that way, so I made it work the other way too.
 
 <<results=tex>>=
-ex3b <- outreg(list("Model A" = m1, "Model B" = m2),
-         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-         varLabels = list(x1 = "Billie"),
-         title = "Note modelLabels Overrides model names (uncentered)",
-         label = "tab:ex3b"
+ex3b <- outreg(list("Model A" = m1, "Model B" = m2),   modelLabels = c("Overrides ModelA", "Overrides ModelB"), varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names (uncentered)",  label = "tab:ex3b"
 )
 @
 
@@ -862,19 +834,11 @@ The column-centered versions are in Table \ref{tab:ex3bd} and Table
 \ref{tab:ex3bs}.
 
 <<results=tex>>=
-ex3bd <- outreg(list("Model A" = m1, "Model B" = m2),
-         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-         varLabels = list(x1 = "Billie"),
-         title = "Note modelLabels Overrides model names (dcolumn)",
-         label = "tab:ex3bd", centering = "dcolumn")
+ex3bd <- outreg(list("Model A" = m1, "Model B" = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"), varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names (dcolumn)", label = "tab:ex3bd", centering = "dcolumn")
 @
 
 <<results=tex>>=
-ex3bs <- outreg(list("Model A" = m1, "Model B" = m2),
-         modelLabels = c("Overrides ModelA", "Overrides ModelB"),
-         varLabels = list(x1 = "Billie"),
-         title = "Note modelLabels Overrides model names (siunitx)",
-         label = "tab:ex3bs", centering = "siunitx")
+ex3bs <- outreg(list("Model A" = m1, "Model B" = m2), modelLabels = c("Overrides ModelA", "Overrides ModelB"),  varLabels = list(x1 = "Billie"), title = "Note modelLabels Overrides model names (siunitx)", label = "tab:ex3bs", centering = "siunitx")
 @
 
 \subsection*{Specifying additional summary information}
@@ -890,23 +854,17 @@ information criterion. For example, see Table \ref{tab:ex5d} produced
 by the following
 
 <<ex5d, results=tex>>=
-ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2),
-         title = "Still have showAIC argument (uncentered)",
-         label = "tab:ex5d", showAIC = TRUE, float = TRUE)
+ex5d <- outreg(list("Whichever" = m1, "Whatever" = m2), title = "Still have showAIC argument (uncentered)", label = "tab:ex5d", showAIC = TRUE, float = TRUE)
 @
 
 The column-centered versions are in Table \ref{tab:ex5dd} and \ref{tab:ex5ds}.
 
 <<ex5dd, results=tex>>=
-ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),
-         title = "Still have showAIC argument (dcolumn)",
-         label = "tab:ex5dd", showAIC = TRUE, float = TRUE, centering = "dcolumn")
+ex5dd <- outreg(list("Whichever" = m1, "Whatever" = m2),  title = "Still have showAIC argument (dcolumn)", label = "tab:ex5dd", showAIC = TRUE, float = TRUE, centering = "dcolumn")
 @
 
 <<ex5ds, results=tex>>=
-ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2),
-         title = "Still have showAIC argument (siunitx)",
-         label = "tab:ex5ds", showAIC = TRUE, float = TRUE, centering = "siunitx")
+ex5ds <- outreg(list("Whichever" = m1, "Whatever" = m2), title = "Still have showAIC argument (siunitx)", label = "tab:ex5ds", showAIC = TRUE, float = TRUE, centering = "siunitx")
 @
 
 However, I anticipated that way might lead me down a bad path of writing
@@ -935,9 +893,7 @@ side argument. So, if one has a lot of request like AIC, BIC, and
 so forth, the R functions can be used without too much effort. 
 
 <<ex6d,results=tex>>=
-ex6d <- outreg(list("Whatever" = m1, "Whatever" =m2),
-         title = "Another way to get AIC output", label="ex6d",
-         runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=FALSE)
+ex6d <- outreg(list("Whatever" = m1, "Whatever" =m2), title = "Another way to get AIC output", label="ex6d",  runFuns = c("AIC" = "Akaike IC"), centering = "dcolumn", print.results=FALSE)
 cat(ex6d)
 @
 
@@ -946,16 +902,14 @@ cat(ex6d)
 This code produces Table \ref{tab:ex7}, which is NOT decimal aligned
 
 <<results=tex>>=
-ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3),
-              title = "My Three Linear Regressions", label="tab:ex7")
+ex7 <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), title = "My Three Linear Regressions", label="tab:ex7")
 @
 
 The column-aligned version of the same is found in Table \ref{tab:ex7d},
 produced by the following code.
 
 <<results=tex>>=
-ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), centering = "dcolumn",
-              title = "My Three Linear Regressions (decimal aligned)", label="tab:ex7d")
+ex7d <- outreg(list("Amod" = m1, "Bmod" = m2, "Gmod" = m3), centering = "dcolumn", title = "My Three Linear Regressions (decimal aligned)", label="tab:ex7d")
 @
 
 I worried that users who are verbose might break the function. In
@@ -969,30 +923,21 @@ to change to the tight columns if that is an issue, as seen in Table
 \caption{Stress test very long titles (uncentered) \label{tab:ex11}}
 
 <<results=tex>>=
-ex11 <- outreg(list("I Love Long Titles" = m1,
-               "Prefer Brevity" = m2,
-               "Captain. Kirk. Named. This." = m3), tight = FALSE, float = FALSE,
-               centering = "dcolumn")
+ex11 <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This." = m3), tight = FALSE, float = FALSE, centering = "dcolumn")
 @
 \end{table}
 \begin{table}[H]
 \caption{Stress test very long titles (dcolumn) \label{tab:ex11t}}
 
 <<results=tex>>=
-ex11td <- outreg(list("I Love Long Titles" = m1,
-               "Prefer Brevity" = m2, 
-               "Captain. Kirk. Named. This" = m3), float = FALSE,
-               centering = "dcolumn")
+ex11td <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This" = m3), float = FALSE,  centering = "dcolumn")
 @
 \end{table}
 \begin{table}[H]
 \caption{Stress test very long titles (dcolumn) \label{tab:ex11ts}}
 
 <<results=tex>>=
-ex11ts <- outreg(list("I Love Long Titles" = m1,
-               "Prefer Brevity" = m2, 
-               "Captain. Kirk. Named. This" = m3), float = FALSE,
-               centering = "siunitx")
+ex11ts <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This" = m3), float = FALSE, centering = "siunitx")
 @
 \end{table}
 

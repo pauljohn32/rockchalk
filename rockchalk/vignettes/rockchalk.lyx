@@ -562,7 +562,7 @@ library(rockchalk)
 
 \begin_layout Standard
 Consider the results of applying summarize() to Fox's Chile data set from
- the car package:
+ the carData package:
 \end_layout
 
 \begin_layout Standard
@@ -576,7 +576,7 @@ status open
 
 \begin_layout Plain Layout
 
-library(car)
+library(carData)
 \end_layout
 
 \begin_layout Plain Layout
@@ -686,7 +686,8 @@ as.factor()
 \end_layout
 
 \begin_layout Standard
-Let's fit an example regression with the Chile data set from the car package.
+Let's fit an example regression with the Chile data set from the carData
+ package.
 \end_layout
 
 \begin_layout Standard
@@ -1387,8 +1388,8 @@ centering
 \begin_layout Standard
 In the following, I will demonstrate some tables for lm and glm fits on
  a simulated data set.
- This new simulation function, genCorrelatedData2(), is a convenient way
- to create multiple-predictor regression data sets of arbitary size and
+ This new simulation function, genCorrelatedData3(), is a convenient way
+ to create multiple-predictor regression data sets of arbitrary size and
  complexity, allowing for interactions and nonlinearity.
  
 \end_layout
@@ -4661,7 +4662,7 @@ status open
 
 \begin_layout Plain Layout
 
-dat2 <- genCorrelatedData(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
+dat2 <- genCorrelatedData3(N=400, rho=.4, stde=300, beta=c(2,0.1,0.1,0.2))
 \end_layout
 
 \begin_layout Plain Layout

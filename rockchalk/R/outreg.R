@@ -213,7 +213,7 @@
 ##'     varLabels = list(x1 = "Billie"),
 ##'     title = "Note modelLabels Overrides model names")
 ##' cat(ex4)
-##'
+##' ##'
 ##' ex5 <- outreg(list("Whichever" = m1, "Whatever" = m2),
 ##'     title = "Still have showAIC argument, as in previous versions",
 ##'     showAIC = TRUE, float = TRUE, centering = "siunitx")
@@ -257,18 +257,18 @@
 ##'           "Prefer Brevity" = m2,
 ##'           "Short" = m3), tight = FALSE, float = FALSE)
 ##' cat(ex11)
-##'
+##' ##'
 ##' ex12 <- outreg(list("GLM" = gm1), float = TRUE)
 ##' cat(ex12)
 ##' 
 ##' ex13 <- outreg(list("OLS" = m1, "GLM" = gm1), float = TRUE,
 ##'         alpha = c(0.05, 0.01))
 ##' cat(ex13)
-##'
+##' ##'
 ##' ex14 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
 ##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"))
 ##' cat(ex14)
-##' 
+
 ##' ex15 <- outreg(list(OLS = m1, GLM = gm1), float = TRUE,
 ##'     request = c(fstatistic = "F"), runFuns = c("BIC" = "BIC"),
 ##'     digits = 5, alpha = c(0.01))
@@ -579,9 +579,9 @@ outreg <-
         for(i in seq_along(sl)) {
             y <- sl[[i]][[name]]
             
-            if (is.null(y) || !is.null(y) && is.na(y)) {
-                y <- ""
-            } else if (name == "fstatistic"){
+            if (length(y) <= 1 && (is.null(y) || is.null(y[1]) ||  is.na(y))) {
+                y <- "_BOC__EOC_"
+            } else if (name == "fstatistic"){                
                 staty <- paste(format(c(y["value"]), digits = digits),
                                "(", format(y["numdf"], digits = digits),
                                ",", format(y["dendf"], digits = digits), ")", sep = "")
@@ -600,7 +600,7 @@ outreg <-
                 }
                 y <- paste0("_BOC_", format(round(y, digits), nsmall = digits), "_EOC_")
             } 
-            if (!is.null(y) & !is.na(y) & !identical(y, "")) res[i] <- y else res[i] <- ""
+            if (is.null(y) ||is.na(y)) res[i] <- "" else res[i] <- y
         }
         if (any(res != "")) nonNull <- TRUE else nonNull <- FALSE
         attr(res, "nonNull") <- nonNull
@@ -656,20 +656,27 @@ outreg <-
     
     
     nmodels <- length(modelList)
-    if (missing(modelLabels)) modelLabels = names(modelList)
-    ## Manufacture model labels
-    if (is.null(modelLabels)) modelLabels <- paste0("M", seq_along(modelList))
-    
-    for (i in seq_along(modelLabels)) {
-        if (modelLabels[i] == ""){
-            ##Make temporary names
-            modelLabels[i] <- paste0("M", i)
+    if (missing(modelLabels) || is.null(modelLabels)) {
+        if(!is.null(names(modelList))){
+            modelLabels = names(modelList)
+        } else {
+            modelLabels <- paste0("M", 1:nmodels)
+        }
+        for (i in seq_along(modelLabels)) {
+            modlname <- modelLabels[i]
+            if ((modlname == "" || is.na(modlname))) {
+                modelLabels[i] <- if(names(modelList[i]) == "") paste0("M", i) else names(modelList[i])
+            }
+        }
+    } else {
+        if(length(modelList) != length(modelLabels)) {
+            MESSG <- "modelLabels must be provided for each model"
+            stop(MESSG)
         }
     }
-  
+    
     ##Ugh. nonunique labels. brute force fix
-    modelLabels <- make.unique(modelLabels)
-    names(modelList) <- modelLabels
+    names(modelList) <- make.unique(modelLabels)
 
     parmnames <- vector()
     myModelClass <- vector()
