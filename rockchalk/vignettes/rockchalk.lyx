@@ -309,7 +309,7 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-This is the Fall, 2018 update of the rockchalk package.
+This is the Spring, 2019 update of the rockchalk package.
  I offer a course in regression analysis for social and behavioral scientists
  every year.
  As the course goes on, I keep track of the difficulties that the students
@@ -2005,7 +2005,20 @@ status open
 \begin_layout Plain Layout
 
 m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval
- = "confidence", opacity = 80, col = "red", ylim = c(20, 70))
+ = "confidence", opacity = 80, col = "red",
+\end_layout
+
+\begin_layout Plain Layout
+
+ylim = c(-70, 15), legendArgs = list(x=
+\begin_inset Quotes erd
+\end_inset
+
+topright
+\begin_inset Quotes erd
+\end_inset
+
+))
 \end_layout
 
 \begin_layout Plain Layout
@@ -2264,7 +2277,20 @@ m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a fun plotx")
 \begin_layout Plain Layout
 
 m4psb <- plotSlopes(m4, plotx = "x2", modx = "x1", modxVals = "std.dev.",
- xlab = "x2 is plotx", ylim = c(-100, 20))
+ xlab = "x2 is plotx", ylim = c(-120, 15),
+\end_layout
+
+\begin_layout Plain Layout
+
+legendArgs = list(x = 
+\begin_inset Quotes eld
+\end_inset
+
+topright
+\begin_inset Quotes erd
+\end_inset
+
+))
 \end_layout
 
 \begin_layout Plain Layout
@@ -3025,9 +3051,10 @@ literal "true"
 
  for which the following (quadratic equation) holds:
 \begin_inset Formula 
-\begin{equation}
-\hat{t}=\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}=\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
-\end{equation}
+\begin{align}
+\hat{t} & =\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}\nonumber \\
+ & =\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
+\end{align}
 
 \end_inset
 
@@ -3087,11 +3114,19 @@ plotCurves for nonlinear predictor formulae
 \end_layout
 
 \begin_layout Standard
-plotCurves() generalizes the plotting capability of plotSlopes.
- plotCurves() should be able to handle any regression formulas that include
- nonlinear transformations.
- Models that have polynomials or terms that are logged (or otherwise transformed
-) can be plotted.
+In the most recent revision of this package, I believe I have made the plotCurve
+s() function redundant.
+ Before I delete the function entirely, I'm waiting for feedback.
+ There was a problem in the past.
+ Some students used plotSlopes() (which drew straight lines) when they intended
+ to draw curves (and should have used plotcCurves).
+\end_layout
+
+\begin_layout Standard
+plotCurves() was developed to generalize the plotting capability for regression
+ formulas that include nonlinear transformations.
+ It was for models that have polynomials or terms that are logged (or otherwise
+ transformed).
  In that sense, plotCurves() is rather similar to R's own termplot() function,
  but plotCurves() has two major advantages.
  First, it allows interactions, and second, it handles some complicated
@@ -3137,18 +3172,16 @@ dat$y5 <- with(dat, -3*x1 + 15*log(0.1 + x2 - min(x2)) + 1.1*x2 + 8.2 *x1 *
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
+The estimated model is
+\end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 \begin_inset ERT
 status open
 
 \begin_layout Plain Layout
 
-<<pcps20, fig=T, echo = F, height=6, width=6>>=
+<<>>=
 \end_layout
 
 \begin_layout Plain Layout
@@ -3158,7 +3191,183 @@ m5 <- lm(y5 ~ log(x2) + x1 * x2, data = dat)
 
 \begin_layout Plain Layout
 
-m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the new version, the function calls for plotSlopes() and plotCurves()
+ are the same:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<pcps20a, fig=T, eval=F, height=4, width=6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m5pc <- plotCurves(m5, plotx = "x2", modx = "x1", main = 
+\begin_inset Quotes eld
+\end_inset
+
+plotCurves output
+\begin_inset Quotes erd
+\end_inset
+
+, ylim = c(-210, 330),
+\end_layout
+
+\begin_layout Plain Layout
+
+legendArgs = list(x = 
+\begin_inset Quotes eld
+\end_inset
+
+topleft
+\begin_inset Quotes erd
+\end_inset
+
+, title = 
+\begin_inset Quotes eld
+\end_inset
+
+x1
+\begin_inset Quotes erd
+\end_inset
+
+, cex = 0.8))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<psps20b, fig=T, eval=T, eval=F, echo = T, height = 4, width = 6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+m5ps <- plotSlopes(m5, plotx = "x2", modx = "x1", main = 
+\begin_inset Quotes eld
+\end_inset
+
+plotSlopes outout
+\begin_inset Quotes erd
+\end_inset
+
+, ylim = c(-210, 330),
+\end_layout
+
+\begin_layout Plain Layout
+
+legendArgs = list(x = 
+\begin_inset Quotes eld
+\end_inset
+
+topleft
+\begin_inset Quotes erd
+\end_inset
+
+, title = 
+\begin_inset Quotes eld
+\end_inset
+
+x1
+\begin_inset Quotes erd
+\end_inset
+
+, cex = 0.8))
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+So far as I have been able to tell, the results are the same.
+ See Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pcps20"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=T, fig=T,echo=F,height = 4, width = 6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<pcps20a>>
+\end_layout
+
+\begin_layout Plain Layout
+
+@
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+<<eval=T, fig=T, echo=F,height = 4, width = 6>>=
+\end_layout
+
+\begin_layout Plain Layout
+
+<<psps20b>>
 \end_layout
 
 \begin_layout Plain Layout
@@ -3175,7 +3384,7 @@ m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-plotCurves
+Illustrations of m5 with plotSlopes and plotCurves
 \begin_inset CommandInset label
 LatexCommand label
 name "fig:pcps20"
@@ -3190,40 +3399,8 @@ name "fig:pcps20"
 
 \end_layout
 
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-We fit a model with an elaborate specification and create the plot in Figure
- 
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "fig:pcps20"
-
-\end_inset
-
- with these commands:
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
 \begin_layout Plain Layout
 
-<<eval=F>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-<<pcps20>>
-\end_layout
-
-\begin_layout Plain Layout
-
-@
 \end_layout
 
 \end_inset
@@ -3236,7 +3413,7 @@ plotPlane
 \end_layout
 
 \begin_layout Standard
-The persp function in R works well, but its interface is too complicated
+The persp() function in R works well, but its interface is too complicated
  for most elementary and intermediate R users.
  To facilitate its use for regression users, the plotPlane() function is
  offered.
@@ -3536,7 +3713,7 @@ literal "true"
 
 ).
  R offers no such thing as standardized regression, probably because this
- practice is practice is thought to be mistaken.
+ practice is thought to be mistaken.
  The automatic standardization of all predictors, no matter whether they
  are categorical, interaction terms, or transformed values (such as logs)
  is dangerous.
@@ -3864,12 +4041,13 @@ literal "true"
 
 \end_inset
 
-is another adjustment that has been recommended for models that include
+ is another adjustment that has been recommended for models that include
  interactions or squared terms.
  Like mean-centering, it is often recommended as a way to obtain smaller
  standard errors or to make estimates more numerically stable.
- Like mean centering, it causes a completely superficial change in the estimated
- coefficients.
+ Like mean centering, it causes a superficial change in the estimated coefficien
+ts, but the predicted values and the regression relationship is not actually
+ changed.
  Nothing of substance is altered.
 \end_layout
 
@@ -3954,7 +4132,7 @@ right ones
  for our analytical purpose.
  We'd like to fit an interactive model, but protect the linear parts from
  fluctuation.
- In R, when we run th 
+ In R, when we run the model 
 \begin_inset listings
 inline true
 status open
@@ -3967,7 +4145,8 @@ lm(y ~ x1 * x2)
 
 \end_inset
 
-, we are allowing all of the coefficients to fluctuate 
+, we are allowing all of the coefficients of all variables to fluctuate
+ 
 \begin_inset Formula 
 \begin{equation}
 y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i}\label{eq:rcwant}
@@ -5440,10 +5619,6 @@ lazyCov convenient ways to create correlation and covariance matrices that
 \begin_layout Description
 mvrnorm a slightly improved version of the MASS package's multivariate normal
  generator.
-\end_layout
-
-\begin_layout Standard
-Development on the package will continue on the basis of classroom experience.
 \end_layout
 
 \begin_layout Standard

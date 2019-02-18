@@ -10,6 +10,7 @@
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
 \usepackage{float}
 \usepackage{url}
+\usepackage{amsmath}
 \usepackage[authoryear]{natbib}
 
 \makeatletter
@@ -127,8 +128,8 @@ options(useFancyQuotes = FALSE)
 
 \section{Introduction}
 
-This is the Fall, 2018 update of the rockchalk package. I offer a
-course in regression analysis for social and behavioral scientists
+This is the Spring, 2019 update of the rockchalk package. I offer
+a course in regression analysis for social and behavioral scientists
 every year. As the course goes on, I keep track of the difficulties
 that the students experience with R and I craft functions that facilitate
 their work on particular assignments. The new features in this edition
@@ -488,7 +489,8 @@ conduct post-hoc hypothesis tests.
 
 \begin{figure}
 <<ps05, fig=T, echo=F, include=F, height=5, width=6>>=
-m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval = "confidence", opacity = 80, col = "red", ylim = c(20, 70))
+m1ps <- plotSlopes(m1, plotx = "x2", xlab = "x2 from model m1", interval = "confidence", opacity = 80, col = "red",
+ylim = c(-70, 15), legendArgs = list(x="topright"))
 @
 
 \includegraphics[height=4in]{rockchalk-ps05}
@@ -532,7 +534,8 @@ m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 <<ps10, fig=T, echo=F, height=9, width=6>>=
 par(mfcol=c(2,1))
 m4psa <- plotSlopes(m4, plotx = "x1", modx = "x2", xlab = "x1 is a fun plotx")
-m4psb <- plotSlopes(m4, plotx = "x2", modx = "x1", modxVals = "std.dev.", xlab = "x2 is plotx", ylim = c(-100, 20))
+m4psb <- plotSlopes(m4, plotx = "x2", modx = "x1", modxVals = "std.dev.", xlab = "x2 is plotx", ylim = c(-120, 15),
+legendArgs = list(x = "topright"))
 par(mfcol=c(1,1))
 @
 
@@ -688,9 +691,10 @@ effect of $plotx$ on the outcome is determined from the computation
 of a T statistic for $\hat{b}_{simple\,slope}$. The J-N interval
 is the set of values of $modx$ for which the following (quadratic
 equation) holds:
-\begin{equation}
-\hat{t}=\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}=\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
-\end{equation}
+\begin{align}
+\hat{t} & =\frac{\hat{b}_{simple\,slope}}{std.err(\hat{b}_{simple\,slope})}\nonumber \\
+ & =\frac{\hat{b}_{simple\,slope}}{\sqrt{\widehat{Var(\hat{b}_{plotx})}+modx^{2}\widehat{Var(\hat{b}_{plotx\cdot modx})}+2modx\widehat{Cov(\hat{b}_{plotx},\hat{b}_{plotx\cdot modx})}}}\geq T_{\frac{\alpha}{2},df}
+\end{align}
 
 \noindent Suppose there are two real roots, $root1$ and $root2$.
 The values of $modx$ for which the slope is statistically significant
@@ -702,14 +706,19 @@ in Figure \ref{fig:ts10} is not too infrequently observed.
 
 \subsection{plotCurves for nonlinear predictor formulae}
 
-plotCurves() generalizes the plotting capability of plotSlopes. plotCurves()
-should be able to handle any regression formulas that include nonlinear
-transformations. Models that have polynomials or terms that are logged
-(or otherwise transformed) can be plotted. In that sense, plotCurves()
-is rather similar to R's own termplot() function, but plotCurves()
-has two major advantages. First, it allows interactions, and second,
-it handles some complicated formulae that termplot() is not able to
-manage. 
+In the most recent revision of this package, I believe I have made
+the plotCurves() function redundant. Before I delete the function
+entirely, I'm waiting for feedback. There was a problem in the past.
+Some students used plotSlopes() (which drew straight lines) when they
+intended to draw curves (and should have used plotcCurves).
+
+plotCurves() was developed to generalize the plotting capability for
+regression formulas that include nonlinear transformations. It was
+for models that have polynomials or terms that are logged (or otherwise
+transformed). In that sense, plotCurves() is rather similar to R's
+own termplot() function, but plotCurves() has two major advantages.
+First, it allows interactions, and second, it handles some complicated
+formulae that termplot() is not able to manage. 
 
 Suppose a dependent variable y5 is created according to a nonlinear
 process.
@@ -721,24 +730,45 @@ y5_{i}=-3x1_{i}+7*log(x2)+1.1x2_{i}+2.2x1_{i}\times x2_{i}+e_{i}
 dat$y5 <- with(dat, -3*x1 + 15*log(0.1 + x2 - min(x2)) + 1.1*x2 + 8.2 *x1 * x2 + 10*rnorm(100))
 @
 
-\begin{figure}
-<<pcps20, fig=T, echo = F, height=6, width=6>>=
+The estimated model is
+
+<<>>=
 m5 <- lm(y5 ~ log(x2) + x1 * x2, data = dat)
-m5pc <- plotCurves(m5, plotx = "x2", modx = "x1")
 @
 
-\caption{plotCurves\label{fig:pcps20}}
+In the new version, the function calls for plotSlopes() and plotCurves()
+are the same:
+
+<<pcps20a, fig=T, eval=F, height=4, width=6>>=
+m5pc <- plotCurves(m5, plotx = "x2", modx = "x1", main = "plotCurves output", ylim = c(-210, 330),
+legendArgs = list(x = "topleft", title = "x1", cex = 0.8))
+@
+
+<<psps20b, fig=T, eval=T, eval=F, echo = T, height = 4, width = 6>>=
+m5ps <- plotSlopes(m5, plotx = "x2", modx = "x1", main = "plotSlopes outout", ylim = c(-210, 330),
+legendArgs = list(x = "topleft", title = "x1", cex = 0.8))
+@
+
+So far as I have been able to tell, the results are the same. See
+Figure \ref{fig:pcps20}.
+
+\begin{figure}
+
+<<eval=T, fig=T,echo=F,height = 4, width = 6>>=
+<<pcps20a>>
+@
+
+<<eval=T, fig=T, echo=F,height = 4, width = 6>>=
+<<psps20b>>
+@
+
+\caption{Illustrations of m5 with plotSlopes and plotCurves\label{fig:pcps20}}
+
 \end{figure}
-We fit a model with an elaborate specification and create the plot
-in Figure \ref{fig:pcps20} with these commands:
-
-<<eval=F>>=
-<<pcps20>>
-@
 
 \subsection{plotPlane}
 
-The persp function in R works well, but its interface is too complicated
+The persp() function in R works well, but its interface is too complicated
 for most elementary and intermediate R users. To facilitate its use
 for regression users, the plotPlane() function is offered.
 
@@ -804,9 +834,9 @@ by an estimated $Z-score:$ $(x1_{i}-\overline{x1})/std.dev.(x1_{i}$).
 Some people think these coefficients are easier to interpret (but,
 for a strong cautionary argument against them, see \citealp{King1986}).
 R offers no such thing as standardized regression, probably because
-this practice is practice is thought to be mistaken. The automatic
-standardization of all predictors, no matter whether they are categorical,
-interaction terms, or transformed values (such as logs) is dangerous. 
+this practice is thought to be mistaken. The automatic standardization
+of all predictors, no matter whether they are categorical, interaction
+terms, or transformed values (such as logs) is dangerous. 
 
 To illustrate that, the rockchalk introduces a function called standardize().
 Each column of the design matrix is scaled to a new variable with
@@ -893,12 +923,13 @@ well.
 
 \subsection{Residual-centered Models}
 
-Residual-centering \citep{LittleBovaird2006}is another adjustment
+Residual-centering \citep{LittleBovaird2006} is another adjustment
 that has been recommended for models that include interactions or
 squared terms. Like mean-centering, it is often recommended as a way
 to obtain smaller standard errors or to make estimates more numerically
-stable. Like mean centering, it causes a completely superficial change
-in the estimated coefficients. Nothing of substance is altered.
+stable. Like mean centering, it causes a superficial change in the
+estimated coefficients, but the predicted values and the regression
+relationship is not actually changed. Nothing of substance is altered.
 
 The residualCenter() function is used in the same manner as meanCenter().
 The user fits an interactive model and the result object is passed
@@ -920,8 +951,8 @@ y=c_{0}+c_{1}x1+c_{2}x2+e{}_{i}.\label{eq:rc20}
 \noindent Let's proceed as if those parameter estimates, $\hat{c}_{1}$,
 $\hat{c}_{2}$, are the ``right ones'' for our analytical purpose.
 We'd like to fit an interactive model, but protect the linear parts
-from fluctuation. In R, when we run th \inputencoding{latin9}\lstinline!lm(y ~ x1 * x2)!\inputencoding{utf8},
-we are allowing all of the coefficients to fluctuate 
+from fluctuation. In R, when we run the model \inputencoding{latin9}\lstinline!lm(y ~ x1 * x2)!\inputencoding{utf8},
+we are allowing all of the coefficients of all variables to fluctuate
 \begin{equation}
 y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i}\label{eq:rcwant}
 \end{equation}
@@ -1290,9 +1321,6 @@ covariance matrices that are needed in many simulation exercises
 \item [{mvrnorm}] a slightly improved version of the MASS package's multivariate
 normal generator.
 \end{description}
-Development on the package will continue on the basis of classroom
-experience.
-
 \bibliographystyle{chicago}
 \bibliography{rockchalk}
 
