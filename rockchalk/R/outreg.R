@@ -481,7 +481,7 @@ outreg <-
         "_STAR2_" = "<sup>**</sup>",
         "_STAR3_" = "<sup>***</sup>",
          "_NBSP_" = "&nbsp;",                
-        "<td><td" = "<td"
+        "<td>\\s*<td" = "<td"
     )
     
     ## Replacement strings for CSV output
@@ -609,7 +609,6 @@ outreg <-
 
     gofRow <- function(x, xname = "fixme") {
         ## x has markup already! don't re-insert
-        ##zline <- c("_BR__BOC_", xname, paste(rep(" ",  max(2, (16 - nchar(xname)))), collapse = "" ))
         zline <- c("_BR_", xname, "_EOC_")
         zline <- paste0(paste0(zline, collapse="") , paste0(x, collapse = paste0(if(!tight) "_BOC__EOC_" else " ")), "_EOR__EOL_")
         zline
@@ -780,7 +779,7 @@ outreg <-
 
     ## 20190214: new idea to fiddle lines HTML
     fudgeLength <- (1 + !tight) * length(modelList)
-    blankline <- paste0("_BRU_", paste0(rep(paste0("_BOCU__EOC_"), fudgeLength), collapse=""), "_EOR__EOL_")
+    blankline <- paste0("_BRU__EOC_", paste0(rep(paste0("_BOCU__EOC_"), fudgeLength), collapse=""), "_EOR__EOL_")
     
     getVC.merMod <- function(modl){
         if(inherits(modl, "merMod")){
@@ -887,7 +886,7 @@ outreg <-
  
     ## Put model labels on top of each model column, if modelLabels were given
     if (!is.null(modelLabels)){
-        aline <- paste0("_BR__EOC_",  sprintf("%2s", " "), "_EOC_", collapse = "")
+        aline <- paste0("_BR_","_EOC_", collapse = "")
         for (modelLabel in modelLabels){
                  aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), modelLabel, "_EOMC_"))
         }
@@ -901,11 +900,10 @@ outreg <-
                        "_EOR__EOL_", collapse = "") 
         z <- c(z, paste0(aline, collapse = ""))
         ##aline <- c("_BRU_", sprintf("%2s", " "), paste(rep ("_EOC__BOCU_ (S.E.)", nmodels, collapse = "")), "_EOR__EOL_")
-        aline <- c("_BR__EOC_", sprintf("%2s", " "), paste0(rep(paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
+        aline <- c("_BR__EOC_", paste0(rep(paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), "(S.E.)_EOMC_"), nmodels, collapse = "")), "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
     } else {
-        aline1 <- paste0("_BR_", sprintf("%2s", " "), "_EOC_")
-        #aline2 <- paste(rep ("_EOC__BOCU_ Estimate _EOC__BOCU_ (S.E.)", nmodels), collapse = "")
+        aline1 <- paste0("_BR__EOC_")
         aline2 <- paste0(rep ("_BOC__BOMC1_Estimate_EOMC__BOC__BOMC1_(S.E.)_EOMC_", nmodels), collapse = "")
         aline3 <- paste0("_EOR__EOL_")
         z <- c(z, paste0(aline1, aline2, aline3, collapse = ""))
@@ -916,30 +914,28 @@ outreg <-
    
     ## Here come the regression coefficients
     for (regname in parmnames){
-        aline <- paste(paste("_BR_", displayNames[regname],
-                             paste(rep(" ", max(2, (6 - nchar(displayNames[regname])))), collapse = "" )), collapse = "")
+        aline <- paste(paste("_BR_", displayNames[regname], "_EOC_"), collapse = "")
         for (model in modelLabels) {
             est <- B[regname, model]
             se <- SE[regname, model]
             if (!is.na(est)) {
-                aline <- c(aline, "_SEP_", est)
+                aline <- c(aline, paste("_BOC_", est, "_EOC_", collapse = " "))
                 if (tight == FALSE) {
-                    aline <- c(aline, paste("_SEP_  ", se, collapse = " "))
+                    aline <- c(aline, paste("_BOC_", se, "_EOC_", collapse = " "))
                 }
             } else {
                 aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx"), 1), "_DOT__EOMC_"))
-                if (tight == FALSE) aline  <- c(aline, "_SEP_    ")
             }
         }
-        aline <- c(aline, " _EOR__EOL_")
+        aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste(aline, collapse = ""))
 
         if (tight == TRUE){
-            aline <- paste("_BR_", paste(rep(" ", 2), sep = "", collapse = ""))
+            aline <- "_BR__EOC_"
             for (model in modelLabels) {
                 est <- B[regname, model]
                 se <- SE[regname, model]
-                aline2 <- if (!is.na(est)) c("_SEP_", rep(" ", max(2, 6 - nchar(se)), collapse=""), se)  else c("  _SEP_", sprintf("%2s", " "))
+                aline2 <- if (!is.na(est)) c("_BOC_", se, "_EOC_")  else c(" _BOC__EOC_")
                 aline <- c(aline, paste(aline2, collapse = ""))
             }
             aline <- c(aline, "_EOR__EOL_")
@@ -957,7 +953,7 @@ outreg <-
     for (model in modelList) {
         myN <- stats::nobs(model)
         columnFudge <- if(centering %in% c("dcolumn", "siunitx")) "_BOMC1_" else "_BOML1_"
-        aline <- c(aline, "_BOC_", columnFudge,  myN, "_EOMC_", if(tight==FALSE) "  _SEP_" else "")
+        aline <- c(aline, "_BOC_", columnFudge,  myN, "_EOMC_", if(tight==FALSE) "  _BOC__EOC_" else "")
     }
     ##    if (type == "html") z <- c(z, blankline)
     aline <- c(if(type == "html") blankline else "", aline, " _EOR__EOL_")
