@@ -10,14 +10,17 @@
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
 \setlength{\parskip}{\smallskipamount}
 \setlength{\parindent}{0pt}
+\usepackage{color}
 \usepackage{babel}
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage[authoryear]{natbib}
 \usepackage[unicode=true,pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
- breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]
+ breaklinks=true,pdfborder={0 0 0},pdfborderstyle={},backref=section,colorlinks=true]
  {hyperref}
+\hypersetup{
+ colorlinks=true, linkcolor=darkblue, urlcolor=darkblue, citecolor=darkblue}
 
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
@@ -55,47 +58,26 @@
 \renewenvironment{figure}[1][]{%
 
  \ifthenelse{\equal{#1}{}}{%
-
    \@float{figure}
-
  }{%
-
    \@float{figure}[#1]%
-
  }%
-
  \centering
-
 }{%
-
  \end@float
-
 }
-
 \renewenvironment{table}[1][]{%
-
  \ifthenelse{\equal{#1}{}}{%
-
    \@float{table}
-
  }{%
-
    \@float{table}[#1]%
-
  }%
-
  \centering
-
 %  \setlength{\@tempdima}{\abovecaptionskip}%
-
 %  \setlength{\abovecaptionskip}{\belowcaptionskip}%
-
 % \setlength{\belowcaptionskip}{\@tempdima}%
-
 }{%
-
  \end@float
-
 }
 
 % In document Latex options:
@@ -109,6 +91,9 @@
 
 \usepackage{listings}% Make ordinary listings look as if they come from Sweave
 \lstset{tabsize=2, breaklines=true, style=Rstyle}
+
+\usepackage{xcolor}
+\definecolor{darkblue}{HTML}{1e2277}
 
 \makeatother
 
@@ -152,13 +137,13 @@ end of this note, none of the advice here is ``my'' advice. Instead,
 it is my best description of the standards followed by the leading
 R programmers. 
 
-At one point, the only guide was the Google R style guide,\footnote{\url{http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html}}
+At one point, the only guide was the Google R style guide,\footnote{\url{https://google.github.io/styleguide/Rguide.xml}}
 which was used as a policy for R-related ``Google Summer of Code''
 projects. There are many excellent suggestions in Hadley Wickham's
-Style Guide.\footnote{\url{https://github.com/hadley/devtools/wiki/Style}}
-In what follows, I'll try to explain why there are some variations
-among these projects and offer some advice about how we (the users)
-should sort through their advice.
+Style Guide.\footnote{\url{http://adv-r.had.co.nz/Style.html}} In
+what follows, I'll try to explain why there are some variations among
+these projects and offer some advice about how we (the users) should
+sort through their advice.
 
 <<echo=F>>=
 dir.create("plots", showWarnings=F)
@@ -200,7 +185,7 @@ developers use.
 I'm often surprised to find that R users--even experienced ones--have
 never looked at the R source code. Before going any further,
 \begin{quote}
-Open the source code for R. I mean, literally, download R-2.15.3.tar.gz
+Open the source code for R. I mean, literally, download R-3.5.2.tar.gz
 (or whatever is current when you read this). Unpack that, navigate
 to the directory src/library/stats/R. Open the file ``lm.R''. 
 \end{quote}

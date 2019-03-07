@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass scrartcl
 \begin_preamble
 %\VignetteIndexEntry{Rstyle}
@@ -22,47 +24,26 @@
 \renewenvironment{figure}[1][]{%
 
  \ifthenelse{\equal{#1}{}}{%
-
    \@float{figure}
-
  }{%
-
    \@float{figure}[#1]%
-
  }%
-
  \centering
-
 }{%
-
  \end@float
-
 }
-
 \renewenvironment{table}[1][]{%
-
  \ifthenelse{\equal{#1}{}}{%
-
    \@float{table}
-
  }{%
-
    \@float{table}[#1]%
-
  }%
-
  \centering
-
 %  \setlength{\@tempdima}{\abovecaptionskip}%
-
 %  \setlength{\abovecaptionskip}{\belowcaptionskip}%
-
 % \setlength{\belowcaptionskip}{\@tempdima}%
-
 }{%
-
  \end@float
-
 }
 
 % In document Latex options:
@@ -76,6 +57,9 @@
 
 \usepackage{listings}% Make ordinary listings look as if they come from Sweave
 \lstset{tabsize=2, breaklines=true, style=Rstyle}
+
+\usepackage{xcolor}
+\definecolor{darkblue}{HTML}{1e2277}
 \end_preamble
 \options noae
 \use_default_options false
@@ -89,16 +73,18 @@ logicalmkup
 \language_package default
 \inputencoding utf8
 \fontencoding global
-\font_roman lmodern
-\font_sans lmss
-\font_typewriter cmtt
-\font_math auto
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "cmtt" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -111,11 +97,12 @@ logicalmkup
 \pdf_bookmarksnumbered false
 \pdf_bookmarksopen false
 \pdf_bookmarksopenlevel 1
-\pdf_breaklinks false
-\pdf_pdfborder false
-\pdf_colorlinks false
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks true
 \pdf_backref section
 \pdf_pdfusetitle true
+\pdf_quoted_options "colorlinks=true, linkcolor=darkblue, urlcolor=darkblue, citecolor=darkblue"
 \papersize default
 \use_geometry true
 \use_package amsmath 1
@@ -137,6 +124,7 @@ logicalmkup
 \suppress_date false
 \justification true
 \use_refstyle 0
+\use_minted 0
 \index Index
 \shortcut idx
 \color #008000
@@ -149,7 +137,10 @@ logicalmkup
 \tocdepth 3
 \paragraph_separation skip
 \defskip smallskip
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -245,6 +236,7 @@ Rchaeologist: One who practices Rchaeology.
 \begin_inset CommandInset citation
 LatexCommand citep
 key "RCore"
+literal "true"
 
 \end_inset
 
@@ -290,11 +282,11 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
-http://google-styleguide.googlecode.com/svn/trunk/google-r-style.html
+https://google.github.io/styleguide/Rguide.xml
 \end_layout
 
 \end_inset
@@ -319,11 +311,11 @@ status open
 
 \begin_layout Plain Layout
 \begin_inset Flex URL
-status collapsed
+status open
 
 \begin_layout Plain Layout
 
-https://github.com/hadley/devtools/wiki/Style
+http://adv-r.had.co.nz/Style.html
 \end_layout
 
 \end_inset
@@ -473,14 +465,14 @@ What should R code look like? Stop guessing.
 \end_layout
 
 \begin_layout Standard
-I'm often surprised to find that R users--even experienced ones--have never
+I'm often surprised to find that R users–even experienced ones–have never
  looked at the R source code.
  Before going any further,
 \end_layout
 
 \begin_layout Quote
 Open the source code for R.
- I mean, literally, download R-2.15.3.tar.gz (or whatever is current when you
+ I mean, literally, download R-3.5.2.tar.gz (or whatever is current when you
  read this).
  Unpack that, navigate to the directory src/library/stats/R.
  Open the file 
@@ -516,6 +508,7 @@ ommended).
 \begin_inset CommandInset citation
 LatexCommand citep
 key "fox_r_2011"
+literal "true"
 
 \end_inset
 
@@ -562,103 +555,103 @@ lm
 inline false
 status open
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
 > lm
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
 function (formula, data, subset, weights, na.action, method = "qr",
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE,
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     contrasts = NULL, offset, ...)
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
 {
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     ret.x <- x
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     ret.y <- y
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     cl <- match.call()
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     mf <- match.call(expand.dots = FALSE)
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     m <- match(c("formula", "data", "subset", "weights", "na.action",
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
         "offset"), names(mf), 0L)
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     mf <- mf[c(1L, m)]
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     mf$drop.unused.levels <- TRUE
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     mf[[1L]] <- as.name("model.frame")
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     mf <- eval(mf, parent.frame())
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     if (method == "model.frame")
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
         return(mf)
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
     else if (method != "qr")
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
         warning(gettextf("method = '%s' is not supported.
  Using 'qr'",
 \end_layout
 
-\begin_layout Soutput
+\begin_layout Plain Layout
 
             method), domain = NA)
 \end_layout
@@ -908,6 +901,10 @@ This is a general GNU coding standard.
 
 \begin_layout Enumerate
 Insert spaces before and after 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1126,6 +1123,10 @@ for
  are functions.
  I asked for clarification in the R-devel email list, and Peter Dalgaard
  explained that the space should be used because those terms are
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1198,6 +1199,10 @@ extra spaces
 
  inside parentheses.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -1500,6 +1505,7 @@ formatR
 \begin_inset CommandInset citation
 LatexCommand citep
 key "formatr"
+literal "true"
 
 \end_inset
 
@@ -1659,6 +1665,7 @@ There are two reasons why tidy.source() is not a panacea.
 \begin_inset CommandInset citation
 LatexCommand citep
 key "Amelia"
+literal "true"
 
 \end_inset
 
@@ -2215,6 +2222,7 @@ One will note another interesting anomaly while reviewing R source code.
 \begin_inset CommandInset citation
 LatexCommand citealp
 key "kernighan_c_1988"
+literal "true"
 
 \end_inset
 
@@ -2778,7 +2786,7 @@ If we were starting with a clean slate, I believe many R functions would
  be re-named for the purposes of consistency.
  Since we do not have a clean slate, we live with an accumulation of function
  names from olde S and R.
- Changes in computer science--the growth of object-oriented programming--cause
+ Changes in computer science–the growth of object-oriented programming–cause
  new naming conventions.
  Consider some of the traditional S function names that are still used in
  R, like 
@@ -2988,6 +2996,7 @@ I like camel cased function names.
 \begin_inset CommandInset citation
 LatexCommand citep
 key "venables_modern_2002"
+literal "true"
 
 \end_inset
 
@@ -2995,6 +3004,7 @@ key "venables_modern_2002"
 \begin_inset CommandInset citation
 LatexCommand citep
 key "fox_r_2011"
+literal "true"
 
 \end_inset
 
@@ -3035,6 +3045,7 @@ boxCox()
 \begin_inset CommandInset citation
 LatexCommand citep
 key "pinheiro_nlme:_2012"
+literal "true"
 
 \end_inset
 
@@ -3042,6 +3053,7 @@ key "pinheiro_nlme:_2012"
 \begin_inset CommandInset citation
 LatexCommand citep
 key "lme4"
+literal "true"
 
 \end_inset
 
