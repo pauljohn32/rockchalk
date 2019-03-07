@@ -590,7 +590,7 @@ guidesetup{%
 
 \begin_layout Plain Layout
 
-  number=51,
+  number=49,
 \end_layout
 
 \begin_layout Plain Layout
@@ -1022,6 +1022,18 @@ color{green}}
 
 \begin_layout Abstract
 \noindent
+This is a comprehensive demonstration of the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+outreg()
+\end_layout
+
+\end_inset
+
+ function in 
 \begin_inset Flex Code
 status open
 
@@ -1032,283 +1044,21 @@ rockchalk
 
 \end_inset
 
- version 1.8.120 marked the first effort to introduce decimal-centering of
- columns in the 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-outreg
-\end_layout
-
-\end_inset
-
- table-writer for regression models.
- This has been the most widely requested feature for a while.
- Years ago, I declined to do it because it seemed a needless complication.
- However, in 2018 I was persuaded we should try harder on decimal centering.
- In today's version of rockchalk, 1.8.136, I have working examples of 2 centering
- methods, 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-dcolumn
-\end_layout
-
-\end_inset
-
- and 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-siunitx
-\end_layout
-
-\end_inset
-
 .
- 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-dcolumn
-\end_layout
-
-\end_inset
-
- was the first method attempted.
- It is relatively widely used.
- It is simpler to work with inside the 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-outreg
-\end_layout
-
-\end_inset
-
- code, but the results are not quite as good as 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-siunitx
-\end_layout
-
-\end_inset
-
-.
- 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-dcolumn
-\end_layout
-
-\end_inset
-
- output it is mostly adequate, but it leaves problems in column headers
- and non-numeric content alignment.
- 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-siunitx
-\end_layout
-
-\end_inset
-
- is a much more massive framework.
- It required much more alteration of 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-rockchalk
-\end_layout
-
-\end_inset
-
- itself.
- There is much more danger of outright failure because of the immensity
- of 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-siunitx
-\end_layout
-
-\end_inset
-
- itself.
- However, there are hopeful signs it can deal with some very tough examples.
- See Table 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-ref{tab:ex16s}
-\end_layout
-
-\end_inset
-
- I have a solution using 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-siunitx
-\end_layout
-
-\end_inset
-
- for a troublesome table that failed badly with 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-dcolumn
-\end_layout
-
-\end_inset
-
- (Table 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-ref{tab:ex16d}
-\end_layout
-
-\end_inset
-
-).
-\end_layout
-
-\begin_layout Abstract
-\noindent
-I am asking friends and colleagues to explore and test.
- Run 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-outreg
-\end_layout
-
-\end_inset
-
- as usual to have my traditional, simple solution that has been good enough
- for 13 years for most people.
- Then insert an additional 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-outreg
-\end_layout
-
-\end_inset
-
- argument to ask for column centering.
- Try 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-centering = "dcolumn"
-\end_layout
-
-\end_inset
-
- or 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-\noindent
-centering = "siunitx"
-\end_layout
-
-\end_inset
-
-.
-\end_layout
-
-\begin_layout Abstract
-This document might become a vignette in 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-rockchalk
-\end_layout
-
-\end_inset
-
-, but right now it is just a brief explanation and a giant collection of
- example tables.
- It is a plea for insight & advice.
- This essay is not in the package, but it is in the repository: 
-\begin_inset Flex URL
-status open
-
-\begin_layout Plain Layout
-
-https://github.com/pauljohn32/rockchalk
-\end_layout
-
-\end_inset
-
-.
- Anybody with a GitHub account can clone that.
- This vignette will be included in 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-rockchalk
-\end_layout
-
-\end_inset
-
- itself under the name 
+ This vignette demonstrates the ability to integrate model estimates, to
+ assign labels for models and variables, and to customize the selection
+ of summary statistics.
+ A major innovation in recent versions is the introduction of the ability
+ to generate 
 \begin_inset Quotes eld
 \end_inset
 
-outreg
+decimal-centered
 \begin_inset Quotes erd
 \end_inset
 
-.
+ columns.
+ This has been the most widely requested feature for a while.
 \end_layout
 
 \begin_layout Standard
@@ -1401,7 +1151,17 @@ lme4
 
 \begin_layout Standard
 \noindent
-The new arguments for column centering are 
+The major new feature is 
+\begin_inset Quotes eld
+\end_inset
+
+decimal-centered
+\begin_inset Quotes erd
+\end_inset
+
+ columns.
+ In the implementation of centering, we tested approaches based on two LaTeX
+ packages, 
 \begin_inset Flex Code
 status open
 
@@ -1424,42 +1184,109 @@ siunitx
 \end_inset
 
 .
- The default is 
+ 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
 \noindent
-FALSE
+dcolumn
 \end_layout
 
 \end_inset
 
-, meaning there will be no effect.
- If FALSE, the 
+ output it is mostly adequate, but it leaves problems in column headers
+ and non-numeric content alignment.
+ 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
 \noindent
-outreg
+siunitx
 \end_layout
 
 \end_inset
 
- table will be the same as it always was.
- However, if the 
+ is a much more massive framework.
+ There is much more danger of outright failure because of the immensity
+ of 
 \begin_inset Flex Code
 status open
 
 \begin_layout Plain Layout
 \noindent
-outreg
+siunitx
 \end_layout
 
 \end_inset
 
- function call sets the argument 
+ itself.
+ However, at the current time, all of the examples we have tested indicate
+ that the 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+-based tables are superior.
+ there are hopeful signs it can deal with some very tough examples.
+ See Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16s}
+\end_layout
+
+\end_inset
+
+ I have a solution using 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+siunitx
+\end_layout
+
+\end_inset
+
+ for a troublesome table that failed badly with 
+\begin_inset Flex Code
+status open
+
+\begin_layout Plain Layout
+\noindent
+dcolumn
+\end_layout
+
+\end_inset
+
+ (Table 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{tab:ex16d}
+\end_layout
+
+\end_inset
+
+).
+ The user can designate which method should be used by assigning the parameter
+ 
 \begin_inset Flex Code
 status open
 
@@ -1481,7 +1308,7 @@ centering = "siunitx"
 
 \end_inset
 
-, then the decimal-centering of columns will be attempted.
+.
  NOTE: it is necessary for the user to insert either 
 \begin_inset Flex Code
 status open
@@ -1517,159 +1344,11 @@ just work
 \end_inset
 
  without any more attention than that.
-\end_layout
-
-\begin_layout Standard
-In the past, my concern about the 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-dcolumn
-\end_layout
-
-\end_inset
-
- package was that it turned all of the text in columns into math mode italics,
- so many tables either had unexpected style changes or failed to compile
- altogether.
- It turned out that 
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-siunitx
-\end_layout
-
-\end_inset
-
- had the same impact, so the same solutions were needed to correct the problem.
- (The solution is to protect all text from that transformation, which is
- a primary source of errors in this function at the current moment.
- Tell me what works!)
+ Please let me know if there is trouble.
 \end_layout
 
 \begin_layout Section
-Get the test version
-\end_layout
-
-\begin_layout Standard
-The test versions are uploaded to our local package server, KRAN.
- Users can obtain like so
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-<<eval=F,results=hide>>=
-\end_layout
-
-\begin_layout Plain Layout
-
-CRAN <- "http://rweb.crmda.ku.edu/cran" 
-\end_layout
-
-\begin_layout Plain Layout
-
-KRAN <- "http://rweb.crmda.ku.edu/kran"
-\end_layout
-
-\begin_layout Plain Layout
-
-options(repos = c(KRAN, CRAN))
-\end_layout
-
-\begin_layout Plain Layout
-
-update(
-\begin_inset Quotes eld
-\end_inset
-
-rockchalk
-\begin_inset Quotes erd
-\end_inset
-
-)
-\end_layout
-
-\begin_layout Plain Layout
-
-@
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-I've already noticed a couple of quirks while testing 1.8.125, so by the time
- you try this, you'll get newer.
-\end_layout
-
-\begin_layout Section
-User Interface question
-\end_layout
-
-\begin_layout Standard
-In this iteration of the effort, I've allowed the user to specify one argument
- for column centering.
- The parameter 
-\begin_inset Quotes eld
-\end_inset
-
-
-\begin_inset Flex Code
-status open
-
-\begin_layout Plain Layout
-centering
-\end_layout
-
-\end_inset
-
-
-\begin_inset Quotes erd
-\end_inset
-
- has legal values c(
-\begin_inset Quotes eld
-\end_inset
-
-none
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-dcolumn
-\begin_inset Quotes erd
-\end_inset
-
-, 
-\begin_inset Quotes eld
-\end_inset
-
-siunitx
-\begin_inset Quotes erd
-\end_inset
-
-).
- What is your thought on that?
-\end_layout
-
-\begin_layout Standard
-It is almost certain to me now that siunitx is the best approach, by far,
- and I'm using it almost all the time in my projects.
-\end_layout
-
-\begin_layout Section
-Briefly: outreg
+Briefly: outreg()
 \end_layout
 
 \begin_layout Standard
