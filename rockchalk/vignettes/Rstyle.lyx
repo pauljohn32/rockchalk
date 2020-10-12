@@ -3257,7 +3257,7 @@ Error in TRUE <- 7 : invalid (do_set) left-hand side to assignment
 \end_layout
 
 \begin_layout Standard
-But R will not prevent the usage of T and R for variable names.
+But R will not prevent the usage of T and F for variable names.
 \end_layout
 
 \begin_layout Subsection
