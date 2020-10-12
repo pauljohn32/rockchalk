@@ -830,7 +830,7 @@ or FALSE:
 Error in TRUE <- 7 : invalid (do_set) left-hand side to assignment
 \end{lstlisting}
 \inputencoding{utf8}
-But R will not prevent the usage of T and R for variable names.
+But R will not prevent the usage of T and F for variable names.
 
 \subsection{(.75 SEA) Avoid declaring variables that have the same names as widely
 used functions.}
