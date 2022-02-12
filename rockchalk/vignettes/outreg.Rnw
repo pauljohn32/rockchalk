@@ -1,4 +1,4 @@
-%% LyX 2.3.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[11pt,letterpaper,english]{extarticle}
 \usepackage{lmodern}
@@ -650,7 +650,8 @@ with the table. And cross references succeed using the LyX pull down
 menus. That is demonstrated in Tables \ref{tab:ex11}, \ref{tab:ex11t},
 \ref{tab:ex8}, \ref{tab:ex17}.
 
-\section{Torture test of ``rockchalk'' outreg function}
+\section{Torture test of \textquotedblleft rockchalk\textquotedblright{} outreg
+function}
 
 In most of these examples, I've taken the one-step ``float=TRUE''
 option, but I have some examples where I've manually created the LaTeX
@@ -876,6 +877,7 @@ to change to the tight columns if that is an issue, as seen in Table
 ex11 <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This." = m3), tight = FALSE, float = FALSE, centering = "dcolumn")
 @
 \end{table}
+
 \begin{table}[H]
 \caption{Stress test very long titles (dcolumn) \label{tab:ex11t}}
 
@@ -883,6 +885,7 @@ ex11 <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. 
 ex11td <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This" = m3), float = FALSE,  centering = "dcolumn")
 @
 \end{table}
+
 \begin{table}[H]
 \caption{Stress test very long titles (dcolumn) \label{tab:ex11ts}}
 
@@ -890,6 +893,7 @@ ex11td <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain
 ex11ts <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This" = m3), float = FALSE, centering = "siunitx")
 @
 \end{table}
+
 
 \subsection*{Alternative standard errors}
 
@@ -914,6 +918,7 @@ if (require(car)){
 }
 @
 \end{table}
+
 \begin{table}[H]
 \caption{Robust Standard Errors (dcolumn)\label{tab:ex8d}}
 
@@ -927,6 +932,7 @@ if (require(car)){
 }
 @
 \end{table}
+
 \begin{table}[H]
 \caption{Robust Standard Errors (siunitx)\label{tab:ex8s}}
 
@@ -940,6 +946,7 @@ if (require(car)){
 }
 @
 \end{table}
+
 
 \subsection*{Aligning different kinds of fits}
 
@@ -1015,6 +1022,7 @@ ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
          "nobs" = "N Again?"), centering = "dcolumn")
 @
 \end{table}
+
 \begin{table}[H]
 \caption{Additional test on summary stats (siunitx)\label{tab:ex17s}}
 
@@ -1025,6 +1033,7 @@ ex17s <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
          "nobs" = "N Again?"), centering = "siunitx")
 @
 \end{table}
+
 
 \section{About examples here and your long-run work flow}
 

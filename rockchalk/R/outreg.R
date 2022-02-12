@@ -480,7 +480,6 @@ outreg <-
         "_STAR1_" = "<sup>*</sup>",
         "_STAR2_" = "<sup>**</sup>",
         "_STAR3_" = "<sup>***</sup>",
-         "_NBSP_" = "&nbsp;",                
         "<td>\\s*<td" = "<td"
     )
     
@@ -888,7 +887,7 @@ outreg <-
     if (!is.null(modelLabels)){
         aline <- paste0("_BR_","_EOC_", collapse = "")
         for (modelLabel in modelLabels){
-                 aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx")), modelLabel, "_EOMC_"))
+                 aline <- c(aline, paste0("_NBSP__BOC_", bomc(centering %in% c("dcolumn", "siunitx")), modelLabel, "_NBSP_ _EOMC_"))
         }
         aline <- c(aline, "_EOR__EOL_")
         z <- c(z, paste0(aline, collapse = ""))
@@ -924,7 +923,7 @@ outreg <-
                     aline <- c(aline, paste("_BOC_", se, "_EOC_", collapse = " "))
                 }
             } else {
-                aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx"), 1), "_DOT__EOMC_"))
+                aline <- c(aline, paste0("_BOC_", bomc(centering %in% c("dcolumn", "siunitx"), 1), "_DOT_ _EOMC_", if(tight==FALSE) "_BOC__EOC_"))
             }
         }
         aline <- c(aline, "_EOR__EOL_")
@@ -1054,7 +1053,7 @@ outreg <-
     
 
     pline <- function(type, alpha){
-        aline <- ""
+        aline <- "_NBSP__NBSP_"
         if (type == "latex"){
             for ( i in seq_along(alpha)){
                 aline <- paste0(aline, "${", paste0(rep("*", i), collapse = "\\!\\!"), "\  p}",  "\\le ", alpha[i], "$", sep = "")

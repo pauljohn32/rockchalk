@@ -1,4 +1,4 @@
-%% LyX 2.3.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -175,7 +175,7 @@ a variety of computer languages. The diversity creates a healthy tension
 that is easy to see in the r-help email list or on Web forums for
 R users. 
 
-\subsection{``Use the Source, Luke,'' said Obi-Wan}
+\subsection{\textquotedblleft Use the Source, Luke,\textquotedblright{} said Obi-Wan}
 
 What should R code look like? Stop guessing. The implicit style guide
 for R is the R source code itself. If users want to communicate with
@@ -293,7 +293,8 @@ default in Emacs. But I'm changing my code to use 4 spaces. If you
 find my code with 2 spaces, please accept this apology and believe
 that it is an oversight. 
 
-\subsection{(SEA .95). Use ``<-'', not ``='', for assignments. }
+\subsection{(SEA .95). Use \textquotedblleft <-\textquotedblright , not \textquotedblleft =\textquotedblright ,
+for assignments. }
 
 One cannot find the equal sign used for assignments in any file in
 the R source code. Nor can one find it in any of the Recommended packages
@@ -375,8 +376,8 @@ The insertion of the interior parentheses for the smaller conditions
 inside the if statement is consistent with the GNU standard for C.
 \end{enumerate}
 
-\subsubsection*{Is there an ``argument exception'' to the space rule for equal
-signs?}
+\subsubsection*{Is there an \textquotedblleft argument exception\textquotedblright{}
+to the space rule for equal signs?}
 
 Package writers are not entirely consistent, and Rchaeologically speaking,
 we cannot be sure if these variations are accidental. We sometimes
@@ -505,7 +506,7 @@ Error in base::parse(text = text, srcfile = NULL) :
 I would estimate that tidy.source() fails on about one-third of the
 R code I randomly select from CRAN.
 
-\subsection{(SEA .70) The ``\} else \{'' policy. }
+\subsection{(SEA .70) The \textquotedblleft\} else \{\textquotedblright{} policy. }
 
 Did you notice ``\inputencoding{latin9}\lstinline!} else {!\inputencoding{utf8}''
 in the \inputencoding{latin9}\lstinline!tidy.source()!\inputencoding{utf8}
@@ -795,7 +796,8 @@ are still living with an awful lot of older counter-examples.
 
 \section{How to name variables (and objects).}
 
-\subsection{(1.0 SEA) Follow the ``letters and numbers'' rule.}
+\subsection{(1.0 SEA) Follow the \textquotedblleft letters and numbers\textquotedblright{}
+rule.}
 
 R variable names must 
 \begin{enumerate}

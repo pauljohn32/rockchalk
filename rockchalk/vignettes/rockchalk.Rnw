@@ -1,4 +1,4 @@
-%% LyX 2.3.1 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -362,14 +362,15 @@ requested statistical summaries for numeric predictors.
 descriptiveTable(m1, digits=6)
 @
 \end{table}
+
 \noindent I my opinion, the output is, well, simple and understandable.
 More importantly, it will be sufficient for a term paper, once it
 is converted into a presentable final format. It can be converted
 into HTML or LaTeX with various R packages, such as xtable. Note that
 because this descriptive table is derived from the fitted regression,
-it summarizes \code{\noindent only the cases} that were actually
-used in the regression analysis. If cases were lost by listwise deletion,
-the deleted cases are not taken into account here.
+it summarizes \code{only the cases} that were actually used in the
+regression analysis. If cases were lost by listwise deletion, the
+deleted cases are not taken into account here.
 
 \section{Better Regression Tables: Some outreg Examples.}
 
@@ -445,6 +446,7 @@ or ``\code{\textbackslash usepackage\{dcolumn\}}''.
 or <- outreg(list(m1, m2, m3), centering = "siunitx")
 @
 \end{table}
+
 \begin{table}
 \caption{The wide format obtained with tight = FALSE\label{tab:Tab2}}
 
@@ -452,6 +454,7 @@ or <- outreg(list(m1, m2, m3), centering = "siunitx")
 or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model" = m3), tight = FALSE, alpha = c(0.05, 0.01, 0.001), centering = "siunitx")
 @
 \end{table}
+
 \begin{table}
 \caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
 
@@ -459,6 +462,7 @@ or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model" = m
 or2 <- outreg(list(m1,gm1), modelLabels = c("OLS:y","GLM: Categorized y"))
 @
 \end{table}
+
 I understand that some authors need to include regression tables in
 documents that are not prepared with LaTeX. The parameter type = ``HTML''
 will change the output format to HTML. An HTML file can be displayed
@@ -497,6 +501,7 @@ ylim = c(-70, 15), legendArgs = list(x="topright"))
 
 \caption{plotSlopes: Linear Model with Confidence Interval\label{fig:ps05}}
 \end{figure}
+
 At its most elementary level, \code{plotSlopes()} is a ``one step''
 regression line plotter. If the regression model includes more than
 one predictor, then a single predictor is displayed on the horizontal
@@ -512,10 +517,10 @@ the ``see though'' confidence region. The command to generate Figure
 
 \noindent I've adjusted the color and opacity to illustrate the usage
 of those arguments. The y range is adjusted to make a little extra
-room for the legend. The \code{\noindent plotSlopes()} function is
-very flexible. All of the label, color, and scale arguments of a plot
-function are also available. The plotSlopes function also works well
-if the moderator is a categorical variable. 
+room for the legend. The \code{plotSlopes()} function is very flexible.
+All of the label, color, and scale arguments of a plot function are
+also available. The plotSlopes function also works well if the moderator
+is a categorical variable. 
 
 It is important to note that the output object, m1ps, has the information
 necessary to re-create the plotted line in the form of a \code{newdata}
@@ -541,6 +546,7 @@ par(mfcol=c(1,1))
 
 \caption{plotSlopes Illustrated\label{fig:ps10}}
 \end{figure}
+
 This is more interesting if we fit a regression with an interaction
 term, such as 
 
@@ -548,17 +554,16 @@ term, such as
 m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 \end{lstlisting}
 \inputencoding{utf8}
-\noindent We then ask \code{\noindent plotSlopes} to draw the predicted
-values using one numeric variable as the horizontal axis and values
-of another variable (a moderator) are set at particular values. Either
-x1 or x2 can be viewed as the ``moderator'' predictor, the one on
-which the effect of the other depends. In rockchalk version 1.8, the
-selection of values of the moderator was generalized, so that the
-user can specify either a function that selects values, or a vector
-of values, or the name of an algorithm. The default algorithm will
-choose quantile values, but Figure \ref{fig:ps10} demonstrates also
-the ``std.dev.'' divider algorithm. The code to produce that figure
-was
+\noindent We then ask \code{plotSlopes} to draw the predicted values
+using one numeric variable as the horizontal axis and values of another
+variable (a moderator) are set at particular values. Either x1 or
+x2 can be viewed as the ``moderator'' predictor, the one on which
+the effect of the other depends. In rockchalk version 1.8, the selection
+of values of the moderator was generalized, so that the user can specify
+either a function that selects values, or a vector of values, or the
+name of an algorithm. The default algorithm will choose quantile values,
+but Figure \ref{fig:ps10} demonstrates also the ``std.dev.'' divider
+algorithm. The code to produce that figure was
 
 <<eval=F, echo=T>>=
 <<ps10>>
@@ -590,6 +595,7 @@ m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Pr
 
 \caption{plotSlopes with a Categorical Moderator\label{fig:ps20}}
 \end{figure}
+
 \noindent 
 \begin{figure}
 <<ps21, fig=T, echo=F>>=
@@ -600,9 +606,9 @@ m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"), 
 \end{figure}
 Suppose we have a four-valued categorical variable, ``West'',''Midwest'',
 ``South'', and ``East''. If that variable is used in an interaction
-in the regression model, then the \code{\noindent plotSlopes} output
-will include four lines, one for each region. For example, consider
-Figure \ref{fig:ps20}, which is created by
+in the regression model, then the \code{plotSlopes} output will include
+four lines, one for each region. For example, consider Figure \ref{fig:ps20},
+which is created by
 
 <<eval=F>>=
 <<ps20>>
@@ -650,6 +656,7 @@ plot(m4psats)
 
 \caption{testSlopes for an Interactive Model\label{fig:ts10}}
 \end{figure}
+
 \inputencoding{latin9}\begin{lstlisting}
 m4 <- lm(y ~ x1*x2 + x3, data = dat)
 m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous Predictor")
@@ -766,6 +773,7 @@ Figure \ref{fig:pcps20}.
 
 \end{figure}
 
+
 \subsection{plotPlane}
 
 The persp() function in R works well, but its interface is too complicated
@@ -790,6 +798,7 @@ p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80, lcol 
 
 \caption{plotPlane for the Interactive Model m4\label{fig:pp100}}
 \end{figure}
+
 Because plotPlane() is a simple convenience wrapper for R's persp()
 function, it responds to the same customizing arguments that perp
 would allow. The arguments phi and theta will rotate the figure, for
@@ -821,6 +830,7 @@ addLines(from = m5pc, to = ppm5, col = m5pc$col)
 
 \caption{Making plotSlopes and plotPlane Work Together\label{fig:pp110}}
 \end{figure}
+
 
 \section{Standardized, Mean-Centered, and Residual-Centered Regressions }
 
@@ -863,6 +873,7 @@ summary(m4s)
 or10 <- outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardized"))
 @
 \end{table}
+
 
 \subsection{Mean-centered Interaction Models}
 
@@ -1094,6 +1105,7 @@ m6rc <- residualCenter(m6int)
 or11 <- outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
 @
 \end{table}
+
 Cohen, et al. claim that the apparent instability of the coefficients
 is a reflection of ``inessential collinearity,'' due to the fact
 that $x1$ and $x2$ are correlated with the new term, $x1\times x2$.
@@ -1135,6 +1147,7 @@ par(mfcol = c(1, 1))
 
 \caption{plotSlopes for the centered and non-centered regressions\label{fig:pscentering}}
 \end{figure}
+
 Perhaps the 2-D plots are not persuasive. Don't stop yet. In the 3-D
 plots will help quite a bit. We have not yet grasped the most fundamental
 changed caused by the insertion of the interaction term. When we insert
@@ -1165,6 +1178,7 @@ par(op)
 
 \caption{Predicted Planes from Centered and Uncentered Fits Identical\label{fig:mcenter30}}
 \end{figure}
+
 The regression coefficient estimates are snapshots, each summarizing
 the curvature at one particular point in a curving surface. It seems
 quite apparent in Figure \ref{fig:mcenter30} that the models are
@@ -1208,6 +1222,7 @@ par(op)
 
 \caption{Predicted Values of Mean and Residual-centered Models\label{fig:rcenter40}}
 \end{figure}
+
 The take-away point from this is that there is no free lunch in regression
 analysis. If re-scaling a variable by adding or subtracting a constant
 seems to change a result, one should be cautious and suspect an error. 
