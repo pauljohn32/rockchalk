@@ -93,7 +93,6 @@ NULL
 ##' @param rounded Default FALSE, rounds to 10's for privacy purposes.
 ##' @rdname pctable
 ##' @method pctable default
-##' @rdname pctable
 ##' @export
 pctable.default <- function(rv, cv,
                             rvlab = NULL, cvlab = NULL,

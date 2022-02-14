@@ -1,15 +1,15 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.150
-Date: 2022-02-12
+Version: 1.8.151
+Date: 2022-02-13
 Authors@R: c(person("Paul E.","Johnson",email="pauljohn@ku.edu",role = c("aut", "cre")),
     person("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"))
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for interpretation and presentation
     of regression analysis.  These functions are used
     to produce the statistics lectures in
-    <http://pj.freefaculty.org/guides>. Includes regression
+    <https://pj.freefaculty.org/guides/>. Includes regression
     diagnostics, regression tables, and plots of interactions and
     "moderator" variables. The emphasis is on "mean-centered" and
     "residual-centered" predictors. The vignette 'rockchalk' offers a
@@ -29,6 +29,9 @@ Imports:
 Suggests:
     tables,
     Hmisc,
-    car   
+    car,
+    mvtnorm,
+    scatterplot3d,
+    HH
 Encoding: UTF-8 
 RoxygenNote: 7.1.2

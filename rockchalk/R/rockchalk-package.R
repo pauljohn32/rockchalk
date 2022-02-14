@@ -149,7 +149,7 @@ NULL
 ##' @author Paul E. Johnson \email{pauljohn@@ku.edu}, on behalf of Benjamin Nyblade and Steven Reed
 ##' @format data.frame: 16623 obs. on 27 variables
 ##' @keywords datasets
-##' @source \url{http://faculty.arts.ubc.ca/bnyblade/publications.html}.
+##' @source \url{https://bnyblade.com/research/publications/}.
 ##' @references
 ##' Benjamin Nyblade and Steven Reed, "Who Cheats? Who
 ##' Loots? Political Competition and Corruption in Japan, 1947-1993."

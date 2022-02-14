@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass scrartcl
 \begin_preamble
 %\VignetteIndexEntry{Rchaeology}
@@ -103,16 +105,18 @@ logicalmkup
 \language_package default
 \inputencoding utf8
 \fontencoding T1
-\font_roman lmodern
-\font_sans lmss
-\font_typewriter lmtt
-\font_math auto
+\font_roman "lmodern" "default"
+\font_sans "lmss" "default"
+\font_typewriter "lmtt" "default"
+\font_math "auto" "auto"
 \font_default_family default
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -151,6 +155,7 @@ logicalmkup
 \suppress_date false
 \justification true
 \use_refstyle 0
+\use_minted 0
 \index Index
 \shortcut idx
 \color #008000
@@ -163,7 +168,10 @@ logicalmkup
 \tocdepth 3
 \paragraph_separation skip
 \defskip smallskip
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -469,6 +477,7 @@ S Programming
 \begin_inset CommandInset citation
 LatexCommand citeyearpar
 key "venables_s_2000"
+literal "true"
 
 \end_inset
 
@@ -485,6 +494,7 @@ Software for Data Analysis
 \begin_inset CommandInset citation
 LatexCommand citeyearpar
 key "chambers_software_2008"
+literal "true"
 
 \end_inset
 
@@ -767,7 +777,15 @@ suffixX <- function(fmla, x, s){
 \begin_layout Plain Layout
 
     upform <- as.formula(paste(".
- ~ .", "-", x, "+", paste(x, s, sep = ""), sep=""))
+ ~ .", "-", x, "+", paste(x, s, sep = ""), sep="", collapse=
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+))
 \end_layout
 
 \begin_layout Plain Layout
@@ -1604,6 +1622,7 @@ Advanced R
 \begin_inset CommandInset citation
 LatexCommand citeyearpar
 key "Wickham2015"
+literal "true"
 
 \end_inset
 
@@ -1864,7 +1883,7 @@ m7 <- lm(f1expeval, data=dat)
 
 \begin_layout Plain Layout
 
-all.equal(coef(m5), coef(m6), coef(m7))	
+all.equal(coef(m6), coef(m7))	
 \end_layout
 
 \begin_layout Plain Layout
@@ -2217,7 +2236,8 @@ Most R users I know have not used substitute, except possibly if they try
  to use plotmath.
  In the context of plotmath, the problem is as follows.
  Plotmath causes the R plot functions to convert expressions into mathematical
- symbols in a way that is reminiscent of LaTeX.
+ symbols in a way that is reminiscent of \SpecialChar LaTeX
+.
  For example, a command like this:
 \end_layout
 
@@ -3670,6 +3690,10 @@ col
 .
  If the user did not supply a value, we might construct one from the other
  input
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3733,6 +3757,10 @@ if (missing(col) | is.null(col)) col <- someTediousCalculation(y, z)
 \begin_layout Description
 stop() Halts a function and returns a message to the user.
  Usage example 
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3788,6 +3816,10 @@ stopifnot(x)
 \begin_layout Description
 warning() If you don't want the function to fail, but you need to warn the
  user about a condition that seems dubious, run
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -3817,6 +3849,10 @@ value
 \emph default
 , but rather the symbolic name.
  To see what I mean, run this
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -4219,6 +4255,10 @@ list(...) The three periods,
 \end_inset
 
 .
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -5433,7 +5473,15 @@ plotme <- function(x, y, data, ...){
 
 \begin_layout Plain Layout
 
-    plot(as.formula(paste(y,  "~",  x)), data = data, ...)
+    plot(as.formula(paste(y,  "~",  x, collapse=
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+)), data = data, ...)
 \end_layout
 
 \begin_layout Plain Layout
@@ -6122,8 +6170,8 @@ te()) can find something to use as a label.
 \begin_layout Standard
 A key element in this is getting an understanding of the information that
  comes in with a standard R object.
- Quite a few--almost all--functions that generate interesting objects in
- R provide, as a part of their output, a copy of the call that ran the function.
+ Quite a few–almost all–functions that generate interesting objects in R
+ provide, as a part of their output, a copy of the call that ran the function.
  Inside our functions, we can inspect that call argument to see what the
  users ran, and from that we can often deduce what we need without requiring
  users to supply a lot of information.
@@ -6250,6 +6298,7 @@ However, none of the apply mechanisms changes the number of times the supplied
 LatexCommand citep
 after "213"
 key "chambers_software_2008"
+literal "true"
 
 \end_inset
 
@@ -6318,6 +6367,10 @@ Good code is compartmentalized.
 \begin_layout Itemize
 Functions should not be HUGE.
  
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
