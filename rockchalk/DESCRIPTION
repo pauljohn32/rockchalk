@@ -1,10 +1,11 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.151
-Date: 2022-02-13
+Version: 1.8.153
+Date: 2022-07-17
 Authors@R: c(person("Paul E.","Johnson",email="pauljohn@ku.edu",role = c("aut", "cre")),
-    person("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"))
+    person("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"),
+    person("Dimitri", "Papadopoulos OrfanosGabor", email="dimitri.papadopoulos@cea.fr", role="ctb"))
 Maintainer: Paul E. Johnson <pauljohn@ku.edu>
 Description: A collection of functions for interpretation and presentation
     of regression analysis.  These functions are used
@@ -34,4 +35,4 @@ Suggests:
     scatterplot3d,
     HH
 Encoding: UTF-8 
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
