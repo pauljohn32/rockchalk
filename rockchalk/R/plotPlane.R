@@ -63,7 +63,7 @@
 ##' @param lflwd line widths for linesFrom highlight lines
 ##' @param envir environment from whence to grab data
 ##' @param ... additional parameters that will go to persp
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @rdname plotPlane
 ##' @export plotPlane
 ##' @importFrom graphics lines
@@ -258,7 +258,7 @@ NULL
 ##' @param lwd line width of added lines (default: 2)
 ##' @param lty line type of added lines (default: 1)
 ##' @return NULL, nothing, nicht, nada.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @export
 ##' @example inst/examples/addLines-ex.R
 

@@ -11,7 +11,7 @@
 ##' @param model A fitted lm object
 ##' @export 
 ##' @rdname residualCenter
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @references  Little, T. D., Bovaird, J. A.,
 ##' & Widaman, K. F. (2006). On the Merits of Orthogonalizing
 ##' Powered and Product Terms: Implications for Modeling

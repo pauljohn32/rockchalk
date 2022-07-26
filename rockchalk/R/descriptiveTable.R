@@ -21,7 +21,7 @@
 ##' @importFrom kutils mgsub
 ##' @export
 ##' @return a character matrix
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' dat <- genCorrelatedData2(1000, means=c(10, 10, 10), sds = 3, 
 ##'                           stde = 3, beta = c(1, 1, -1, 0.5))

@@ -15,7 +15,7 @@
 ##' possible. If X is a single value, d is a required argument.
 ##' @return A correlation matrix.
 ##' @export
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' lazyCor(0.5, 8)
 ##' lazyCor(c(0.1, 0.2, 0.3))

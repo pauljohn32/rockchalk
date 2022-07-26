@@ -25,7 +25,7 @@
 ##' @return mcGraph1 and mcGraph2 return only the perspective matrix
 ##' from persp. It is returned so that users can add additional embellishments on the 3D plot (can be used with trans3d)
 ##' @keywords regression hplot
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' set.seed(12345)
 ##' ## Create data with x1 and x2 correlated at 0.10

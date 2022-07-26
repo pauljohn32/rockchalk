@@ -70,7 +70,7 @@ NULL
 ##' @param pct Default = TRUE. Include percentage of responses within each category
 ##' @return A named vector.
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 cutByTable <-
     function(x, n = 5, pct = TRUE)
 {
@@ -113,7 +113,7 @@ NULL
 ##' @return A vector
 ##' @export
 ##' @importFrom stats quantile
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 cutByQuantile <-
     function(x, n = 3)
 {
@@ -152,7 +152,7 @@ NULL
 ##' If the numeric variable has fewer than 6 unique observed values,
 ##' this will send the data to cutByTable.
 ##' @return A named vector
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @param x A numeric variable
 ##' @param n Should be an odd number 1, 3, 5, or 7. If 2 < n < 5,
 ##' values that divide the data at c(m-sd, m, m+sd) are returned. If n
@@ -213,7 +213,7 @@ NULL
 ##' @return A vector.
 ##' @rdname getFocal
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##'
 getFocal <-
     function(x, ...)
@@ -395,7 +395,7 @@ NULL
 ##' @param x a numeric  variable.
 ##' @return A character string vector padded with 0's
 ##' @export
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' x <- c(1 , 11, 22, 121, 14141, 31)
 ##' (xpad <- padW0(x))

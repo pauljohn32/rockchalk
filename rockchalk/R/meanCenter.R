@@ -7,7 +7,7 @@
 ##' @param model a fitted lm object
 ##' @return an lm fitted with the standardized variables
 ##' @export
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @seealso \code{\link[rockchalk]{meanCenter}} which will center or
 ##' re-scale only numberic variables
 standardize <-
@@ -57,7 +57,7 @@ standardize.lm <-
 }
 
 
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @method summary stdreg
 ##' @export
 summary.stdreg <-
@@ -78,7 +78,7 @@ summary.stdreg <-
 NULL
 
 
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @method print stdreg
 ##' @export 
 print.stdreg <- function(x, ...){
@@ -87,7 +87,7 @@ print.stdreg <- function(x, ...){
 }
 NULL
 
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @method print summary.stdreg
 ##' @export 
 print.summary.stdreg <-
@@ -181,7 +181,7 @@ NULL
 ##'     centered.
 ##' @export meanCenter
 ##' @rdname meanCenter
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @seealso
 ##'     \code{\link[rockchalk]{standardize}}
 ##'     \code{\link[rockchalk]{residualCenter}}
@@ -300,7 +300,7 @@ meanCenter.default <-
     res
 }
 
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @export 
 ##' @method summary mcreg
 summary.mcreg <-
@@ -323,7 +323,7 @@ summary.mcreg <-
 }
 NULL
 
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @method print mcreg
 ##' @export 
 print.mcreg <- function(x, ...){
@@ -338,7 +338,7 @@ print.mcreg <- function(x, ...){
 NULL
 
 
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @method print summary.mcreg
 ##' @export 
 print.summary.mcreg <-
@@ -359,7 +359,7 @@ print.summary.mcreg <-
 NULL
 
 
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @method predict mcreg
 ##' @export
 predict.mcreg <-
@@ -414,7 +414,7 @@ NULL
 ##' to indicate the data is centered or centered and
 ##' scaled. Attributes "centers" and "scales" are created for "record
 ##' keeping" on centering and scaling values.
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @export
 ##' @examples
 ##' set.seed(12345)

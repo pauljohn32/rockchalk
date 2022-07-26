@@ -14,7 +14,7 @@
 ##' @importFrom stats pnorm
 ##' @importFrom stats median
 ##' @export
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' drawnorm(mu = 10, sigma = 20)
 ##' drawnorm(mu= 0, sigma = 1)

@@ -9,7 +9,7 @@
 ##' @param x A single value or a vector
 ##' @param d An integer, the desired size of the vector
 ##' @return A vector of length d
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 makeVec <-
     function(x = NULL, d = NULL)
 {

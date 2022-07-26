@@ -20,7 +20,7 @@
 ##'     passed on to dir.create
 ##' @export
 ##' @return a character string with the directory name
-##' @author Paul E Johnson <pauljohn@@ku.edu>
+##' @author Paul E Johnson \email{pauljohn@@ku.edu}
 dir.create.unique <- function(path, usedate = TRUE,
                               showWarnings = TRUE,
                               recursive = TRUE,

@@ -40,7 +40,7 @@
 ##' @export
 ##' @import carData
 ##' @seealso plotSlopes
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @references
 ##' Preacher, Kristopher J, Curran, Patrick J.,and Bauer, Daniel J. (2006).
 ##' Computational Tools for Probing Interactions in Multiple Linear
@@ -201,7 +201,7 @@ NULL
 ##' Johnson-Neyman interval calculations to highlight the
 ##' "statistically significantly different from zero" slopes.
 ##' @return \code{NULL}
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @method plot testSlopes
 ##' @export
 ##' @param x   A testSlopes object.

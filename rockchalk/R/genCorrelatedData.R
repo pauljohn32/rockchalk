@@ -341,7 +341,7 @@ NULL
 ##' @return A data frame with rownames to specify unit and
 ##'     individual values, including an attribute "unit" with the
 ##'     unit's name.
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' X1 <- genX(10, means = c(7, 8), sds = 3, rho = .4)
 ##' X2 <- genX(10, means = c(7, 8), sds = 3, rho = .4, unit = "Kansas")
@@ -514,7 +514,7 @@ NULL
 ##' @importFrom stats rnorm
 ##' @importFrom stats rt
 ##' @importFrom stats rlogis
-##' @author Paul Johnson <pauljohn@@ku.edu> and Gabor Grothendieck <ggrothendieck@gmail.com>
+##' @author Paul Johnson \email{pauljohn@@ku.edu} and Gabor Grothendieck <ggrothendieck@gmail.com>
 ##' @examples
 ##' set.seed(123123)
 ##' ## note: x4 is an unused variable in formula

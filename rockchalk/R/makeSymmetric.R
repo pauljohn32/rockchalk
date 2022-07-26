@@ -22,7 +22,7 @@
 ##' @param cov TRUE or FALSE: Should this be a covariance matrix?
 ##' @return A d x d matrix
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' makeSymmetric(X = 3, d = 4)
 ##' makeSymmetric(X = 3, d = 4, diag = c(99, 98, 97, 96))

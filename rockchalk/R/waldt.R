@@ -26,7 +26,7 @@
 ##'     printout. The return object is numeric, full precision.
 ##' @return A vector with the difference, std. err., t-stat, and p
 ##'     value. Prints a formatted output statement.
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @export
 ##' @examples
 ##' mdat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))

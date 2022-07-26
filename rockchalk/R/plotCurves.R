@@ -80,7 +80,7 @@
 ##' including 1) the call, 2) a newdata object that includes
 ##' information on the curves that were plotted, 3) a vector modxVals,
 ##' the values for which curves were drawn.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @example  inst/examples/plotCurves-ex.R
 plotCurves <-
     function (model, plotx, nx = 40,  modx,  plotxRange = NULL, n, modxVals = NULL,

@@ -19,7 +19,7 @@
 ##' input. However, when the user supplies only a single value for
 ##' both Rho and Sd, d is necessary.
 ##' @return covariance matrix.
-##' @author <pauljohn@@ku.edu>
+##' @author \email{pauljohn@@ku.edu}
 ##' @export
 ##' @examples
 ##' ##correlation 0.8 for all pairs, standard deviation 1.0 of each

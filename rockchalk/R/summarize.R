@@ -41,7 +41,7 @@
 ##' @return a data.frame with one column per summary element (rows are
 ##'     the variables).
 ##' @seealso summarize and summarizeFactors
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##'
 summarizeNumerics <-
     function(dat, alphaSort = FALSE, probs = c(0, 0.5, 1.0),
@@ -198,7 +198,7 @@ NULL
 ##'     variance estimate be divided by N-1, rather than N?
 ##' @export
 ##' @return A scalar value or NA
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
     if (!isTRUE(na.rm) & sum(is.na(x) > 0)) return(NA)
     x <- x[!is.na(x)]
@@ -249,7 +249,7 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##'     variance estimate be divided by N-1?
 ##' @export
 ##' @return A scalar value or NA
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 skewness <- function(x, na.rm = TRUE, unbiased = TRUE){
     if (!isTRUE(na.rm) & sum(is.na(x) > 0)) return(NA)
     x <- x[!is.na(x)]
@@ -320,7 +320,7 @@ skewness <- function(x, na.rm = TRUE, unbiased = TRUE){
 ##' @param digits Default 2.
 ##' @export
 ##' @return A list of factor summaries
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @seealso \code{\link{summarizeNumerics}}
 ##'
 ##' @references
@@ -384,7 +384,7 @@ NULL
 ##' @param ... optional arguments. Only value currently used is digits,
 ##'   which defaults to 2.
 ##' @return A table of formatted output
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @seealso \code{\link{summarize}}, \code{\link{summarizeFactors}}, \code{\link{formatSummarizedNumerics}}
 ##' @examples
 ##' dat <- data.frame(xcat1 = gl(10, 3), xcat2 = gl(5, 6))
@@ -554,7 +554,7 @@ NULL
 ##'     variable. The display on-screen is governed by a method
 ##'     \code{print.summarize}.
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @example inst/examples/summarize-ex.R
 summarize <-
     function(dat, alphaSort = FALSE,
@@ -695,7 +695,7 @@ formatSummarizedNumerics <- function(x, ...){
 ##' @param y a factor (non-numeric variable)
 ##' @return A list, including the summary table and vector of summary
 ##'     stats if requested.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 summary.factor <-
     function(y)
 {

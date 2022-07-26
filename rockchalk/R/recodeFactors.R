@@ -28,7 +28,7 @@
 ##' @name combineLevels
 ##' @export combineLevels
 ##' @return A new factor variable, with unused levels removed.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' x <- c("M","A","B","C","A","B","A","M")
 ##' x <- factor(x)

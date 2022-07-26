@@ -68,7 +68,7 @@
 ##' data = argument in the original regression model. The attribute
 ##' "varNamesRHS" is a vector of the predictor variable names.
 ##' @rdname newdata
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @export
 ##' @seealso \code{predictOMatic}
 newdata <- function(model, predVals, n,  ...) UseMethod("newdata")
@@ -207,7 +207,7 @@ NULL
 ##' with the data option.
 ##' @param ... Arguments passed to implementing methods.
 ##' @return A data frame
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @export
 model.data <-
     function(model, ...)
@@ -230,7 +230,7 @@ NULL
 ##' @return A data frame
 ##' @export
 ##' @method model.data default
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @example inst/examples/model.data-ex.R
 model.data.default <- function(model, na.action = na.omit, ...){
     ## from nls, returns -1 for missing variables
@@ -313,7 +313,7 @@ NULL
 ##' @return A named vector of focal values selected from a variable. The
 ##' values of the names should be informative and useful for plotting or
 ##' other diagnostic work.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @export
 ##' @seealso \code{predictOMatic} \code{newdata}
 focalVals <-
@@ -460,7 +460,7 @@ NULL
 ##' extracted from ... and used to control the output.
 ##' @return A data frame or a list of data frames.
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @example inst/examples/predictOMatic-ex.R
 predictOMatic <-
     function(model = NULL, predVals = "margins", divider = "quantile", n = 5, ...)

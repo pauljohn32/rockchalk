@@ -19,7 +19,7 @@
 ##'     they are correlations) and the matrix formed must be positive
 ##'     definite.
 ##' @return A symmetric correlation matrix, with 1's on the diagonal.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' v <- c(0.1, 0.4, -0.5)
 ##' vech2Corr(v)

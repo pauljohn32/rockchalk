@@ -4,7 +4,7 @@
 ##'
 ##' @param model a fitted regression model
 ##' @return a list of fitted regressions, one for each omitted variable.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @export
 lmAuxiliary <- function(model){
   dat <- as.data.frame(model.matrix(model))
@@ -35,7 +35,7 @@ NULL
 ##' Asks each regression model in a list for a summary and then reports the R-squares.
 ##' @param auxRegs a list of fitted regression objects
 ##' @return a numeric vector of the same length as auxRegs.
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 getAuxRsq <- function(auxRegs){
   auxRsq <- numeric(length=length(auxRegs))
   j <- 0
@@ -58,7 +58,7 @@ NULL
 ##'
 ##' @param rsq a vector of real values, presumably fitted R-squares
 ##' @return a vector of vif estimates
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 getVIF <- function(rsq){
   vif <- 1/(1-rsq)
 
@@ -78,7 +78,7 @@ getVIF <- function(rsq){
 ##' @importFrom stats drop1
 ##' @param model a fitted regression model
 ##' @return a vector of estimates of the delta R-squares
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' dat1 <- genCorrelatedData(N=250, means=c(100,100),
 ##' sds=c(30,20), rho=0.0,  stde = 7, beta=c(1.1, 2.4, 4.1, 0))
@@ -114,7 +114,7 @@ NULL
 ##' fitted during the analysis
 ##' @export
 ##' @importFrom stats model.matrix
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @example inst/examples/mcDiagnose-ex.R
 mcDiagnose <- function(model){
   if (any(is.na(coef(model)))) stop("There are redundant variables in the model. Fix the specification before diagnosing multicollinearity")
@@ -178,7 +178,7 @@ NULL
 ##' partial correlation matrix. That corresponds to the partial correlation of each predictor with y. I mean, r[yx].[others]
 ##' @return A column or matrix of partial correlation coefficients
 ##' @export
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 getPartialCor <- function(model, dvonly = TRUE){
     x <- model.matrix(model)
     modelterms <- terms(model)

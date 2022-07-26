@@ -7,7 +7,7 @@
 ##' @param X A matrix
 ##' @param tol Tolerance (closeness to 0 required to declare failure)
 ##' @return TRUE or FALSE
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 checkPosDef <-
     function(X, tol = 1e-6)
 {

@@ -181,7 +181,7 @@
 ##'     we were aware that those packages were in development. It is
 ##'     not intended as a competitor, it is just a slightly different
 ##'     version of the same that is more suited to our needs.
-##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
+##' @author Paul E. Johnson  \email{pauljohn@@ku.edu}
 ##' @examples
 ##' set.seed(2134234)
 ##' dat <- data.frame(x1 = rnorm(100), x2 = rnorm(100))
@@ -1122,7 +1122,7 @@ NULL
 ##' @param filename A file name into which the regression markup is to be saved. Should end in .html.
 ##' @return A vector of strings
 ##' @export
-##' @author Paul E. Johnson \email{<pauljohn@@ku.edu>}
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @examples
 ##' dat <- genCorrelatedData2(means = c(50,50,50,50,50,50),
 ##'     sds = c(10,10,10,10,10,10), rho = 0.2, beta = rnorm(7), stde = 50)

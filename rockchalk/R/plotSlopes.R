@@ -28,7 +28,7 @@
 ##'             rnorm sd setNames terms var vcov
 ##' @importFrom utils browseURL methods modifyList 
 ##' @rdname plotSlopes
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##' @seealso \code{\link[rockchalk]{testSlopes}} \code{\link[rockchalk]{plotCurves}}
 ##' @return Creates a plot and an output object that summarizes it.
 plotSlopes <- function(model, plotx, ...) UseMethod("plotSlopes")
@@ -304,7 +304,7 @@ NULL
 ##' @importFrom methods formalArgs
 ##' @importFrom graphics par
 ##' @importFrom graphics plot.default
-##' @author Paul E. Johnson <pauljohn@@ku.edu>
+##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
 ##'
 plotFancy <-
     function(newdf, olddf, plotx, modx, modxVals, interval, plotPoints,
@@ -594,7 +594,7 @@ NULL
 ##'     if no legend is needed. Otherwise, provide a list
 ##' @importFrom graphics axis
 ##' @return None
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' 
 plotFancyCategories <- function(newdf, olddf, plotx, modx=NULL,
                                 modxVals, xlab, xlim, ylab, ylim,

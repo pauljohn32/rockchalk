@@ -70,7 +70,7 @@ NULL
 ##' @export
 ##' @return A list with tables (count, column percent, row percent) as
 ##' well as a copy of the call.
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 pctable <- function(rv, ...)
 {
     UseMethod("pctable")
@@ -242,6 +242,7 @@ NULL
 ##'     Hmisc::html(tabsumtab, file = fn)
 ##'     print(paste("The file saved was named", fn, "go get it."))
 ##'     if (interactive()) browseURL(fn)
+##'     unlink(fn)
 ##'     ## go get the fn file if you want to import it in document
 ##'     ## Now LaTeX output
 ##'     ## have to escape the percent signs
@@ -283,7 +284,7 @@ NULL
 ##' @param rowpct Default FALSE: should row percents be included
 ##' @param ... Other arguments, currently unused
 ##' @return An object of class summary.pctable
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @method summary pctable
 ##' @export
 summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
@@ -351,7 +352,7 @@ summary.pctable <- function(object, ..., colpct = TRUE, rowpct = FALSE)
 ##' @param x a summary.pctable object
 ##' @param ... Other arguments to print method
 ##' @return Nothing is returned
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @method print summary.pctable
 ##' @export
 print.summary.pctable <- function(x, ...){
@@ -387,7 +388,7 @@ print.summary.pctable <- function(x, ...){
 ##' @param rowpct Default FALSE: include row percentages?
 ##' @param ... Other arguments passed through to print method
 ##' @return A table object for the final printed table.
-##' @author Paul Johnson <pauljohn@@ku.edu>
+##' @author Paul Johnson \email{pauljohn@@ku.edu}
 ##' @method print pctable
 ##' @export
 print.pctable <- function(x, colpct = TRUE, rowpct = FALSE, ...)
