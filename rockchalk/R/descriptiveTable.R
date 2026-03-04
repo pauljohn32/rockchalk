@@ -7,7 +7,7 @@
 ##' only summary is proportions.
 ##'
 ##' @param object A fitted regression or an R data.frame, or any
-##'      other object type that does not fail in code{model.frame(object)}.
+##'      other object type that does not fail in \code{model.frame(object)}.
 ##' @param stats Default is a vector c("mean", "sd", "min", "max"). Other
 ##'      stats reported by rockchalk::summarize should work fine as well
 ##' @param digits 2 decimal points is default
