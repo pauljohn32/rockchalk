@@ -1,8 +1,7 @@
 Package: rockchalk
 Type: Package
 Title: Regression Estimation and Presentation
-Version: 1.8.157
-Date: 2022-07-25
+Version: 1.8.158
 Authors@R: c(person("Paul E.","Johnson",email="pauljohn@ku.edu",role = c("aut", "cre")),
     person("Gabor", "Grothendieck",email="ggrothendieck@gmail.com", role="ctb"),
     person("Dimitri", "Papadopoulos OrfanosGabor", email="dimitri.papadopoulos@cea.fr", role="ctb"))
@@ -26,7 +25,8 @@ Imports:
     lme4,
     carData,
     MASS,
-    kutils
+    kutils,
+    reformulas (>= 0.4.3)
 Suggests:
     tables,
     Hmisc,
@@ -35,4 +35,4 @@ Suggests:
     scatterplot3d,
     HH
 Encoding: UTF-8 
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.3

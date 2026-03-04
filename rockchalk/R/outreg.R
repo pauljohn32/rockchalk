@@ -169,7 +169,7 @@
 ##'     to TRUE if type = "html"
 ##' @export outreg
 ##' @importFrom lme4 VarCorr
-##' @importFrom utils getFromNamespace
+##' @importFrom reformulas formatVC
 ##' @import grDevices
 ##' @rdname outreg
 ##' @return A character vector, one element per row of the regression
@@ -783,8 +783,7 @@ outreg <-
     getVC.merMod <- function(modl){
         if(inherits(modl, "merMod")){
             vc <- lme4::VarCorr(modl)
-            formatVC <- getFromNamespace("formatVC", "lme4")
-            vcfmt <- formatVC(vc, 3, "Std.Dev.")
+            vcfmt <- formatVC(vc, digits = 3, comp = "Std.Dev.")
             vcfmt[ ,2] <- gsub("\\(Intercept\\)", "", vcfmt[ ,2])
             
             for ( i in seq_along(vcfmt[ ,1])){
