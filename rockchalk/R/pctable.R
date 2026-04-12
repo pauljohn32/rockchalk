@@ -251,6 +251,7 @@ NULL
 ##'                    fileext = ".tex")
 ##'     Hmisc::latex(tabsumtab, file = fn2)
 ##'     print(paste("The file saved was named", fn2, "go get it."))
+##'     unlink(fn2)
 ##' }
 ##' }
 ##' @rdname pctable
