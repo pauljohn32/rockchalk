@@ -176,7 +176,7 @@ NULL
 ##' this is not desired.  It appears somewhat controversial whether
 ##' this is necessary. According to the
 ##' US NIST,
-##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
+##' \url{https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' kurtosis is defined as
 ##'                   
 ##' \deqn{kurtosis =  ( mean((x - mean(x))^4) )/ var(x)^2}
@@ -230,7 +230,7 @@ kurtosis <- function(x, na.rm = TRUE, excess = TRUE, unbiased = TRUE){
 ##' whether this is necessary, hence the argument unbiased is provided.
 ##' Set unbiased = FALSE if it is desired to have the one recommended
 ##' by NIST, for example. According to the US NIST,
-##' \url{http://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
+##' \url{https://www.itl.nist.gov/div898/handbook/eda/section3/eda35b.htm},
 ##' skewness is defined as the mean of cubed deviations divided by the
 ##' cube of the standard deviation.
 ##'       
