@@ -30,9 +30,6 @@
 ##'
 ##' @name rockchalk-package
 ##' @aliases rockchalk-package rockchalk
-##' @docType package
-##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
-##'
 ##' @references http://pj.freefaculty.org/R
 ##' @keywords regression hplot
 NULL
@@ -169,4 +166,7 @@ NULL
 ##' ## The publication used "rare events logistic", which I'm not bothering
 ##' ## with here because I don't want to invoke additional imported packages.
 ##' ## But the ordinary logit results are proof of concept.
+
+#' @keywords internal
+"_PACKAGE"
 NULL
