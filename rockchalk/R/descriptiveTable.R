@@ -1,13 +1,13 @@
 ##' Summary stats table-maker for regression users
 ##'
 ##' rockchalk::summarize does the numerical calculations
-##' 
+##'
 ##' This is, roughly speaking, doing the right thing, but
 ##' not in a clever way. For the categorical variables, the
 ##' only summary is proportions.
 ##'
 ##' @param object A fitted regression or an R data.frame, or any
-##'      other object type that does not fail in code{model.frame(object)}.
+##'      other object type that does not fail in model.frame(object)
 ##' @param stats Default is a vector c("mean", "sd", "min", "max"). Other
 ##'      stats reported by rockchalk::summarize should work fine as well
 ##' @param digits 2 decimal points is default
