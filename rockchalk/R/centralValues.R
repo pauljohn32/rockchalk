@@ -33,7 +33,9 @@ centralValues <- function(x){
             represents[1, i] <- xvarmode      
         }
     }
-    as.data.frame(represents)
-    rownames(represents) <- NULL
-    represents
+    ## PJ 20260412 was is not saving the return.  Printing to screen? ??
+    ## as.data.frame(represents)
+    mydf <- as.data.frame(represents)
+    rownames(mydf) <- NULL
+    mydf
 }
