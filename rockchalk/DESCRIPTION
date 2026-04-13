@@ -35,5 +35,5 @@ Suggests:
     mvtnorm,
     scatterplot3d,
     HH
-Encoding: UTF-8 
+Encoding: UTF-8
 RoxygenNote: 7.3.3

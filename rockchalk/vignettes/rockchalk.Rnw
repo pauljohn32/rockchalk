@@ -1,4 +1,4 @@
-%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.4.0~RC3 created this file.  For more info, see https://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -217,8 +217,8 @@ centralValues(Chile)
 
 Students struggle with R's predict() methods. The primary challenge
 is in the creation of a newdata object of interesting values of the
-predictors. If the newdata argument, here myNewDF in \inputencoding{latin9}\lstinline!predict(m1, newdata = myNewDF)!\inputencoding{utf8}
-is not exactly right, the command will fail. If the regression formula
+predictors. If the newdata argument, here myNewDF in \bgroup\inputencoding{latin9}\lstinline!predict(m1, newdata = myNewDF)!\egroup
+ is not exactly right, the command will fail. If the regression formula
 uses functions like ``as.numeric()'' or ``as.factor()'', its almost
 impossible for first-time R users to get this right. In version 1.8,
 I believe I have solved the problem entirely with the functions newdata()
@@ -356,7 +356,7 @@ See Table \ref{tab:descriptiveTable}. The user can customize the
 requested statistical summaries for numeric predictors.
 
 \begin{table}[H]
-\caption{The descriptiveTable function\label{tab:descriptiveTable}}
+\caption{The descriptiveTable function\protect\label{tab:descriptiveTable}}
 
 <<>>=
 descriptiveTable(m1, digits=6)
@@ -440,7 +440,7 @@ into the document preamble either ``\code{\textbackslash usepackage\{siunitx\}}'
 or ``\code{\textbackslash usepackage\{dcolumn\}}''.
 
 \begin{table}
-\caption{Decimal-centered columns in the ``tight'' style\label{tab:Tab1}}
+\caption{Decimal-centered columns in the ``tight'' style\protect\label{tab:Tab1}}
 
 <<outreg10, echo = F, results=tex>>="
 or <- outreg(list(m1, m2, m3), centering = "siunitx")
@@ -448,7 +448,7 @@ or <- outreg(list(m1, m2, m3), centering = "siunitx")
 \end{table}
 
 \begin{table}
-\caption{The wide format obtained with tight = FALSE\label{tab:Tab2}}
+\caption{The wide format obtained with tight = FALSE\protect\label{tab:Tab2}}
 
 <<outreg20, results=tex, echo=F>>=
 or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model" = m3), tight = FALSE, alpha = c(0.05, 0.01, 0.001), centering = "siunitx")
@@ -456,7 +456,7 @@ or1 <- outreg(list("The First Model with a Long Title" = m1, "Another Model" = m
 \end{table}
 
 \begin{table}
-\caption{Combined OLS and GLM Estimates\label{tab:Combined-OLSGLM}}
+\caption{Combined OLS and GLM Estimates\protect\label{tab:Combined-OLSGLM}}
 
 <<outreg70, results=tex, echo=F>>=
 or2 <- outreg(list(m1,gm1), modelLabels = c("OLS:y","GLM: Categorized y"))
@@ -499,7 +499,7 @@ ylim = c(-70, 15), legendArgs = list(x="topright"))
 
 \includegraphics[height=4in]{rockchalk-ps05}
 
-\caption{plotSlopes: Linear Model with Confidence Interval\label{fig:ps05}}
+\caption{plotSlopes: Linear Model with Confidence Interval\protect\label{fig:ps05}}
 \end{figure}
 
 At its most elementary level, \code{plotSlopes()} is a ``one step''
@@ -544,16 +544,18 @@ legendArgs = list(x = "topright"))
 par(mfcol=c(1,1))
 @
 
-\caption{plotSlopes Illustrated\label{fig:ps10}}
+\caption{plotSlopes Illustrated\protect\label{fig:ps10}}
 \end{figure}
 
 This is more interesting if we fit a regression with an interaction
 term, such as 
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 m4 <- lm(y4 ~ x1*x2 + x3, data = dat)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \noindent We then ask \code{plotSlopes} to draw the predicted values
 using one numeric variable as the horizontal axis and values of another
 variable (a moderator) are set at particular values. Either x1 or
@@ -580,7 +582,6 @@ scores will be selected for consideration. The default display will
 include the regression line as well as color-coded points for the
 subgroups represented by values of the moderator.
 
-\noindent 
 \begin{figure}
 <<echo=F>>=
 fourCat <- gl(4,25, labels=c("East","West","South", "Midwest"))
@@ -593,16 +594,16 @@ m5 <- lm (y5 ~ x1*x4 + x3, data=dat)
 m5psa <- plotSlopes(m5, plotx = "x1", modx = "x4", xlab = "x1 is a Continuous Predictor", xlim = magRange(dat$x1, c(1.2,1)))
 @
 
-\caption{plotSlopes with a Categorical Moderator\label{fig:ps20}}
+\caption{plotSlopes with a Categorical Moderator\protect\label{fig:ps20}}
 \end{figure}
 
-\noindent 
+\noindent{}
 \begin{figure}
 <<ps21, fig=T, echo=F>>=
 m5psb <- plotSlopes(m5, plotx = "x1", modx = "x4", modxVals = c("West","East"), xlab = "x1 is a Continuous Predictor", xlim=magRange(dat$x1, c(1.2,1)), interval = "conf")
 @
 
-\caption{plotSlopes: the interval argument\label{fig:ps21}}
+\caption{plotSlopes: the interval argument\protect\label{fig:ps21}}
 \end{figure}
 Suppose we have a four-valued categorical variable, ``West'',''Midwest'',
 ``South'', and ``East''. If that variable is used in an interaction
@@ -654,16 +655,18 @@ m4psats <- testSlopes(m4psa)
 plot(m4psats)
 @
 
-\caption{testSlopes for an Interactive Model\label{fig:ts10}}
+\caption{testSlopes for an Interactive Model\protect\label{fig:ts10}}
 \end{figure}
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 m4 <- lm(y ~ x1*x2 + x3, data = dat)
 m4ps <- plotSlopes(m4, plotx = "x1", modx ="x2", xlab = "x1 is a Continuous Predictor")
 m4psats <- testSlopes(m4ps)
 plot(m4psats)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \noindent The output from testSlopes will differ, depending on whether
 modx is numeric or a factor. If it is a factor, then the slope of
 the lines and the associated t-test for each will be presented. My
@@ -677,7 +680,7 @@ y_{i}=b_{0}+b_{plotx}plotx_{i}+b_{modx}modx_{i}+b_{plotx:modx}plotx_{i}\cdot mod
 
 \noindent the null hypothesis would be
 
-\noindent 
+\noindent
 \begin{equation}
 H_{0}:0=\hat{b}_{simple\,slope}=\hat{b}_{plotx}+\hat{b}_{plotx:modx}modx
 \end{equation}
@@ -769,7 +772,7 @@ Figure \ref{fig:pcps20}.
 <<psps20b>>
 @
 
-\caption{Illustrations of m5 with plotSlopes and plotCurves\label{fig:pcps20}}
+\caption{Illustrations of m5 with plotSlopes and plotCurves\protect\label{fig:pcps20}}
 
 \end{figure}
 
@@ -787,16 +790,16 @@ components in the regression formula. plotPlane() allows the depiction
 of a 3 dimensional curving plane that ``sits'' in the cloud of data
 points. The variables that are not explicitly pictured in the plotPlane()
 figure are set to central reference values. Recall model m4, which
-used the formula \inputencoding{latin9}\lstinline!y4 ~ x1*x2 + x3!\inputencoding{utf8}.
-As illustrated in Figure \ref{fig:pp100}, plotCurves() presents a
-reasonable view of the predicted values.
+used the formula \bgroup\inputencoding{latin9}\lstinline!y4 ~ x1*x2 + x3!\egroup
+. As illustrated in Figure \ref{fig:pp100}, plotCurves() presents
+a reasonable view of the predicted values.
 
 \begin{figure}
 <<pp100, fig=T, echo=F>>=
 p100 <- plotPlane(m4, plotx1 = "x1", plotx2 = "x2", phi = 10, theta = -80, lcol = gray(.70))
 @
 
-\caption{plotPlane for the Interactive Model m4\label{fig:pp100}}
+\caption{plotPlane for the Interactive Model m4\protect\label{fig:pp100}}
 \end{figure}
 
 Because plotPlane() is a simple convenience wrapper for R's persp()
@@ -814,13 +817,13 @@ is that students can easily see that a model with a simple interaction
 effect is \emph{not a linear model any more. }We will return to that
 point in the discussion of mean centering in regression analysis.
 
-Recall that model m5 is the rather complicated nonlinear formula \inputencoding{latin9}\lstinline!log(x2*x2) + x1 * x2!\inputencoding{utf8}.
-The plotCurves() output for that was already presented in Figure \ref{fig:pcps20}.
-The three dimensional view of the same is presented in Figure \ref{fig:pp110},
-but with an added twist. The twist is that the predicted value lines
-from the 2-D plot functions can be superimposed on the plane. The
-function addLines() does the work for translating 2-D plot object
-onto the regression plane. 
+Recall that model m5 is the rather complicated nonlinear formula \bgroup\inputencoding{latin9}\lstinline!log(x2*x2) + x1 * x2!\egroup
+. The plotCurves() output for that was already presented in Figure
+\ref{fig:pcps20}. The three dimensional view of the same is presented
+in Figure \ref{fig:pp110}, but with an added twist. The twist is
+that the predicted value lines from the 2-D plot functions can be
+superimposed on the plane. The function addLines() does the work for
+translating 2-D plot object onto the regression plane. 
 
 \begin{figure}
 <<pp111, fig = T, echo = F, height = 5, results = hide>>=
@@ -828,7 +831,7 @@ ppm5 <- plotPlane(m5, plotx1 = "x2", plotx2 = "x1", phi = 0, npp = 15, lcol = gr
 addLines(from = m5pc, to = ppm5, col = m5pc$col)
 @
 
-\caption{Making plotSlopes and plotPlane Work Together\label{fig:pp110}}
+\caption{Making plotSlopes and plotPlane Work Together\protect\label{fig:pp110}}
 \end{figure}
 
 
@@ -867,7 +870,7 @@ summary(m4s)
 @
 
 \begin{table}
-\caption{Comparing Ordinary and Standardized Regression\label{tab:stdreg10}}
+\caption{Comparing Ordinary and Standardized Regression\protect\label{tab:stdreg10}}
 
 <<stdreg10, results=tex, echo=F>>=
 or10 <- outreg(list(m4, m4s), tight = F, modelLabels = c("Not Standardized","Standardized"))
@@ -885,16 +888,20 @@ y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+e_{i}
 \noindent and then wonder, ``is there an interaction between $x1_{i}$
 and $x2_{i}$?'' The natural inclination is to run this model, 
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 m1 <- lm(y ~ x1*x2)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \noindent or its equivalent
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 m2 <- lm(y ~ x1 + x2 + x1:x2)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Researchers have been advised that they should not run the ordinary
 interaction model without ``mean-centering'' the predictors (Aiken
 and West, 1991). They are advised to replace $x1_{i}$ with $(x1_{i}-\overline{x1})$
@@ -923,10 +930,12 @@ predictors that should be centered. If the user wants all of the numeric
 predictors to be mean-centered, the usage of the argument centerOnlyInteractors
 would be appropriate:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 m4mc <- meanCenter(m4, centerOnlyInteractors = FALSE)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 By default, it does not standardize while centering (but the user
 can request standardization with the argument standardize = TRUE.
 The option centerDV causes the dependent variable to be centered as
@@ -962,8 +971,8 @@ y=c_{0}+c_{1}x1+c_{2}x2+e{}_{i}.\label{eq:rc20}
 \noindent Let's proceed as if those parameter estimates, $\hat{c}_{1}$,
 $\hat{c}_{2}$, are the ``right ones'' for our analytical purpose.
 We'd like to fit an interactive model, but protect the linear parts
-from fluctuation. In R, when we run the model \inputencoding{latin9}\lstinline!lm(y ~ x1 * x2)!\inputencoding{utf8},
-we are allowing all of the coefficients of all variables to fluctuate
+from fluctuation. In R, when we run the model \bgroup\inputencoding{latin9}\lstinline!lm(y ~ x1 * x2)!\egroup
+, we are allowing all of the coefficients of all variables to fluctuate
 \begin{equation}
 y_{i}=b_{o}+b_{1}x1_{i}+b_{2}x2_{i}+b_{3}x1_{i}\times x2_{i}+e_{i}\label{eq:rcwant}
 \end{equation}
@@ -996,8 +1005,8 @@ and $x2_{i}$.
 rockchalk 1.6 included summary, print, and predict methods for the
 residual-centered regression objects. It is worth mentioning that
 the code can handle interactions of arbitrarily many predictors. If
-the formula has \inputencoding{latin9}\lstinline!lm(y ~ x1 * x2 * x3 * x4)!\inputencoding{utf8},
-for example, this implies many separate interactions must be calculated.
+the formula has \bgroup\inputencoding{latin9}\lstinline!lm(y ~ x1 * x2 * x3 * x4)!\egroup
+, for example, this implies many separate interactions must be calculated.
 We need to calculate residual-centered residuals for $x1\cdot x2$,
 $x1\cdot x3$, $x1\cdot x4$, $x2\cdot x3$ and so forth, and then
 use them as predictors to get centered estimates of terms $x1\cdot x2\cdot x3$,
@@ -1068,21 +1077,24 @@ y_{i}=2+0.1x1_{i}+0.1x2_{i}+0.2\cdot(x1_{i}\times x2_{i})+e_{i},
 
 A regression analysis that ignores the interaction, 
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 lm(y ~ x1 + x2, data = dat2)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \noindent is reported in the first column of Table \ref{tab:meancenter10-1}.
 I've used outreg's new alpha argument to emphasize the ``really good''
 estimates with more stars. Notice that everything is ``statistically
 significant!''
 
 Unable to leave well enough alone, the researcher wonders, ``is there
-an interaction between $x1$ and $x2$?'' Run \inputencoding{latin9}
+an interaction between $x1$ and $x2$?'' Run \bgroup\inputencoding{latin9}
 \begin{lstlisting}
 lm(y ~ x1 * x2, data = dat2)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \noindent The second column in Table \ref{tab:meancenter10-1} summarizes
 that regression. Be prepared for a shock when you scan the estimates.
 Almost everybody I know has said ``what the heck?'' or ``Holy Cow!''
@@ -1099,7 +1111,7 @@ m6rc <- residualCenter(m6int)
 @
 
 \begin{table}
-\caption{Comparing Regressions\label{tab:meancenter10-1}}
+\caption{Comparing Regressions\protect\label{tab:meancenter10-1}}
 
 <<mcenter10, results=tex, echo=F>>=
 or11 <- outreg(list(m6linear, m6int, m6mc, m6rc), tight=F, modelLabels=c("Linear", "Interaction","Mean-centered","Residual-centered"), alpha = c(0.05, 0.01))
@@ -1145,7 +1157,7 @@ par(mfcol = c(1, 1))
 
 \includegraphics[height=8in]{rockchalk-pscenter.pdf}
 
-\caption{plotSlopes for the centered and non-centered regressions\label{fig:pscentering}}
+\caption{plotSlopes for the centered and non-centered regressions\protect\label{fig:pscentering}}
 \end{figure}
 
 Perhaps the 2-D plots are not persuasive. Don't stop yet. In the 3-D
@@ -1176,7 +1188,7 @@ plotPlane(m6rc, plotx1="x1", plotx2="x2", plotPoints=FALSE, main="Residual-cente
 par(op)
 @
 
-\caption{Predicted Planes from Centered and Uncentered Fits Identical\label{fig:mcenter30}}
+\caption{Predicted Planes from Centered and Uncentered Fits Identical\protect\label{fig:mcenter30}}
 \end{figure}
 
 The regression coefficient estimates are snapshots, each summarizing
@@ -1220,7 +1232,7 @@ par(op)
 
 \includegraphics[width = 6.5in]{rockchalk-rcenter40}
 
-\caption{Predicted Values of Mean and Residual-centered Models\label{fig:rcenter40}}
+\caption{Predicted Values of Mean and Residual-centered Models\protect\label{fig:rcenter40}}
 \end{figure}
 
 The take-away point from this is that there is no free lunch in regression
@@ -1274,7 +1286,7 @@ to calculate the estimates from the non-centered model.
 The estimation of the residual-centered model requires two steps.
 The residual from this regression model
 
-\noindent 
+\noindent
 \begin{equation}
 \widehat{(x1_{i}\times x2_{i})}=\hat{d}_{0}+\hat{d}_{1}x1_{i}+\hat{d}_{2}x2_{i}.
 \end{equation}

@@ -1,4 +1,4 @@
-%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.4.0~RC3 created this file.  For more info, see https://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[american,noae]{scrartcl}
 \usepackage{lmodern}
@@ -8,13 +8,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
 \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
-\setlength{\parskip}{\smallskipamount}
-\setlength{\parindent}{0pt}
 \usepackage{babel}
 \usepackage{url}
 \usepackage{enumitem}
 \usepackage[authoryear]{natbib}
-\usepackage[unicode=true,pdfusetitle,
+\usepackage[pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=section,colorlinks=false]
  {hyperref}
@@ -115,6 +113,9 @@
 
 \usepackage{listings}% Make ordinary listings look as if they come from Sweave
 \lstset{tabsize=2, breaklines=true, style=Rstyle}
+% Added by lyx2lyx
+\setlength{\parskip}{\smallskipamount}
+\setlength{\parindent}{0pt}
 
 \makeatother
 
@@ -288,7 +289,8 @@ suffixX(newFmla, "x1", "c")
 Run that and check the last few lines of the output. See how the update
 misses x1 inside log(x1) or in the interaction?
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > newFmla <- formula(m2)
 > newFmla
 y ~ log(x1) + x2 * x3
@@ -297,16 +299,19 @@ y ~ log(x1) + x3 + x2c + x2:x3
 > suffixX(newFmla, "x1", "c")
 y ~ log(x1) + x2 + x3 + x1c + x2:x3
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 I asked the members of r-help for assistance. Lately I've had very
 good luck with r-help. Gabor Grothendieck wrote an answer to r-help
 on May 29, 2012. He said simply, ``Try substitute,'' with this example.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > do.call("substitute", list(newFmla, setNames(list(as.name("x1c")), "x1")))
 y ~ log(x1c) + x2 * x3
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Problem solved, in a single line. 
 
 That's very clever, I think. It packs together a half-dozen very deep
@@ -349,16 +354,20 @@ involves do.call() or eval().
 
 Let's concentrate on do.call first. The syntax is like this
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 do.call("someRFunction", aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 It is as if we were telling R to run this:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 someRFunction(aListOfArgumentsToGoInTheParentheses)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 We use do.call() because it is much more flexible than calling someRFunction()
 directly.
 
@@ -388,39 +397,47 @@ with rockchalk called stackListItems-01.R. I was using rbind() over
 and over to join the results of simulation runs. Basically, the code
 was like this
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 for (i in 1:10000){
    dat <- someHugeSimulation(i)
    result <- rbind(result, dat)
 }
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 That will call rbind() 10000 times. I had not realized that rbind()
 is time-consuming. It accesses a new chunk of memory each time it
 is run. On the other hand, we could collect those results in a list,
 then we can call rbind() one time to smash together all of the results.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 for (i in 1:10000){
    mylist[[i]] <- someHugeSimulation(i)
 }
 result <- do.call("rbind", mylist)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 It is much faster to run rbind() only once. It would be OK if we typed
 it all out like this:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 result <- rbind(mylist[[1]], mylist[[2]], mylist[[3]], ..., mylist[[10000])
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 But who wants to do all of that typing? How tiresome! Thanks to Erik
 Iverson in r-help, I understand that
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 result <- do.call("rbind", mylist)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 is doing the EXACT same thing. ``mylist'' is a list of arguments.
 do.call is \emph{constructing} a function call from the list of arguments.
 It is \emph{as if} I had actually typed rbind with 10000 arguments.
@@ -458,42 +475,50 @@ expression() can also create not-yet-evaluated code.
 
 Everybody has experienced an error like this:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > x1 + x2
 Error: object 'x1' not found
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Whenever we use a variable, the R interpreter expects to find it.
 We know those variables are in the data frame dat, but the interpreter
 does not know that's what we mean. But we can ask R to trust us with
 the quote() function, which, basically, means ``here's some code
 we will evaluate later'':
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > mycall <- quote(x1 + x2)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 The object ``mycall'' is an R call object, something that might
 be evaluated in the future. 
 
 When we want to evaluate ``x1 + x2'', we ask R do to so:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 eval(mycall, dat)
 \end{lstlisting}
-\inputencoding{utf8}The second argument supplies the place where x1 and x2 are to be found.
+\leavevmode\egroup
+The second argument supplies the place where x1 and x2 are to be found.
 R users may never have noticed the eval() function, but most will
 have used the with() function, which is simply a clever re-phrasing
-of the eval function's interface. It does the same thing:\inputencoding{latin9}
+of the eval function's interface. It does the same thing:\bgroup\inputencoding{latin9}
 \begin{lstlisting}
 with(dat, x1 + x2)
 \end{lstlisting}
-\inputencoding{utf8}
-and so does \inputencoding{latin9}
+\leavevmode\egroup
+
+and so does \bgroup\inputencoding{latin9}
 \begin{lstlisting}
 with(dat, eval(mycall)).
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Now, back to the regression example we were working on before. We
 can create the call object using the call() function, which requires
 the name of a function and a comma-separated list of quoted arguments.
@@ -522,10 +547,12 @@ quote(). However, the protective wrapper in this case is actually
 the function called formula(). The R interpreter notices the symbol
 $\sim$ in the syntax, and so it assumes you meant to run
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 formula(y ~ x1 + x2)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 A formula is another kind of not-yet-evaluated thing. It is something
 that we can fiddle with before evaluating. 
 
@@ -554,11 +581,13 @@ f1[[3]][[3]]
 Note that f1 created in this way must be a syntactically valid R formula;
 it cannot include any other regression options.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > f1 <- y ~ x1 + x2 + x3 + log(x4), data=dat 
 Error: unexpected ',' in "f1 <- y ~ x1 + x2 + x3 + log(x4),"
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 If I declare f1exp as an expression, then R does not re-interpret
 it as a formula (f1exp is an unevaluated expression, the R parser
 has not translated it yet). To use that as a formula in the regression,
@@ -602,7 +631,8 @@ submits a command like ``lm(y \textasciitilde{} x, data = dat, x
 = TRUE, y = TRUE).'' Inside lm(), the import is re-organized. Here
 are the first lines of the lm() function
 
-\inputencoding{latin9}\begin{lstlisting}[breaklines=true,numbers=left,numberstyle={\footnotesize},tabsize=4]
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}[breaklines=true,numbers=left,numberstyle={\footnotesize},tabsize=4]
 lm <- function (formula, data, subset, weights, na.action, method = "qr",
     model = TRUE, x = FALSE, y = FALSE, qr = TRUE, singular.ok = TRUE,
     contrasts = NULL, offset, ...)
@@ -618,25 +648,30 @@ lm <- function (formula, data, subset, weights, na.action, method = "qr",
     mf[[1L]] <- as.name("model.frame")
     mf <- eval(mf, parent.frame())
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Now suppose we turn on the debugger and run a regression in R with
 a command like this.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 debug(lm)
 m1 <- lm(y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 After that, we are ``in'' the function, stepping through line-by-line.
 In line 8, the match.call() function is used to grab a copy of the
 command that I typed. We can see that mf is exactly the same as my
 command, except R has named the arguments:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > mf
 lm(formula = y ~ x1 * x2, data = dat, x = TRUE, y = TRUE)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 That's not just a string of letters, however. It is a call object,
 a list with individual pieces that can be revised. Recall that the
 first element in a call object is the name of a function, and the
@@ -646,7 +681,8 @@ It only wants the arguments we would be needed to run the function
 model.frame. Line 12 adds an argument to the list, drop.unused.levels.
 Up to that point, then, we can look at the individual pieces of mf:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > names(mf) 
 [1] ""      "formula"       "data" [4] "drop.unused.levels"
 > mf[[1]]
@@ -658,17 +694,20 @@ dat
 > mf[[4]] 
 [1] TRUE
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 The object mf has separate pieces that can be revised and then evaluated.
 Line 13 replaces the element 1 in mf with the symbol ``model.frame''.
 That's the function that will be called. Line 14 is the coup de grâce,
 when the revised call ``mf'' is sent to eval. In the end, it is
 \emph{as if} lm had directly submitted the command
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 mf <- model.frame(y ~ x1 * x2, data = dat, drop.unused.levels = TRUE)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 It would not do to simply write that into the lm function, however,
 because some people use variables that have names different from y,
 x1, and x2, and their data objects may not be called dat. lm allows
@@ -683,23 +722,29 @@ follows. Plotmath causes the R plot functions to convert expressions
 into mathematical symbols in a way that is reminiscent of \LaTeX .
 For example, a command like this:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 text(4, 4, expression(gamma))
 \end{lstlisting}
-\inputencoding{utf8}will draw the gamma symbol at the position (4,4). We can use paste
+\leavevmode\egroup
+will draw the gamma symbol at the position (4,4). We can use paste
 to combine symbolic commands and text like so:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 text(4, 4, expression(paste(gamma, " = 7")))
 \end{lstlisting}
-\inputencoding{utf8}The number 7 is a nice number, but what if we want to calculate something
+\leavevmode\egroup
+The number 7 is a nice number, but what if we want to calculate something
 and insert it into the expression? Your first guess might be to insert
 a function that makes a calculation, such as the mean, but this fails:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 text(4, 4, expression(paste(gamma, mean(x))))
 \end{lstlisting}
-\inputencoding{utf8}In order to smuggle the result of a calculation into an expression,
+\leavevmode\egroup
+In order to smuggle the result of a calculation into an expression,
 some fancy footwork is required. In the help page for plotmath, examples
 using the functions bquote and substitute are offered. I have found
 this to be quite frustrating and difficult to do, and if one examines
@@ -823,10 +868,12 @@ the names, and creates the data frame, and then they all come together.
 What if we have just one element in a list? In Gabor's answer to my
 question, there is this idiom
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 setNames(list(as.name("x1c")), "x1")))
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Consider this from the inside out. 
 \begin{enumerate}
 \item as.name(``x1c'') is an R symbol object,
@@ -846,17 +893,20 @@ or ``x1'' becomes ``x1c''. So the user's regression formula that
 uses variables age or x1 must be revised. This is a function that
 takes a formula ``fmla'' and replaces a symbol xname with newname.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 formulaReplace <- function(fmla, xname, newname){ 
     do.call("substitute", list(fmla, setNames(list(as.name(newname)), xname))) 
 }
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 This is put to use in meanCenter(). Suppose a vector of variable names
 called nc (stands for ``needs centering'') has already been calculated.
 The function std() creates a centered variable.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 newFmla <- mc$formula
 for (i in seq_along(nc)){
     icenter <- std(stddat[, nc[i]])
@@ -865,7 +915,8 @@ for (i in seq_along(nc)){
     nc[i] <- newname
 }
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 If one has a copy of rockchalk 1.6 or newer, the evidence of the success
 of this approach should be evident in the output of the command example(meanCenter). 
 
@@ -880,7 +931,8 @@ solutions.
 Here is an example of the problem. A person needed ``dummy variables''.
 The code had several pages like this:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
   if(setcorr == 1){
         corr.10 <-1
         corr.20 <-0
@@ -912,7 +964,8 @@ The code had several pages like this:
         corr.80 <-0
     }
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Well, that's understandable, but a little bit embarrassing. I asked
 ``why do you declare these separate variables, why not make a vector?''
 and ``can't you see a more succinct way to declare those things?''
@@ -966,13 +1019,15 @@ we need to start thinking about the problem of unexpected user input.
 Notice what happens if we ask for more 1's than the result vector
 is supposed to contain:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > biVec1(n = 3, n1s = 7)
 Error in rep(0, n - n1s) (from #2) : invalid 'times' argument
 > biVec2(n = 3, n1s = 7)
 [1] 1 1 1 1 1 1 1
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Perhaps I prefer biVec1() because it throws an error when there is
 unreasonable input, while biVec2() returns a longer vector than expected
 with no error. 
@@ -1007,7 +1062,8 @@ biVec1 <- function(n = 3, n1s = 1) {
 In all of the test cases I've tried, that works, although the real
 numbers 7.0 and 4.0 are able to masquerade as integers.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > biVec1(3, 7)
 Error in biVec1(3, 7) (from #4) : n must be greater than or equal to n1s
 > biVec1(7, 3)
@@ -1020,7 +1076,8 @@ Error in biVec1(3.3, 4.4) (from #2) :
 > biVec1(7.0, 4.0)
 [1] 1 1 1 1 0 0 0
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 
 \section{Function Arguments.}
 
@@ -1061,41 +1118,51 @@ need to check if the user supplied a value for an argument, such as
 \code{col}. If the user did not supply a value, we might construct
 one from the other input
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 if (missing(col)) col <- someTediousCalculation(y, z)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 This is usually good enough, but there is danger that the user might
 have called the function like so:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 plotme(x, y, z, col = NULL)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 This outsmarts missing(col), which will return FALSE. If our goal
 is to make sure col is something, some non-NULL thing, a more careful
 argument check would be
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 if (missing(col) | is.null(col)) col <- someTediousCalculation(y, z)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \item [{stop()}] Halts a function and returns a message to the user. Usage
 example 
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 if (isTRUE(x)) stop(paste("I'm sorry, you failed to supply the right information.")))
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \item [{stopifnot()}] It is so frequent to run ``\code{if(isTRUE(x)) stop()}''
 that they created a wrapper, \code{stopifnot(x)}.
 \item [{warning()}] If you don't want the function to fail, but you need
 to warn the user about a condition that seems dubious, run
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 if (isTRUE(x)) warning(paste("Are you sure the value of x ought to be", x, "?"))
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \item [{deparse(substitute())}] Inside a function, it is often important
 to find out the symbolic value of the argument that the user supplied
 to the function. I don't mean the \emph{value}, but rather the symbolic
@@ -1113,25 +1180,29 @@ and hit return. That takes the first step into the calculations. After
 that, run \code{match.call()}. The function is somewhat ``self aware''.
 It knows how it was called. You should see this
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 Browse[2]> n 
 debug: localAxiis <- function(..., col, bg, pch, cex, lty, lwd) Axis(...)
 Browse[2]> match.call()
 plot.default(x = dat$myx, y = dat$myy)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 You asked for \code{plot()}, R sends the work to \code{plot.default()}.
 All is well.
 
 Still inside the debugger now, type ``x'' and then ``myx'':
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 Browse[2]> x
 [1] 1 2 3
 Browse[2]> myx
 Error: object 'myx' not found
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Inside the function, the vector value that we passed in, which was
 referred to as dat\$myx, is now called x. The thing x is a data holder,
 it is used in the following calculations. \code{x} does not remember
@@ -1140,23 +1211,27 @@ life. It is as if \code{x} is the new identity of the same old data
 vector. However, we can ask \code{x} ``what name were you known
 by in your previous life?'' with this interesting idiom.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 Browse[2]> deparse(substitute(x))
 [1] "dat$myx"
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 The substitute() function, as we have already seen, is a way to replace
 a letter x with a value from somewhere. Maybe it would be more obvious
 to run this in 2 steps.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 Browse[2]> xsubs <- substitute(x)
 Browse[2]> xsubs
 dat$myx
 Browse[2]> deparse(xsubs)
 [1] "dat$myx"
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 \code{substitute()} grabs the object name from whence \code{x} was
 calculated. We need to convert that back to a character string so
 that we can know the symbolic name of the thing that eventually became
@@ -1169,10 +1244,12 @@ the function will run line by line. If you get tired of hitting return,
 type ``c'' and the function will run to its conclusion. To let R
 know that you don't want to debug that function any more, run:
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > undebug(plot.default)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 If you don't do that, then the function browser will pop open every
 time you try to run plot.
 \item [{list(...)}] The three periods, ``...'', are a valid word. (A
@@ -1184,12 +1261,14 @@ matching), and then the other arguments are thrown into a thing called
 In a simple case, we could just pass those additional arguments to
 another function, as in
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 plotme <- function(x, y, ...){
     plot(x, y, ...)
 }
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 Often, it is not sufficient to simply pass on the ``...'' variables,
 and we instead need to scan them and sort them for various purposes.
 Inside the function, we access those variables by turning them into
@@ -1293,14 +1372,16 @@ abbreviation for \code{TRUE} and \code{F} for \code{FALSE}. R will
 allow the user to re-define T and F in ways that will break calculations.
 However, R will not allow the user to re-define TRUE or FALSE. Observe
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 > TRUE <- 2342 
 Error in TRUE <- 2342 : invalid (do_set) left-hand side to assignment
 > FALSE <- function(x,y){x + y}
 Error in FALSE <- function(x, y) { :
   invalid (do_set) left-hand side to assignment
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 In order to protect our function's calculations, we are urged to fully
 write out the symbols TRUE and FALSE inside functions. This way, users
 cannot cause damage. 
@@ -1316,7 +1397,8 @@ theirs. The lexical scope can be convenient, but it is also dangerous.
 Here the example function relies on variables \code{y} and \code{z}
 that are not passed in as arguments.
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 x <- c(1, 2, 3, 4)
 y <- c(8, 9, 10, 11)
 z <- c(1, 1, 2, 2)
@@ -1325,7 +1407,8 @@ plotme <- function(x){
 }
 plotme(x)
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 That lets the function go and find \code{y} and \code{z}. This will
 run, but it is pretty risky. It depends on R's willingness to reach
 outside the boundaries of the function to find \code{y}, and \code{z}.
@@ -1360,12 +1443,14 @@ of arguments.
 \end{quote}
 If we define the function as follows,
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 plotme <- function(x, y, z){
     plot(x, y, col = z)
 }
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 the user's use of \code{plotme(x)} will result in the error
 
 \begin{Schunk}

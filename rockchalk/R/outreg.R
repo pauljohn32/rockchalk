@@ -783,7 +783,7 @@ outreg <-
     getVC.merMod <- function(modl){
         if(inherits(modl, "merMod")){
             vc <- lme4::VarCorr(modl)
-            vcfmt <- reformulas::formatVC(vc, 3, "Std.Dev.")
+            vcfmt <- reformulas::formatVC(vc, digits=3, comp="Std.Dev.")
             vcfmt[ ,2] <- gsub("\\(Intercept\\)", "", vcfmt[ ,2])
             
             for ( i in seq_along(vcfmt[ ,1])){

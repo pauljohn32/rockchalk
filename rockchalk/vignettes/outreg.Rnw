@@ -1,4 +1,4 @@
-%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 2.4.0~RC3 created this file.  For more info, see https://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[11pt,letterpaper,english]{extarticle}
 \usepackage{lmodern}
@@ -6,12 +6,10 @@
 \renewcommand{\ttdefault}{lmtt}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\setlength{\parskip}{\medskipamount}
-\setlength{\parindent}{0pt}
 \usepackage{babel}
 \usepackage{float}
 \usepackage[authoryear]{natbib}
-\usepackage[unicode=true,pdfusetitle,
+\usepackage[pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
  breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
  {hyperref}
@@ -439,6 +437,9 @@ rightside .code:n = {
 %  table-space-text-post = {***},
 %  parse-units = false
 %}
+% Added by lyx2lyx
+\setlength{\parskip}{\medskipamount}
+\setlength{\parindent}{0pt}
 
 \makeatother
 
@@ -446,7 +447,7 @@ rightside .code:n = {
 \renewcommand{\lstlistingname}{\inputencoding{latin9}Listing}
 
 \begin{document}
-%% Fill in values of the arguments here, 
+\noindent %% Fill in values of the arguments here, 
 %% If blanks are needed, must insert value " ~ "
 %% If comma needed inside value, wrap in {}.
 %% Delete secondauthor and thirdauthor if not needed
@@ -537,19 +538,19 @@ I use regularly, usually in the base of R, like \code{lm}, \code{glm},
 and for \code{lme4} objects. Other regression packages may work.
 I've tried to be somewhat general in the design.
 
-The major new feature is ``decimal-centered'' columns. In the implementation
-of centering, we tested approaches based on two LaTeX packages, \code{dcolumn}
-and \code{siunitx}. \code{dcolumn} output it is mostly adequate,
-but it leaves problems in column headers and non-numeric content alignment.
-\code{siunitx} is a much more massive framework. There is much more
-danger of outright failure because of the immensity of \code{siunitx}
-itself. However, at the current time, all of the examples we have
-tested indicate that the \code{siunitx}-based tables are superior.
-there are hopeful signs it can deal with some very tough examples.
-See Table \ref{tab:ex16s} I have a solution using \code{siunitx}
-for a troublesome table that failed badly with \code{dcolumn} (Table
-\ref{tab:ex16d}). The user can designate which method should be used
-by assigning the parameter \code{centering = \textquotedbl dcolumn\textquotedbl}
+\noindent The major new feature is ``decimal-centered'' columns.
+In the implementation of centering, we tested approaches based on
+two LaTeX packages, \code{dcolumn} and \code{siunitx}. \code{dcolumn}
+output it is mostly adequate, but it leaves problems in column headers
+and non-numeric content alignment. \code{siunitx} is a much more
+massive framework. There is much more danger of outright failure because
+of the immensity of \code{siunitx} itself. However, at the current
+time, all of the examples we have tested indicate that the \code{siunitx}-based
+tables are superior. there are hopeful signs it can deal with some
+very tough examples. See Table \ref{tab:ex16s} I have a solution
+using \code{siunitx} for a troublesome table that failed badly with
+\code{dcolumn} (Table \ref{tab:ex16d}). The user can designate which
+method should be used by assigning the parameter \code{centering = \textquotedbl dcolumn\textquotedbl}
 or \code{centering = \textquotedbl siunitx\textquotedbl}. NOTE: it
 is necessary for the user to insert either \code{\textbackslash usepackage\{dcolumn\}}
 or \code{\textbackslash usepackage\{siunitx\}} in the preamble! The
@@ -585,7 +586,8 @@ have labels)
 If we are writing LaTeX code by hand, a tabular inside a table will
 look like 
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 \begin{table}
     \caption{The title of the floating object is specified in caption}
     \label{tab:ex1}% cross referencing use \ref{tab:ex1}
@@ -594,7 +596,8 @@ look like
 \end{tabular}
 \end{table}
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 The big question is ``should my outreg function write the tabular
 only, or also the table container''?
 
@@ -871,7 +874,7 @@ to change to the tight columns if that is an issue, as seen in Table
 \ref{tab:ex11t}.
 
 \begin{table}[H]
-\caption{Stress test very long titles (uncentered) \label{tab:ex11}}
+\caption{Stress test very long titles (uncentered) \protect\label{tab:ex11}}
 
 <<results=tex>>=
 ex11 <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This." = m3), tight = FALSE, float = FALSE, centering = "dcolumn")
@@ -879,7 +882,7 @@ ex11 <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. 
 \end{table}
 
 \begin{table}[H]
-\caption{Stress test very long titles (dcolumn) \label{tab:ex11t}}
+\caption{Stress test very long titles (dcolumn) \protect\label{tab:ex11t}}
 
 <<results=tex>>=
 ex11td <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This" = m3), float = FALSE,  centering = "dcolumn")
@@ -887,7 +890,7 @@ ex11td <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain
 \end{table}
 
 \begin{table}[H]
-\caption{Stress test very long titles (dcolumn) \label{tab:ex11ts}}
+\caption{Stress test very long titles (dcolumn) \protect\label{tab:ex11ts}}
 
 <<results=tex>>=
 ex11ts <- outreg(list("I Love Long Titles" = m1, "Prefer Brevity" = m2, "Captain. Kirk. Named. This" = m3), float = FALSE, centering = "siunitx")
@@ -907,7 +910,7 @@ because I created the outreg table with float=FALSE, and then I manually
 created a table container into which I typed the R code chunk.
 
 \begin{table}[H]
-\caption{Robust Standard Errors (uncentered)\label{tab:ex8}}
+\caption{Robust Standard Errors (uncentered)\protect\label{tab:ex8}}
 
 <<results=tex>>=
 if (require(car)){
@@ -920,7 +923,7 @@ if (require(car)){
 \end{table}
 
 \begin{table}[H]
-\caption{Robust Standard Errors (dcolumn)\label{tab:ex8d}}
+\caption{Robust Standard Errors (dcolumn)\protect\label{tab:ex8d}}
 
 <<results=tex>>=
 if (require(car)){
@@ -934,7 +937,7 @@ if (require(car)){
 \end{table}
 
 \begin{table}[H]
-\caption{Robust Standard Errors (siunitx)\label{tab:ex8s}}
+\caption{Robust Standard Errors (siunitx)\protect\label{tab:ex8s}}
 
 <<results=tex>>=
 if (require(car)){
@@ -1013,7 +1016,7 @@ And I also show that if authors want to create redundant rows, they
 are allowed to do so (N, for example).
 
 \begin{table}[H]
-\caption{Additional test on summary stats (dcolumn)\label{tab:ex17}}
+\caption{Additional test on summary stats (dcolumn)\protect\label{tab:ex17}}
 
 <<results=tex>>=
 ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
@@ -1024,7 +1027,7 @@ ex17 <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
 \end{table}
 
 \begin{table}[H]
-\caption{Additional test on summary stats (siunitx)\label{tab:ex17s}}
+\caption{Additional test on summary stats (siunitx)\protect\label{tab:ex17s}}
 
 <<results=tex>>=
 ex17s <- outreg(list("Model A" = gm1, "Model B label with Spaces" = m2),
@@ -1046,12 +1049,14 @@ If you are learning how to make tables, I usually suggest doing it
 in a different way. I would suggest instead that authors should create
 an outreg output file, with a sequence like this
 
-\inputencoding{latin9}\begin{lstlisting}
+\bgroup\inputencoding{latin9}
+\begin{lstlisting}
 lm1 <- lm(... regression commands ...)
 lm1.out <- outreg(lm1, print.results=FALSE, ...parameters like float=FALSE, tight = FALSE ...)
 cat(lm1.out, file = "lm1.out.tex")
 \end{lstlisting}
-\inputencoding{utf8}
+\leavevmode\egroup
+
 I'd usually have an output directory where the tex file would be placed,
 but aside from this detail, that's my workflow. Then, when I want
 to use that file in my document, I use the LaTeX code ``\textbackslash input\{lm1.out.tex\}''. 
@@ -1069,7 +1074,7 @@ open the opportunity that it might need to be revised by hand.
 
 \pagebreak{}
 
-\section*{Replication Information\label{sec:Session-Info}}
+\section*{Replication Information\protect\label{sec:Session-Info}}
 
 <<session, echo=F>>=
 sessionInfo()

@@ -358,7 +358,7 @@ summarizeFactors <-
     datf <- dat[, factors, drop = FALSE]
     if (alphaSort)
         datf <- datf[, sort(colnames(datf)), drop = FALSE]
-    z <- lapply(datf, summary.factor)
+    z <- lapply(datf, summary_factor)
     attr(z, "class") <- c("summarizedFactors")
     attr(z, "maxLevels") <- maxLevels
     attr(z, "stats") <- stats
@@ -691,12 +691,14 @@ formatSummarizedNumerics <- function(x, ...){
 ##'
 ##' This adapts code from R base summary.factor. It adds
 ##' the calculation of entropy as a measure of diversity.
+##' This was a method summary_factor, but R check kept
+##' objecting, no matter what I tried
 ##'
 ##' @param y a factor (non-numeric variable)
 ##' @return A list, including the summary table and vector of summary
 ##'     stats if requested.
 ##' @author Paul E. Johnson \email{pauljohn@@ku.edu}
-summary.factor <-
+summary_factor <-
     function(y)
 {
     ## 5 nested functions to be used later
