@@ -236,7 +236,9 @@ NULL
 ##' ## if user has tables package, can push out to latex or html
 ##' if (require(tables) & require(Hmisc)){
 ##'     tabsumtab <- tables::as.tabular(tabsum)
-##'     Hmisc::html(tabsumtab)
+##'     # PJ 20260412. I don't think it is needed.
+##'     # causes check warning about unexpected file
+##'     # Hmisc::html(tabsumtab)
 ##'     fn <- tempfile(pattern = "file", tmpdir = tempdir(), 
 ##'             fileext = ".html")
 ##'     Hmisc::html(tabsumtab, file = fn)
