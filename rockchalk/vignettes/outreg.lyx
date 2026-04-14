@@ -274,13 +274,14 @@ rightside .code:n = {
 \urlstyle{tt}
 \footersetup{
   leftside={
-    lone={CRMDA{,}~1425~Jayhawk~BLVD}, 
-    ltwo={University~of~Kansas{,}~Waston~Library~Suite~470}, 
-    lthree={Lawrence{,}~KS~66045}},
+    lone={Data~Adjacent~LLC}, 
+    ltwo={Oletha{,}~KS~66061},
+    lthree={}},
   rightside={
-    rone=Web: \url{https://crmda.ku.edu},
-    rtwo=Email: \href{mailto:pauljohn@ku.edu}{\url{pauljohn@ku.edu}},
-    rthree=Phone: 785-864-3353}
+    rone=Web: \url{https://pj.freefaculty.org},
+    rtwo=Email: \href{mailto:pauljohn32@freefaculty.org}{\url{pauljohn32@freefaculty.org}},
+    rthree={}    
+}
 }
 \guideftr
 
@@ -449,6 +450,7 @@ sweave
 \bibtex_command default
 \index_command default
 \float_placement H
+\float_alignment class
 \paperfontsize 11
 \spacing single
 \use_hyperref true
