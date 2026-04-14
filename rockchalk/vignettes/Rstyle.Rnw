@@ -974,8 +974,8 @@ be more cautious to teach new R users about coding style. I intend
 to prevent the accumulation of bad habits that result in code that
 is difficult to read and hard to debug. 
 
-Users who ask for help in the r-help email list \footnote{\url{http://www.r-project.org/mail.html}}
-or on web forums \footnote{e.g., \url{http://stackoverflow.com/questions/tagged/r}}
+Users who ask for help in the r-help email list \footnote{\url{https://www.r-project.org/mail.html}}
+or on web forums \footnote{e.g., \url{https://stackoverflow.com/questions/tagged/r}}
 are well advised to remember the importance of style. Most newcomers
 believe that the experts will understand what they write, but that's
 not true. Experts will find it much easier to spot errors in code

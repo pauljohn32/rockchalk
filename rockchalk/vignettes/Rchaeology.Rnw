@@ -128,8 +128,8 @@
 
 \maketitle
 This document was initiated on May 31, 2012. The newest copy will
-always be available at \url{http://pj.freefaculty.org/R} and as a
-vignette in the R package ``rockchalk''.
+always be available at \url{https://pj.freefaculty.org/R} and as
+a vignette in the R package ``rockchalk''.
 \begin{description}
 \item [{Rchaeology:}] The study of R programming by investigation of R
 source code. It is the effort to discern the programming strategies,
@@ -143,7 +143,7 @@ here are gathered from the r-help and r-devel emails lists, the stackoverflow
 website pages for R, and the R source code itself. These are lessons
 from the ``school of hard knocks.''
 
-How is this different from Rtips(\url{http://pj.freefaculty.org/R/Rtips.{pdf,html}})?
+How is this different from Rtips(\url{https://pj.freefaculty.org/R/Rtips.{pdf,html}})?
 \begin{enumerate}
 \item This is oriented toward programming R, rather than using R.
 \item It is more synthetic, aimed more at finding ``what's right'' rather
@@ -187,11 +187,11 @@ language. Well, that's wrong. It is a different dialect.
 
 A transitional R user will have to learn a lot of terminology and
 undergo a change of paradigm. There are resources available! Everybody
-should subscribe to the email lists for the R project (\url{http://www.r-project.org/mail.html}),
+should subscribe to the email lists for the R project (\url{https://www.r-project.org/mail.html}),
 especially r-help (for user questions) and r-devel. Rchaeologically
 speaking, that is the native habitat of the R programmers. There is
 also a burgeoning collection of blogs and Web forums, perhaps most
-notably the R section on StackExchange (\url{http://stackoverflow.com/questions/tagged/r}).
+notably the R section on StackExchange (\url{https://stackoverflow.com/questions/tagged/r}).
 Excellent books have been published. As an Rcheologist, I am drawn
 to the books that are written by the R insiders. \emph{S Programming},
 by William Venables and Brian Ripley \citeyearpar{venables_s_2000},
@@ -748,7 +748,7 @@ In order to smuggle the result of a calculation into an expression,
 some fancy footwork is required. In the help page for plotmath, examples
 using the functions bquote and substitute are offered. I have found
 this to be quite frustrating and difficult to do, and if one examines
-my collection of examples on \url{http://pj.freefaculty.org/R/WorkingExamples},
+my collection of examples on \url{https://pj.freefaculty.org/R/WorkingExamples},
 one will find quite a few plotmath exercises.
 
 For the particular purpose of blending expressions with calculation
