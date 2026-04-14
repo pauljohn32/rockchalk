@@ -1,7 +1,7 @@
 ##' draw a normal distribution with beautiful illustrations
 ##'
 ##' This was developed for the R Working Example collection
-##' in my website, pj.freefaculty.org/R/WorkingExamples
+##' in my website, https://pj.freefaculty.org/R/WorkingExamples
 ##' @param mu The mu parameter
 ##' @param sigma The sigma parameter
 ##' @param xlab Label for x axis

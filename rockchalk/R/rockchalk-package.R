@@ -30,7 +30,7 @@
 ##'
 ##' @name rockchalk-package
 ##' @aliases rockchalk-package rockchalk
-##' @references http://pj.freefaculty.org/R
+##' @references https://pj.freefaculty.org/R
 ##' @keywords regression hplot
 NULL
 

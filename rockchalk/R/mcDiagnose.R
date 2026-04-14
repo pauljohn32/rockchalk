@@ -169,7 +169,7 @@ NULL
 ##' formula that is used by cov2pcor in gRbase and in every other
 ##' package or online source I could find. I prepared a little
 ##' WorkingExample file matrix-partial-correlations-1.R that
-##' discusses this, in case you are interested (http://pj.freefaculty.org/R).
+##' discusses this, in case you are interested (https://pj.freefaculty.org/R).
 ##'
 ##' @param model A fitted regression model, such as output from
 ##' lm(). Any object that has methods model.matrix and model.frame
