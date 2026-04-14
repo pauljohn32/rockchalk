@@ -300,7 +300,7 @@ rightside .code:n = {
     ltwo={University~of~Kansas{,}~Waston~Library~Suite~470}, 
     lthree={Lawrence{,}~KS~66045}},
   rightside={
-    rone=Web: \url{https://crmda.ku.edu},
+    rone=Web: \url{https://pj.freefaculty.org},
     rtwo=Email: \href{mailto:pauljohn@ku.edu}{\url{pauljohn@ku.edu}},
     rthree=Phone: 785-864-3353}
 }
@@ -457,7 +457,7 @@ rightside .code:n = {
     firstname=Paul, 
     affiliation=CRMDA,
     email=pauljohn@ku.edu},
-  url={https://crmda.ku.edu/guides},
+  url={https://pj.freefaculty.org/guides},
   keywords={R, rockchalk, outreg, LaTeX, regression tables},
   title={Regression Table Survey with outreg},
   leftlogo={theme/logoleft.pdf},
